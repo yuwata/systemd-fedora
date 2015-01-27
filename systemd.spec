@@ -478,6 +478,9 @@ mv %{_localstatedir}/lib/backlight %{_localstatedir}/lib/systemd/backlight >/dev
 # to fail when the link already exists)
 ln -s /usr/lib/systemd/system/rsyslog.service /etc/systemd/system/syslog.service >/dev/null 2>&1 || :
 
+# Remove spurious /etc/fstab entries from very old installations
+sed -i.rpm.bak -r '/^devpts\s+\/dev\/pts\s+devpts\s+defaults\s+/d; /^tmpfs\s+\/dev\/shm\s+tmpfs\s+defaults\s+/d; /^sysfs\s+\/sys\s+sysfs\s+defaults\s+/d; /^proc\s+\/proc\s+proc\s+defaults\s+/d' /etc/fstab
+
 # Services we install by default, and which are controlled by presets.
 if [ $1 -eq 1 ] ; then
         systemctl preset \
