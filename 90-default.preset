@@ -11,7 +11,6 @@ enable sshd.service
 enable atd.*
 enable crond.*
 enable chronyd.service
-enable rpcbind.*
 enable NetworkManager.service
 enable NetworkManager-dispatcher.service
 enable ModemManager.service
