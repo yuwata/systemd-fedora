@@ -16,7 +16,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        218
-Release:        4%{?gitcommit:.git%{gitcommit}}%{?dist}
+Release:        5%{?gitcommit:.git%{gitcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -428,8 +428,6 @@ touch %{buildroot}%{_localstatedir}/lib/systemd/clock
 
 # Install yum protection fragment
 install -Dm0644 %{SOURCE4} %{buildroot}%{_sysconfdir}/yum/protected.d/systemd.conf
-
-install -Dm0644 %{SOURCE7} %{buildroot}%{_rpmconfigdir}/macros.d/macros.systemd
 
 mkdir -vp %{buildroot}/usr/lib/firewalld/services/
 install -Dm0644 %{SOURCE7} %{buildroot}/usr/lib/firewalld/services/
@@ -850,6 +848,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Thu Feb 05 2015 Michal Schmidt <mschmidt@redhat.com> - 218-5
+- Don't overwrite systemd.macros with unrelated Source file.
+
 * Thu Feb  5 2015 Jan Synáček <jsynacek@redhat.com> - 218-4
 - Add a touchpad hwdb (#1189319)
 
