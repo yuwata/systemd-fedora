@@ -43,6 +43,7 @@ Source8:        systemd-journal-gatewayd.xml
 # i=1; for p in 0*patch;do printf "Patch%04d:      %s\n" $i $p; ((i++));done
 Patch0001:      0001-nspawn-fix-invocation-of-the-raw-clone-system-call-o.patch
 Patch0002:      0002-journald-when-we-detect-the-journal-file-we-are-abou.patch
+Patch0003:      0003-hwdb-add-a-touchpad-hwdb.patch
 
 Patch0998:      fedora-disable-resolv.conf-symlink.patch
 Patch0999:      fedora-add-bridge-sysctl-configuration.patch
@@ -849,6 +850,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Thu Feb  5 2015 Jan Synáček <jsynacek@redhat.com> - 218-4
+- Add a touchpad hwdb (#1189319)
+
 * Thu Jan 15 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 218-4
 - Enable xkbcommon dependency to allow checking of keymaps
 - Fix permissions of /var/log/journal (#1048424)
