@@ -16,7 +16,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        218
-Release:        5%{?gitcommit:.git%{gitcommit}}%{?dist}
+Release:        6%{?gitcommit:.git%{gitcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -86,8 +86,8 @@ BuildRequires:  python3-devel
 BuildRequires:  python-lxml
 BuildRequires:  python3-lxml
 BuildRequires:  firewalld-filesystem
-# libseccomp is currently explicitly only supported on x86/armv7
-%ifarch %{arm} %{ix86} x86_64
+# libseccomp is currently explicitly only supported on x86/arm*
+%ifarch %{arm} aarch64 %{ix86} x86_64
 # https://bugzilla.redhat.com/show_bug.cgi?id=1071278
 # https://bugzilla.redhat.com/show_bug.cgi?id=1073647
 # https://bugzilla.redhat.com/show_bug.cgi?id=1071284
@@ -848,6 +848,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Mon Feb 16 2015 Peter Robinson <pbrobinson@fedoraproject.org> 218-6
+- aarch64 now has seccomp support
+
 * Thu Feb 05 2015 Michal Schmidt <mschmidt@redhat.com> - 218-5
 - Don't overwrite systemd.macros with unrelated Source file.
 
