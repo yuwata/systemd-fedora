@@ -299,6 +299,14 @@ CONFIGURE_OPTS=(
         --disable-terminal
 )
 
+%ifarch %{arm} aarch64
+# gold on arm is broken
+# https://bugzilla.redhat.com/show_bug.cgi?id=1193212
+CONFIGURE_OPTS+=(
+        LDFLAGS=-Wl,-fuse-ld=bfd
+)
+%endif
+
 pushd build3
 %define _configure ../configure
 %configure \
@@ -861,6 +869,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 - This removes the sysctl/bridge hack, a different solution needs to be found for this (see #634736)
 - This removes the /etc/resolv.conf hack, anaconda needs to fix their handling of /etc/resolv.conf as symlink
 - This enables "%check"
+- disable gold on arm, as that is broken (see #1193212)
 
 * Mon Feb 16 2015 Peter Robinson <pbrobinson@fedoraproject.org> 218-6
 - aarch64 now has seccomp support
