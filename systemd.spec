@@ -15,8 +15,8 @@
 
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        218
-Release:        6%{?gitcommit:.git%{gitcommit}}%{?dist}
+Version:        219
+Release:        1%{?gitcommit:.git%{gitcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -38,15 +38,9 @@ Source6:        sysctl.conf.README
 Source7:        systemd-journal-remote.xml
 Source8:        systemd-journal-gatewayd.xml
 
-# Patch series is available from http://cgit.freedesktop.org/systemd/systemd-stable/log/?h=v218-stable
-# GIT_DIR=~/src/systemd/.git git format-patch-ab -M -N --no-signature v218..v218-stable
+# Patch series is available from http://cgit.freedesktop.org/systemd/systemd-stable/log/?h=v219-stable
+# GIT_DIR=~/src/systemd/.git git format-patch-ab -M -N --no-signature v219..v219-stable
 # i=1; for p in 0*patch;do printf "Patch%04d:      %s\n" $i $p; ((i++));done
-Patch0001:      0001-nspawn-fix-invocation-of-the-raw-clone-system-call-o.patch
-Patch0002:      0002-journald-when-we-detect-the-journal-file-we-are-abou.patch
-Patch0003:      0003-hwdb-add-a-touchpad-hwdb.patch
-
-Patch0998:      fedora-disable-resolv.conf-symlink.patch
-Patch0999:      fedora-add-bridge-sysctl-configuration.patch
 
 # kernel-install patch for grubby, drop if grubby is obsolete
 Patch1000:      kernel-install-grubby.patch
@@ -435,6 +429,10 @@ install -Dm0644 %{SOURCE8} %{buildroot}/usr/lib/firewalld/services/
 
 %find_lang %{name}
 
+%check
+make -C build2 check
+make -C build3 check
+
 %pre
 getent group cdrom >/dev/null 2>&1 || groupadd -r -g 11 cdrom >/dev/null 2>&1 || :
 getent group utmp >/dev/null 2>&1 || groupadd -r -g 22 utmp >/dev/null 2>&1 || :
@@ -644,6 +642,8 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.timedate1.conf
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.machine1.conf
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.resolve1.conf
+%config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.import1.conf
+%config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.network1.conf
 %config(noreplace) %{_sysconfdir}/systemd/system.conf
 %config(noreplace) %{_sysconfdir}/systemd/user.conf
 %config(noreplace) %{_sysconfdir}/systemd/logind.conf
@@ -693,6 +693,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_bindir}/systemd-path
 %{_bindir}/systemd-sysusers
 %{_bindir}/systemd-firstboot
+%{_bindir}/systemd-hwdb
 %{_bindir}/hostnamectl
 %{_bindir}/localectl
 %{_bindir}/timedatectl
@@ -716,7 +717,6 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_prefix}/lib/tmpfiles.d/etc.conf
 %{_prefix}/lib/sysctl.d/50-default.conf
 %{_prefix}/lib/sysctl.d/50-coredump.conf
-%{_prefix}/lib/sysctl.d/50-bridge.conf
 %{_prefix}/lib/sysusers.d/basic.conf
 %{_prefix}/lib/sysusers.d/systemd.conf
 %{_prefix}/lib/systemd/system-preset/85-display-manager.preset
@@ -726,6 +726,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_prefix}/lib/systemd/catalog/systemd.catalog
 %{_prefix}/lib/kernel/install.d/50-depmod.install
 %{_prefix}/lib/kernel/install.d/90-loaderentry.install
+%{_prefix}/lib/systemd/import-pubring.gpg
 %{_sbindir}/init
 %{_sbindir}/reboot
 %{_sbindir}/halt
@@ -744,6 +745,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_datadir}/factory/etc/pam.d/other
 %{_datadir}/factory/etc/pam.d/system-auth
 %{_datadir}/systemd/kbd-model-map
+%{_datadir}/systemd/language-fallback-map
 %{_datadir}/dbus-1/services/org.freedesktop.systemd1.service
 %{_datadir}/dbus-1/system-services/org.freedesktop.systemd1.service
 %{_datadir}/dbus-1/system-services/org.freedesktop.hostname1.service
@@ -752,6 +754,8 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_datadir}/dbus-1/system-services/org.freedesktop.timedate1.service
 %{_datadir}/dbus-1/system-services/org.freedesktop.machine1.service
 %{_datadir}/dbus-1/system-services/org.freedesktop.resolve1.service
+%{_datadir}/dbus-1/system-services/org.freedesktop.import1.service
+%{_datadir}/dbus-1/system-services/org.freedesktop.network1.service
 %dir %{_datadir}/polkit-1
 %dir %{_datadir}/polkit-1/actions
 %{_datadir}/polkit-1/actions/org.freedesktop.systemd1.policy
@@ -759,7 +763,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_datadir}/polkit-1/actions/org.freedesktop.login1.policy
 %{_datadir}/polkit-1/actions/org.freedesktop.locale1.policy
 %{_datadir}/polkit-1/actions/org.freedesktop.timedate1.policy
-%{_datadir}/pkgconfig/systemd.pc
+%{_datadir}/polkit-1/actions/org.freedesktop.import1.policy
+%{_datadir}/polkit-1/actions/org.freedesktop.machine1.policy
+%{_libdir}/pkgconfig/systemd.pc
 %{_datadir}/pkgconfig/udev.pc
 %{_datadir}/bash-completion/completions/*
 %{_datadir}/zsh/site-functions/*
@@ -848,6 +854,12 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Mon Feb 16 2015 Lennart Poettering <lpoetter@redhat.com> - 219-1
+- New upstream release
+- This removes the sysctl/bridge hack, a different solution needs to be found for this (see #634736)
+- This removes the /etc/resolv.conf hack, anaconda needs to fix their handling of /etc/resolv.conf as symlink
+- This enables "%check"
+
 * Mon Feb 16 2015 Peter Robinson <pbrobinson@fedoraproject.org> 218-6
 - aarch64 now has seccomp support
 
