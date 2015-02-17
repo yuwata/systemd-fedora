@@ -16,7 +16,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        219
-Release:        1%{?gitcommit:.git%{gitcommit}}%{?dist}
+Release:        2%{?gitcommit:.git%{gitcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -864,6 +864,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Tue Feb 17 2015 Peter Jones <pjones@redhat.com> - 219-2
+- Update 90-default.present for dbxtool.
+
 * Mon Feb 16 2015 Lennart Poettering <lpoetter@redhat.com> - 219-1
 - New upstream release
 - This removes the sysctl/bridge hack, a different solution needs to be found for this (see #634736)
