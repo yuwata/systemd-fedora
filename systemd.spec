@@ -16,7 +16,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        219
-Release:        3%{?gitcommit:.git%{gitcommit}}%{?dist}
+Release:        4%{?gitcommit:.git%{gitcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -44,6 +44,7 @@ Source8:        systemd-journal-gatewayd.xml
 
 # kernel-install patch for grubby, drop if grubby is obsolete
 Patch1000:      kernel-install-grubby.patch
+Patch1001:      fedora-disable-resolv.conf-symlink.patch
 
 %global num_patches %{lua: c=0; for i,p in ipairs(patches) do c=c+1; end; print(c);}
 
@@ -862,6 +863,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Fri Feb 20 2015 Michal Schmidt <mschmidt@redhat.com> - 219-4
+- Revive fedora-disable-resolv.conf-symlink.patch to unbreak composes.
+
 * Wed Feb 18 2015 Michal Schmidt <mschmidt@redhat.com> - 219-3
 - arm: disabling gold did not help; disable lto instead (#1193212)
 
