@@ -16,7 +16,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        219
-Release:        5%{?gitcommit:.git%{gitcommit}}%{?dist}
+Release:        6%{?gitcommit:.git%{gitcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -41,6 +41,9 @@ Source8:        systemd-journal-gatewayd.xml
 # Patch series is available from http://cgit.freedesktop.org/systemd/systemd-stable/log/?h=v219-stable
 # GIT_DIR=~/src/systemd/.git git format-patch-ab -M -N --no-signature v219..v219-stable
 # i=1; for p in 0*patch;do printf "Patch%04d:      %s\n" $i $p; ((i++));done
+
+Patch998: 0001-unit-When-stopping-due-to-BindsTo-log-which-unit-cau.patch
+Patch999: 0001-Revert-core-mount-add-dependencies-to-dynamically-mo.patch
 
 # kernel-install patch for grubby, drop if grubby is obsolete
 Patch1000:      kernel-install-grubby.patch
@@ -862,6 +865,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Tue Feb 24 2015 Colin Walters <walters@redhat.com> - 219-6
+- Revert patch that breaks Atomic/OSTree (#1195761)
+
 * Fri Feb 20 2015 Michal Schmidt <mschmidt@redhat.com> - 219-5
 - Undo the resolv.conf workaround, Aim for a proper fix in Rawhide.
 

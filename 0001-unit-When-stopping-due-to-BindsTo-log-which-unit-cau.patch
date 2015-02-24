@@ -1,0 +1,49 @@
+From f94b2f6c88693a9dbd9230723d097d35c0e94b75 Mon Sep 17 00:00:00 2001
+From: Colin Walters <walters@verbum.org>
+Date: Mon, 16 Feb 2015 11:43:46 -0500
+Subject: [PATCH] unit: When stopping due to BindsTo=, log which unit caused it
+
+I'm trying to track down a relatively recent change in systemd
+which broke OSTree; see https://bugzilla.gnome.org/show_bug.cgi?id=743891
+
+Systemd started to stop sysroot.mount, and this patch should help
+me debug why at least.
+
+While we're here, "break" on the first unit we find that will
+deactivate, as there's no point in further iteration.
+---
+ src/core/unit.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/src/core/unit.c b/src/core/unit.c
+index ad5348b..f898bb7 100644
+--- a/src/core/unit.c
++++ b/src/core/unit.c
+@@ -1623,7 +1623,7 @@ static void unit_check_unneeded(Unit *u) {
+ 
+ static void unit_check_binds_to(Unit *u) {
+         bool stop = false;
+-        Unit *other;
++        Unit *other = NULL;
+         Iterator i;
+ 
+         assert(u);
+@@ -1642,12 +1642,14 @@ static void unit_check_binds_to(Unit *u) {
+                         continue;
+ 
+                 stop = true;
++                break;
+         }
+ 
+         if (!stop)
+                 return;
+ 
+-        log_unit_info(u->id, "Unit %s is bound to inactive unit. Stopping, too.", u->id);
++        assert(other);
++        log_unit_info(u->id, "Unit %s is bound to inactive unit %s. Stopping, too.", u->id, other->id);
+ 
+         /* A unit we need to run is gone. Sniff. Let's stop this. */
+         manager_add_job(u->manager, JOB_STOP, u, JOB_FAIL, true, NULL, NULL);
+-- 
+1.8.3.1
+
