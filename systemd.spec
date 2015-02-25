@@ -16,7 +16,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        219
-Release:        6%{?gitcommit:.git%{gitcommit}}%{?dist}
+Release:        7%{?gitcommit:.git%{gitcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -301,12 +301,6 @@ CONFIGURE_OPTS=(
         --disable-kdbus
         --disable-terminal
 )
-
-%ifarch %{arm} aarch64
-# lto on arm is broken
-# https://bugzilla.redhat.com/show_bug.cgi?id=1193212
-CFLAGS="%{optflags} -fno-lto"
-%endif
 
 pushd build3
 %define _configure ../configure
@@ -865,6 +859,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Wed Feb 25 2015 Michal Schmidt <mschmidt@redhat.com> - 219-7
+- arm: reenable lto. gcc-5.0.0-0.16 fixed the crash (#1193212)
+
 * Tue Feb 24 2015 Colin Walters <walters@redhat.com> - 219-6
 - Revert patch that breaks Atomic/OSTree (#1195761)
 
