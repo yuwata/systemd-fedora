@@ -456,8 +456,8 @@ install -Dm0644 %{SOURCE8} %{buildroot}/usr/lib/firewalld/services/
 %find_lang %{name}
 
 %check
-make -C build2 check
-make -C build3 check
+make -C build2 check VERBOSE=1
+make -C build3 check VERBOSE=1
 
 %pre
 getent group cdrom >/dev/null 2>&1 || groupadd -r -g 11 cdrom >/dev/null 2>&1 || :
