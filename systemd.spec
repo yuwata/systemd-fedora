@@ -496,6 +496,10 @@ chmod g+s /run/log/journal/ /run/log/journal/`cat /etc/machine-id 2> /dev/null` 
 # Apply ACL to the journal directory
 setfacl -Rnm g:wheel:rx,d:g:wheel:rx,g:adm:rx,d:g:adm:rx /var/log/journal/ >/dev/null 2>&1 || :
 
+# Remove duplicate ACL entries on /var/log/journal/<id>
+# This should be removed before before F22 or F23 release
+getfacl -p /var/log/journal/`cat /etc/machine-id`|grep -v '^#'|sort -u|setfacl --set-file=- /var/log/journal/`cat /etc/machine-id` >/dev/null 2>&1 || :
+
 # Move old stuff around in /var/lib
 mv %{_localstatedir}/lib/random-seed %{_localstatedir}/lib/systemd/random-seed >/dev/null 2>&1 || :
 mv %{_localstatedir}/lib/backlight %{_localstatedir}/lib/systemd/backlight >/dev/null 2>&1 || :
@@ -885,7 +889,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %changelog
 * Tue Mar  3 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 219-8
 - Reworked device handling (#1195761)
-- ACL handling fixes
+- ACL handling fixes (with a script in %%post)
 - Various log messages downgraded (#1184712)
 
 * Wed Feb 25 2015 Michal Schmidt <mschmidt@redhat.com> - 219-7
