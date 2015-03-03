@@ -16,7 +16,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        219
-Release:        7%{?gitcommit:.git%{gitcommit}}%{?dist}
+Release:        8%{?gitcommit:.git%{gitcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -41,9 +41,33 @@ Source8:        systemd-journal-gatewayd.xml
 # Patch series is available from http://cgit.freedesktop.org/systemd/systemd-stable/log/?h=v219-stable
 # GIT_DIR=~/src/systemd/.git git format-patch-ab -M -N --no-signature v219..v219-stable
 # i=1; for p in 0*patch;do printf "Patch%04d:      %s\n" $i $p; ((i++));done
+Patch0001:      0001-journal-remote-fix-certificate-status-memory-leak.patch
+Patch0002:      0002-journal-remote-fix-client_cert-memory-leak.patch
+Patch0003:      0003-tmpfiles-Fix-parse_acl-error-message.patch
+Patch0004:      0004-test-utf8-fix-utf16-tests-on-BE-machines.patch
+Patch0005:      0005-tmpfiles-avoid-creating-duplicate-acl-entries.patch
+Patch0006:      0006-shared-time-util-fix-gcc5-warning.patch
+Patch0007:      0007-test-time-test-infinity-parsing-in-nanoseconds.patch
+Patch0008:      0008-bootchart-fix-default-init-path.patch
+Patch0009:      0009-systemctl-bump-NOFILE-only-for-systemctl_main.patch
+Patch0010:      0010-acl-util-avoid-freeing-uninitialized-pointer.patch
+Patch0011:      0011-bootchart-svg-fix-checking-of-list-end.patch
+Patch0012:      0012-systemd-add-getrandom-syscall-numbers-for-MIPS.patch
+Patch0013:      0013-unit-use-weaker-dependencies-between-mount-and-devic.patch
+Patch0014:      0014-unit-When-stopping-due-to-BindsTo-log-which-unit-cau.patch
+Patch0015:      0015-sysctl-downgrade-message-about-sysctl-overrides-to-d.patch
+Patch0016:      0016-sysctl-add-some-hints-how-to-override-settings.patch
+Patch0017:      0017-core-rework-device-state-logic.patch
+Patch0018:      0018-core-fix-return-value-on-OOM.patch
+Patch0019:      0019-machined-use-x-machine-unix-prefix-for-the-container.patch
+Patch0020:      0020-shared-AFS-is-also-a-network-filesystem.patch
+Patch0021:      0021-core-downgrade-unit-type-not-supported-message.patch
+Patch0022:      0022-journal-remote-fix-saving-of-binary-fields.patch
+Patch0023:      0023-journal-fix-Inappropriate-ioctl-for-device-on-ext4.patch
+Patch0024:      0024-sd-daemon-replace-VLA-with-alloca-to-make-llvm-happy.patch
+Patch0025:      0025-tmpfiles-quietly-ignore-ACLs-on-unsupported-filesyst.patch
+Patch0026:      0026-shared-util-assume-ac-when-sys-class-power_supply-is.patch
 
-Patch998: 0001-unit-When-stopping-due-to-BindsTo-log-which-unit-cau.patch
-Patch999: 0001-Revert-core-mount-add-dependencies-to-dynamically-mo.patch
 
 # kernel-install patch for grubby, drop if grubby is obsolete
 Patch1000:      kernel-install-grubby.patch
@@ -859,6 +883,11 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Tue Mar  3 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 219-8
+- Reworked device handling (#1195761)
+- ACL handling fixes
+- Various log messages downgraded (#1184712)
+
 * Wed Feb 25 2015 Michal Schmidt <mschmidt@redhat.com> - 219-7
 - arm: reenable lto. gcc-5.0.0-0.16 fixed the crash (#1193212)
 

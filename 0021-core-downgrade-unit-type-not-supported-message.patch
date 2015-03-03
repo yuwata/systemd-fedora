@@ -1,0 +1,28 @@
+From 4e2d4dd757c6faa4d5a471c10cf6f45978524845 Mon Sep 17 00:00:00 2001
+From: Umut Tezduyar Lindskog <umut.tezduyar@axis.com>
+Date: Fri, 20 Feb 2015 10:53:28 +0100
+Subject: [PATCH] core: downgrade unit type not supported message
+
+Otherwise every daemon reload prints out warnings like:
+
+systemd[1]: Unit type .busname is not supported on this system.
+systemd[1]: Unit type .swap is not supported on this system.
+
+(cherry picked from commit 03afec3c9aa849ba13161c253b129b834298fd40)
+---
+ src/core/manager.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/core/manager.c b/src/core/manager.c
+index 4775219e4a..bc9b7ec620 100644
+--- a/src/core/manager.c
++++ b/src/core/manager.c
+@@ -961,7 +961,7 @@ int manager_enumerate(Manager *m) {
+                 int q;
+ 
+                 if (unit_vtable[c]->supported && !unit_vtable[c]->supported(m)) {
+-                        log_info("Unit type .%s is not supported on this system.", unit_type_to_string(c));
++                        log_debug("Unit type .%s is not supported on this system.", unit_type_to_string(c));
+                         continue;
+                 }
+ 

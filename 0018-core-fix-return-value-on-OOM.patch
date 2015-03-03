@@ -1,0 +1,23 @@
+From 3d3a67138c63b47f2a5723577f886bc3c7995748 Mon Sep 17 00:00:00 2001
+From: Thomas Hindoe Paaboel Andersen <phomes@gmail.com>
+Date: Sat, 28 Feb 2015 23:39:55 +0100
+Subject: [PATCH] core: fix return value on OOM
+
+(cherry picked from commit c43b2132f37264600cc26e07c8d85dfdd6c969f0)
+---
+ src/core/device.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/core/device.c b/src/core/device.c
+index 75b9a46287..1cc103c290 100644
+--- a/src/core/device.c
++++ b/src/core/device.c
+@@ -211,6 +211,8 @@ static int device_update_description(Unit *u, struct udev_device *dev, const cha
+                         j = strjoin(model, " ", label, NULL);
+                         if (j)
+                                 r = unit_set_description(u, j);
++                        else
++                                r = -ENOMEM;
+                 } else
+                         r = unit_set_description(u, model);
+         } else

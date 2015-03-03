@@ -1,6 +1,6 @@
-From f94b2f6c88693a9dbd9230723d097d35c0e94b75 Mon Sep 17 00:00:00 2001
+From ca0cf2741ef9db81141f4444ab58dd3552c8fb1f Mon Sep 17 00:00:00 2001
 From: Colin Walters <walters@verbum.org>
-Date: Mon, 16 Feb 2015 11:43:46 -0500
+Date: Tue, 17 Feb 2015 13:47:34 -0500
 Subject: [PATCH] unit: When stopping due to BindsTo=, log which unit caused it
 
 I'm trying to track down a relatively recent change in systemd
@@ -11,24 +11,17 @@ me debug why at least.
 
 While we're here, "break" on the first unit we find that will
 deactivate, as there's no point in further iteration.
+
+(cherry picked from commit 98f738b62047229af4a929d7996e2ab04253b02c)
 ---
- src/core/unit.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ src/core/unit.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/src/core/unit.c b/src/core/unit.c
-index ad5348b..f898bb7 100644
+index 9f1e55e2f1..563f6fe850 100644
 --- a/src/core/unit.c
 +++ b/src/core/unit.c
-@@ -1623,7 +1623,7 @@ static void unit_check_unneeded(Unit *u) {
- 
- static void unit_check_binds_to(Unit *u) {
-         bool stop = false;
--        Unit *other;
-+        Unit *other = NULL;
-         Iterator i;
- 
-         assert(u);
-@@ -1642,12 +1642,14 @@ static void unit_check_binds_to(Unit *u) {
+@@ -1648,12 +1648,14 @@ static void unit_check_binds_to(Unit *u) {
                          continue;
  
                  stop = true;
@@ -44,6 +37,3 @@ index ad5348b..f898bb7 100644
  
          /* A unit we need to run is gone. Sniff. Let's stop this. */
          manager_add_job(u->manager, JOB_STOP, u, JOB_FAIL, true, NULL, NULL);
--- 
-1.8.3.1
-

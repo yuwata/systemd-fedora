@@ -1,0 +1,28 @@
+From 7057db8b36594bb03c611cab711cd992ad4de31e Mon Sep 17 00:00:00 2001
+From: Michal Schmidt <mschmidt@redhat.com>
+Date: Tue, 17 Feb 2015 10:33:01 +0100
+Subject: [PATCH] journal-remote: fix certificate status memory leak
+
+The output of gnutls_certificate_verification_status_print() needs to be
+freed.
+
+Noticed this while staring at verify_cert_authorized() to see what could
+possibly confuse gcc5 on armv7hl to segfault during compilation.
+
+(cherry picked from commit 9c3cf9693ac5c0a332ba376f99e6adea28b1bb0d)
+---
+ src/journal-remote/microhttpd-util.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/journal-remote/microhttpd-util.c b/src/journal-remote/microhttpd-util.c
+index 34d93379da..de9c6ab32d 100644
+--- a/src/journal-remote/microhttpd-util.c
++++ b/src/journal-remote/microhttpd-util.c
+@@ -179,6 +179,7 @@ static int verify_cert_authorized(gnutls_session_t session) {
+                 return log_error_errno(r, "gnutls_certificate_verification_status_print failed: %m");
+ 
+         log_info("Certificate status: %s", out.data);
++        gnutls_free(out.data);
+ 
+         return status == 0 ? 0 : -EPERM;
+ }

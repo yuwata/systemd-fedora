@@ -1,0 +1,26 @@
+From 2439dc6083d27271ee942559f0f73c99fa9e2b4e Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Thu, 26 Feb 2015 19:00:11 -0500
+Subject: [PATCH] sysctl: downgrade message about sysctl overrides to debug
+
+Printing it at info level was tedious. We don't do that for any other
+overrides.
+
+(cherry picked from commit 7933e4266f8124e3fca71f67757abd44155fa1cb)
+---
+ src/sysctl/sysctl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/sysctl/sysctl.c b/src/sysctl/sysctl.c
+index 275a5b74ae..2415d84526 100644
+--- a/src/sysctl/sysctl.c
++++ b/src/sysctl/sysctl.c
+@@ -176,7 +176,7 @@ found:
+                         if (streq(value, existing))
+                                 continue;
+ 
+-                        log_info("Overwriting earlier assignment of %s in file '%s'.", p, path);
++                        log_debug("Overwriting earlier assignment of %s in file '%s'.", p, path);
+                         free(hashmap_remove(sysctl_options, p));
+                         free(v);
+                 }

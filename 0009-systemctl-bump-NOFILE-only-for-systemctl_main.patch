@@ -1,0 +1,41 @@
+From 1df0ddca3ae405537ceb87eccdb76324f276706f Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Tue, 24 Feb 2015 10:10:04 -0500
+Subject: [PATCH] systemctl: bump NOFILE only for systemctl_main
+
+It is not necessary when running as telinit, etc.
+
+https://bugzilla.redhat.com/show_bug.cgi?id=1184712
+(cherry picked from commit 95d383ee47db488f182048cfd6846f2e6b859f2b)
+---
+ src/systemctl/systemctl.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/src/systemctl/systemctl.c b/src/systemctl/systemctl.c
+index 21cb898b9a..6b93ec8446 100644
+--- a/src/systemctl/systemctl.c
++++ b/src/systemctl/systemctl.c
+@@ -7204,6 +7204,11 @@ found:
+                 }
+         }
+ 
++        /* Increase max number of open files to 16K if we can, we
++         * might needs this when browsing journal files, which might
++         * be split up into many files. */
++        setrlimit_closest(RLIMIT_NOFILE, &RLIMIT_MAKE_CONST(16384));
++
+         return verb->dispatch(bus, argv + optind);
+ }
+ 
+@@ -7453,11 +7458,6 @@ int main(int argc, char*argv[]) {
+                 goto finish;
+         }
+ 
+-        /* Increase max number of open files to 16K if we can, we
+-         * might needs this when browsing journal files, which might
+-         * be split up into many files. */
+-        setrlimit_closest(RLIMIT_NOFILE, &RLIMIT_MAKE_CONST(16384));
+-
+         if (!avoid_bus())
+                 r = bus_open_transport_systemd(arg_transport, arg_host, arg_scope != UNIT_FILE_SYSTEM, &bus);
+ 
