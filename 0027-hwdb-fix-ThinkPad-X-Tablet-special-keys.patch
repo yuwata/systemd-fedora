@@ -1,0 +1,45 @@
+From 39addb81b660dd7af7d21be941d8de6497abbdbf Mon Sep 17 00:00:00 2001
+From: Lubomir Rintel <lkundrak@v3.sk>
+Date: Wed, 18 Feb 2015 21:02:01 +0100
+Subject: [PATCH] hwdb: fix ThinkPad X* Tablet special keys
+
+ThinkPad tablet firmware has DMI product name and version reversed:
+
+Handle 0x0001, DMI type 1, 27 bytes
+System Information
+        Manufacturer: LENOVO
+        Product Name: 7762AS1
+        Version: ThinkPad X61 Tablet
+        Serial Number: LKZCDH2
+        UUID: 6ADBC681-4FC9-11CB-844F-B47CB9210BE2
+        Wake-up Type: Power Switch
+        SKU Number: Not Specified
+        Family: ThinkPad X61 Tablet
+---
+ hwdb/60-keyboard.hwdb | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/hwdb/60-keyboard.hwdb b/hwdb/60-keyboard.hwdb
+index 1b7d871..2cb9769 100644
+--- a/hwdb/60-keyboard.hwdb
++++ b/hwdb/60-keyboard.hwdb
+@@ -586,7 +586,6 @@ keyboard:dmi:bvn*:bvr*:bd*:svnLENOVO*:pnS10-*:pvr*
+  KEYBOARD_KEY_f3=f21
+ 
+ # Thinkpad X200_Tablet
+-keyboard:dmi:bvn*:bvr*:bd*:svnLENOVO*:pnThinkPad*X2*Tablet*:pvr*
+ keyboard:dmi:bvn*:bvr*:bd*:svnLENOVO*:pn*:pvrThinkPad*X2*Tablet*
+  KEYBOARD_KEY_5d=menu
+  KEYBOARD_KEY_63=fn
+@@ -596,7 +595,7 @@ keyboard:dmi:bvn*:bvr*:bd*:svnLENOVO*:pn*:pvrThinkPad*X2*Tablet*
+  KEYBOARD_KEY_6c=direction                              # rotate screen
+ 
+ # ThinkPad X6 Tablet
+-keyboard:dmi:bvn*:bvr*:bd*:svnLENOVO*:pnThinkPad*X6*:pvr*
++keyboard:dmi:bvn*:bvr*:bd*:svnLENOVO*:pn*:pvrThinkPad*X6*Tablet*
+  KEYBOARD_KEY_6c=direction                              # rotate
+  KEYBOARD_KEY_68=leftmeta                               # toolbox
+  KEYBOARD_KEY_6b=esc                                    # escape
+-- 
+2.1.0
+
