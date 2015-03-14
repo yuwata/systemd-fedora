@@ -189,6 +189,7 @@ BuildRequires:  git
 Requires(post): coreutils
 Requires(post): sed
 Requires(post): acl
+Requires(post): grep
 Requires(pre):  coreutils
 Requires(pre):  /usr/bin/getent
 Requires(pre):  /usr/sbin/groupadd
@@ -572,7 +573,14 @@ mv %{_localstatedir}/lib/backlight %{_localstatedir}/lib/systemd/backlight >/dev
 ln -s /usr/lib/systemd/system/rsyslog.service /etc/systemd/system/syslog.service >/dev/null 2>&1 || :
 
 # Remove spurious /etc/fstab entries from very old installations
-sed -i.rpm.bak -r '/^devpts\s+\/dev\/pts\s+devpts\s+defaults\s+/d; /^tmpfs\s+\/dev\/shm\s+tmpfs\s+defaults\s+/d; /^sysfs\s+\/sys\s+sysfs\s+defaults\s+/d; /^proc\s+\/proc\s+proc\s+defaults\s+/d' /etc/fstab
+# https://bugzilla.redhat.com/show_bug.cgi?id=1009023
+grep -v -E -q '^(devpts|tmpfs|sysfs|proc)' /etc/fstab || \
+    sed -i.rpm.bak -r '/^devpts\s+\/dev\/pts\s+devpts\s+defaults\s+/d; /^tmpfs\s+\/dev\/shm\s+tmpfs\s+defaults\s+/d; /^sysfs\s+\/sys\s+sysfs\s+defaults\s+/d; /^proc\s+\/proc\s+proc\s+defaults\s+/d' /etc/fstab || :
+
+# Replace obsolete keymaps
+# https://bugzilla.redhat.com/show_bug.cgi?id=1151958
+grep -v -E -q '^KEYMAP="?fi-latin[19]"?' /etc/vconsole.conf || \
+    sed -i.rpm.bak -r 's/^KEYMAP="?fi-latin[19]"?/KEYMAP="fi"/' /etc/vconsole.conf || :
 
 # Services we install by default, and which are controlled by presets.
 if [ $1 -eq 1 ] ; then
@@ -964,6 +972,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 - Downgrade various log messages.
 - Fix issue where journal-remote would process some messages with a delay.
 - GPT /srv partition autodiscovery is fixed.
+- Reconfigure old Finnish keymaps in post (#1151958)
 
 * Tue Mar 10 2015 Jan Synáček <jsynacek@redhat.com> - 219-9
 - Buttons on Lenovo X6* tablets broken (#1198939)
