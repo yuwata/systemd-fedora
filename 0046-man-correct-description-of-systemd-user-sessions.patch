@@ -1,0 +1,34 @@
+From dd416d4c05eb40bc80380978779cfbc67fab7d35 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Fri, 27 Feb 2015 17:26:42 -0500
+Subject: [PATCH] man: correct description of systemd-user-sessions
+
+That part of functionality was removed in 7fb3ee51c1b377.
+
+(cherry picked from commit 3849a2ac8198fedd25e66fe780821fa96eb6396d)
+---
+ man/systemd-user-sessions.service.xml | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
+
+diff --git a/man/systemd-user-sessions.service.xml b/man/systemd-user-sessions.service.xml
+index 9d796b1ae1..e75ef11c4e 100644
+--- a/man/systemd-user-sessions.service.xml
++++ b/man/systemd-user-sessions.service.xml
+@@ -55,13 +55,12 @@
+     <title>Description</title>
+ 
+     <para><filename>systemd-user-sessions.service</filename> is a
+-    service that controls user logins. After basic system
+-    initialization is complete it removes
++    service that controls user logins through
++    <citerefentry project='man-pages'><refentrytitle>pam_nologin</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
++    After basic system initialization is complete it removes
+     <filename>/run/nologin</filename>, thus permitting logins. Before
+     system shutdown it creates <filename>/run/nologin</filename>, thus
+-    prohibiting further logins. At the same time it also kills all
+-    user processes, so that system shutdown may proceed without any
+-    remaining user processes around.</para>
++    prohibiting further logins.</para>
+   </refsect1>
+ 
+   <refsect1>

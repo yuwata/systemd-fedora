@@ -1,0 +1,179 @@
+From 62ae285fd7265de8ef410b876a8aec047a93ea37 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Thu, 12 Mar 2015 21:29:28 -0400
+Subject: [PATCH] journal-remote: downgrade routine messages to debug
+
+https://bugs.freedesktop.org/show_bug.cgi?id=89486
+(cherry picked from commit 0e72da6fe8671d49b4d458519f5ac7600fd04f03)
+---
+ src/journal-remote/journal-remote-parse.c |  2 +-
+ src/journal-remote/journal-remote-write.c |  2 +-
+ src/journal-remote/journal-remote.c       | 36 +++++++++++++++----------------
+ src/journal-remote/microhttpd-util.c      |  4 ++--
+ 4 files changed, 22 insertions(+), 22 deletions(-)
+
+diff --git a/src/journal-remote/journal-remote-parse.c b/src/journal-remote/journal-remote-parse.c
+index afded7e380..6c096de03a 100644
+--- a/src/journal-remote/journal-remote-parse.c
++++ b/src/journal-remote/journal-remote-parse.c
+@@ -443,7 +443,7 @@ int process_source(RemoteSource *source, bool compress, bool seal) {
+                 return r;
+ 
+         /* We have a full event */
+-        log_trace("Received a full event from source@%p fd:%d (%s)",
++        log_trace("Received full event from source@%p fd:%d (%s)",
+                   source, source->fd, source->name);
+ 
+         if (!source->iovw.count) {
+diff --git a/src/journal-remote/journal-remote-write.c b/src/journal-remote/journal-remote-write.c
+index df30049397..99820fa7b8 100644
+--- a/src/journal-remote/journal-remote-write.c
++++ b/src/journal-remote/journal-remote-write.c
+@@ -156,7 +156,7 @@ int writer_write(Writer *w,
+         if (r < 0)
+                 return r;
+         else
+-                log_info("%s: Successfully rotated journal", w->journal->path);
++                log_debug("%s: Successfully rotated journal", w->journal->path);
+ 
+         log_debug("Retrying write.");
+         r = journal_file_append_entry(w->journal, ts, iovw->iovec, iovw->count,
+diff --git a/src/journal-remote/journal-remote.c b/src/journal-remote/journal-remote.c
+index 8f32a9a988..d1486e7cda 100644
+--- a/src/journal-remote/journal-remote.c
++++ b/src/journal-remote/journal-remote.c
+@@ -207,7 +207,7 @@ static int open_output(Writer *w, const char* host) {
+                 log_error_errno(r, "Failed to open output journal %s: %m",
+                                 output);
+         else
+-                log_info("Opened output file %s", w->journal->path);
++                log_debug("Opened output file %s", w->journal->path);
+         return r;
+ }
+ 
+@@ -747,7 +747,7 @@ static int setup_microhttpd_socket(RemoteServer *s,
+                                    const char *trust) {
+         int fd;
+ 
+-        fd = make_socket_fd(LOG_INFO, address, SOCK_STREAM | SOCK_CLOEXEC);
++        fd = make_socket_fd(LOG_DEBUG, address, SOCK_STREAM | SOCK_CLOEXEC);
+         if (fd < 0)
+                 return fd;
+ 
+@@ -844,7 +844,7 @@ static int remoteserver_init(RemoteServer *s,
+         if (n < 0)
+                 return log_error_errno(n, "Failed to read listening file descriptors from environment: %m");
+         else
+-                log_info("Received %d descriptors", n);
++                log_debug("Received %d descriptors", n);
+ 
+         if (MAX(http_socket, https_socket) >= SD_LISTEN_FDS_START + n) {
+                 log_error("Received fewer sockets than expected");
+@@ -853,7 +853,7 @@ static int remoteserver_init(RemoteServer *s,
+ 
+         for (fd = SD_LISTEN_FDS_START; fd < SD_LISTEN_FDS_START + n; fd++) {
+                 if (sd_is_socket(fd, AF_UNSPEC, 0, true)) {
+-                        log_info("Received a listening socket (fd:%d)", fd);
++                        log_debug("Received a listening socket (fd:%d)", fd);
+ 
+                         if (fd == http_socket)
+                                 r = setup_microhttpd_server(s, fd, NULL, NULL, NULL);
+@@ -868,7 +868,7 @@ static int remoteserver_init(RemoteServer *s,
+                         if (r < 0)
+                                 return log_error_errno(r, "Failed to retrieve remote name: %m");
+ 
+-                        log_info("Received a connection socket (fd:%d) from %s", fd, hostname);
++                        log_debug("Received a connection socket (fd:%d) from %s", fd, hostname);
+ 
+                         r = add_source(s, fd, hostname, true);
+                 } else {
+@@ -908,7 +908,7 @@ static int remoteserver_init(RemoteServer *s,
+         }
+ 
+         if (arg_listen_raw) {
+-                log_info("Listening on a socket...");
++                log_debug("Listening on a socket...");
+                 r = setup_raw_socket(s, arg_listen_raw);
+                 if (r < 0)
+                         return r;
+@@ -930,12 +930,12 @@ static int remoteserver_init(RemoteServer *s,
+                 const char *output_name;
+ 
+                 if (streq(*file, "-")) {
+-                        log_info("Using standard input as source.");
++                        log_debug("Using standard input as source.");
+ 
+                         fd = STDIN_FILENO;
+                         output_name = "stdin";
+                 } else {
+-                        log_info("Reading file %s...", *file);
++                        log_debug("Reading file %s...", *file);
+ 
+                         fd = open(*file, O_RDONLY|O_CLOEXEC|O_NOCTTY|O_NONBLOCK);
+                         if (fd < 0)
+@@ -1014,22 +1014,22 @@ static int dispatch_raw_source_event(sd_event_source *event,
+         if (source->state == STATE_EOF) {
+                 size_t remaining;
+ 
+-                log_info("EOF reached with source fd:%d (%s)",
+-                         source->fd, source->name);
++                log_debug("EOF reached with source fd:%d (%s)",
++                          source->fd, source->name);
+ 
+                 remaining = source_non_empty(source);
+                 if (remaining > 0)
+-                        log_warning("Premature EOF. %zu bytes lost.", remaining);
++                        log_notice("Premature EOF. %zu bytes lost.", remaining);
+                 remove_source(s, source->fd);
+-                log_info("%zu active sources remaining", s->active);
++                log_debug("%zu active sources remaining", s->active);
+                 return 0;
+         } else if (r == -E2BIG) {
+-                log_error("Entry too big, skipped");
++                log_notice_errno(E2BIG, "Entry too big, skipped");
+                 return 1;
+         } else if (r == -EAGAIN) {
+                 return 0;
+         } else if (r < 0) {
+-                log_info_errno(r, "Closing connection: %m");
++                log_debug_errno(r, "Closing connection: %m");
+                 remove_source(server, fd);
+                 return 0;
+         } else
+@@ -1071,10 +1071,10 @@ static int accept_connection(const char* type, int fd,
+                         return r;
+                 }
+ 
+-                log_info("Accepted %s %s connection from %s",
+-                         type,
+-                         socket_address_family(addr) == AF_INET ? "IP" : "IPv6",
+-                         a);
++                log_debug("Accepted %s %s connection from %s",
++                          type,
++                          socket_address_family(addr) == AF_INET ? "IP" : "IPv6",
++                          a);
+ 
+                 *hostname = b;
+ 
+diff --git a/src/journal-remote/microhttpd-util.c b/src/journal-remote/microhttpd-util.c
+index a95fff18f3..b45c38d682 100644
+--- a/src/journal-remote/microhttpd-util.c
++++ b/src/journal-remote/microhttpd-util.c
+@@ -178,7 +178,7 @@ static int verify_cert_authorized(gnutls_session_t session) {
+         if (r < 0)
+                 return log_error_errno(r, "gnutls_certificate_verification_status_print failed: %m");
+ 
+-        log_info("Certificate status: %s", out.data);
++        log_debug("Certificate status: %s", out.data);
+         gnutls_free(out.data);
+ 
+         return status == 0 ? 0 : -EPERM;
+@@ -280,7 +280,7 @@ int check_permissions(struct MHD_Connection *connection, int *code, char **hostn
+                 return -EPERM;
+         }
+ 
+-        log_info("Connection from %s", buf);
++        log_debug("Connection from %s", buf);
+ 
+         if (hostname) {
+                 *hostname = buf;

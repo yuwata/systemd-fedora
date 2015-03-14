@@ -1,4 +1,4 @@
-From 39addb81b660dd7af7d21be941d8de6497abbdbf Mon Sep 17 00:00:00 2001
+From bfc587ff72ad50e290b3f5426edb929b225da53f Mon Sep 17 00:00:00 2001
 From: Lubomir Rintel <lkundrak@v3.sk>
 Date: Wed, 18 Feb 2015 21:02:01 +0100
 Subject: [PATCH] hwdb: fix ThinkPad X* Tablet special keys
@@ -15,12 +15,14 @@ System Information
         Wake-up Type: Power Switch
         SKU Number: Not Specified
         Family: ThinkPad X61 Tablet
+
+(cherry picked from commit 39addb81b660dd7af7d21be941d8de6497abbdbf)
 ---
  hwdb/60-keyboard.hwdb | 3 +--
  1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/hwdb/60-keyboard.hwdb b/hwdb/60-keyboard.hwdb
-index 1b7d871..2cb9769 100644
+index 1b7d87101a..2cb976923d 100644
 --- a/hwdb/60-keyboard.hwdb
 +++ b/hwdb/60-keyboard.hwdb
 @@ -586,7 +586,6 @@ keyboard:dmi:bvn*:bvr*:bd*:svnLENOVO*:pnS10-*:pvr*
@@ -40,6 +42,3 @@ index 1b7d871..2cb9769 100644
   KEYBOARD_KEY_6c=direction                              # rotate
   KEYBOARD_KEY_68=leftmeta                               # toolbox
   KEYBOARD_KEY_6b=esc                                    # escape
--- 
-2.1.0
-

@@ -1,0 +1,23 @@
+From 01c9c40501ba72a595160137ab31a80bd42f62c6 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Fri, 13 Mar 2015 21:25:37 -0500
+Subject: [PATCH] man: fix name of systemd.resource-control(5)
+
+(cherry picked from commit ee41f6028189819c728316e917ca09b9eb0a7850)
+---
+ man/systemctl.xml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/man/systemctl.xml b/man/systemctl.xml
+index b5e4cdf862..50e6bc93f2 100644
+--- a/man/systemctl.xml
++++ b/man/systemctl.xml
+@@ -1721,7 +1721,7 @@ kobject-uevent 1 systemd-udevd-kernel.socket systemd-udevd.service
+       <citerefentry><refentrytitle>loginctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>machinectl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd.unit</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>systemd.resource-management</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
++      <citerefentry><refentrytitle>systemd.resource-control</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd.special</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
+       <citerefentry project='man-pages'><refentrytitle>wall</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd.preset</refentrytitle><manvolnum>5</manvolnum></citerefentry>,

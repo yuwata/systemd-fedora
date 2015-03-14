@@ -1,0 +1,28 @@
+From 646308cdc78e95caa311d6d140379ce24954c068 Mon Sep 17 00:00:00 2001
+From: Ivan Shapovalov <intelfx100@gmail.com>
+Date: Thu, 26 Feb 2015 02:46:24 +0300
+Subject: [PATCH] firstboot: set all spwd fields to -1 for consistency with
+ sysusers
+
+(cherry picked from commit ad525df851a1bef7369fe21b5cde382941e7b073)
+---
+ src/firstboot/firstboot.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/firstboot/firstboot.c b/src/firstboot/firstboot.c
+index a765d6d219..a37ca170fb 100644
+--- a/src/firstboot/firstboot.c
++++ b/src/firstboot/firstboot.c
+@@ -525,9 +525,9 @@ static int process_root_password(void) {
+ 
+         struct spwd item = {
+                 .sp_namp = (char*) "root",
+-                .sp_min = 0,
+-                .sp_max = 99999,
+-                .sp_warn = 7,
++                .sp_min = -1,
++                .sp_max = -1,
++                .sp_warn = -1,
+                 .sp_inact = -1,
+                 .sp_expire = -1,
+                 .sp_flag = (unsigned long) -1, /* this appears to be what everybody does ... */

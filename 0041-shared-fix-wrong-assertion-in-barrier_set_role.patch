@@ -1,0 +1,29 @@
+From cf0e4940eadeb4636a958e8d7bc243dd03120eb8 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Cristian=20Rodr=C3=ADguez?= <crrodriguez@opensuse.org>
+Date: Fri, 20 Feb 2015 15:14:56 -0300
+Subject: [PATCH] shared: fix wrong assertion in barrier_set_role()
+
+ assert(b->pipe[0] >= 0 && b->pipe[0] >= 0);
+
+Test the same condition twice, pretty sure we mean
+
+ assert(b->pipe[0] >= 0 && b->pipe[1] >= 0);
+
+(cherry picked from commit 3f7f1fad7621f584d9ce024abb313ecbc9bd0e62)
+---
+ src/shared/barrier.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/shared/barrier.c b/src/shared/barrier.c
+index f65363a67b..b7dca75097 100644
+--- a/src/shared/barrier.c
++++ b/src/shared/barrier.c
+@@ -178,7 +178,7 @@ void barrier_set_role(Barrier *b, unsigned int role) {
+         assert(b);
+         assert(role == BARRIER_PARENT || role == BARRIER_CHILD);
+         /* make sure this is only called once */
+-        assert(b->pipe[1] >= 0 && b->pipe[1] >= 0);
++        assert(b->pipe[0] >= 0 && b->pipe[1] >= 0);
+ 
+         if (role == BARRIER_PARENT)
+                 b->pipe[1] = safe_close(b->pipe[1]);

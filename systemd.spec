@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        219
-Release:        9%{?gitcommit:.git%{gitcommit}}%{?dist}
+Release:        10%{?gitcommit:.git%{gitcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -64,7 +64,71 @@ Patch0023:      0023-journal-fix-Inappropriate-ioctl-for-device-on-ext4.patch
 Patch0024:      0024-sd-daemon-replace-VLA-with-alloca-to-make-llvm-happy.patch
 Patch0025:      0025-tmpfiles-quietly-ignore-ACLs-on-unsupported-filesyst.patch
 Patch0026:      0026-shared-util-assume-ac-when-sys-class-power_supply-is.patch
-Patch0027:      0027-hwdb-fix-ThinkPad-X-Tablet-special-keys.patch
+Patch0027:      0027-import-remove-unused-variable.patch
+Patch0028:      0028-hwdb-fix-ThinkPad-X-Tablet-special-keys.patch
+Patch0029:      0029-man-add-newlines-to-the-pull-raw-example-in-machinec.patch
+Patch0030:      0030-core-shared-in-deserializing-match-same-files-reache.patch
+Patch0031:      0031-shared-use-SocketAddress-in-socket_address_matches_f.patch
+Patch0032:      0032-shared-avoid-semi-duplicating-socket_address_equal.patch
+Patch0033:      0033-shared-handle-unnamed-sockets-in-socket_address_equa.patch
+Patch0034:      0034-man-make-bootup-graph-consistent.patch
+Patch0035:      0035-nspawn-fix-whitespace-and-typo-in-partition-table-bl.patch
+Patch0036:      0036-man-explain-time-units-in-tmpfiles.patch
+Patch0037:      0037-systemctl-check-validity-of-PID-we-received.patch
+Patch0038:      0038-systemctl-support-auditd.service-better.patch
+Patch0039:      0039-shared-unit-name-fix-gcc5-warning.patch
+Patch0040:      0040-test-hashmap-fix-gcc5-warning.patch
+Patch0041:      0041-shared-fix-wrong-assertion-in-barrier_set_role.patch
+Patch0042:      0042-hwdb-Update-database-of-Bluetooth-company-identifier.patch
+Patch0043:      0043-journal-make-skipping-of-exhausted-journal-files-eff.patch
+Patch0044:      0044-hwdb-add-sdio-identifiers-for-Broadcom-WLAN-cards.patch
+Patch0045:      0045-shared-condition-fix-gcc5-warning.patch
+Patch0046:      0046-man-correct-description-of-systemd-user-sessions.patch
+Patch0047:      0047-build-sys-allow-lto-and-FORTIFY_SOURCE-with-O-sz.patch
+Patch0048:      0048-man-fix-typo.patch
+Patch0049:      0049-bus-proxyd-avoid-logging-oom-twice.patch
+Patch0050:      0050-Do-not-run-sysv-generator-test-when-sysv-compat-is-d.patch
+Patch0051:      0051-README-mention-ACLs-more.patch
+Patch0052:      0052-Do-not-advertise-.d-snippets-over-main-config-file.patch
+Patch0053:      0053-hwdb-add-pnpid-for-the-T450s-touchpad.patch
+Patch0054:      0054-networkd-netdev-inform-when-we-take-over-an-existing.patch
+Patch0055:      0055-man-replace-obsolete-wiki-link-with-man-page.patch
+Patch0056:      0056-Use-correct-uname-identifiers-in-arch_map-for-SuperH.patch
+Patch0057:      0057-hwdb-fix-Dell-XPS12-9Q33-key-name.patch
+Patch0058:      0058-Remove-the-cap-on-epoll-events.patch
+Patch0059:      0059-Allow-up-to-4096-simultaneous-connections.patch
+Patch0060:      0060-hwdb-add-Logitech-G5-Laser-Mouse.patch
+Patch0061:      0061-tmpfiles-Fix-handling-of-duplicate-lines.patch
+Patch0062:      0062-hwdb-add-Lenovo-W451-to-TOUCHPAD_HAS_TRACKPOINT_BUTT.patch
+Patch0063:      0063-vconsole-match-on-vtcon-events-not-fbcon-ones.patch
+Patch0064:      0064-core-do-not-spawn-jobs-or-touch-other-units-during-c.patch
+Patch0065:      0065-firstboot-set-all-spwd-fields-to-1-for-consistency-w.patch
+Patch0066:      0066-sysusers-do-not-reject-users-with-already-present-et.patch
+Patch0067:      0067-nspawn-fix-use-after-free-and-leak-in-error-paths.patch
+Patch0068:      0068-login-fix-copy-pasto-in-error-path.patch
+Patch0069:      0069-journalctl-update-hint-now-that-we-set-ACL-everywher.patch
+Patch0070:      0070-sd-journal-return-error-when-we-cannot-open-a-file.patch
+Patch0071:      0071-missing.h-add-NDA_.patch
+Patch0072:      0072-udevd-close-race-in-udev-settle.patch
+Patch0073:      0073-man-document-that-ExecStartPre-is-not-the-place-to-s.patch
+Patch0074:      0074-journal-fix-return-code.patch
+Patch0075:      0075-console-fix-error-code-inversion.patch
+Patch0076:      0076-bus-proxy-complain-only-once-about-queue-overflows.patch
+Patch0077:      0077-cgtop-fix-assert-when-not-on-tty.patch
+Patch0078:      0078-man-split-paragraph.patch
+Patch0079:      0079-hwdb-update.patch
+Patch0080:      0080-networkd-Begin-with-serial-number-1-for-netlink-requ.patch
+Patch0081:      0081-journal-remote-downgrade-routine-messages-to-debug.patch
+Patch0082:      0082-journal-remote-process-events-without-delay.patch
+Patch0083:      0083-man-update-example-2-in-systemd.network-5.patch
+Patch0084:      0084-gpt-auto-generator-fix-detection-of-srv.patch
+Patch0085:      0085-sd-rtnl-never-set-serial-to-0.patch
+Patch0086:      0086-gpt-auto-generator-allow-type-check-to-fail.patch
+Patch0087:      0087-man-fix-a-bunch-of-links.patch
+Patch0088:      0088-man-link-to-fd.o-for-dbus-stuff.patch
+Patch0089:      0089-man-fix-name-of-systemd.resource-control-5.patch
+Patch0090:      0090-selinux-fix-SEGV-during-switch-root-if-SELinux-polic.patch
+Patch0091:      0091-service-don-t-add-After-dependencies-on-.busname-uni.patch
 
 
 # kernel-install patch for grubby, drop if grubby is obsolete
@@ -289,6 +353,7 @@ systemd-journal-gatewayd serves journal events over the network using HTTP.
         --exclude CODING_STYLE \
         --exclude src/readahead/Makefile \
         --exclude src/libsystemd-terminal/unifont-def.h \
+        --exclude hwdb/sdio.ids \
         %{patches}
 %endif
 
@@ -885,6 +950,21 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Sat Mar 14 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 219-10
+- Fixes for bugs 1186018, 1195294, 1185604, 1196452.
+- Hardware database update.
+- Documentation fixes.
+- A fix for journalctl performance regression.
+- Fix detection of inability to open files in journalctl.
+- Detect SuperH architecture properly.
+- The first of duplicate lines in tmpfiles wins again.
+- Do vconsole setup after loading vconsole driver, not fbcon.
+- Fix problem where some units were restarted during systemd reexec.
+- Fix race in udevadm settle tripping up NetworkManager.
+- Downgrade various log messages.
+- Fix issue where journal-remote would process some messages with a delay.
+- GPT /srv partition autodiscovery is fixed.
+
 * Tue Mar 10 2015 Jan Synáček <jsynacek@redhat.com> - 219-9
 - Buttons on Lenovo X6* tablets broken (#1198939)
 

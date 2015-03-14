@@ -1,0 +1,23 @@
+From 8b92bdb0bd91a1614c0132dc31a35ee6193c26da Mon Sep 17 00:00:00 2001
+From: Jan Synacek <jsynacek@redhat.com>
+Date: Mon, 23 Feb 2015 15:22:40 +0100
+Subject: [PATCH] nspawn: fix whitespace and typo in partition table blurb
+
+(cherry picked from commit 4aab5d0cbd979b2cccb88534f118bceaa86466d8)
+---
+ src/nspawn/nspawn.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/nspawn/nspawn.c b/src/nspawn/nspawn.c
+index fb672510b4..7724df96bd 100644
+--- a/src/nspawn/nspawn.c
++++ b/src/nspawn/nspawn.c
+@@ -2676,7 +2676,7 @@ static int setup_image(char **device_path, int *loop_nr) {
+ 
+ #define PARTITION_TABLE_BLURB \
+         "Note that the disk image needs to either contain only a single MBR partition of\n" \
+-        "type 0x83 that is marked bootable, or a sinlge GPT partition of type" \
++        "type 0x83 that is marked bootable, or a single GPT partition of type " \
+         "0FC63DAF-8483-4772-8E79-3D69D8477DE4 or follow\n" \
+         "    http://www.freedesktop.org/wiki/Specifications/DiscoverablePartitionsSpec/\n" \
+         "to be bootable with systemd-nspawn."

@@ -1,0 +1,24 @@
+From cc32b9d93a797ce30b139e839432c49ec228271f Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Wed, 4 Mar 2015 20:25:04 -0500
+Subject: [PATCH] hwdb: fix Dell XPS12 9Q33 key name
+
+https://bugs.freedesktop.org/show_bug.cgi?id=84437
+(cherry picked from commit 4f70555d76c90ffdc5a5e4f75bbc08b38022c911)
+---
+ hwdb/60-keyboard.hwdb | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/hwdb/60-keyboard.hwdb b/hwdb/60-keyboard.hwdb
+index 2cb976923d..88906655ef 100644
+--- a/hwdb/60-keyboard.hwdb
++++ b/hwdb/60-keyboard.hwdb
+@@ -259,7 +259,7 @@ keyboard:dmi:bvn*:bvr*:bd*:svnDell*:pnXPS*:pvr*
+ # Dell XPS12 9Q33
+ keyboard:dmi:bvn*:bvr*:bd*:svnDell*:pnXPS12-9Q33*:pvr*
+  KEYBOARD_KEY_88=wlan
+- KEYBOARD_KEY_65=switchvideomode                        # Screen Rotate
++ KEYBOARD_KEY_65=direction                              # Screen Rotate
+ 
+ # Dell Latitude microphone mute
+ keyboard:name:Dell WMI hotkeys:dmi:bvn*:bvr*:bd*:svnDell*:pnLatitude*

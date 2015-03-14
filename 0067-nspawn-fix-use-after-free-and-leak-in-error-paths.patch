@@ -1,0 +1,40 @@
+From fa09f5c3ceef08947225a9c39edb09411f3929d4 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Sat, 7 Mar 2015 14:19:20 -0500
+Subject: [PATCH] nspawn: fix use-after-free and leak in error paths
+
+CID #1257765.
+
+(cherry picked from commit 8a16a7b4e7f6702a7e6edaead80ecf04be7d3ba2)
+---
+ src/nspawn/nspawn.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/nspawn/nspawn.c b/src/nspawn/nspawn.c
+index 7724df96bd..78bd584834 100644
+--- a/src/nspawn/nspawn.c
++++ b/src/nspawn/nspawn.c
+@@ -3627,7 +3627,7 @@ int main(int argc, char *argv[]) {
+                 }
+ 
+                 if (arg_ephemeral) {
+-                        char *np;
++                        _cleanup_free_ char *np = NULL;
+ 
+                         /* If the specified path is a mount point we
+                          * generate the new snapshot immediately
+@@ -3657,13 +3657,13 @@ int main(int argc, char *argv[]) {
+ 
+                         r = btrfs_subvol_snapshot(arg_directory, np, arg_read_only, true);
+                         if (r < 0) {
+-                                free(np);
+                                 log_error_errno(r, "Failed to create snapshot %s from %s: %m", np, arg_directory);
+                                 goto finish;
+                         }
+ 
+                         free(arg_directory);
+                         arg_directory = np;
++                        np = NULL;
+ 
+                         remove_subvol = true;
+ 

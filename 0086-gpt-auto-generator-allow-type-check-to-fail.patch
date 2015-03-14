@@ -1,0 +1,45 @@
+From 1261a8df61818d48c6bc9445a16b40e24ffaa74e Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Fri, 13 Mar 2015 21:10:13 -0500
+Subject: [PATCH] gpt-auto-generator: allow type check to fail
+
+add_mount() is OK with unknow file type, but we have to initalize
+the variable to NULL not to pass garbage on error.
+
+(cherry picked from commit a0b1209c4a59754f428894e0485413542da50014)
+---
+ src/gpt-auto-generator/gpt-auto-generator.c | 13 +++++--------
+ 1 file changed, 5 insertions(+), 8 deletions(-)
+
+diff --git a/src/gpt-auto-generator/gpt-auto-generator.c b/src/gpt-auto-generator/gpt-auto-generator.c
+index 869a230f17..e0a5bb305b 100644
+--- a/src/gpt-auto-generator/gpt-auto-generator.c
++++ b/src/gpt-auto-generator/gpt-auto-generator.c
+@@ -290,7 +290,7 @@ static int probe_and_add_mount(
+                 const char *post) {
+ 
+         _cleanup_blkid_free_probe_ blkid_probe b = NULL;
+-        const char *fstype;
++        const char *fstype = NULL;
+         int r;
+ 
+         assert(id);
+@@ -323,14 +323,11 @@ static int probe_and_add_mount(
+         r = blkid_do_safeprobe(b);
+         if (r == -2 || r == 1) /* no result or uncertain */
+                 return 0;
+-        else if (r != 0) {
+-                if (errno == 0)
+-                        errno = EIO;
+-                log_error_errno(errno, "Failed to probe %s: %m", what);
+-                return -errno;
+-        }
++        else if (r != 0)
++                return log_error_errno(errno ?: EIO, "Failed to probe %s: %m", what);
+ 
+-        blkid_probe_lookup_value(b, "TYPE", &fstype, NULL);
++        /* add_mount is OK with fstype being NULL. */
++        (void) blkid_probe_lookup_value(b, "TYPE", &fstype, NULL);
+ 
+         return add_mount(
+                         id,

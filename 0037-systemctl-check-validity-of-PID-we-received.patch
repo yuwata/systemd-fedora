@@ -1,0 +1,33 @@
+From 33ff9ced04684fe88e988fe06573ad73c8d9c20a Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Sat, 7 Feb 2015 11:16:04 -0500
+Subject: [PATCH] systemctl: check validity of PID we received
+
+(cherry picked from commit d028e01814a405e83c400c60545785d35dba2a17)
+---
+ src/systemctl/systemctl.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/src/systemctl/systemctl.c b/src/systemctl/systemctl.c
+index 6b93ec8446..3da4d3d4f1 100644
+--- a/src/systemctl/systemctl.c
++++ b/src/systemctl/systemctl.c
+@@ -2881,6 +2881,9 @@ static int check_inhibitors(sd_bus *bus, enum action a) {
+                 if (!sv)
+                         return log_oom();
+ 
++                if ((pid_t) pid < 0)
++                        return log_error_errno(ERANGE, "Bad PID %"PRIu32": %m", pid);
++
+                 if (!strv_contains(sv,
+                                   a == ACTION_HALT ||
+                                   a == ACTION_POWEROFF ||
+@@ -2892,7 +2895,7 @@ static int check_inhibitors(sd_bus *bus, enum action a) {
+                 user = uid_to_name(uid);
+ 
+                 log_warning("Operation inhibited by \"%s\" (PID "PID_FMT" \"%s\", user %s), reason is \"%s\".",
+-                            who, pid, strna(comm), strna(user), why);
++                            who, (pid_t) pid, strna(comm), strna(user), why);
+ 
+                 c++;
+         }

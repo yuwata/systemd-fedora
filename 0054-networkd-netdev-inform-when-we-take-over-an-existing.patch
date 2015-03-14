@@ -1,0 +1,30 @@
+From 67ec035b3c192e71fb040959fe8d311d9c89edaa Mon Sep 17 00:00:00 2001
+From: Tom Gundersen <teg@jklm.no>
+Date: Wed, 4 Mar 2015 10:33:50 +0100
+Subject: [PATCH] networkd: netdev - inform when we take over an existing
+ netdev
+
+The crucial point here is that we will not change the settings of a netdev created by someone else
+we simply use it as is and trust it was set up as intended.
+
+This is confusing in the case of the pre-created netdev's (bond0 etc.), the solution should probably
+be to simply make the kernel stop creating these devices as they are pretty useless.
+
+(cherry picked from commit ff88a301e93cf1bddbaa7faa981f390a2a81a4bb)
+---
+ src/network/networkd-netdev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/network/networkd-netdev.c b/src/network/networkd-netdev.c
+index 8119205dde..7d193d088e 100644
+--- a/src/network/networkd-netdev.c
++++ b/src/network/networkd-netdev.c
+@@ -261,7 +261,7 @@ static int netdev_create_handler(sd_rtnl *rtnl, sd_rtnl_message *m, void *userda
+ 
+         r = sd_rtnl_message_get_errno(m);
+         if (r == -EEXIST)
+-                log_netdev_debug(netdev, "netdev exists, using existing");
++                log_info_netdev(netdev, "netdev exists, using existing without changing its parameters");
+         else if (r < 0) {
+                 log_warning_netdev(netdev, "netdev could not be created: %s", strerror(-r));
+                 netdev_drop(netdev);

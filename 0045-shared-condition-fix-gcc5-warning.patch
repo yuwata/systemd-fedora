@@ -1,0 +1,42 @@
+From 99ed674eb8f9bdaa45d937379c2f00ea684a7fc9 Mon Sep 17 00:00:00 2001
+From: Daniel Mack <daniel@zonque.org>
+Date: Fri, 27 Feb 2015 20:05:26 +0100
+Subject: [PATCH] shared/condition: fix gcc5 warning
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Fixes the warning below.
+
+src/shared/condition.c: In function ‘condition_new’:
+src/shared/condition.c:47:27: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+         assert(!parameter == (type == CONDITION_NULL));
+                           ^
+src/shared/macro.h:42:44: note: in definition of macro ‘_unlikely_’
+ #define _unlikely_(x) (__builtin_expect(!!(x),0))
+                                            ^
+src/shared/macro.h:226:22: note: in expansion of macro ‘assert_se’
+ #define assert(expr) assert_se(expr)
+                      ^
+src/shared/condition.c:47:9: note: in expansion of macro ‘assert’
+         assert(!parameter == (type == CONDITION_NULL));
+         ^
+
+(cherry picked from commit 8a9c6071cb7467170010f0287672c987981bdf9c)
+---
+ src/shared/condition.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/shared/condition.c b/src/shared/condition.c
+index da7560f05f..796cc520d7 100644
+--- a/src/shared/condition.c
++++ b/src/shared/condition.c
+@@ -46,7 +46,7 @@ Condition* condition_new(ConditionType type, const char *parameter, bool trigger
+ 
+         assert(type >= 0);
+         assert(type < _CONDITION_TYPE_MAX);
+-        assert(!parameter == (type == CONDITION_NULL));
++        assert((!parameter) == (type == CONDITION_NULL));
+ 
+         c = new0(Condition, 1);
+         if (!c)

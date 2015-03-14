@@ -1,0 +1,27 @@
+From c04228cbd9373f2e5242e871ef1cb8878559f27e Mon Sep 17 00:00:00 2001
+From: David Herrmann <dh.herrmann@gmail.com>
+Date: Tue, 16 Dec 2014 16:14:48 +0100
+Subject: [PATCH] console: fix error-code inversion
+
+The error-code propagated via sysview is always negative. Avoid
+multiplying by -1 before returning it. Otherwise, we will return >0
+instead of <0, which will not be detected as error by sysview-core.
+
+(cherry picked from commit 84c3561c58dd992b339afe5bb4c41971a2ebc486)
+---
+ src/console/consoled-manager.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/console/consoled-manager.c b/src/console/consoled-manager.c
+index 9dd62f04a0..25de0a218f 100644
+--- a/src/console/consoled-manager.c
++++ b/src/console/consoled-manager.c
+@@ -228,7 +228,7 @@ static int manager_sysview_session_control(Manager *m, sysview_event *event) {
+                                 sysview_session_get_name(session));
+                 session_free(s);
+                 sysview_session_set_userdata(session, NULL);
+-                return -error;
++                return error;
+         }
+ 
+         return 0;

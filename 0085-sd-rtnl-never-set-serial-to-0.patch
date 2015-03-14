@@ -1,0 +1,28 @@
+From 12e474fdf33ffc500aacad39fe19aa57b344f9cb Mon Sep 17 00:00:00 2001
+From: Tom Gundersen <teg@jklm.no>
+Date: Fri, 13 Mar 2015 15:49:07 +0100
+Subject: [PATCH] sd-rtnl: never set serial to 0
+
+In the unlikely event that we wrap the counter, skip 0 as this is used
+for broadcasts.
+
+Suggested by Richard Maw.
+
+(cherry picked from commit 913b0eef1a01e0c78f0453b0174e75d5caae1023)
+---
+ src/libsystemd/sd-rtnl/sd-rtnl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/libsystemd/sd-rtnl/sd-rtnl.c b/src/libsystemd/sd-rtnl/sd-rtnl.c
+index 7cdcc5d96a..5df39e1177 100644
+--- a/src/libsystemd/sd-rtnl/sd-rtnl.c
++++ b/src/libsystemd/sd-rtnl/sd-rtnl.c
+@@ -262,7 +262,7 @@ static void rtnl_seal_message(sd_rtnl *rtnl, sd_rtnl_message *m) {
+         assert(m);
+         assert(m->hdr);
+ 
+-        m->hdr->nlmsg_seq = rtnl->serial++;
++        m->hdr->nlmsg_seq = rtnl->serial++ ? : rtnl->serial++;
+ 
+         rtnl_message_seal(m);
+ 

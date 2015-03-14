@@ -1,0 +1,72 @@
+From c98114c5e5c5b9d1e8fea75a0bfb37f0d329fd36 Mon Sep 17 00:00:00 2001
+From: David Herrmann <dh.herrmann@gmail.com>
+Date: Wed, 11 Mar 2015 13:53:21 +0100
+Subject: [PATCH] bus-proxy: complain only once about queue overflows
+
+If the local peer does not dispatch its incoming queue, the bus-proxy will
+slowly fill its outgoing queue. Once its full, it will continously
+complain that it cannot forward its messages.
+
+As it turns out, pulseaudio does have an idle background dbus connection
+that is not integrated into any mainloop (and given that gdbus and
+libdbus1 both support background shared connections, PA is probably not
+the only example), therefore, the bus-proxy will loudly complain if it
+cannot forward NameOwnerChanged events once the queue is full.
+
+This commit makes the proxy track queue-state and complain only once the
+queue runs full, not if it is already full.
+
+A PA bug-report (and patch) has been filed, and other applications should
+be fixed similarly. Hence, lets keep the error message, instead of
+dropping it. It's unused resources we really want to get rid of, so
+silencing the message does not really help (which is actually what
+dbus-daemon does).
+
+(cherry picked from commit ec2c7b56599981a7d9e76b15c75af3e1af3e6f81)
+---
+ src/bus-proxyd/proxy.c | 16 ++++++++++++----
+ src/bus-proxyd/proxy.h |  1 +
+ 2 files changed, 13 insertions(+), 4 deletions(-)
+
+diff --git a/src/bus-proxyd/proxy.c b/src/bus-proxyd/proxy.c
+index 3dea908f5b..e13cf5e2ea 100644
+--- a/src/bus-proxyd/proxy.c
++++ b/src/bus-proxyd/proxy.c
+@@ -729,13 +729,21 @@ static int proxy_process_destination_to_local(Proxy *p) {
+ 
+                 /* Return the error to the client, if we can */
+                 synthetic_reply_method_errnof(m, r, "Failed to forward message we got from destination: %m");
+-                log_error_errno(r,
+-                         "Failed to forward message we got from destination: uid=" UID_FMT " gid=" GID_FMT" message=%s destination=%s path=%s interface=%s member=%s: %m",
+-                         p->local_creds.uid, p->local_creds.gid, bus_message_type_to_string(m->header->type),
+-                         strna(m->destination), strna(m->path), strna(m->interface), strna(m->member));
++                if (r == -ENOBUFS) {
++                        /* if local dbus1 peer does not dispatch its queue, warn only once */
++                        if (!p->queue_overflow)
++                                log_error("Dropped messages due to queue overflow of local peer (pid: "PID_FMT" uid: "UID_FMT")", p->local_creds.pid, p->local_creds.uid);
++                        p->queue_overflow = true;
++                } else
++                        log_error_errno(r,
++                                 "Failed to forward message we got from destination: uid=" UID_FMT " gid=" GID_FMT" message=%s destination=%s path=%s interface=%s member=%s: %m",
++                                 p->local_creds.uid, p->local_creds.gid, bus_message_type_to_string(m->header->type),
++                                 strna(m->destination), strna(m->path), strna(m->interface), strna(m->member));
++
+                 return 1;
+         }
+ 
++        p->queue_overflow = false;
+         return 1;
+ }
+ 
+diff --git a/src/bus-proxyd/proxy.h b/src/bus-proxyd/proxy.h
+index 913d47071b..782c4e60b3 100644
+--- a/src/bus-proxyd/proxy.h
++++ b/src/bus-proxyd/proxy.h
+@@ -40,6 +40,7 @@ struct Proxy {
+         SharedPolicy *policy;
+ 
+         bool got_hello : 1;
++        bool queue_overflow : 1;
+ };
+ 
+ int proxy_new(Proxy **out, int in_fd, int out_fd, const char *dest);

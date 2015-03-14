@@ -1,0 +1,333 @@
+From fdf1ec82999b343bedaeb48bca55f2dc53d2646d Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Tue, 3 Mar 2015 19:10:21 -0500
+Subject: [PATCH] Do not advertise .d snippets over main config file
+
+For daemons which have a main configuration file, there's
+little reason for the administrator to use configuration snippets.
+They are useful for packagers which need to override settings, but
+we shouldn't advertise that as the main way of configuring those
+services.
+
+https://bugs.freedesktop.org/show_bug.cgi?id=89397
+(cherry picked from commit e93549ef29c4123d9ee45acb5815048390201e49)
+---
+ man/bootchart.conf.xml         |  3 +--
+ man/coredump.conf.xml          |  3 +--
+ man/journald.conf.xml          |  3 +--
+ man/logind.conf.xml            |  8 +++++---
+ man/resolved.conf.xml          |  3 +--
+ man/standard-conf.xml          | 42 ++++++++++++++++++++++++++++++++++--------
+ man/systemd-sleep.conf.xml     |  3 +--
+ man/systemd-system.conf.xml    |  3 +--
+ man/timesyncd.conf.xml         |  3 +--
+ src/bootchart/bootchart.conf   |  7 ++++---
+ src/core/system.conf           |  7 ++++---
+ src/journal/coredump.conf      |  7 ++++---
+ src/journal/journald.conf      |  7 ++++---
+ src/login/logind.conf          |  7 ++++---
+ src/resolve/resolved.conf.in   |  5 +++--
+ src/timesync/timesyncd.conf.in |  7 ++++---
+ 16 files changed, 73 insertions(+), 45 deletions(-)
+
+diff --git a/man/bootchart.conf.xml b/man/bootchart.conf.xml
+index 8d9700d300..bf6ca0bf9e 100644
+--- a/man/bootchart.conf.xml
++++ b/man/bootchart.conf.xml
+@@ -68,8 +68,7 @@
+     parameters and graph output.</para>
+   </refsect1>
+ 
+-  <xi:include href="standard-conf.xml" xpointer="confd" />
+-  <xi:include href="standard-conf.xml" xpointer="conf" />
++  <xi:include href="standard-conf.xml" xpointer="main-conf" />
+ 
+   <refsect1>
+     <title>Options</title>
+diff --git a/man/coredump.conf.xml b/man/coredump.conf.xml
+index 3d325e6ad7..0b7329bf55 100644
+--- a/man/coredump.conf.xml
++++ b/man/coredump.conf.xml
+@@ -63,8 +63,7 @@
+     a handler for core dumps invoked by the kernel.</para>
+   </refsect1>
+ 
+-  <xi:include href="standard-conf.xml" xpointer="confd" />
+-  <xi:include href="standard-conf.xml" xpointer="conf" />
++  <xi:include href="standard-conf.xml" xpointer="main-conf" />
+ 
+   <refsect1>
+     <title>Options</title>
+diff --git a/man/journald.conf.xml b/man/journald.conf.xml
+index 364b58f07e..85146b0d82 100644
+--- a/man/journald.conf.xml
++++ b/man/journald.conf.xml
+@@ -64,8 +64,7 @@
+ 
+   </refsect1>
+ 
+-  <xi:include href="standard-conf.xml" xpointer="confd" />
+-  <xi:include href="standard-conf.xml" xpointer="conf" />
++  <xi:include href="standard-conf.xml" xpointer="main-conf" />
+ 
+   <refsect1>
+     <title>Options</title>
+diff --git a/man/logind.conf.xml b/man/logind.conf.xml
+index ffaec50351..ca2b18783c 100644
+--- a/man/logind.conf.xml
++++ b/man/logind.conf.xml
+@@ -58,11 +58,13 @@
+   <refsect1>
+     <title>Description</title>
+ 
+-    <para>These files configure various parameters of the systemd login manager, <citerefentry><refentrytitle>systemd-logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.</para>
++    <para>These files configure various parameters of the systemd
++    login manager,
++    <citerefentry><refentrytitle>systemd-logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
++    </para>
+   </refsect1>
+ 
+-  <xi:include href="standard-conf.xml" xpointer="confd" />
+-  <xi:include href="standard-conf.xml" xpointer="conf" />
++  <xi:include href="standard-conf.xml" xpointer="main-conf" />
+ 
+   <refsect1>
+     <title>Options</title>
+diff --git a/man/resolved.conf.xml b/man/resolved.conf.xml
+index 36cae2706c..8047a4ea75 100644
+--- a/man/resolved.conf.xml
++++ b/man/resolved.conf.xml
+@@ -63,8 +63,7 @@
+ 
+   </refsect1>
+ 
+-  <xi:include href="standard-conf.xml" xpointer="confd" />
+-  <xi:include href="standard-conf.xml" xpointer="conf" />
++  <xi:include href="standard-conf.xml" xpointer="main-conf" />
+ 
+   <refsect1>
+     <title>Options</title>
+diff --git a/man/standard-conf.xml b/man/standard-conf.xml
+index b87d7e955b..36af45927d 100644
+--- a/man/standard-conf.xml
++++ b/man/standard-conf.xml
+@@ -33,13 +33,39 @@
+     configuration file.</para>
+   </refsection>
+ 
+-  <refsection id='conf'>
+-    <title>Configuration File</title>
+-
+-    <para>Configuration is also read from a single configuration file in
+-    <filename>/etc/</filename>. This file is read before any of the
+-    configuration directories, and has the lowest precedence; entries in a file
+-    in any configuration directory override entries in the single configuration
+-    file.</para>
++  <refsection id='main-conf'>
++    <title>Configuration Directories and Precedence</title>
++
++    <para>Default configuration is defined during compilation, so a
++    configuration file is only needed when it is necessary to deviate
++    from those defaults. By default the configuration file in
++    <filename>/etc/systemd/</filename> contains commented out entries
++    showing the defaults as a guide to the administrator. This file
++    can be edited to create local overrides.
++    </para>
++
++    <para>When packages need to customize the configuration, they can
++    install configuration snippets in
++    <filename>/usr/lib/systemd/*.conf.d/</filename>. Files in
++    <filename>/etc/</filename> are reserved for the local
++    administrator, who may use this logic to override the
++    configuration files installed by vendor packages. The main
++    configuration file is read before any of the configuration
++    directories, and has the lowest precedence; entries in a file in
++    any configuration directory override entries in the single
++    configuration file. Files in the
++    <filename>logind.conf.d/</filename> configuration subdirectories
++    are sorted by their filename in lexicographic order, regardless of
++    which of the subdirectories they reside in. If multiple files
++    specify the same option, the entry in the file with the
++    lexicographically latest name takes precedence.  It is recommended
++    to prefix all filenames in those subdirectories with a two-digit
++    number and a dash, to simplify the ordering of the files.</para>
++
++    <para>To disable a configuration file supplied by the vendor, the
++    recommended way is to place a symlink to
++    <filename>/dev/null</filename> in the configuration directory in
++    <filename>/etc/</filename>, with the same filename as the vendor
++    configuration file.</para>
+   </refsection>
+ </refsection>
+diff --git a/man/systemd-sleep.conf.xml b/man/systemd-sleep.conf.xml
+index 433f2f83a0..bb17ec8669 100644
+--- a/man/systemd-sleep.conf.xml
++++ b/man/systemd-sleep.conf.xml
+@@ -112,8 +112,7 @@ along with systemd; If not, see <http://www.gnu.org/licenses/>.
+     attempts to suspend or hibernate the machine.</para>
+   </refsect1>
+ 
+-  <xi:include href="standard-conf.xml" xpointer="confd" />
+-  <xi:include href="standard-conf.xml" xpointer="conf" />
++  <xi:include href="standard-conf.xml" xpointer="main-conf" />
+ 
+   <refsect1>
+     <title>Options</title>
+diff --git a/man/systemd-system.conf.xml b/man/systemd-system.conf.xml
+index 7c3f237567..c7bcfaee4d 100644
+--- a/man/systemd-system.conf.xml
++++ b/man/systemd-system.conf.xml
+@@ -74,8 +74,7 @@
+     operations.</para>
+   </refsect1>
+ 
+-  <xi:include href="standard-conf.xml" xpointer="confd" />
+-  <xi:include href="standard-conf.xml" xpointer="conf" />
++  <xi:include href="standard-conf.xml" xpointer="main-conf" />
+ 
+   <refsect1>
+     <title>Options</title>
+diff --git a/man/timesyncd.conf.xml b/man/timesyncd.conf.xml
+index 1127970a18..89a651c662 100644
+--- a/man/timesyncd.conf.xml
++++ b/man/timesyncd.conf.xml
+@@ -63,8 +63,7 @@
+ 
+   </refsect1>
+ 
+-  <xi:include href="standard-conf.xml" xpointer="confd" />
+-  <xi:include href="standard-conf.xml" xpointer="conf" />
++  <xi:include href="standard-conf.xml" xpointer="main-conf" />
+ 
+   <refsect1>
+     <title>Options</title>
+diff --git a/src/bootchart/bootchart.conf b/src/bootchart/bootchart.conf
+index 2d7cb61217..4f5e50936e 100644
+--- a/src/bootchart/bootchart.conf
++++ b/src/bootchart/bootchart.conf
+@@ -5,10 +5,11 @@
+ #  the Free Software Foundation; either version 2.1 of the License, or
+ #  (at your option) any later version.
+ #
+-# You can override the directives in this file by creating files in
+-# /etc/systemd/bootchart.conf.d/*.conf.
++# Entries in this file show the compile time defaults.
++# You can change settings by editing this file.
++# Defaults can be restored by simply deleting this file.
+ #
+-# See bootchart.conf(5) for details
++# See bootchart.conf(5) for details.
+ 
+ [Bootchart]
+ #Samples=500
+diff --git a/src/core/system.conf b/src/core/system.conf
+index a3727200df..231609033b 100644
+--- a/src/core/system.conf
++++ b/src/core/system.conf
+@@ -5,10 +5,11 @@
+ #  the Free Software Foundation; either version 2.1 of the License, or
+ #  (at your option) any later version.
+ #
+-# You can override the directives in this file by creating files in
+-# /etc/systemd/system.conf.d/*.conf.
++# Entries in this file show the compile time defaults.
++# You can change settings by editing this file.
++# Defaults can be restored by simply deleting this file.
+ #
+-# See systemd-system.conf(5) for details
++# See systemd-system.conf(5) for details.
+ 
+ [Manager]
+ #LogLevel=info
+diff --git a/src/journal/coredump.conf b/src/journal/coredump.conf
+index 0fe9fe801a..c2f0643e03 100644
+--- a/src/journal/coredump.conf
++++ b/src/journal/coredump.conf
+@@ -5,10 +5,11 @@
+ #  the Free Software Foundation; either version 2.1 of the License, or
+ #  (at your option) any later version.
+ #
+-# You can override the directives in this file by creating files in
+-# /etc/systemd/coredump.conf.d/*.conf.
++# Entries in this file show the compile time defaults.
++# You can change settings by editing this file.
++# Defaults can be restored by simply deleting this file.
+ #
+-# See coredump.conf(5) for details
++# See coredump.conf(5) for details.
+ 
+ [Coredump]
+ #Storage=external
+diff --git a/src/journal/journald.conf b/src/journal/journald.conf
+index 29bdf8f183..47eefe91c1 100644
+--- a/src/journal/journald.conf
++++ b/src/journal/journald.conf
+@@ -5,10 +5,11 @@
+ #  the Free Software Foundation; either version 2.1 of the License, or
+ #  (at your option) any later version.
+ #
+-# You can override the directives in this file by creating files in
+-# /etc/systemd/journald.conf.d/*.conf.
++# Entries in this file show the compile time defaults.
++# You can change settings by editing this file.
++# Defaults can be restored by simply deleting this file.
+ #
+-# See journald.conf(5) for details
++# See journald.conf(5) for details.
+ 
+ [Journal]
+ #Storage=auto
+diff --git a/src/login/logind.conf b/src/login/logind.conf
+index 6b1943a2d1..834c4c2ebf 100644
+--- a/src/login/logind.conf
++++ b/src/login/logind.conf
+@@ -5,10 +5,11 @@
+ #  the Free Software Foundation; either version 2.1 of the License, or
+ #  (at your option) any later version.
+ #
+-# You can override the directives in this file by creating files in
+-# /etc/systemd/logind.conf.d/*.conf.
++# Entries in this file show the compile time defaults.
++# You can change settings by editing this file.
++# Defaults can be restored by simply deleting this file.
+ #
+-# See logind.conf(5) for details
++# See logind.conf(5) for details.
+ 
+ [Login]
+ #NAutoVTs=6
+diff --git a/src/resolve/resolved.conf.in b/src/resolve/resolved.conf.in
+index e5a19ee474..3eb19e42b7 100644
+--- a/src/resolve/resolved.conf.in
++++ b/src/resolve/resolved.conf.in
+@@ -5,8 +5,9 @@
+ #  the Free Software Foundation; either version 2.1 of the License, or
+ #  (at your option) any later version.
+ #
+-# You can override the directives in this file by creating files in
+-# /etc/systemd/resolved.conf.d/*.conf.
++# Entries in this file show the compile time defaults.
++# You can change settings by editing this file.
++# Defaults can be restored by simply deleting this file.
+ #
+ # See resolved.conf(5) for details
+ 
+diff --git a/src/timesync/timesyncd.conf.in b/src/timesync/timesyncd.conf.in
+index fc3c6c49cf..b6a2ada273 100644
+--- a/src/timesync/timesyncd.conf.in
++++ b/src/timesync/timesyncd.conf.in
+@@ -5,10 +5,11 @@
+ #  the Free Software Foundation; either version 2.1 of the License, or
+ #  (at your option) any later version.
+ #
+-# You can override the directives in this file by creating files in
+-# /etc/systemd/timesyncd.conf.d/*.conf.
++# Entries in this file show the compile time defaults.
++# You can change settings by editing this file.
++# Defaults can be restored by simply deleting this file.
+ #
+-# See timesyncd.conf(5) for details
++# See timesyncd.conf(5) for details.
+ 
+ [Time]
+ #NTP=

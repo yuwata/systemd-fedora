@@ -1,0 +1,181 @@
+From 4015611680b1ee7ba43dbaf405fefb7ddb137797 Mon Sep 17 00:00:00 2001
+From: Zachary Cook <zachcook1991@gmail.com>
+Date: Wed, 4 Mar 2015 18:43:20 -0500
+Subject: [PATCH] man: replace obsolete wiki link with man page
+
+(cherry picked from commit b1c1a51944e8e11545ae2a230d674f5145595192)
+---
+ man/systemd-cryptsetup-generator.xml    | 6 ++----
+ man/systemd-debug-generator.xml         | 6 ++----
+ man/systemd-efi-boot-generator.xml      | 4 +---
+ man/systemd-fstab-generator.xml         | 6 ++----
+ man/systemd-getty-generator.xml         | 5 ++---
+ man/systemd-gpt-auto-generator.xml      | 4 +---
+ man/systemd-system-update-generator.xml | 6 ++----
+ man/systemd-sysv-generator.xml          | 6 ++----
+ man/systemd.unit.xml                    | 4 ++--
+ man/systemd.xml                         | 5 ++---
+ 10 files changed, 18 insertions(+), 34 deletions(-)
+
+diff --git a/man/systemd-cryptsetup-generator.xml b/man/systemd-cryptsetup-generator.xml
+index 0e48e79346..1974cd7a2d 100644
+--- a/man/systemd-cryptsetup-generator.xml
++++ b/man/systemd-cryptsetup-generator.xml
+@@ -59,10 +59,8 @@
+     <citerefentry><refentrytitle>systemd-cryptsetup@.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+     units as necessary.</para>
+ 
+-    <para><filename>systemd-cryptsetup-generator</filename>
+-    implements the <ulink
+-    url="http://www.freedesktop.org/wiki/Software/systemd/Generators">generator
+-    specification</ulink>.</para>
++    <para><filename>systemd-cryptsetup-generator</filename> implements
++    <citerefentry><refentrytitle>systemd.generator</refentrytitle><manvolnum>7</manvolnum></citerefentry>.</para>
+   </refsect1>
+ 
+   <refsect1>
+diff --git a/man/systemd-debug-generator.xml b/man/systemd-debug-generator.xml
+index 74c3b2620e..5c5e9fc4a1 100644
+--- a/man/systemd-debug-generator.xml
++++ b/man/systemd-debug-generator.xml
+@@ -79,10 +79,8 @@
+     <citerefentry><refentrytitle>systemctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>'s
+     <command>enable</command> command.</para>
+ 
+-    <para><filename>systemd-debug-generator</filename> implements the
+-    <ulink
+-    url="http://www.freedesktop.org/wiki/Software/systemd/Generators">generator
+-    specification</ulink>.</para>
++    <para><filename>systemd-debug-generator</filename> implements
++    <citerefentry><refentrytitle>systemd.generator</refentrytitle><manvolnum>7</manvolnum></citerefentry>.</para>
+   </refsect1>
+ 
+   <refsect1>
+diff --git a/man/systemd-efi-boot-generator.xml b/man/systemd-efi-boot-generator.xml
+index b2d8d65e3d..fd7ba79837 100644
+--- a/man/systemd-efi-boot-generator.xml
++++ b/man/systemd-efi-boot-generator.xml
+@@ -68,9 +68,7 @@
+     only be activated on-demand, when accessed.</para>
+ 
+     <para><filename>systemd-efi-boot-generator</filename> implements
+-    the <ulink
+-    url="http://www.freedesktop.org/wiki/Software/systemd/Generators">generator
+-    specification</ulink>.</para>
++    <citerefentry><refentrytitle>systemd.generator</refentrytitle><manvolnum>7</manvolnum></citerefentry>.</para>
+   </refsect1>
+ 
+   <refsect1>
+diff --git a/man/systemd-fstab-generator.xml b/man/systemd-fstab-generator.xml
+index 8f82e33304..022efb4130 100644
+--- a/man/systemd-fstab-generator.xml
++++ b/man/systemd-fstab-generator.xml
+@@ -71,10 +71,8 @@
+     for more information about special <filename>/etc/fstab</filename>
+     mount options this generator understands.</para>
+ 
+-    <para><filename>systemd-fstab-generator</filename> implements the
+-    <ulink
+-    url="http://www.freedesktop.org/wiki/Software/systemd/Generators">generator
+-    specification</ulink>.</para>
++    <para><filename>systemd-fstab-generator</filename> implements
++    <citerefentry><refentrytitle>systemd.generator</refentrytitle><manvolnum>7</manvolnum></citerefentry>.</para>
+   </refsect1>
+ 
+   <refsect1>
+diff --git a/man/systemd-getty-generator.xml b/man/systemd-getty-generator.xml
+index 0b5b2f2a71..338925964d 100644
+--- a/man/systemd-getty-generator.xml
++++ b/man/systemd-getty-generator.xml
+@@ -75,9 +75,8 @@
+     for more information on the <varname>console=</varname> kernel
+     parameter.</para>
+ 
+-    <para><filename>systemd-getty-generator</filename> implements the
+-    <ulink url="http://www.freedesktop.org/wiki/Software/systemd/Generators">generator
+-    specification</ulink>.</para>
++    <para><filename>systemd-getty-generator</filename> implements
++    <citerefentry><refentrytitle>systemd.generator</refentrytitle><manvolnum>7</manvolnum></citerefentry>.</para>
+ 
+     <para>Further information about configuration of gettys you may
+     find in
+diff --git a/man/systemd-gpt-auto-generator.xml b/man/systemd-gpt-auto-generator.xml
+index 9c706df246..8d2eaca4f6 100644
+--- a/man/systemd-gpt-auto-generator.xml
++++ b/man/systemd-gpt-auto-generator.xml
+@@ -157,9 +157,7 @@
+     using <command>btrfs subvolume set-default</command>.</para>
+ 
+     <para><filename>systemd-gpt-auto-generator</filename> implements
+-    the
+-    <ulink url="http://www.freedesktop.org/wiki/Software/systemd/Generators">Generator
+-    Specification</ulink>.</para>
++    <citerefentry><refentrytitle>systemd.generator</refentrytitle><manvolnum>7</manvolnum></citerefentry>.</para>
+   </refsect1>
+ 
+   <refsect1>
+diff --git a/man/systemd-system-update-generator.xml b/man/systemd-system-update-generator.xml
+index 3eec1d7b93..e7fc95c742 100644
+--- a/man/systemd-system-update-generator.xml
++++ b/man/systemd-system-update-generator.xml
+@@ -61,10 +61,8 @@
+     Updates Specification</ulink>.
+     </para>
+ 
+-    <para><filename>systemd-system-update-generator</filename>
+-    implements the
+-    <ulink url="http://www.freedesktop.org/wiki/Software/systemd/Generators">generator
+-    specification</ulink>.</para>
++    <para><filename>systemd-system-update-generator</filename> implements
++    <citerefentry><refentrytitle>systemd.generator</refentrytitle><manvolnum>7</manvolnum></citerefentry>.</para>
+   </refsect1>
+ 
+   <refsect1>
+diff --git a/man/systemd-sysv-generator.xml b/man/systemd-sysv-generator.xml
+index e619b1bc2e..f2d56cbcd2 100644
+--- a/man/systemd-sysv-generator.xml
++++ b/man/systemd-sysv-generator.xml
+@@ -81,10 +81,8 @@
+     part of early boot, so all wrapper units are ordered after
+     <filename>basic.target</filename>.</para>
+ 
+-    <para><filename>systemd-sysv-generator</filename>
+-    implements the <ulink
+-    url="http://www.freedesktop.org/wiki/Software/systemd/Generators">generator
+-    specification</ulink>.</para>
++    <para><filename>systemd-sysv-generator</filename> implements
++    <citerefentry><refentrytitle>systemd.generator</refentrytitle><manvolnum>7</manvolnum></citerefentry>.</para>
+   </refsect1>
+ 
+   <refsect1>
+diff --git a/man/systemd.unit.xml b/man/systemd.unit.xml
+index 09e11b4711..a452f87baf 100644
+--- a/man/systemd.unit.xml
++++ b/man/systemd.unit.xml
+@@ -357,8 +357,8 @@
+     from directories not on the unit load path. See the
+     <command>link</command> command for
+     <citerefentry><refentrytitle>systemctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>.
+-    Also, some units are dynamically created via generators <ulink
+-    url="http://www.freedesktop.org/wiki/Software/systemd/Generators/">Generators</ulink>.
++    Also, some units are dynamically created via a
++    <citerefentry><refentrytitle>systemd.generator</refentrytitle><manvolnum>7</manvolnum></citerefentry>.
+     </para>
+   </refsect1>
+ 
+diff --git a/man/systemd.xml b/man/systemd.xml
+index 80591dc732..9b92140e6b 100644
+--- a/man/systemd.xml
++++ b/man/systemd.xml
+@@ -415,9 +415,8 @@
+ 
+     <para>Units may be generated dynamically at boot and system
+     manager reload time, for example based on other configuration
+-    files or parameters passed on the kernel command line. For details
+-    see the
+-    <ulink url="http://www.freedesktop.org/wiki/Software/systemd/Generators">Generators Specification</ulink>.</para>
++    files or parameters passed on the kernel command line. For details see
++    <citerefentry><refentrytitle>systemd.generator</refentrytitle><manvolnum>7</manvolnum></citerefentry>.</para>
+ 
+     <para>Systems which invoke systemd in a container or initrd
+     environment should implement the

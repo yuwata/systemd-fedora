@@ -1,0 +1,31 @@
+From c59d61522d87fdaca015f51466d7357288a95110 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Mon, 9 Mar 2015 17:46:30 -0400
+Subject: [PATCH] journal: fix return code
+
+Introduced in fa6ac76083b8ff.
+
+Might be related to CID #1261724, but I don't know if coverity can
+recurse this deep.
+
+(cherry picked from commit 977eaa1eae53af7f418d87fcb42f4a4d34aad739)
+---
+ src/journal/journal-file.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/src/journal/journal-file.c b/src/journal/journal-file.c
+index 24c49b916a..f500568fec 100644
+--- a/src/journal/journal-file.c
++++ b/src/journal/journal-file.c
+@@ -2652,10 +2652,8 @@ int journal_file_open(
+         }
+ 
+         r = mmap_cache_get(f->mmap, f->fd, f->prot, CONTEXT_HEADER, true, 0, PAGE_ALIGN(sizeof(Header)), &f->last_stat, &h);
+-        if (r < 0) {
+-                r = -errno;
++        if (r < 0)
+                 goto fail;
+-        }
+ 
+         f->header = h;
+ 

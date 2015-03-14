@@ -1,0 +1,37 @@
+From 19e98bf405a8105db71a4e3247b0397509825a6e Mon Sep 17 00:00:00 2001
+From: Will Woods <wwoods@redhat.com>
+Date: Fri, 13 Mar 2015 17:24:46 -0400
+Subject: [PATCH] selinux: fix SEGV during switch-root if SELinux policy loaded
+
+If you've got SELinux policy loaded, label_hnd is your labeling handle.
+When systemd is shutting down, we free that handle via mac_selinux_finish().
+
+But: switch_root() calls mkdir_p_label(), which tries to look up a label
+using that freed handle, and so we get a bunch of garbage and eventually
+SEGV in libselinux.
+
+(This doesn't happen in the switch-root from initramfs to real root because
+there's no SELinux policy loaded in initramfs, so label_hnd is NULL and we
+never attempt any lookups.)
+
+So: make sure that mac_selinux_finish() actually sets label_hnd to NULL, so
+nobody tries to use it after it becomes invalid.
+
+https://bugzilla.redhat.com/show_bug.cgi?id=1185604
+(cherry picked from commit f5ce2b49585a14cefb6d02f61c8dcdf7628a8605)
+---
+ src/shared/selinux-util.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/shared/selinux-util.c b/src/shared/selinux-util.c
+index a2233e0cfb..a46ddf8498 100644
+--- a/src/shared/selinux-util.c
++++ b/src/shared/selinux-util.c
+@@ -117,6 +117,7 @@ void mac_selinux_finish(void) {
+                 return;
+ 
+         selabel_close(label_hnd);
++        label_hnd = NULL;
+ #endif
+ }
+ 

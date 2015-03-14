@@ -1,0 +1,35 @@
+From 4acdc3835b2c9d395f1df95bb1dd5620a4a0e7e5 Mon Sep 17 00:00:00 2001
+From: Michael Biebl <biebl@debian.org>
+Date: Sat, 14 Mar 2015 16:48:54 +0100
+Subject: [PATCH] service: don't add After= dependencies on .busname units if
+ kdbus support is disabled
+
+(cherry picked from commit 6962fd3bd28cb5d3aaff69c1e3b6cc006e7c8426)
+---
+ src/core/service.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/src/core/service.c b/src/core/service.c
+index 7781b4e626..ae5e610008 100644
+--- a/src/core/service.c
++++ b/src/core/service.c
+@@ -556,14 +556,16 @@ static int service_add_extras(Service *s) {
+                 s->notify_access = NOTIFY_MAIN;
+ 
+         if (s->bus_name) {
++#ifdef ENABLE_KDBUS
+                 const char *n;
+ 
+-                r = unit_watch_bus_name(UNIT(s), s->bus_name);
++                n = strjoina(s->bus_name, ".busname");
++                r = unit_add_dependency_by_name(UNIT(s), UNIT_AFTER, n, NULL, true);
+                 if (r < 0)
+                         return r;
++#endif
+ 
+-                n = strjoina(s->bus_name, ".busname");
+-                r = unit_add_dependency_by_name(UNIT(s), UNIT_AFTER, n, NULL, true);
++                r = unit_watch_bus_name(UNIT(s), s->bus_name);
+                 if (r < 0)
+                         return r;
+         }

@@ -1,0 +1,1453 @@
+From 285bc1b0a3d2a6e0b87a7778de8227216feb897e Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Fri, 13 Mar 2015 21:22:39 -0500
+Subject: [PATCH] man: fix a bunch of links
+
+All hail linkchecker!
+
+(cherry picked from commit 3ba3a79df4ae094d1008c04a9af8d1ff970124c4)
+
+Conflicts:
+	man/systemd-efi-boot-generator.xml
+---
+ man/busctl.xml                             |  4 ++--
+ man/crypttab.xml                           | 20 +++++++++----------
+ man/file-hierarchy.xml                     |  2 +-
+ man/kernel-command-line.xml                |  2 +-
+ man/locale.conf.xml                        |  8 ++++----
+ man/localectl.xml                          |  8 ++++----
+ man/logind.conf.xml                        |  2 +-
+ man/machine-id.xml                         |  4 ++--
+ man/modules-load.d.xml                     |  2 +-
+ man/os-release.xml                         |  2 +-
+ man/sd_bus_message_append.xml              |  2 +-
+ man/sd_bus_open_user.xml                   |  2 +-
+ man/sd_event_add_signal.xml                |  4 ++--
+ man/sd_journal_get_catalog.xml             |  2 +-
+ man/sd_journal_get_cursor.xml              |  2 +-
+ man/sd_journal_print.xml                   | 14 ++++++-------
+ man/sysctl.d.xml                           |  8 ++++----
+ man/systemctl.xml                          |  6 +++---
+ man/systemd-activate.xml                   |  2 +-
+ man/systemd-analyze.xml                    |  4 ++--
+ man/systemd-cat.xml                        |  2 +-
+ man/systemd-cryptsetup-generator.xml       |  2 +-
+ man/systemd-cryptsetup@.service.xml        |  2 +-
+ man/systemd-efi-boot-generator.xml         |  4 ++--
+ man/systemd-firstboot.xml                  | 14 ++++++-------
+ man/systemd-fstab-generator.xml            |  4 ++--
+ man/systemd-gpt-auto-generator.xml         |  8 ++++----
+ man/systemd-hibernate-resume-generator.xml |  2 +-
+ man/systemd-journald.service.xml           |  2 +-
+ man/systemd-localed.service.xml            |  8 ++++----
+ man/systemd-nspawn.xml                     |  4 ++--
+ man/systemd-quotacheck.service.xml         |  2 +-
+ man/systemd-remount-fs.service.xml         |  6 +++---
+ man/systemd-socket-proxyd.xml              |  8 ++++----
+ man/systemd-sysctl.service.xml             |  8 ++++----
+ man/systemd-system.conf.xml                |  2 +-
+ man/systemd-update-utmp.service.xml        |  2 +-
+ man/systemd-vconsole-setup.service.xml     |  8 ++++----
+ man/systemd.automount.xml                  |  6 +++---
+ man/systemd.exec.xml                       | 16 +++++++--------
+ man/systemd.generator.xml                  |  2 +-
+ man/systemd.journal-fields.xml             |  2 +-
+ man/systemd.kill.xml                       |  4 ++--
+ man/systemd.mount.xml                      | 14 ++++++-------
+ man/systemd.network.xml                    |  8 ++++----
+ man/systemd.path.xml                       |  4 ++--
+ man/systemd.socket.xml                     | 32 +++++++++++++++---------------
+ man/systemd.swap.xml                       | 10 +++++-----
+ man/systemd.unit.xml                       |  4 ++--
+ man/systemd.xml                            |  6 +++---
+ man/vconsole.conf.xml                      |  6 +++---
+ 51 files changed, 151 insertions(+), 151 deletions(-)
+
+diff --git a/man/busctl.xml b/man/busctl.xml
+index 251233bb96..cc1844b0a0 100644
+--- a/man/busctl.xml
++++ b/man/busctl.xml
+@@ -288,7 +288,7 @@
+         url="http://wiki.wireshark.org/Development/LibpcapFileFormat">Libpcap
+         File Format</ulink> description. Make sure to redirect the
+         output to STDOUT to a file. Tools like
+-        <citerefentry><refentrytitle>wireshark</refentrytitle><manvolnum>1</manvolnum></citerefentry>
++        <citerefentry project='die-net'><refentrytitle>wireshark</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+         may be used to dissect and view the generated
+         files.</para></listitem>
+       </varlistentry>
+@@ -472,7 +472,7 @@ o "/org/freedesktop/systemd1/job/42684"</programlisting>
+       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd-bus-proxyd</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>machinectl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>wireshark</refentrytitle><manvolnum>1</manvolnum></citerefentry>
++      <citerefentry project='die-net'><refentrytitle>wireshark</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+     </para>
+   </refsect1>
+ </refentry>
+diff --git a/man/crypttab.xml b/man/crypttab.xml
+index aeacc57973..3e249ad23e 100644
+--- a/man/crypttab.xml
++++ b/man/crypttab.xml
+@@ -75,7 +75,7 @@
+ 
+     <para>Setting up encrypted block devices using this file supports
+     three encryption modes: LUKS, TrueCrypt and plain. See
+-    <citerefentry><refentrytitle>cryptsetup</refentrytitle><manvolnum>8</manvolnum></citerefentry>
++    <citerefentry project='die-net'><refentrytitle>cryptsetup</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+     for more information about each mode. When no mode is specified in
+     the options field and the block device contains a LUKS signature,
+     it is opened as a LUKS device; otherwise, it is assumed to be in
+@@ -117,7 +117,7 @@
+         <term><option>cipher=</option></term>
+ 
+         <listitem><para>Specifies the cipher to use. See
+-        <citerefentry><refentrytitle>cryptsetup</refentrytitle><manvolnum>8</manvolnum></citerefentry>
++        <citerefentry project='die-net'><refentrytitle>cryptsetup</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+         for possible values and the default value of this option. A
+         cipher with unpredictable IV values, such as
+         <literal>aes-cbc-essiv:sha256</literal>, is
+@@ -129,7 +129,7 @@
+ 
+         <listitem><para>Specifies the hash to use for password
+         hashing. See
+-        <citerefentry><refentrytitle>cryptsetup</refentrytitle><manvolnum>8</manvolnum></citerefentry>
++        <citerefentry project='die-net'><refentrytitle>cryptsetup</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+         for possible values and the default value of this
+         option.</para></listitem>
+       </varlistentry>
+@@ -140,7 +140,7 @@
+         <listitem><para>Use a detached (separated) metadata device or
+         file where the LUKS header is stored. This option is only
+         relevant for LUKS devices. See
+-        <citerefentry><refentrytitle>cryptsetup</refentrytitle><manvolnum>8</manvolnum></citerefentry>
++        <citerefentry project='die-net'><refentrytitle>cryptsetup</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+         for possible values and the default value of this
+         option.</para></listitem>
+       </varlistentry>
+@@ -150,7 +150,7 @@
+ 
+         <listitem><para>Specifies the number of bytes to skip at the
+         start of the key file. See
+-        <citerefentry><refentrytitle>cryptsetup</refentrytitle><manvolnum>8</manvolnum></citerefentry>
++        <citerefentry project='die-net'><refentrytitle>cryptsetup</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+         for possible values and the default value of this
+         option.</para></listitem>
+       </varlistentry>
+@@ -160,7 +160,7 @@
+ 
+         <listitem><para>Specifies the maximum number of bytes to read
+         from the key file. See
+-        <citerefentry><refentrytitle>cryptsetup</refentrytitle><manvolnum>8</manvolnum></citerefentry>
++        <citerefentry project='die-net'><refentrytitle>cryptsetup</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+         for possible values and the default value of this option. This
+         option is ignored in plain encryption mode, as the key file
+         size is then given by the key size.</para></listitem>
+@@ -174,7 +174,7 @@
+         given passphrase or key, but another would, the setup of the
+         device will fail regardless. This option implies
+         <option>luks</option>. See
+-        <citerefentry><refentrytitle>cryptsetup</refentrytitle><manvolnum>8</manvolnum></citerefentry>
++        <citerefentry project='die-net'><refentrytitle>cryptsetup</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+         for possible values. The default is to try all key slots in
+         sequential order.</para></listitem>
+       </varlistentry>
+@@ -221,7 +221,7 @@
+         <term><option>size=</option></term>
+ 
+         <listitem><para>Specifies the key size in bits. See
+-        <citerefentry><refentrytitle>cryptsetup</refentrytitle><manvolnum>8</manvolnum></citerefentry>
++        <citerefentry project='die-net'><refentrytitle>cryptsetup</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+         for possible values and the default value of this
+         option.</para></listitem>
+       </varlistentry>
+@@ -278,7 +278,7 @@
+         volume provided in the second field. Please note that there is
+         no protection for the hidden volume if the outer volume is
+         mounted instead. See
+-        <citerefentry><refentrytitle>cryptsetup</refentrytitle><manvolnum>8</manvolnum></citerefentry>
++        <citerefentry project='die-net'><refentrytitle>cryptsetup</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+         for more information on this limitation.</para></listitem>
+       </varlistentry>
+ 
+@@ -383,7 +383,7 @@ hidden     /mnt/tc_hidden  /dev/null    tcrypt-hidden,tcrypt-keyfile=/etc/keyfil
+       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd-cryptsetup@.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd-cryptsetup-generator</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>cryptsetup</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
++      <citerefentry project='die-net'><refentrytitle>cryptsetup</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+       <citerefentry project='man-pages'><refentrytitle>mkswap</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+       <citerefentry project='man-pages'><refentrytitle>mke2fs</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+     </para>
+diff --git a/man/file-hierarchy.xml b/man/file-hierarchy.xml
+index e9c894f5c8..364e130790 100644
+--- a/man/file-hierarchy.xml
++++ b/man/file-hierarchy.xml
+@@ -397,7 +397,7 @@
+         <term><filename>/dev/shm</filename></term>
+         <listitem><para>Place for POSIX shared memory segments, as
+         created via
+-        <citerefentry><refentrytitle>shm_open</refentrytitle><manvolnum>3</manvolnum></citerefentry>.
++        <citerefentry project='die-net'><refentrytitle>shm_open</refentrytitle><manvolnum>3</manvolnum></citerefentry>.
+         This directory is flushed on boot, and is a
+         <literal>tmpfs</literal> file system. Since all users have
+         write access to this directory, special care should be taken
+diff --git a/man/kernel-command-line.xml b/man/kernel-command-line.xml
+index 3741cf9cc2..919bd13745 100644
+--- a/man/kernel-command-line.xml
++++ b/man/kernel-command-line.xml
+@@ -336,7 +336,7 @@
+         <listitem>
+           <para>Enables resume from hibernation using the specified
+           device. All
+-          <citerefentry><refentrytitle>fstab</refentrytitle><manvolnum>5</manvolnum></citerefentry>-like
++          <citerefentry project='man-pages'><refentrytitle>fstab</refentrytitle><manvolnum>5</manvolnum></citerefentry>-like
+           paths are supported. For details, see
+           <citerefentry><refentrytitle>systemd-hibernate-resume-generator</refentrytitle><manvolnum>8</manvolnum></citerefentry>.</para>
+         </listitem>
+diff --git a/man/locale.conf.xml b/man/locale.conf.xml
+index 48c0006db2..2c32d16094 100644
+--- a/man/locale.conf.xml
++++ b/man/locale.conf.xml
+@@ -91,7 +91,7 @@
+     might be checked for locale configuration as well, however only as
+     fallback.</para>
+ 
+-    <para><citerefentry><refentrytitle>localectl</refentrytitle><manvolnum>1</manvolnum></citerefentry>
++    <para><citerefentry project='man-pages'><refentrytitle>localectl</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+     may be used to alter the settings in this file during runtime from
+     the command line. Use
+     <citerefentry><refentrytitle>systemd-firstboot</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+@@ -121,7 +121,7 @@
+     Note that <varname>LC_ALL</varname> may not be configured in this
+     file. For details about the meaning and semantics of these
+     settings, refer to
+-    <citerefentry><refentrytitle>locale</refentrytitle><manvolnum>7</manvolnum></citerefentry>.</para>
++    <citerefentry project='man-pages'><refentrytitle>locale</refentrytitle><manvolnum>7</manvolnum></citerefentry>.</para>
+   </refsect1>
+ 
+   <refsect1>
+@@ -142,8 +142,8 @@ LC_MESSAGES=en_US.UTF-8</programlisting>
+       <title>See Also</title>
+       <para>
+         <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+-        <citerefentry><refentrytitle>locale</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
+-        <citerefentry><refentrytitle>localectl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
++        <citerefentry project='man-pages'><refentrytitle>locale</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
++        <citerefentry project='man-pages'><refentrytitle>localectl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+         <citerefentry><refentrytitle>systemd-localed.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+         <citerefentry><refentrytitle>systemd-firstboot</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+       </para>
+diff --git a/man/localectl.xml b/man/localectl.xml
+index aae6e0629c..7def047f62 100644
+--- a/man/localectl.xml
++++ b/man/localectl.xml
+@@ -124,7 +124,7 @@
+         <listitem><para>Set the system locale. This takes one or more
+         assignments such as "LANG=de_DE.utf8",
+         "LC_MESSAGES=en_GB.utf8", and so on. See
+-        <citerefentry><refentrytitle>locale</refentrytitle><manvolnum>7</manvolnum></citerefentry>
++        <citerefentry project='man-pages'><refentrytitle>locale</refentrytitle><manvolnum>7</manvolnum></citerefentry>
+         for details on the available settings and their meanings. Use
+         <command>list-locales</command> for a list of available
+         locales (see below). </para></listitem>
+@@ -204,10 +204,10 @@
+     <title>See Also</title>
+     <para>
+       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>locale</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>locale.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
++      <citerefentry project='man-pages'><refentrytitle>locale</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
++      <citerefentry project='man-pages'><refentrytitle>locale.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>vconsole.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>loadkeys</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
++      <citerefentry project='mankier'><refentrytitle>loadkeys</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>kbd</refentrytitle><manvolnum>4</manvolnum></citerefentry>,
+       <ulink url="http://www.x.org/releases/current/doc/xorg-docs/input/XKB-Config.html">
+         The XKB Configuration Guide
+diff --git a/man/logind.conf.xml b/man/logind.conf.xml
+index ca2b18783c..d02d573565 100644
+--- a/man/logind.conf.xml
++++ b/man/logind.conf.xml
+@@ -126,7 +126,7 @@
+ 
+         <para>Note that setting <varname>KillUserProcesses=1</varname>
+         will break tools like
+-        <citerefentry><refentrytitle>screen</refentrytitle><manvolnum>1</manvolnum></citerefentry>.</para></listitem>
++        <citerefentry project='die-net'><refentrytitle>screen</refentrytitle><manvolnum>1</manvolnum></citerefentry>.</para></listitem>
+       </varlistentry>
+ 
+       <varlistentry>
+diff --git a/man/machine-id.xml b/man/machine-id.xml
+index 83e0b26ced..92d67a3869 100644
+--- a/man/machine-id.xml
++++ b/man/machine-id.xml
+@@ -75,7 +75,7 @@
+     globally unique ID in the network, which does not change even if
+     the local network configuration changes. Due to this and its
+     greater length, it is a more useful replacement for the
+-    <citerefentry><refentrytitle>gethostid</refentrytitle><manvolnum>3</manvolnum></citerefentry>
++    <citerefentry project='man-pages'><refentrytitle>gethostid</refentrytitle><manvolnum>3</manvolnum></citerefentry>
+     call that POSIX specifies.</para>
+ 
+     <para>The
+@@ -127,7 +127,7 @@ id[8] = (id[8] &amp; 0x3F) | 0x80;</programlisting>
+       <para>
+         <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+         <citerefentry><refentrytitle>systemd-machine-id-setup</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+-        <citerefentry><refentrytitle>gethostid</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
++        <citerefentry project='man-pages'><refentrytitle>gethostid</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
+         <citerefentry><refentrytitle>hostname</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+         <citerefentry><refentrytitle>machine-info</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+         <citerefentry><refentrytitle>os-release</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+diff --git a/man/modules-load.d.xml b/man/modules-load.d.xml
+index 34a937db68..4b722aa128 100644
+--- a/man/modules-load.d.xml
++++ b/man/modules-load.d.xml
+@@ -94,7 +94,7 @@ virtio-net</programlisting>
+       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd-modules-load.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd-delta</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>modprobe</refentrytitle><manvolnum>8</manvolnum></citerefentry>
++      <citerefentry project='man-pages'><refentrytitle>modprobe</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+     </para>
+   </refsect1>
+ 
+diff --git a/man/os-release.xml b/man/os-release.xml
+index 1b71a49d05..8f4ab10fed 100644
+--- a/man/os-release.xml
++++ b/man/os-release.xml
+@@ -316,7 +316,7 @@ BUG_REPORT_URL="https://bugzilla.redhat.com/"</programlisting>
+       <title>See Also</title>
+       <para>
+         <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+-        <citerefentry><refentrytitle>lsb_release</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
++        <citerefentry project='die-net'><refentrytitle>lsb_release</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+         <citerefentry><refentrytitle>hostname</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+         <citerefentry><refentrytitle>machine-id</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+         <citerefentry><refentrytitle>machine-info</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+diff --git a/man/sd_bus_message_append.xml b/man/sd_bus_message_append.xml
+index 0c49a0c7c9..11fa07c636 100644
+--- a/man/sd_bus_message_append.xml
++++ b/man/sd_bus_message_append.xml
+@@ -245,7 +245,7 @@ sd_bus_message_append(m, "ynqiuxtd", y, n, q, i, u, x, t, d);</programlisting>
+       <citerefentry><refentrytitle>sd_bus_new</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>sd_bus_ref</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>sd_bus_unref</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>ssh</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
++      <citerefentry project='die-net'><refentrytitle>ssh</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd-machined.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>machinectl</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+     </para>
+diff --git a/man/sd_bus_open_user.xml b/man/sd_bus_open_user.xml
+index e7a765962a..2bbb010696 100644
+--- a/man/sd_bus_open_user.xml
++++ b/man/sd_bus_open_user.xml
+@@ -208,7 +208,7 @@ along with systemd; If not, see <http://www.gnu.org/licenses/>.
+       <citerefentry><refentrytitle>sd_bus_new</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>sd_bus_ref</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>sd_bus_unref</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>ssh</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
++      <citerefentry project='die-net'><refentrytitle>ssh</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd-machined.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>machinectl</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+     </para>
+diff --git a/man/sd_event_add_signal.xml b/man/sd_event_add_signal.xml
+index 0299aa5a53..7c8df7df8d 100644
+--- a/man/sd_event_add_signal.xml
++++ b/man/sd_event_add_signal.xml
+@@ -86,7 +86,7 @@ along with systemd; If not, see <http://www.gnu.org/licenses/>.
+     the <parameter>source</parameter> parameter. The
+     <parameter>signal</parameter> parameter specifies the signal to be handled
+     (see
+-    <citerefentry><refentrytitle>signal</refentrytitle><manvolnum>7</manvolnum></citerefentry>).
++    <citerefentry project='man-pages'><refentrytitle>signal</refentrytitle><manvolnum>7</manvolnum></citerefentry>).
+     The <parameter>handler</parameter> must reference a function to
+     call when the signal is delivered or be <constant>NULL</constant>.
+     The handler function will be passed the
+@@ -94,7 +94,7 @@ along with systemd; If not, see <http://www.gnu.org/licenses/>.
+     freely by the caller. The handler also receives a pointer to a
+     <structname>const struct signalfd_siginfo</structname> containing
+     the information about the received signal. See
+-    <citerefentry><refentrytitle>signalfd</refentrytitle><manvolnum>2</manvolnum></citerefentry>
++    <citerefentry project='man-pages'><refentrytitle>signalfd</refentrytitle><manvolnum>2</manvolnum></citerefentry>
+     for further information.</para>
+ 
+     <para>Only a single handler may be installed for a specific
+diff --git a/man/sd_journal_get_catalog.xml b/man/sd_journal_get_catalog.xml
+index 1dcbadd186..c19eb11b20 100644
+--- a/man/sd_journal_get_catalog.xml
++++ b/man/sd_journal_get_catalog.xml
+@@ -130,7 +130,7 @@
+       <citerefentry><refentrytitle>sd_journal_open</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>sd_journal_next</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>sd_journal_get_data</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>malloc</refentrytitle><manvolnum>3</manvolnum></citerefentry>
++      <citerefentry project='man-pages'><refentrytitle>malloc</refentrytitle><manvolnum>3</manvolnum></citerefentry>
+     </para>
+   </refsect1>
+ 
+diff --git a/man/sd_journal_get_cursor.xml b/man/sd_journal_get_cursor.xml
+index 2b7f443f29..a400d8b1b5 100644
+--- a/man/sd_journal_get_cursor.xml
++++ b/man/sd_journal_get_cursor.xml
+@@ -84,7 +84,7 @@
+     time) available entry. The call takes two arguments: a journal
+     context object and a pointer to a string pointer where the cursor
+     string will be placed. The string is allocated via libc
+-    <citerefentry><refentrytitle>malloc</refentrytitle><manvolnum>3</manvolnum></citerefentry>
++    <citerefentry project='man-pages'><refentrytitle>malloc</refentrytitle><manvolnum>3</manvolnum></citerefentry>
+     and should be freed after use with
+     <citerefentry project='man-pages'><refentrytitle>free</refentrytitle><manvolnum>3</manvolnum></citerefentry>.</para>
+ 
+diff --git a/man/sd_journal_print.xml b/man/sd_journal_print.xml
+index 068b10e7ca..0cd0b45b9a 100644
+--- a/man/sd_journal_print.xml
++++ b/man/sd_journal_print.xml
+@@ -119,7 +119,7 @@
+     <function>sd_journal_print()</function> but takes a variable
+     argument list encapsulated in an object of type
+     <varname>va_list</varname> (see
+-    <citerefentry><refentrytitle>stdarg</refentrytitle><manvolnum>3</manvolnum></citerefentry>
++    <citerefentry project='man-pages'><refentrytitle>stdarg</refentrytitle><manvolnum>3</manvolnum></citerefentry>
+     for more information) instead of the format string. It is
+     otherwise equivalent in behavior.</para>
+ 
+@@ -145,7 +145,7 @@
+     <function>sd_journal_send()</function> but takes an array of
+     <varname>struct iovec</varname> (as defined in
+     <filename>uio.h</filename>, see
+-    <citerefentry><refentrytitle>readv</refentrytitle><manvolnum>3</manvolnum></citerefentry>
++    <citerefentry project='man-pages'><refentrytitle>readv</refentrytitle><manvolnum>3</manvolnum></citerefentry>
+     for details) instead of the format string. Each structure should
+     reference one field of the entry to submit. The second argument
+     specifies the number of structures in the array.
+@@ -154,7 +154,7 @@
+     necessary.</para>
+ 
+     <para><function>sd_journal_perror()</function> is a similar to
+-    <citerefentry><refentrytitle>perror</refentrytitle><manvolnum>3</manvolnum></citerefentry>
++    <citerefentry project='die-net'><refentrytitle>perror</refentrytitle><manvolnum>3</manvolnum></citerefentry>
+     and writes a message to the journal that consists of the passed
+     string, suffixed with ": " and a human readable representation of
+     the current error code stored in
+@@ -219,7 +219,7 @@ sd_journal_send("MESSAGE=Hello World, this is PID %lu!", (unsigned long) getpid(
+     <title>Async signal safety</title>
+     <para><function>sd_journal_sendv()</function> is "async signal
+     safe" in the meaning of
+-    <citerefentry><refentrytitle>signal</refentrytitle><manvolnum>7</manvolnum></citerefentry>.
++    <citerefentry project='man-pages'><refentrytitle>signal</refentrytitle><manvolnum>7</manvolnum></citerefentry>.
+     </para>
+ 
+     <para><function>sd_journal_print</function>,
+@@ -249,11 +249,11 @@ sd_journal_send("MESSAGE=Hello World, this is PID %lu!", (unsigned long) getpid(
+       <citerefentry><refentrytitle>sd-journal</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>sd_journal_stream_fd</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
+       <citerefentry project='man-pages'><refentrytitle>syslog</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>perror</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
++      <citerefentry project='die-net'><refentrytitle>perror</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
+       <citerefentry project='man-pages'><refentrytitle>errno</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd.journal-fields</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>signal</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>socket</refentrytitle><manvolnum>7</manvolnum></citerefentry>
++      <citerefentry project='man-pages'><refentrytitle>signal</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
++      <citerefentry project='man-pages'><refentrytitle>socket</refentrytitle><manvolnum>7</manvolnum></citerefentry>
+     </para>
+   </refsect1>
+ 
+diff --git a/man/sysctl.d.xml b/man/sysctl.d.xml
+index 5a35cfe2c8..8a131791a5 100644
+--- a/man/sysctl.d.xml
++++ b/man/sysctl.d.xml
+@@ -57,7 +57,7 @@
+     <para>At boot,
+     <citerefentry><refentrytitle>systemd-sysctl.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+     reads configuration files from the above directories to configure
+-    <citerefentry><refentrytitle>sysctl</refentrytitle><manvolnum>8</manvolnum></citerefentry>
++    <citerefentry project='man-pages'><refentrytitle>sysctl</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+     kernel parameters.</para>
+   </refsect1>
+ 
+@@ -162,9 +162,9 @@ net.bridge.bridge-nf-call-arptables = 0
+       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd-sysctl.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd-delta</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>sysctl</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>sysctl.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>modprobe</refentrytitle><manvolnum>8</manvolnum></citerefentry>
++      <citerefentry project='man-pages'><refentrytitle>sysctl</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
++      <citerefentry project='man-pages'><refentrytitle>sysctl.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
++      <citerefentry project='man-pages'><refentrytitle>modprobe</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+     </para>
+   </refsect1>
+ 
+diff --git a/man/systemctl.xml b/man/systemctl.xml
+index 338c1d3280..b5e4cdf862 100644
+--- a/man/systemctl.xml
++++ b/man/systemctl.xml
+@@ -1703,9 +1703,9 @@ kobject-uevent 1 systemd-udevd-kernel.socket systemd-udevd.service
+         <varname>$VISUAL</varname> are present or if it is set to an empty
+         string or if their execution failed, systemctl will try to execute well
+         known editors in this order:
+-        <citerefentry><refentrytitle>nano</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+-        <citerefentry><refentrytitle>vim</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+-        <citerefentry><refentrytitle>vi</refentrytitle><manvolnum>1</manvolnum></citerefentry>.
++        <citerefentry project='die-net'><refentrytitle>nano</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
++        <citerefentry project='die-net'><refentrytitle>vim</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
++        <citerefentry project='die-net'><refentrytitle>vi</refentrytitle><manvolnum>1</manvolnum></citerefentry>.
+         </para></listitem>
+       </varlistentry>
+     </variablelist>
+diff --git a/man/systemd-activate.xml b/man/systemd-activate.xml
+index e64894a28b..cb68a79be7 100644
+--- a/man/systemd-activate.xml
++++ b/man/systemd-activate.xml
+@@ -165,7 +165,7 @@
+       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd.socket</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>cat</refentrytitle><manvolnum>1</manvolnum></citerefentry>
++      <citerefentry project='man-pages'><refentrytitle>cat</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+     </para>
+   </refsect1>
+ </refentry>
+diff --git a/man/systemd-analyze.xml b/man/systemd-analyze.xml
+index 1ff81d3d5a..198315052f 100644
+--- a/man/systemd-analyze.xml
++++ b/man/systemd-analyze.xml
+@@ -145,7 +145,7 @@
+     <para><command>systemd-analyze dot</command> generates textual
+     dependency graph description in dot format for further processing
+     with the GraphViz
+-    <citerefentry><refentrytitle>dot</refentrytitle><manvolnum>1</manvolnum></citerefentry>
++    <citerefentry project='die-net'><refentrytitle>dot</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+     tool. Use a command line like <command>systemd-analyze dot | dot
+     -Tsvg > systemd.svg</command> to generate a graphical dependency
+     tree. Unless <option>--order</option> or
+@@ -229,7 +229,7 @@
+         <command>dot</command> command (see above), this selects which
+         relationships are shown in the dependency graph. Both options
+         require a
+-        <citerefentry><refentrytitle>glob</refentrytitle><manvolnum>7</manvolnum></citerefentry>
++        <citerefentry project='die-net'><refentrytitle>glob</refentrytitle><manvolnum>7</manvolnum></citerefentry>
+         pattern as an argument, which will be matched against the
+         left-hand and the right-hand, respectively, nodes of a
+         relationship.</para>
+diff --git a/man/systemd-cat.xml b/man/systemd-cat.xml
+index 38ddf66d27..9b1a8809dc 100644
+--- a/man/systemd-cat.xml
++++ b/man/systemd-cat.xml
+@@ -171,7 +171,7 @@
+     <para>
+       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>logger</refentrytitle><manvolnum>1</manvolnum></citerefentry>
++      <citerefentry project='man-pages'><refentrytitle>logger</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+     </para>
+   </refsect1>
+ 
+diff --git a/man/systemd-cryptsetup-generator.xml b/man/systemd-cryptsetup-generator.xml
+index 1974cd7a2d..b6270358ea 100644
+--- a/man/systemd-cryptsetup-generator.xml
++++ b/man/systemd-cryptsetup-generator.xml
+@@ -185,7 +185,7 @@
+       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>crypttab</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd-cryptsetup@.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>cryptsetup</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
++      <citerefentry project='die-net'><refentrytitle>cryptsetup</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd-fstab-generator</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+     </para>
+   </refsect1>
+diff --git a/man/systemd-cryptsetup@.service.xml b/man/systemd-cryptsetup@.service.xml
+index bd03637deb..ea524851eb 100644
+--- a/man/systemd-cryptsetup@.service.xml
++++ b/man/systemd-cryptsetup@.service.xml
+@@ -78,7 +78,7 @@
+       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd-cryptsetup-generator</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>crypttab</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>cryptsetup</refentrytitle><manvolnum>8</manvolnum></citerefentry>
++      <citerefentry project='die-net'><refentrytitle>cryptsetup</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+      </para>
+   </refsect1>
+ 
+diff --git a/man/systemd-efi-boot-generator.xml b/man/systemd-efi-boot-generator.xml
+index fd7ba79837..3431c3ce5b 100644
+--- a/man/systemd-efi-boot-generator.xml
++++ b/man/systemd-efi-boot-generator.xml
+@@ -62,7 +62,7 @@
+     does not communicate the used ESP to the OS, on systems where
+     <filename>/boot</filename> is an explicitly configured mount (for
+     example, listed in
+-    <citerefentry><refentrytitle>fstab</refentrytitle><manvolnum>5</manvolnum></citerefentry>)
++    <citerefentry project='man-pages'><refentrytitle>fstab</refentrytitle><manvolnum>5</manvolnum></citerefentry>)
+     or where the <filename>/boot</filename> mount point is non-empty.
+     Since this generator creates an automount unit, the mount will
+     only be activated on-demand, when accessed.</para>
+@@ -79,7 +79,7 @@
+       <citerefentry><refentrytitle>systemd.automount</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd-gpt-auto-generator</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>gummiboot</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>fstab</refentrytitle><manvolnum>5</manvolnum></citerefentry>
++      <citerefentry project='man-pages'><refentrytitle>fstab</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+     </para>
+   </refsect1>
+ 
+diff --git a/man/systemd-firstboot.xml b/man/systemd-firstboot.xml
+index 67d38ba31f..67289daa26 100644
+--- a/man/systemd-firstboot.xml
++++ b/man/systemd-firstboot.xml
+@@ -91,7 +91,7 @@
+ 
+     <para>Note that this tool operates directly on the file system and
+     does not involve any running system services, unlike
+-    <citerefentry><refentrytitle>localectl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
++    <citerefentry project='man-pages'><refentrytitle>localectl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+     <citerefentry><refentrytitle>timedatectl</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+     or
+     <citerefentry><refentrytitle>hostnamectl</refentrytitle><manvolnum>1</manvolnum></citerefentry>.
+@@ -125,7 +125,7 @@
+         <varname>LANG=</varname> and <varname>LC_MESSAGES</varname>
+         settings. The argument should be a valid locale identifier,
+         such as <literal>de_DE.UTF-8</literal>. This controls the
+-        <citerefentry><refentrytitle>locale.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>
++        <citerefentry project='man-pages'><refentrytitle>locale.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+         configuration file.</para></listitem>
+       </varlistentry>
+ 
+@@ -163,7 +163,7 @@
+ 
+         <listitem><para>Sets the password of the system's root user.
+         This creates a
+-        <citerefentry><refentrytitle>shadow</refentrytitle><manvolnum>5</manvolnum></citerefentry>
++        <citerefentry project='die-net'><refentrytitle>shadow</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+         file. This setting exists in two forms:
+         <option>--root-password=</option> accepts the password to set
+         directly on the command line,
+@@ -171,7 +171,7 @@
+         Note that it is not recommended specifying passwords on the
+         command line as other users might be able to see them simply
+         by invoking
+-        <citerefentry><refentrytitle>ps</refentrytitle><manvolnum>1</manvolnum></citerefentry>.</para></listitem>
++        <citerefentry project='die-net'><refentrytitle>ps</refentrytitle><manvolnum>1</manvolnum></citerefentry>.</para></listitem>
+       </varlistentry>
+ 
+       <varlistentry>
+@@ -244,13 +244,13 @@
+     <title>See Also</title>
+     <para>
+       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>locale.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
++      <citerefentry project='man-pages'><refentrytitle>locale.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>localtime</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>hostname</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>machine-id</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>shadow</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
++      <citerefentry project='die-net'><refentrytitle>shadow</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd-machine-id-setup</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>localectl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
++      <citerefentry project='man-pages'><refentrytitle>localectl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>timedatectl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>hostnamectl</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+     </para>
+diff --git a/man/systemd-fstab-generator.xml b/man/systemd-fstab-generator.xml
+index 022efb4130..bdc2dc1d0e 100644
+--- a/man/systemd-fstab-generator.xml
++++ b/man/systemd-fstab-generator.xml
+@@ -54,7 +54,7 @@
+ 
+     <para><filename>systemd-fstab-generator</filename> is a generator
+     that translates <filename>/etc/fstab</filename> (see
+-    <citerefentry><refentrytitle>fstab</refentrytitle><manvolnum>5</manvolnum></citerefentry>
++    <citerefentry project='man-pages'><refentrytitle>fstab</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+     for details) into native systemd units early at boot and when
+     configuration of the system manager is reloaded. This will
+     instantiate mount and swap units as necessary.</para>
+@@ -173,7 +173,7 @@
+     <title>See Also</title>
+     <para>
+       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>fstab</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
++      <citerefentry project='man-pages'><refentrytitle>fstab</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd.mount</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd.swap</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd-cryptsetup-generator</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+diff --git a/man/systemd-gpt-auto-generator.xml b/man/systemd-gpt-auto-generator.xml
+index 8d2eaca4f6..bcc64ec9b5 100644
+--- a/man/systemd-gpt-auto-generator.xml
++++ b/man/systemd-gpt-auto-generator.xml
+@@ -66,7 +66,7 @@
+     Partitions Specification</ulink>. Note that this generator has no
+     effect on non-GPT systems, on systems where the units are
+     explicitly configured (for example, listed in
+-    <citerefentry><refentrytitle>fstab</refentrytitle><manvolnum>5</manvolnum></citerefentry>),
++    <citerefentry project='man-pages'><refentrytitle>fstab</refentrytitle><manvolnum>5</manvolnum></citerefentry>),
+     or where the mount points are non-empty.</para>
+ 
+     <para>This generator will only look for root partitions on the
+@@ -169,9 +169,9 @@
+       <citerefentry><refentrytitle>systemd-fstab-generator</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd-efi-boot-generator</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd-cryptsetup@.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>cryptsetup</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>fstab</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>btrfs</refentrytitle><manvolnum>8</manvolnum></citerefentry>
++      <citerefentry project='die-net'><refentrytitle>cryptsetup</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
++      <citerefentry project='man-pages'><refentrytitle>fstab</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
++      <citerefentry project='man-pages'><refentrytitle>btrfs</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+     </para>
+   </refsect1>
+ 
+diff --git a/man/systemd-hibernate-resume-generator.xml b/man/systemd-hibernate-resume-generator.xml
+index a21782cbf9..d811b9b551 100644
+--- a/man/systemd-hibernate-resume-generator.xml
++++ b/man/systemd-hibernate-resume-generator.xml
+@@ -73,7 +73,7 @@
+         <listitem><para>Takes a path to the resume device. Both
+         persistent block device paths like
+         <filename>/dev/disk/by-foo/bar</filename> and
+-        <citerefentry><refentrytitle>fstab</refentrytitle><manvolnum>5</manvolnum></citerefentry>-style
++        <citerefentry project='man-pages'><refentrytitle>fstab</refentrytitle><manvolnum>5</manvolnum></citerefentry>-style
+         specifiers like <literal>FOO=bar</literal> are
+         supported.</para></listitem>
+       </varlistentry>
+diff --git a/man/systemd-journald.service.xml b/man/systemd-journald.service.xml
+index 6b250b65e6..8280d6c874 100644
+--- a/man/systemd-journald.service.xml
++++ b/man/systemd-journald.service.xml
+@@ -241,7 +241,7 @@
+       <citerefentry><refentrytitle>systemd.journal-fields</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>sd-journal</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd-coredump</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>setfacl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
++      <citerefentry project='die-net'><refentrytitle>setfacl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>sd_journal_print</refentrytitle><manvolnum>4</manvolnum></citerefentry>,
+       <command>pydoc systemd.journal</command>.
+     </para>
+diff --git a/man/systemd-localed.service.xml b/man/systemd-localed.service.xml
+index 8999166383..06aa78c0e4 100644
+--- a/man/systemd-localed.service.xml
++++ b/man/systemd-localed.service.xml
+@@ -64,7 +64,7 @@
+     unused.</para>
+ 
+     <para>The tool
+-    <citerefentry><refentrytitle>localectl</refentrytitle><manvolnum>1</manvolnum></citerefentry>
++    <citerefentry project='man-pages'><refentrytitle>localectl</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+     is a command line client to this service.</para>
+ 
+     <para>See the <ulink
+@@ -77,10 +77,10 @@
+     <title>See Also</title>
+     <para>
+       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>locale.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
++      <citerefentry project='man-pages'><refentrytitle>locale.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>vconsole.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>localectl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>loadkeys</refentrytitle><manvolnum>1</manvolnum></citerefentry>
++      <citerefentry project='man-pages'><refentrytitle>localectl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
++      <citerefentry project='mankier'><refentrytitle>loadkeys</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+     </para>
+   </refsect1>
+ 
+diff --git a/man/systemd-nspawn.xml b/man/systemd-nspawn.xml
+index 4a936d326f..65b4c2f294 100644
+--- a/man/systemd-nspawn.xml
++++ b/man/systemd-nspawn.xml
+@@ -598,7 +598,7 @@
+ 
+         <listitem><para>Control the architecture ("personality")
+         reported by
+-        <citerefentry><refentrytitle>uname</refentrytitle><manvolnum>2</manvolnum></citerefentry>
++        <citerefentry project='man-pages'><refentrytitle>uname</refentrytitle><manvolnum>2</manvolnum></citerefentry>
+         in the container. Currently, only <literal>x86</literal> and
+         <literal>x86-64</literal> are supported. This is useful when
+         running a 32-bit container on a 64-bit host. If this setting
+@@ -735,7 +735,7 @@
+       <citerefentry project='archlinux'><refentrytitle>pacman</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd.slice</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>machinectl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>btrfs</refentrytitle><manvolnum>8</manvolnum></citerefentry>
++      <citerefentry project='man-pages'><refentrytitle>btrfs</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+     </para>
+   </refsect1>
+ 
+diff --git a/man/systemd-quotacheck.service.xml b/man/systemd-quotacheck.service.xml
+index 2179f11e95..9d4976274e 100644
+--- a/man/systemd-quotacheck.service.xml
++++ b/man/systemd-quotacheck.service.xml
+@@ -86,7 +86,7 @@
+     <title>See Also</title>
+     <para>
+       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>quotacheck</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
++      <citerefentry project='die-net'><refentrytitle>quotacheck</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd-fsck@.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+     </para>
+   </refsect1>
+diff --git a/man/systemd-remount-fs.service.xml b/man/systemd-remount-fs.service.xml
+index 7b88ac3f3c..8e60e31b5c 100644
+--- a/man/systemd-remount-fs.service.xml
++++ b/man/systemd-remount-fs.service.xml
+@@ -56,7 +56,7 @@
+ 
+     <para><filename>systemd-remount-fs.service</filename> is an
+     early-boot service that applies mount options listed in
+-    <citerefentry><refentrytitle>fstab</refentrytitle><manvolnum>5</manvolnum></citerefentry>
++    <citerefentry project='man-pages'><refentrytitle>fstab</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+     to the root file system, the <filename>/usr</filename> file system
+     and the kernel API file systems. This is required so that the
+     mount options of these file systems -- which are pre-mounted by
+@@ -80,8 +80,8 @@
+     <title>See Also</title>
+     <para>
+       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>fstab</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>mount</refentrytitle><manvolnum>8</manvolnum></citerefentry>
++      <citerefentry project='man-pages'><refentrytitle>fstab</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
++      <citerefentry project='man-pages'><refentrytitle>mount</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+     </para>
+   </refsect1>
+ 
+diff --git a/man/systemd-socket-proxyd.xml b/man/systemd-socket-proxyd.xml
+index 1c78b656e1..0b852e6bc1 100644
+--- a/man/systemd-socket-proxyd.xml
++++ b/man/systemd-socket-proxyd.xml
+@@ -72,7 +72,7 @@
+     to a configured server for each client, and then bidirectionally
+     forwards data between the two.</para>
+     <para>This utility's behavior is similar to
+-    <citerefentry><refentrytitle>socat</refentrytitle><manvolnum>1</manvolnum></citerefentry>.
++    <citerefentry project='die-net'><refentrytitle>socat</refentrytitle><manvolnum>1</manvolnum></citerefentry>.
+     The main differences for <command>systemd-socket-proxyd</command>
+     are support for socket activation with
+     <literal>Accept=false</literal> and an event-driven
+@@ -183,9 +183,9 @@ $ curl http://localhost:80/]]></programlisting>
+       <citerefentry><refentrytitle>systemd.socket</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>socat</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>nginx</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>curl</refentrytitle><manvolnum>1</manvolnum></citerefentry>
++      <citerefentry project='die-net'><refentrytitle>socat</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
++      <citerefentry project='die-net'><refentrytitle>nginx</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
++      <citerefentry project='die-net'><refentrytitle>curl</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+     </para>
+   </refsect1>
+ </refentry>
+diff --git a/man/systemd-sysctl.service.xml b/man/systemd-sysctl.service.xml
+index f35a18a4d4..d4c1a7ebe3 100644
+--- a/man/systemd-sysctl.service.xml
++++ b/man/systemd-sysctl.service.xml
+@@ -56,11 +56,11 @@
+ 
+     <para><filename>systemd-sysctl.service</filename> is an early-boot
+     service that configures
+-    <citerefentry><refentrytitle>sysctl</refentrytitle><manvolnum>8</manvolnum></citerefentry>
++    <citerefentry project='man-pages'><refentrytitle>sysctl</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+     kernel parameters.</para>
+ 
+     <para>See
+-    <citerefentry><refentrytitle>sysctl.d</refentrytitle><manvolnum>5</manvolnum></citerefentry>
++    <citerefentry project='man-pages'><refentrytitle>sysctl.d</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+     for information about the configuration of this service.</para>
+   </refsect1>
+ 
+@@ -68,8 +68,8 @@
+     <title>See Also</title>
+     <para>
+       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>sysctl.d</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>sysctl</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
++      <citerefentry project='man-pages'><refentrytitle>sysctl.d</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
++      <citerefentry project='man-pages'><refentrytitle>sysctl</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+     </para>
+   </refsect1>
+ 
+diff --git a/man/systemd-system.conf.xml b/man/systemd-system.conf.xml
+index c7bcfaee4d..1b74ed38f7 100644
+--- a/man/systemd-system.conf.xml
++++ b/man/systemd-system.conf.xml
+@@ -172,7 +172,7 @@
+         <citerefentry project='man-pages'><refentrytitle>capabilities</refentrytitle><manvolnum>7</manvolnum></citerefentry>
+         for details. Takes a whitespace-separated list of capability
+         names as read by
+-        <citerefentry><refentrytitle>cap_from_name</refentrytitle><manvolnum>3</manvolnum></citerefentry>.
++        <citerefentry project='mankier'><refentrytitle>cap_from_name</refentrytitle><manvolnum>3</manvolnum></citerefentry>.
+         Capabilities listed will be included in the bounding set, all
+         others are removed. If the list of capabilities is prefixed
+         with ~, all but the listed capabilities will be included, the
+diff --git a/man/systemd-update-utmp.service.xml b/man/systemd-update-utmp.service.xml
+index b842d29721..c8a9cb7c90 100644
+--- a/man/systemd-update-utmp.service.xml
++++ b/man/systemd-update-utmp.service.xml
+@@ -69,7 +69,7 @@
+     <para>
+       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+       <citerefentry project='man-pages'><refentrytitle>utmp</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>auditd</refentrytitle><manvolnum>8</manvolnum></citerefentry>
++      <citerefentry project='man-pages'><refentrytitle>auditd</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+     </para>
+   </refsect1>
+ 
+diff --git a/man/systemd-vconsole-setup.service.xml b/man/systemd-vconsole-setup.service.xml
+index 59bb5e4e8c..7c6ed08997 100644
+--- a/man/systemd-vconsole-setup.service.xml
++++ b/man/systemd-vconsole-setup.service.xml
+@@ -57,9 +57,9 @@
+     <para><filename>systemd-vconsole-setup.service</filename> is an
+     early-boot service that configures the virtual console font and
+     console keymap. Internally it calls
+-    <citerefentry><refentrytitle>loadkeys</refentrytitle><manvolnum>1</manvolnum></citerefentry>
++    <citerefentry project='mankier'><refentrytitle>loadkeys</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+     and
+-    <citerefentry><refentrytitle>setfont</refentrytitle><manvolnum>8</manvolnum></citerefentry>.</para>
++    <citerefentry project='die-net'><refentrytitle>setfont</refentrytitle><manvolnum>8</manvolnum></citerefentry>.</para>
+ 
+     <para>See
+     <citerefentry><refentrytitle>vconsole.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+@@ -105,8 +105,8 @@
+     <para>
+       <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>vconsole.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>loadkeys</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>setfont</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
++      <citerefentry project='mankier'><refentrytitle>loadkeys</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
++      <citerefentry project='die-net'><refentrytitle>setfont</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd-localed.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+     </para>
+   </refsect1>
+diff --git a/man/systemd.automount.xml b/man/systemd.automount.xml
+index 3db65d988d..b5b5885cdf 100644
+--- a/man/systemd.automount.xml
++++ b/man/systemd.automount.xml
+@@ -96,7 +96,7 @@
+ 
+     <para>Automount units may either be configured via unit files, or
+     via <filename>/etc/fstab</filename> (see
+-    <citerefentry><refentrytitle>fstab</refentrytitle><manvolnum>5</manvolnum></citerefentry>
++    <citerefentry project='man-pages'><refentrytitle>fstab</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+     for details).</para>
+ 
+     <para>For details how systemd parses
+@@ -145,8 +145,8 @@
+         <citerefentry><refentrytitle>systemctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+         <citerefentry><refentrytitle>systemd.unit</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+         <citerefentry><refentrytitle>systemd.mount</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+-        <citerefentry><refentrytitle>mount</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+-        <citerefentry><refentrytitle>automount</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
++        <citerefentry project='man-pages'><refentrytitle>mount</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
++        <citerefentry project='die-net'><refentrytitle>automount</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+         <citerefentry><refentrytitle>systemd.directives</refentrytitle><manvolnum>7</manvolnum></citerefentry>
+       </para>
+   </refsect1>
+diff --git a/man/systemd.exec.xml b/man/systemd.exec.xml
+index fdb1578641..56b53e6015 100644
+--- a/man/systemd.exec.xml
++++ b/man/systemd.exec.xml
+@@ -663,7 +663,7 @@
+         <citerefentry project='man-pages'><refentrytitle>capabilities</refentrytitle><manvolnum>7</manvolnum></citerefentry>
+         for details. Takes a whitespace-separated list of capability
+         names as read by
+-        <citerefentry><refentrytitle>cap_from_name</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
++        <citerefentry project='mankier'><refentrytitle>cap_from_name</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
+         e.g. <constant>CAP_SYS_ADMIN</constant>,
+         <constant>CAP_DAC_OVERRIDE</constant>,
+         <constant>CAP_SYS_PTRACE</constant>. Capabilities listed will
+@@ -711,7 +711,7 @@
+         set for the executed process. Take a capability string
+         describing the effective, permitted and inherited capability
+         sets as documented in
+-        <citerefentry><refentrytitle>cap_from_text</refentrytitle><manvolnum>3</manvolnum></citerefentry>.
++        <citerefentry project='mankier'><refentrytitle>cap_from_text</refentrytitle><manvolnum>3</manvolnum></citerefentry>.
+         Note that these capability sets are usually influenced (and
+         filtered) by the capabilities attached to the executed file.
+         Due to that <varname>CapabilityBoundingSet=</varname> is
+@@ -881,7 +881,7 @@
+         <option>private</option>, which control whether mounts in the
+         file system namespace set up for this unit's processes will
+         receive or propagate mounts or unmounts. See
+-        <citerefentry><refentrytitle>mount</refentrytitle><manvolnum>2</manvolnum></citerefentry>
++        <citerefentry project='man-pages'><refentrytitle>mount</refentrytitle><manvolnum>2</manvolnum></citerefentry>
+         for details. Defaults to <option>shared</option>. Use
+         <option>shared</option> to ensure that mounts and unmounts are
+         propagated from the host to the container and vice versa. Use
+@@ -929,7 +929,7 @@
+         authorize the transition. This directive is ignored if SELinux
+         is disabled. If prefixed by <literal>-</literal>, all errors
+         will be ignored. See
+-        <citerefentry><refentrytitle>setexeccon</refentrytitle><manvolnum>3</manvolnum></citerefentry>
++        <citerefentry project='die-net'><refentrytitle>setexeccon</refentrytitle><manvolnum>3</manvolnum></citerefentry>
+         for details.</para></listitem>
+       </varlistentry>
+ 
+@@ -1076,7 +1076,7 @@
+         prefixed with <constant>~</constant> the listed address
+         families will be applied as blacklist, otherwise as whitelist.
+         Note that this restricts access to the
+-        <citerefentry><refentrytitle>socket</refentrytitle><manvolnum>2</manvolnum></citerefentry>
++        <citerefentry project='man-pages'><refentrytitle>socket</refentrytitle><manvolnum>2</manvolnum></citerefentry>
+         system call only. Sockets passed into the process by other
+         means (for example, by using socket activation with socket
+         units, see
+@@ -1104,7 +1104,7 @@
+         <term><varname>Personality=</varname></term>
+ 
+         <listitem><para>Controls which kernel architecture
+-        <citerefentry><refentrytitle>uname</refentrytitle><manvolnum>2</manvolnum></citerefentry>
++        <citerefentry project='man-pages'><refentrytitle>uname</refentrytitle><manvolnum>2</manvolnum></citerefentry>
+         shall report, when invoked by unit processes. Takes one of
+         <constant>x86</constant> and <constant>x86-64</constant>. This
+         is useful when running 32-bit services on a 64-bit host
+@@ -1166,7 +1166,7 @@
+         <term><varname>$LANG</varname></term>
+ 
+         <listitem><para>Locale. Can be set in
+-        <citerefentry><refentrytitle>locale.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>
++        <citerefentry project='man-pages'><refentrytitle>locale.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+         or on the kernel command line (see
+         <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+         and
+@@ -1184,7 +1184,7 @@
+         login shell. The variables are set for the units that have
+         <varname>User=</varname> set, which includes user
+         <command>systemd</command> instances. See
+-        <citerefentry><refentrytitle>passwd</refentrytitle><manvolnum>5</manvolnum></citerefentry>.
++        <citerefentry project='die-net'><refentrytitle>passwd</refentrytitle><manvolnum>5</manvolnum></citerefentry>.
+         </para></listitem>
+       </varlistentry>
+ 
+diff --git a/man/systemd.generator.xml b/man/systemd.generator.xml
+index ccb698752a..9b39e732e3 100644
+--- a/man/systemd.generator.xml
++++ b/man/systemd.generator.xml
+@@ -333,7 +333,7 @@ find $dir</programlisting>
+       <citerefentry><refentrytitle>systemd-debug-generator</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd-efi-boot-generator</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd-fstab-generator</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>fstab</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
++      <citerefentry project='man-pages'><refentrytitle>fstab</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd-getty-generator</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd-gpt-auto-generator</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd-hibernate-resume-generator</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+diff --git a/man/systemd.journal-fields.xml b/man/systemd.journal-fields.xml
+index 1fd46de31f..7d6c5c715f 100644
+--- a/man/systemd.journal-fields.xml
++++ b/man/systemd.journal-fields.xml
+@@ -134,7 +134,7 @@
+           derived from glibc's
+           <varname>program_invocation_short_name</varname> variable,
+           see
+-          <citerefentry><refentrytitle>program_invocation_short_name</refentrytitle><manvolnum>3</manvolnum></citerefentry>.)</para>
++          <citerefentry project='die-net'><refentrytitle>program_invocation_short_name</refentrytitle><manvolnum>3</manvolnum></citerefentry>.)</para>
+         </listitem>
+ 
+       </varlistentry>
+diff --git a/man/systemd.kill.xml b/man/systemd.kill.xml
+index c974e22489..e57f0e7242 100644
+--- a/man/systemd.kill.xml
++++ b/man/systemd.kill.xml
+@@ -135,7 +135,7 @@
+         of shutting down a unit (see above), and is usually followed
+         by <constant>SIGKILL</constant> (see above and below). For a
+         list of valid signals, see
+-        <citerefentry><refentrytitle>signal</refentrytitle><manvolnum>7</manvolnum></citerefentry>.
++        <citerefentry project='man-pages'><refentrytitle>signal</refentrytitle><manvolnum>7</manvolnum></citerefentry>.
+         Defaults to <constant>SIGTERM</constant>. </para></listitem>
+       </varlistentry>
+ 
+@@ -176,7 +176,7 @@
+         <citerefentry><refentrytitle>systemd.exec</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+         <citerefentry><refentrytitle>systemd.directives</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
+         <citerefentry><refentrytitle>kill</refentrytitle><manvolnum>2</manvolnum></citerefentry>,
+-        <citerefentry><refentrytitle>signal</refentrytitle><manvolnum>7</manvolnum></citerefentry>
++        <citerefentry project='man-pages'><refentrytitle>signal</refentrytitle><manvolnum>7</manvolnum></citerefentry>
+       </para>
+   </refsect1>
+ 
+diff --git a/man/systemd.mount.xml b/man/systemd.mount.xml
+index 5cbde8b84c..fcb9a44161 100644
+--- a/man/systemd.mount.xml
++++ b/man/systemd.mount.xml
+@@ -68,7 +68,7 @@
+     <para>Additional options are listed in
+     <citerefentry><refentrytitle>systemd.exec</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+     which define the execution environment the
+-    <citerefentry><refentrytitle>mount</refentrytitle><manvolnum>8</manvolnum></citerefentry>
++    <citerefentry project='man-pages'><refentrytitle>mount</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+     binary is executed in, and in
+     <citerefentry><refentrytitle>systemd.kill</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+     which define the way the processes are terminated, and in
+@@ -78,7 +78,7 @@
+     particularly useful for mount units specifying a
+     <literal>Type=</literal> option or using configuration not
+     specified in <filename>/etc/fstab</filename>;
+-    <citerefentry><refentrytitle>mount</refentrytitle><manvolnum>8</manvolnum></citerefentry>
++    <citerefentry project='man-pages'><refentrytitle>mount</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+     will refuse options that are not listed in
+     <filename>/etc/fstab</filename> if it is not run as UID 0.</para>
+ 
+@@ -118,7 +118,7 @@
+ 
+     <para>Mount units may either be configured via unit files, or via
+     <filename>/etc/fstab</filename> (see
+-    <citerefentry><refentrytitle>fstab</refentrytitle><manvolnum>5</manvolnum></citerefentry>
++    <citerefentry project='man-pages'><refentrytitle>fstab</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+     for details). Mounts listed in <filename>/etc/fstab</filename>
+     will be converted into native units dynamically at boot and when
+     the configuration of the system manager is reloaded. In general,
+@@ -231,7 +231,7 @@
+         <term><varname>What=</varname></term>
+         <listitem><para>Takes an absolute path of a device node, file
+         or other resource to mount. See
+-        <citerefentry><refentrytitle>mount</refentrytitle><manvolnum>8</manvolnum></citerefentry>
++        <citerefentry project='man-pages'><refentrytitle>mount</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+         for details. If this refers to a device node, a dependency on
+         the respective device unit is automatically created. (See
+         <citerefentry><refentrytitle>systemd.device</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+@@ -251,7 +251,7 @@
+       <varlistentry>
+         <term><varname>Type=</varname></term>
+         <listitem><para>Takes a string for the file system type. See
+-        <citerefentry><refentrytitle>mount</refentrytitle><manvolnum>8</manvolnum></citerefentry>
++        <citerefentry project='man-pages'><refentrytitle>mount</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+         for details. This setting is optional.</para></listitem>
+       </varlistentry>
+ 
+@@ -270,7 +270,7 @@
+         the options specified in <varname>Options=</varname> is
+         relaxed, and unknown mount options are tolerated. This
+         corresponds with
+-        <citerefentry><refentrytitle>mount</refentrytitle><manvolnum>8</manvolnum></citerefentry>'s
++        <citerefentry project='man-pages'><refentrytitle>mount</refentrytitle><manvolnum>8</manvolnum></citerefentry>'s
+         <parameter>-s</parameter> switch. Defaults to
+         off.</para></listitem>
+       </varlistentry>
+@@ -321,7 +321,7 @@
+         <citerefentry><refentrytitle>systemd.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+         <citerefentry><refentrytitle>systemd.device</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+         <citerefentry project='man-pages'><refentrytitle>proc</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+-        <citerefentry><refentrytitle>mount</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
++        <citerefentry project='man-pages'><refentrytitle>mount</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+         <citerefentry><refentrytitle>systemd-fstab-generator</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+         <citerefentry><refentrytitle>systemd.directives</refentrytitle><manvolnum>7</manvolnum></citerefentry>
+       </para>
+diff --git a/man/systemd.network.xml b/man/systemd.network.xml
+index 24f8416ef9..97386271d6 100644
+--- a/man/systemd.network.xml
++++ b/man/systemd.network.xml
+@@ -286,7 +286,7 @@
+             separated by a <literal>/</literal> character. Specify
+             this key more than once to configure several addresses.
+             The format of the address must be as described in
+-            <citerefentry><refentrytitle>inet_pton</refentrytitle><manvolnum>3</manvolnum></citerefentry>.
++            <citerefentry project='man-pages'><refentrytitle>inet_pton</refentrytitle><manvolnum>3</manvolnum></citerefentry>.
+             This is a short-hand for an [Address] section only
+             containing an Address key (see below). This option may be
+             specified more than once.
+@@ -312,7 +312,7 @@
+           <listitem>
+             <para>The gateway address, which must be in the format
+             described in
+-            <citerefentry><refentrytitle>inet_pton</refentrytitle><manvolnum>3</manvolnum></citerefentry>.
++            <citerefentry project='man-pages'><refentrytitle>inet_pton</refentrytitle><manvolnum>3</manvolnum></citerefentry>.
+             This is a short-hand for a [Route] section only containing
+             a Gateway key. This option may be specified more than
+             once.</para>
+@@ -323,7 +323,7 @@
+           <listitem>
+             <para>A DNS server address, which must be in the format
+             described in
+-            <citerefentry><refentrytitle>inet_pton</refentrytitle><manvolnum>3</manvolnum></citerefentry>.
++            <citerefentry project='man-pages'><refentrytitle>inet_pton</refentrytitle><manvolnum>3</manvolnum></citerefentry>.
+             This option may be specified more than once.</para>
+           </listitem>
+         </varlistentry>
+@@ -429,7 +429,7 @@
+           <listitem>
+             <para>The broadcast address, which must be in the format
+             described in
+-            <citerefentry><refentrytitle>inet_pton</refentrytitle><manvolnum>3</manvolnum></citerefentry>.
++            <citerefentry project='man-pages'><refentrytitle>inet_pton</refentrytitle><manvolnum>3</manvolnum></citerefentry>.
+             This key only applies to IPv4 addresses. If it is not
+             given, it is derived from the <literal>Address</literal>
+             key.</para>
+diff --git a/man/systemd.path.xml b/man/systemd.path.xml
+index 08a7ec8975..d02bc92ae6 100644
+--- a/man/systemd.path.xml
++++ b/man/systemd.path.xml
+@@ -74,7 +74,7 @@
+     (see below).</para>
+ 
+     <para>Internally, path units use the
+-    <citerefentry><refentrytitle>inotify</refentrytitle><manvolnum>7</manvolnum></citerefentry>
++    <citerefentry project='man-pages'><refentrytitle>inotify</refentrytitle><manvolnum>7</manvolnum></citerefentry>
+     API to monitor file systems. Due to that, it suffers by the same
+     limitations as inotify, and for example cannot be used to monitor
+     files or directories changed by other machines on remote NFS file
+@@ -187,7 +187,7 @@
+         <citerefentry><refentrytitle>systemctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+         <citerefentry><refentrytitle>systemd.unit</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+         <citerefentry><refentrytitle>systemd.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+-        <citerefentry><refentrytitle>inotify</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
++        <citerefentry project='man-pages'><refentrytitle>inotify</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
+         <citerefentry><refentrytitle>systemd.directives</refentrytitle><manvolnum>7</manvolnum></citerefentry>
+       </para>
+   </refsect1>
+diff --git a/man/systemd.socket.xml b/man/systemd.socket.xml
+index 3938345fac..2f541937f8 100644
+--- a/man/systemd.socket.xml
++++ b/man/systemd.socket.xml
+@@ -265,7 +265,7 @@
+         <listitem><para>Takes a one of <option>default</option>,
+         <option>both</option> or <option>ipv6-only</option>. Controls
+         the IPV6_V6ONLY socket option (see
+-        <citerefentry><refentrytitle>ipv6</refentrytitle><manvolnum>7</manvolnum></citerefentry>
++        <citerefentry project='die-net'><refentrytitle>ipv6</refentrytitle><manvolnum>7</manvolnum></citerefentry>
+         for details). If <option>both</option>, IPv6 sockets bound
+         will be accessible via both IPv4 and IPv6. If
+         <option>ipv6-only</option>, they will be accessible via IPv6
+@@ -294,7 +294,7 @@
+         this socket to. If set, traffic will only be accepted from the
+         specified network interfaces. This controls the
+         SO_BINDTODEVICE socket option (see
+-        <citerefentry><refentrytitle>socket</refentrytitle><manvolnum>7</manvolnum></citerefentry>
++        <citerefentry project='man-pages'><refentrytitle>socket</refentrytitle><manvolnum>7</manvolnum></citerefentry>
+         for details). If this option is used, an automatic dependency
+         from this socket unit on the network interface device unit
+         (<citerefentry><refentrytitle>systemd.device</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+@@ -380,7 +380,7 @@
+         <filename>/proc/sys/net/ipv4/tcp_keepalive_time</filename>)
+         for all TCP streams accepted on this socket. This controls the
+         SO_KEEPALIVE socket option (see
+-        <citerefentry><refentrytitle>socket</refentrytitle><manvolnum>7</manvolnum></citerefentry>
++        <citerefentry project='man-pages'><refentrytitle>socket</refentrytitle><manvolnum>7</manvolnum></citerefentry>
+         and the <ulink
+         url="http://www.tldp.org/HOWTO/html_single/TCP-Keepalive-HOWTO/">TCP
+         Keepalive HOWTO</ulink> for details.) Defaults to
+@@ -392,7 +392,7 @@
+         <listitem><para>Takes time (in seconds) as argument . The connection needs to remain
+         idle before TCP starts sending keepalive probes. This controls the TCP_KEEPIDLE
+         socket option (see
+-        <citerefentry><refentrytitle>socket</refentrytitle><manvolnum>7</manvolnum></citerefentry>
++        <citerefentry project='man-pages'><refentrytitle>socket</refentrytitle><manvolnum>7</manvolnum></citerefentry>
+         and the <ulink
+         url="http://www.tldp.org/HOWTO/html_single/TCP-Keepalive-HOWTO/">TCP
+         Keepalive HOWTO</ulink> for details.)
+@@ -405,7 +405,7 @@
+         individual keepalive probes, if the socket option SO_KEEPALIVE
+         has been set on this socket seconds as argument. This controls
+         the TCP_KEEPINTVL socket option (see
+-        <citerefentry><refentrytitle>socket</refentrytitle><manvolnum>7</manvolnum></citerefentry>
++        <citerefentry project='man-pages'><refentrytitle>socket</refentrytitle><manvolnum>7</manvolnum></citerefentry>
+         and the <ulink
+         url="http://www.tldp.org/HOWTO/html_single/TCP-Keepalive-HOWTO/">TCP
+         Keepalive HOWTO</ulink> for details.) Defaults value is 75
+@@ -418,7 +418,7 @@
+         unacknowledged probes to send before considering the
+         connection dead and notifying the application layer. This
+         controls the TCP_KEEPCNT socket option (see
+-        <citerefentry><refentrytitle>socket</refentrytitle><manvolnum>7</manvolnum></citerefentry>
++        <citerefentry project='man-pages'><refentrytitle>socket</refentrytitle><manvolnum>7</manvolnum></citerefentry>
+         and the <ulink
+         url="http://www.tldp.org/HOWTO/html_single/TCP-Keepalive-HOWTO/">TCP
+         Keepalive HOWTO</ulink> for details.) Defaults value is
+@@ -431,7 +431,7 @@
+         algorithm works by combining a number of small outgoing
+         messages, and sending them all at once. This controls the
+         TCP_NODELAY socket option (see
+-        <citerefentry><refentrytitle>tcp</refentrytitle><manvolnum>7</manvolnum></citerefentry>
++        <citerefentry project='die-net'><refentrytitle>tcp</refentrytitle><manvolnum>7</manvolnum></citerefentry>
+         Defaults to <option>false</option>.</para></listitem>
+       </varlistentry>
+ 
+@@ -440,7 +440,7 @@
+         <listitem><para>Takes an integer argument controlling the
+         priority for all traffic sent from this socket. This controls
+         the SO_PRIORITY socket option (see
+-        <citerefentry><refentrytitle>socket</refentrytitle><manvolnum>7</manvolnum></citerefentry>
++        <citerefentry project='man-pages'><refentrytitle>socket</refentrytitle><manvolnum>7</manvolnum></citerefentry>
+         for details.).</para></listitem>
+       </varlistentry>
+ 
+@@ -453,7 +453,7 @@
+         established. When this option is set, the
+         <constant>TCP_DEFER_ACCEPT</constant> socket option will be
+         used (see
+-        <citerefentry><refentrytitle>tcp</refentrytitle><manvolnum>7</manvolnum></citerefentry>),
++        <citerefentry project='die-net'><refentrytitle>tcp</refentrytitle><manvolnum>7</manvolnum></citerefentry>),
+         and the kernel will ignore initial ACK packets without any
+         data. The argument specifies the approximate amount of time
+         the kernel should wait for incoming data before falling back
+@@ -480,7 +480,7 @@
+         <listitem><para>Takes an integer argument controlling the
+         receive or send buffer sizes of this socket, respectively.
+         This controls the SO_RCVBUF and SO_SNDBUF socket options (see
+-        <citerefentry><refentrytitle>socket</refentrytitle><manvolnum>7</manvolnum></citerefentry>
++        <citerefentry project='man-pages'><refentrytitle>socket</refentrytitle><manvolnum>7</manvolnum></citerefentry>
+         for details.). The usual suffixes K, M, G are supported and
+         are understood to the base of 1024.</para></listitem>
+       </varlistentry>
+@@ -490,7 +490,7 @@
+         <listitem><para>Takes an integer argument controlling the IP
+         Type-Of-Service field for packets generated from this socket.
+         This controls the IP_TOS socket option (see
+-        <citerefentry><refentrytitle>ip</refentrytitle><manvolnum>7</manvolnum></citerefentry>
++        <citerefentry project='die-net'><refentrytitle>ip</refentrytitle><manvolnum>7</manvolnum></citerefentry>
+         for details.). Either a numeric string or one of
+         <option>low-delay</option>, <option>throughput</option>,
+         <option>reliability</option> or <option>low-cost</option> may
+@@ -503,9 +503,9 @@
+         Time-To-Live/IPv6 Hop-Count field for packets generated from
+         this socket. This sets the IP_TTL/IPV6_UNICAST_HOPS socket
+         options (see
+-        <citerefentry><refentrytitle>ip</refentrytitle><manvolnum>7</manvolnum></citerefentry>
++        <citerefentry project='die-net'><refentrytitle>ip</refentrytitle><manvolnum>7</manvolnum></citerefentry>
+         and
+-        <citerefentry><refentrytitle>ipv6</refentrytitle><manvolnum>7</manvolnum></citerefentry>
++        <citerefentry project='die-net'><refentrytitle>ipv6</refentrytitle><manvolnum>7</manvolnum></citerefentry>
+         for details.)</para></listitem>
+       </varlistentry>
+ 
+@@ -515,7 +515,7 @@
+         mark of packets generated by this socket. This can be used in
+         the firewall logic to filter packets from this socket. This
+         sets the SO_MARK socket option. See
+-        <citerefentry><refentrytitle>iptables</refentrytitle><manvolnum>8</manvolnum></citerefentry>
++        <citerefentry project='die-net'><refentrytitle>iptables</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+         for details.</para></listitem>
+       </varlistentry>
+ 
+@@ -526,7 +526,7 @@
+         <citerefentry><refentrytitle>bind</refentrytitle><manvolnum>2</manvolnum></citerefentry>s
+         to this TCP or UDP port. This controls the SO_REUSEPORT socket
+         option. See
+-        <citerefentry><refentrytitle>socket</refentrytitle><manvolnum>7</manvolnum></citerefentry>
++        <citerefentry project='man-pages'><refentrytitle>socket</refentrytitle><manvolnum>7</manvolnum></citerefentry>
+         for details.</para></listitem>
+       </varlistentry>
+ 
+@@ -578,7 +578,7 @@
+         control the mq_maxmsg field or the mq_msgsize field,
+         respectively, when creating the message queue. Note that
+         either none or both of these variables need to be set. See
+-        <citerefentry><refentrytitle>mq_setattr</refentrytitle><manvolnum>3</manvolnum></citerefentry>
++        <citerefentry project='die-net'><refentrytitle>mq_setattr</refentrytitle><manvolnum>3</manvolnum></citerefentry>
+         for details.</para></listitem>
+       </varlistentry>
+ 
+diff --git a/man/systemd.swap.xml b/man/systemd.swap.xml
+index 23b9c712ed..5016f453d5 100644
+--- a/man/systemd.swap.xml
++++ b/man/systemd.swap.xml
+@@ -69,7 +69,7 @@
+     <para>Additional options are listed in
+     <citerefentry><refentrytitle>systemd.exec</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+     which define the execution environment the
+-    <citerefentry><refentrytitle>swapon</refentrytitle><manvolnum>8</manvolnum></citerefentry>
++    <citerefentry project='man-pages'><refentrytitle>swapon</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+     binary is executed in, and in
+     <citerefentry><refentrytitle>systemd.kill</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+     which define the way the processes are terminated, and in
+@@ -100,7 +100,7 @@
+ 
+     <para>Swap units may either be configured via unit files, or via
+     <filename>/etc/fstab</filename> (see
+-    <citerefentry><refentrytitle>fstab</refentrytitle><manvolnum>5</manvolnum></citerefentry>
++    <citerefentry project='man-pages'><refentrytitle>fstab</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+     for details). Swaps listed in <filename>/etc/fstab</filename> will
+     be converted into native units dynamically at boot and when the
+     configuration of the system manager is reloaded. See
+@@ -161,7 +161,7 @@
+         <term><varname>What=</varname></term>
+         <listitem><para>Takes an absolute path of a device node or
+         file to use for paging. See
+-        <citerefentry><refentrytitle>swapon</refentrytitle><manvolnum>8</manvolnum></citerefentry>
++        <citerefentry project='man-pages'><refentrytitle>swapon</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+         for details. If this refers to a device node, a dependency on
+         the respective device unit is automatically created. (See
+         <citerefentry><refentrytitle>systemd.device</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+@@ -187,7 +187,7 @@
+         device. This may be used for controlling discard options among
+         other functionality, if the swap backing device supports the
+         discard or trim operation. (See
+-        <citerefentry><refentrytitle>swapon</refentrytitle><manvolnum>8</manvolnum></citerefentry>
++        <citerefentry project='man-pages'><refentrytitle>swapon</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+         for more information.) </para></listitem>
+       </varlistentry>
+ 
+@@ -229,7 +229,7 @@
+         <citerefentry><refentrytitle>systemd.resource-control</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+         <citerefentry><refentrytitle>systemd.device</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+         <citerefentry><refentrytitle>systemd.mount</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+-        <citerefentry><refentrytitle>swapon</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
++        <citerefentry project='man-pages'><refentrytitle>swapon</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+         <citerefentry><refentrytitle>systemd-fstab-generator</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+         <citerefentry><refentrytitle>systemd.directives</refentrytitle><manvolnum>7</manvolnum></citerefentry>
+       </para>
+diff --git a/man/systemd.unit.xml b/man/systemd.unit.xml
+index a452f87baf..c2e374a94e 100644
+--- a/man/systemd.unit.xml
++++ b/man/systemd.unit.xml
+@@ -826,7 +826,7 @@
+         <varname>cris</varname> to test
+         against a specific architecture. The architecture is
+         determined from the information returned by
+-        <citerefentry><refentrytitle>uname</refentrytitle><manvolnum>2</manvolnum></citerefentry>
++        <citerefentry project='man-pages'><refentrytitle>uname</refentrytitle><manvolnum>2</manvolnum></citerefentry>
+         and is thus subject to
+         <citerefentry><refentrytitle>personality</refentrytitle><manvolnum>2</manvolnum></citerefentry>.
+         Note that a <varname>Personality=</varname> setting in the
+@@ -1438,7 +1438,7 @@ PrivateTmp=yes</programlisting>
+       <citerefentry><refentrytitle>systemd-analyze</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+       <citerefentry project='man-pages'><refentrytitle>capabilities</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd.directives</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>uname</refentrytitle><manvolnum>1</manvolnum></citerefentry>
++      <citerefentry project='man-pages'><refentrytitle>uname</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+     </para>
+   </refsect1>
+ 
+diff --git a/man/systemd.xml b/man/systemd.xml
+index 9b92140e6b..d006b0bb99 100644
+--- a/man/systemd.xml
++++ b/man/systemd.xml
+@@ -1012,9 +1012,9 @@
+         <listitem><para>Set the system locale to use. This overrides
+         the settings in <filename>/etc/locale.conf</filename>. For
+         more information see
+-        <citerefentry><refentrytitle>locale.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>
++        <citerefentry project='man-pages'><refentrytitle>locale.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+         and
+-        <citerefentry><refentrytitle>locale</refentrytitle><manvolnum>7</manvolnum></citerefentry>.
++        <citerefentry project='man-pages'><refentrytitle>locale</refentrytitle><manvolnum>7</manvolnum></citerefentry>.
+         </para></listitem>
+       </varlistentry>
+     </variablelist>
+@@ -1077,7 +1077,7 @@
+     <para>
+       The <ulink url="http://www.freedesktop.org/wiki/Software/systemd/">systemd Homepage</ulink>,
+       <citerefentry><refentrytitle>systemd-system.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+-      <citerefentry><refentrytitle>locale.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
++      <citerefentry project='man-pages'><refentrytitle>locale.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>journalctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd-notify</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+diff --git a/man/vconsole.conf.xml b/man/vconsole.conf.xml
+index 17bea8b682..27196d44e9 100644
+--- a/man/vconsole.conf.xml
++++ b/man/vconsole.conf.xml
+@@ -129,9 +129,9 @@ FONT=eurlatgr</programlisting>
+       <para>
+         <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+         <citerefentry><refentrytitle>systemd-vconsole-setup.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+-        <citerefentry><refentrytitle>loadkeys</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+-        <citerefentry><refentrytitle>setfont</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+-        <citerefentry><refentrytitle>locale.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
++        <citerefentry project='mankier'><refentrytitle>loadkeys</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
++        <citerefentry project='die-net'><refentrytitle>setfont</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
++        <citerefentry project='man-pages'><refentrytitle>locale.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+         <citerefentry><refentrytitle>systemd-localed.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+       </para>
+   </refsect1>

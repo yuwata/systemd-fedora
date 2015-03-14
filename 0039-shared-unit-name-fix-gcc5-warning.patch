@@ -1,0 +1,31 @@
+From c52febcc0314c85d5a0cefc95d7f9ee0d7eb7081 Mon Sep 17 00:00:00 2001
+From: Daniel Mack <daniel@zonque.org>
+Date: Tue, 24 Feb 2015 16:18:43 +0100
+Subject: [PATCH] shared/unit-name: fix gcc5 warning
+
+Fix the following gcc5 warning:
+
+  CC       src/shared/libsystemd_shared_la-unit-name.lo
+src/shared/unit-name.c: In function 'unit_name_is_valid':
+src/shared/unit-name.c:102:34: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
+                 if (!template_ok == TEMPLATE_VALID && at+1 == e)
+                                  ^
+
+(cherry picked from commit f9bf3e260c480f7b660bec3f78a13f52a46ec34d)
+---
+ src/shared/unit-name.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/shared/unit-name.c b/src/shared/unit-name.c
+index 21b66913c9..f728af4a81 100644
+--- a/src/shared/unit-name.c
++++ b/src/shared/unit-name.c
+@@ -100,7 +100,7 @@ bool unit_name_is_valid(const char *n, enum template_valid template_ok) {
+                 if (at == n)
+                         return false;
+ 
+-                if (!template_ok == TEMPLATE_VALID && at+1 == e)
++                if (template_ok != TEMPLATE_VALID && at+1 == e)
+                         return false;
+         }
+ 

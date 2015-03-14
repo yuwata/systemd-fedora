@@ -1,0 +1,23 @@
+From 9e28311ad66214528c4644ca593bcb5259462341 Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Fri, 6 Mar 2015 11:02:04 +1000
+Subject: [PATCH] hwdb: add Lenovo W451 to TOUCHPAD_HAS_TRACKPOINT_BUTTONS list
+
+(cherry picked from commit 9638ee90862e4a24f5796e87beebc4c47e2728c2)
+---
+ hwdb/70-touchpad.hwdb | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/hwdb/70-touchpad.hwdb b/hwdb/70-touchpad.hwdb
+index 9fcb5fdb9b..8a324466b3 100644
+--- a/hwdb/70-touchpad.hwdb
++++ b/hwdb/70-touchpad.hwdb
+@@ -36,6 +36,8 @@
+ 
+ # Lenovo X1 Carbon 3rd
+ touchpad:pnpid:*LEN0048*:
++# Lenovo W541
++touchpad:pnpid:*LEN004a*:
+ # Lenovo T450s
+ touchpad:pnpid:*LEN200f*:
+  TOUCHPAD_HAS_TRACKPOINT_BUTTONS=1
