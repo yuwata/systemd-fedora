@@ -16,7 +16,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        219
-Release:        10%{?gitcommit:.git%{gitcommit}}%{?dist}
+Release:        11%{?gitcommit:.git%{gitcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -811,8 +811,11 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{system_unit_dir}
 %{pkgdir}/user
 %exclude %{system_unit_dir}/systemd-journal-gatewayd.*
+%exclude %{system_unit_dir}/systemd-journal-remote.*
+%exclude %{system_unit_dir}/systemd-journal-upload.*
 %exclude %{pkgdir}/systemd-journal-gatewayd
 %exclude %{pkgdir}/systemd-journal-remote
+%exclude %{pkgdir}/systemd-journal-upload
 %{pkgdir}/systemd-*
 %{_prefix}/lib/udev
 %{_prefix}/lib/tmpfiles.d/systemd.conf
@@ -847,6 +850,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_mandir}/man7/*
 %exclude %{_mandir}/man8/systemd-journal-gatewayd.*
 %exclude %{_mandir}/man8/systemd-journal-remote.*
+%exclude %{_mandir}/man8/systemd-journal-upload.*
 %{_mandir}/man8/*
 %{_datadir}/factory/etc/nsswitch.conf
 %{_datadir}/factory/etc/pam.d/other
@@ -951,16 +955,24 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %config(noreplace) %{_sysconfdir}/systemd/journal-remote.conf
 %config(noreplace) %{_sysconfdir}/systemd/journal-upload.conf
 %{system_unit_dir}/systemd-journal-gatewayd.*
+%{system_unit_dir}/systemd-journal-remote.*
+%{system_unit_dir}/systemd-journal-upload.*
 %{pkgdir}/systemd-journal-gatewayd
 %{pkgdir}/systemd-journal-remote
+%{pkgdir}/systemd-journal-upload
 %{_prefix}/lib/tmpfiles.d/systemd-remote.conf
 %{_prefix}/lib/sysusers.d/systemd-remote.conf
 %{_mandir}/man8/systemd-journal-gatewayd.*
 %{_mandir}/man8/systemd-journal-remote.*
+%{_mandir}/man8/systemd-journal-upload.*
 %{_datadir}/systemd/gatewayd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Sun Mar 22 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 219-11
+- Move all parts systemd-journal-{remote,upload} to
+  systemd-journal-gatewayd subpackage (#1193143).
+
 * Sat Mar 14 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 219-10
 - Fixes for bugs 1186018, 1195294, 1185604, 1196452.
 - Hardware database update.
