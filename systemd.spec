@@ -10,6 +10,9 @@
 # Do not check .so files in the python_sitelib directory for provides.
 %global __provides_exclude_from ^(%{python_sitearch}|%{python3_sitearch})/.*\\.so
 
+%global pkgdir %{_prefix}/lib/systemd
+%global system_unit_dir %{pkgdir}/system
+
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        219
@@ -456,22 +459,22 @@ touch %{buildroot}%{_sysconfdir}/systemd/system/runlevel4.target
 touch %{buildroot}%{_sysconfdir}/systemd/system/runlevel5.target
 
 # Make sure these directories are properly owned
-mkdir -p %{buildroot}%{_prefix}/lib/systemd/system/basic.target.wants
-mkdir -p %{buildroot}%{_prefix}/lib/systemd/system/default.target.wants
-mkdir -p %{buildroot}%{_prefix}/lib/systemd/system/dbus.target.wants
-mkdir -p %{buildroot}%{_prefix}/lib/systemd/system/syslog.target.wants
+mkdir -p %{buildroot}%{system_unit_dir}/basic.target.wants
+mkdir -p %{buildroot}%{system_unit_dir}/default.target.wants
+mkdir -p %{buildroot}%{system_unit_dir}/dbus.target.wants
+mkdir -p %{buildroot}%{system_unit_dir}/syslog.target.wants
 
 # Temporary workaround for #1002806
-mkdir -p %{buildroot}%{_prefix}/lib/systemd/system/poweroff.target.wants
-mkdir -p %{buildroot}%{_prefix}/lib/systemd/system/rescue.target.wants
-mkdir -p %{buildroot}%{_prefix}/lib/systemd/system/multi-user.target.wants
-mkdir -p %{buildroot}%{_prefix}/lib/systemd/system/graphical.target.wants
-mkdir -p %{buildroot}%{_prefix}/lib/systemd/system/reboot.target.wants
-ln -s ../systemd-update-utmp-runlevel.service %{buildroot}%{_prefix}/lib/systemd/system/poweroff.target.wants/
-ln -s ../systemd-update-utmp-runlevel.service %{buildroot}%{_prefix}/lib/systemd/system/rescue.target.wants/
-ln -s ../systemd-update-utmp-runlevel.service %{buildroot}%{_prefix}/lib/systemd/system/multi-user.target.wants/
-ln -s ../systemd-update-utmp-runlevel.service %{buildroot}%{_prefix}/lib/systemd/system/graphical.target.wants/
-ln -s ../systemd-update-utmp-runlevel.service %{buildroot}%{_prefix}/lib/systemd/system/reboot.target.wants/
+mkdir -p %{buildroot}%{system_unit_dir}/poweroff.target.wants
+mkdir -p %{buildroot}%{system_unit_dir}/rescue.target.wants
+mkdir -p %{buildroot}%{system_unit_dir}/multi-user.target.wants
+mkdir -p %{buildroot}%{system_unit_dir}/graphical.target.wants
+mkdir -p %{buildroot}%{system_unit_dir}/reboot.target.wants
+ln -s ../systemd-update-utmp-runlevel.service %{buildroot}%{system_unit_dir}/poweroff.target.wants/
+ln -s ../systemd-update-utmp-runlevel.service %{buildroot}%{system_unit_dir}/rescue.target.wants/
+ln -s ../systemd-update-utmp-runlevel.service %{buildroot}%{system_unit_dir}/multi-user.target.wants/
+ln -s ../systemd-update-utmp-runlevel.service %{buildroot}%{system_unit_dir}/graphical.target.wants/
+ln -s ../systemd-update-utmp-runlevel.service %{buildroot}%{system_unit_dir}/reboot.target.wants/
 
 mkdir -p %{buildroot}%{_localstatedir}/run
 mkdir -p %{buildroot}%{_localstatedir}/log
@@ -479,8 +482,8 @@ touch %{buildroot}%{_localstatedir}/run/utmp
 touch %{buildroot}%{_localstatedir}/log/{w,b}tmp
 
 # Make sure the user generators dir exists too
-mkdir -p %{buildroot}%{_prefix}/lib/systemd/system-generators
-mkdir -p %{buildroot}%{_prefix}/lib/systemd/user-generators
+mkdir -p %{buildroot}%{pkgdir}/system-generators
+mkdir -p %{buildroot}%{pkgdir}/user-generators
 
 # Create new-style configuration files so that we can ghost-own them
 touch %{buildroot}%{_sysconfdir}/hostname
@@ -493,14 +496,14 @@ mkdir -p %{buildroot}%{_sysconfdir}/X11/xorg.conf.d
 touch %{buildroot}%{_sysconfdir}/X11/xorg.conf.d/00-keyboard.conf
 
 # Install Fedora default preset policy
-install -Dm0644 %{SOURCE1} %{buildroot}%{_prefix}/lib/systemd/system-preset/
-install -Dm0644 %{SOURCE2} %{buildroot}%{_prefix}/lib/systemd/system-preset/
-install -Dm0644 %{SOURCE3} %{buildroot}%{_prefix}/lib/systemd/system-preset/
-mkdir -p %{buildroot}%{_prefix}/lib/systemd/user-preset/
+install -Dm0644 %{SOURCE1} %{buildroot}%{pkgdir}/system-preset/
+install -Dm0644 %{SOURCE2} %{buildroot}%{pkgdir}/system-preset/
+install -Dm0644 %{SOURCE3} %{buildroot}%{pkgdir}/system-preset/
+mkdir -p %{buildroot}%{pkgdir}/user-preset/
 
 # Make sure the shutdown/sleep drop-in dirs exist
-mkdir -p %{buildroot}%{_prefix}/lib/systemd/system-shutdown/
-mkdir -p %{buildroot}%{_prefix}/lib/systemd/system-sleep/
+mkdir -p %{buildroot}%{pkgdir}/system-shutdown/
+mkdir -p %{buildroot}%{pkgdir}/system-sleep/
 
 # Make sure directories in /var exist
 mkdir -p %{buildroot}%{_localstatedir}/lib/systemd/coredump
@@ -707,14 +710,14 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %config(noreplace) %{_sysconfdir}/sysctl.conf
 %{_sysconfdir}/sysctl.d/99-sysctl.conf
 %dir %{_prefix}/lib/systemd
-%{_prefix}/lib/systemd/system-generators
-%{_prefix}/lib/systemd/user-generators
-%dir %{_prefix}/lib/systemd/system-preset
-%dir %{_prefix}/lib/systemd/user-preset
-%dir %{_prefix}/lib/systemd/system-shutdown
-%dir %{_prefix}/lib/systemd/system-sleep
-%dir %{_prefix}/lib/systemd/catalog
-%dir %{_prefix}/lib/systemd/network
+%{pkgdir}/system-generators
+%{pkgdir}/user-generators
+%dir %{pkgdir}/system-preset
+%dir %{pkgdir}/user-preset
+%dir %{pkgdir}/system-shutdown
+%dir %{pkgdir}/system-sleep
+%dir %{pkgdir}/catalog
+%dir %{pkgdir}/network
 %dir %{_prefix}/lib/tmpfiles.d
 %dir %{_prefix}/lib/sysusers.d
 %dir %{_prefix}/lib/sysctl.d
@@ -804,13 +807,13 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_bindir}/bootctl
 %{_bindir}/udevadm
 %{_bindir}/kernel-install
-%{_prefix}/lib/systemd/systemd
-%exclude %{_prefix}/lib/systemd/system/systemd-journal-gatewayd.*
-%{_prefix}/lib/systemd/system
-%{_prefix}/lib/systemd/user
-%exclude %{_prefix}/lib/systemd/systemd-journal-gatewayd
-%exclude %{_prefix}/lib/systemd/systemd-journal-remote
-%{_prefix}/lib/systemd/systemd-*
+%{pkgdir}/systemd
+%{system_unit_dir}
+%{pkgdir}/user
+%exclude %{system_unit_dir}/systemd-journal-gatewayd.*
+%exclude %{pkgdir}/systemd-journal-gatewayd
+%exclude %{pkgdir}/systemd-journal-remote
+%{pkgdir}/systemd-*
 %{_prefix}/lib/udev
 %{_prefix}/lib/tmpfiles.d/systemd.conf
 %{_prefix}/lib/tmpfiles.d/systemd-nologin.conf
@@ -823,14 +826,14 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_prefix}/lib/sysctl.d/50-coredump.conf
 %{_prefix}/lib/sysusers.d/basic.conf
 %{_prefix}/lib/sysusers.d/systemd.conf
-%{_prefix}/lib/systemd/system-preset/85-display-manager.preset
-%{_prefix}/lib/systemd/system-preset/90-default.preset
-%{_prefix}/lib/systemd/system-preset/90-systemd.preset
-%{_prefix}/lib/systemd/system-preset/99-default-disable.preset
-%{_prefix}/lib/systemd/catalog/systemd.catalog
+%{pkgdir}/system-preset/85-display-manager.preset
+%{pkgdir}/system-preset/90-default.preset
+%{pkgdir}/system-preset/90-systemd.preset
+%{pkgdir}/system-preset/99-default-disable.preset
+%{pkgdir}/catalog/systemd.catalog
 %{_prefix}/lib/kernel/install.d/50-depmod.install
 %{_prefix}/lib/kernel/install.d/90-loaderentry.install
-%{_prefix}/lib/systemd/import-pubring.gpg
+%{pkgdir}/import-pubring.gpg
 %{_sbindir}/init
 %{_sbindir}/reboot
 %{_sbindir}/halt
@@ -873,10 +876,10 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_datadir}/pkgconfig/udev.pc
 %{_datadir}/bash-completion/completions/*
 %{_datadir}/zsh/site-functions/*
-%{_prefix}/lib/systemd/catalog/systemd.*.catalog
-%{_prefix}/lib/systemd/network/99-default.link
-%{_prefix}/lib/systemd/network/80-container-host0.network
-%{_prefix}/lib/systemd/network/80-container-ve.network
+%{pkgdir}/catalog/systemd.*.catalog
+%{pkgdir}/network/99-default.link
+%{pkgdir}/network/80-container-host0.network
+%{pkgdir}/network/80-container-ve.network
 
 # Make sure we don't remove runlevel targets from F14 alpha installs,
 # but make sure we don't create then anew.
@@ -947,9 +950,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %files journal-gateway
 %config(noreplace) %{_sysconfdir}/systemd/journal-remote.conf
 %config(noreplace) %{_sysconfdir}/systemd/journal-upload.conf
-%{_prefix}/lib/systemd/system/systemd-journal-gatewayd.*
-%{_prefix}/lib/systemd/systemd-journal-gatewayd
-%{_prefix}/lib/systemd/systemd-journal-remote
+%{system_unit_dir}/systemd-journal-gatewayd.*
+%{pkgdir}/systemd-journal-gatewayd
+%{pkgdir}/systemd-journal-remote
 %{_prefix}/lib/tmpfiles.d/systemd-remote.conf
 %{_prefix}/lib/sysusers.d/systemd-remote.conf
 %{_mandir}/man8/systemd-journal-gatewayd.*
