@@ -1,0 +1,31 @@
+From 1708f0d4156c6579691728bebe429ece10f5a2be Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Sat, 14 Mar 2015 21:49:10 -0400
+Subject: [PATCH] core: do not use quotes around virt and arch
+
+Quotes are useful when the string can contain spaces or be otherwise
+confusing. Not possible with those two.
+
+(cherry picked from commit d3f86679783aee216d60b125acfb5f39a0df555f)
+---
+ src/core/main.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/core/main.c b/src/core/main.c
+index ba2de85bd3..fd527d4d63 100644
+--- a/src/core/main.c
++++ b/src/core/main.c
+@@ -1537,11 +1537,11 @@ int main(int argc, char *argv[]) {
+ 
+                 detect_virtualization(&virtualization);
+                 if (virtualization)
+-                        log_info("Detected virtualization '%s'.", virtualization);
++                        log_info("Detected virtualization %s.", virtualization);
+ 
+                 write_container_id();
+ 
+-                log_info("Detected architecture '%s'.", architecture_to_string(uname_architecture()));
++                log_info("Detected architecture %s.", architecture_to_string(uname_architecture()));
+ 
+                 if (in_initrd())
+                         log_info("Running in initial RAM disk.");

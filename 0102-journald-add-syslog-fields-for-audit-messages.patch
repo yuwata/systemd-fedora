@@ -1,0 +1,39 @@
+From 9555e12d82200b02ad8c54858bcf469e6f2d7e82 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Wed, 4 Mar 2015 10:31:42 -0500
+Subject: [PATCH] journald: add syslog fields for audit messages
+
+Audit messages would be displayed as "unknown[1]".
+
+Also specify AUTH as facility... This seems to be the closest match
+(/* security/authorization messages */).
+
+(cherry picked from commit cd556b6ca8aec8dd371806afedec45f852f8f724)
+---
+ src/journal/journald-audit.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/src/journal/journald-audit.c b/src/journal/journald-audit.c
+index c2f1545cc9..46eb82fa34 100644
+--- a/src/journal/journald-audit.c
++++ b/src/journal/journald-audit.c
+@@ -373,7 +373,7 @@ static void process_audit_string(Server *s, int type, const char *data, size_t s
+         if (isempty(p))
+                 return;
+ 
+-        n_iov_allocated = N_IOVEC_META_FIELDS + 5;
++        n_iov_allocated = N_IOVEC_META_FIELDS + 7;
+         iov = new(struct iovec, n_iov_allocated);
+         if (!iov) {
+                 log_oom();
+@@ -392,6 +392,10 @@ static void process_audit_string(Server *s, int type, const char *data, size_t s
+         sprintf(id_field, "_AUDIT_ID=%" PRIu64, id);
+         IOVEC_SET_STRING(iov[n_iov++], id_field);
+ 
++        assert_cc(32 == LOG_AUTH);
++        IOVEC_SET_STRING(iov[n_iov++], "SYSLOG_FACILITY=32");
++        IOVEC_SET_STRING(iov[n_iov++], "SYSLOG_IDENTIFIER=audit");
++
+         m = alloca(strlen("MESSAGE=<audit-") + DECIMAL_STR_MAX(int) + strlen("> ") + strlen(p) + 1);
+         sprintf(m, "MESSAGE=<audit-%i> %s", type, p);
+         IOVEC_SET_STRING(iov[n_iov++], m);

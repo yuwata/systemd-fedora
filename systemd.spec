@@ -132,6 +132,27 @@ Patch0088:      0088-man-link-to-fd.o-for-dbus-stuff.patch
 Patch0089:      0089-man-fix-name-of-systemd.resource-control-5.patch
 Patch0090:      0090-selinux-fix-SEGV-during-switch-root-if-SELinux-polic.patch
 Patch0091:      0091-service-don-t-add-After-dependencies-on-.busname-uni.patch
+Patch0092:      0092-libudev-monitor-fix-error-path-in-send_device.patch
+Patch0093:      0093-core-remove-left-over-debug-message.patch
+Patch0094:      0094-units-there-is-no-systemd-udev-hwdb-update.service.patch
+Patch0095:      0095-util-remove-redundant-debug-message.patch
+Patch0096:      0096-tmpfiles-remove-redundant-debug-message.patch
+Patch0097:      0097-sysv-generator-initialize-LookupPaths-just-once.patch
+Patch0098:      0098-core-do-not-use-quotes-around-virt-and-arch.patch
+Patch0099:      0099-udev-downgrade-has-devpath-and-filled-with-db-file-m.patch
+Patch0100:      0100-cryptsetup-generator-remove-warning-about-crypttab-a.patch
+Patch0101:      0101-sysctl-tweak-debug-message.patch
+Patch0102:      0102-journald-add-syslog-fields-for-audit-messages.patch
+Patch0103:      0103-core-remove-useless-debug-message.patch
+Patch0104:      0104-man-standard-conf-change-directory-reference-to-wild.patch
+Patch0105:      0105-core-don-t-change-removed-devices-to-state-tentative.patch
+Patch0106:      0106-fstab-generator-ignore-invalid-swap-priority.patch
+Patch0107:      0107-missing.h-add-more-btrfs-types-and-defines.patch
+Patch0108:      0108-timedated-flip-internal-status-after-executing-opera.patch
+Patch0109:      0109-timedated-fix-enable-disable-reversal.patch
+Patch0110:      0110-core-make-SELinux-enable-disable-check-symmetric.patch
+Patch0111:      0111-shared-add-path_compare-an-ordering-path-comparison.patch
+Patch0112:      0112-core-namespace-fix-path-sorting.patch
 
 
 # kernel-install patch for grubby, drop if grubby is obsolete
@@ -975,6 +996,12 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 - Move all parts systemd-journal-{remote,upload} to
   systemd-journal-gatewayd subpackage (#1193143).
 - Create /var/lib/systemd/journal-upload directory (#1193145).
+- Cut out lots of stupid messages at debug level which were obscuring more
+  important stuff.
+- Apply "tentative" state for devices only when they are added, not removed.
+- Ignore invalid swap pri= settings (#1204336)
+- Fix SELinux check for timedated operations to enable/disable ntp (#1014315)
+- Fix comparing of filesystem paths (#1184016)
 
 * Sat Mar 14 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 219-10
 - Fixes for bugs 1186018, 1195294, 1185604, 1196452.

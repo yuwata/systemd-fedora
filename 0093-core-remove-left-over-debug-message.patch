@@ -1,0 +1,23 @@
+From 84d7bc201f8875bed45c9516fcec62d5f82d3718 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Sat, 14 Mar 2015 17:41:53 -0400
+Subject: [PATCH] core: remove left-over debug message
+
+(cherry picked from commit bdb26d423a7f992bec5c28e17894c684d770d6f3)
+---
+ src/core/load-fragment.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/src/core/load-fragment.c b/src/core/load-fragment.c
+index 90bf5634c8..f17a82fcdf 100644
+--- a/src/core/load-fragment.c
++++ b/src/core/load-fragment.c
+@@ -634,8 +634,6 @@ int config_parse_exec(const char *unit,
+ 
+                 n[k] = NULL;
+ 
+-                log_debug("path: %s", path ?: n[0]);
+-
+                 if (!n[0])
+                         reason = "Empty executable name or zeroeth argument";
+                 else if (!string_is_safe(path ?: n[0]))

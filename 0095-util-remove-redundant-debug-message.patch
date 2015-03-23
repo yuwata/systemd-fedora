@@ -1,0 +1,29 @@
+From 5112d77f6a279cfa1cf4c1f3eac896f475650952 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Sat, 14 Mar 2015 20:14:39 -0400
+Subject: [PATCH] util: remove redundant debug message
+
+mar 14 20:05:34 fedora22 systemd[4058]: /usr/lib/systemd/system-generators/kdump-dep-generator.sh will be executed.
+mar 14 20:05:34 fedora22 systemd[4058]: Spawned /usr/lib/systemd/system-generators/kdump-dep-generator.sh as 4059.
+
+The second line already says everything.
+
+(cherry picked from commit 7034e9db51d0b6f8e1dbbe9127393c6fbc06fe28)
+---
+ src/shared/util.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/src/shared/util.c b/src/shared/util.c
+index 85487230a2..1e1bf944f2 100644
+--- a/src/shared/util.c
++++ b/src/shared/util.c
+@@ -4115,8 +4115,7 @@ static int do_execute(char **directories, usec_t timeout, char *argv[]) {
+                         if (null_or_empty_path(path)) {
+                                 log_debug("%s is empty (a mask).", path);
+                                 continue;
+-                        } else
+-                                log_debug("%s will be executed.", path);
++                        }
+ 
+                         pid = fork();
+                         if (pid < 0) {

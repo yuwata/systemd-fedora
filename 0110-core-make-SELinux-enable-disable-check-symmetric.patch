@@ -1,0 +1,43 @@
+From b6df45d1c129fc95078b47d9124eca1143a7fa64 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Sat, 21 Mar 2015 18:50:10 -0400
+Subject: [PATCH] core: make SELinux enable/disable check symmetric
+
+We'd use the generic check for disable, and a unit-file-specific one for enable.
+Use the more specific one both ways.
+
+systemd[1]: SELinux access check scon=system_u:system_r:systemd_timedated_t:s0 tcon=system_u:system_r:init_t:s0 tclass=system perm=disable path=(null) cmdline=/usr/lib/systemd/systemd-timedated: -13
+systemd[1]: SELinux access check scon=system_u:system_r:systemd_timedated_t:s0 tcon=system_u:object_r:systemd_unit_file_t:s0 tclass=service perm=enable path=/usr/lib/systemd/system/systemd-timesyncd.service cmdline=/usr/lib/systemd/systemd-timedated: -13
+
+https://bugzilla.redhat.com/show_bug.cgi?id=1014315
+(cherry picked from commit df823e23f04da832ad5fc078176f8c26597a9845)
+
+Conflicts:
+	src/core/dbus-manager.c
+---
+ src/core/dbus-manager.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/core/dbus-manager.c b/src/core/dbus-manager.c
+index 8ba665dc3d..2bc37ba60e 100644
+--- a/src/core/dbus-manager.c
++++ b/src/core/dbus-manager.c
+@@ -1772,15 +1772,15 @@ static int method_disable_unit_files_generic(
+         if (r == 0)
+                 return 1; /* No authorization for now, but the async polkit stuff will call us again when it has it */
+ 
+-        r = mac_selinux_access_check(message, verb, error);
++        r = sd_bus_message_read_strv(message, &l);
+         if (r < 0)
+                 return r;
+ 
+-        r = sd_bus_message_read_strv(message, &l);
++        r = sd_bus_message_read(message, "b", &runtime);
+         if (r < 0)
+                 return r;
+ 
+-        r = sd_bus_message_read(message, "b", &runtime);
++        r = mac_selinux_unit_access_check_strv(l, message, m, verb, error);
+         if (r < 0)
+                 return r;
+ 

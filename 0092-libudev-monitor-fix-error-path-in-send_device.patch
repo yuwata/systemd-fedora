@@ -1,0 +1,38 @@
+From 317e24365d3d88b7a5282577a35bc8f259737f93 Mon Sep 17 00:00:00 2001
+From: Tom Gundersen <teg@jklm.no>
+Date: Wed, 11 Mar 2015 22:23:38 +0100
+Subject: [PATCH] libudev: monitor - fix error path in send_device
+
+Return -errno rather than -1 in case sendmsg() fails.
+
+(cherry picked from commit a4445e88cece0444c66d70876b03065158dd4685)
+---
+ src/libudev/libudev-monitor.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/src/libudev/libudev-monitor.c b/src/libudev/libudev-monitor.c
+index 3f1fee7f7e..d0486e3d1e 100644
+--- a/src/libudev/libudev-monitor.c
++++ b/src/libudev/libudev-monitor.c
+@@ -749,12 +749,20 @@ int udev_monitor_send_device(struct udev_monitor *udev_monitor,
+          * If we send to a multicast group, we will get
+          * ECONNREFUSED, which is expected.
+          */
+-        if (destination != NULL)
++        if (destination)
+                 smsg.msg_name = &destination->snl;
+         else
+                 smsg.msg_name = &udev_monitor->snl_destination;
+         smsg.msg_namelen = sizeof(struct sockaddr_nl);
+         count = sendmsg(udev_monitor->sock, &smsg, 0);
++        if (count < 0) {
++                if (!destination && errno == ECONNREFUSED) {
++                        log_debug("passed unknown number of bytes to netlink monitor %p", udev_monitor);
++                        return 0;
++                } else
++                        return -errno;
++        }
++
+         log_debug("passed %zi bytes to netlink monitor %p", count, udev_monitor);
+         return count;
+ }
