@@ -16,7 +16,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        219
-Release:        11%{?gitcommit:.git%{gitcommit}}%{?dist}
+Release:        12%{?gitcommit:.git%{gitcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -263,7 +263,7 @@ Summary:        systemd compatibility libraries
 License:        LGPLv2+ and MIT
 # To reduce confusion, this package can only be installed in parallel
 # with the normal systemd-libs, same version.
-Requires:       systemd-libs = %{version}-%{release}
+Requires:       systemd-libs%{?_isa} = %{version}-%{release}
 
 %description compat-libs
 Compatibility libraries for systemd. If your package requires this
@@ -272,7 +272,9 @@ package, you need to update your link options and build.
 %package devel
 Summary:        Development headers for systemd
 License:        LGPLv2+ and MIT
-Requires:       %{name} = %{version}-%{release}
+# We need both libsystemd and libsystemd-<compat> libraries
+Requires:       %{name}%{?_isa} = %{version}-%{release}
+Requires:       %{name}-compat-libs%{?_isa} = %{version}-%{release}
 Provides:       libudev-devel = %{version}
 Obsoletes:      libudev-devel < 183
 
@@ -282,12 +284,12 @@ Development headers and auxiliary files for developing applications for systemd.
 %package python
 Summary:        Python 2 bindings for systemd
 License:        LGPLv2+
-Requires:       %{name} = %{version}-%{release}
+Requires:       %{name}%{?_isa} = %{version}-%{release}
 
 %package python3
 Summary:        Python 3 bindings for systemd
 License:        LGPLv2+
-Requires:       %{name} = %{version}-%{release}
+Requires:       %{name}%{?_isa} = %{version}-%{release}
 
 %description python
 This package contains bindings which allow Python 2 programs to use
@@ -301,7 +303,7 @@ systemd APIs
 Summary:        Libraries for adding libudev support to applications that use glib
 Conflicts:      filesystem < 3
 License:        LGPLv2+
-Requires:       %{name}-libs = %{version}-%{release}
+Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
 
 %description -n libgudev1
 This package contains the libraries that make it easier to use libudev
@@ -309,7 +311,7 @@ functionality from applications that use glib.
 
 %package -n libgudev1-devel
 Summary:        Header files for adding libudev support to applications that use glib
-Requires:       libgudev1 = %{version}-%{release}
+Requires:       libgudev1%{?_isa} = %{version}-%{release}
 License:        LGPLv2+
 
 %description -n libgudev1-devel
@@ -318,7 +320,7 @@ glib-based applications using libudev functionality.
 
 %package journal-gateway
 Summary:        Gateway for serving journal events over the network using HTTP
-Requires:       %{name} = %{version}-%{release}
+Requires:       %{name}%{?_isa} = %{version}-%{release}
 License:        LGPLv2+
 Requires(pre):    /usr/bin/getent
 Requires(post):   systemd
@@ -992,6 +994,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Wed Apr  8 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 219-12
+- Tighten requirements between subpackages (#1207381).
+
 * Sun Mar 22 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 219-11
 - Move all parts systemd-journal-{remote,upload} to
   systemd-journal-gatewayd subpackage (#1193143).
