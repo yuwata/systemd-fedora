@@ -1,0 +1,43 @@
+From 8bdb345984f8a00ff866c1b4198888a9eef03395 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Tue, 14 Apr 2015 20:47:20 -0500
+Subject: [PATCH] systemctl: avoid bumping NOFILE rlimit unless needed
+
+We actually only use the journal when showing status. Move setrlimit call
+so it is only called for status.
+
+https://bugzilla.redhat.com/show_bug.cgi?id=1184712
+(cherry picked from commit 40acc203c043fd419f3c045dc6f116c3a28411d8)
+---
+ src/systemctl/systemctl.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/src/systemctl/systemctl.c b/src/systemctl/systemctl.c
+index 4ec0cff21d..089c25f83f 100644
+--- a/src/systemctl/systemctl.c
++++ b/src/systemctl/systemctl.c
+@@ -4449,6 +4449,12 @@ static int show(sd_bus *bus, char **args) {
+         if (show_properties)
+                 pager_open_if_enabled();
+ 
++        if (show_status)
++                /* Increase max number of open files to 16K if we can, we
++                 * might needs this when browsing journal files, which might
++                 * be split up into many files. */
++                setrlimit_closest(RLIMIT_NOFILE, &RLIMIT_MAKE_CONST(16384));
++
+         /* If no argument is specified inspect the manager itself */
+ 
+         if (show_properties && strv_length(args) <= 1)
+@@ -7207,11 +7213,6 @@ found:
+                 }
+         }
+ 
+-        /* Increase max number of open files to 16K if we can, we
+-         * might needs this when browsing journal files, which might
+-         * be split up into many files. */
+-        setrlimit_closest(RLIMIT_NOFILE, &RLIMIT_MAKE_CONST(16384));
+-
+         return verb->dispatch(bus, argv + optind);
+ }
+ 

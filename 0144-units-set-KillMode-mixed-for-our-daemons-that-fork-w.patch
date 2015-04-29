@@ -1,0 +1,34 @@
+From 0e1b8518cc0409b268bdede1ae4b424c8544ed20 Mon Sep 17 00:00:00 2001
+From: Lennart Poettering <lennart@poettering.net>
+Date: Fri, 24 Apr 2015 16:12:28 +0200
+Subject: [PATCH] units: set KillMode=mixed for our daemons that fork worker
+ processes
+
+The daemons should really have the time to kill the workers first,
+before systemd does it, hence use KillMode=mixed for these daemons.
+
+https://bugs.freedesktop.org/show_bug.cgi?id=90051
+(cherry picked from commit 658f26b828fdd7007cfe82d794f610525b21cb99)
+---
+ units/systemd-importd.service.in | 1 +
+ units/systemd-udevd.service.in   | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/units/systemd-importd.service.in b/units/systemd-importd.service.in
+index 45e98fd320..6359e5cdd9 100644
+--- a/units/systemd-importd.service.in
++++ b/units/systemd-importd.service.in
+@@ -18,3 +18,4 @@ WatchdogSec=1min
+ PrivateTmp=yes
+ ProtectSystem=full
+ ProtectHome=yes
++KillMode=mixed
+diff --git a/units/systemd-udevd.service.in b/units/systemd-udevd.service.in
+index a133044005..32f04d901a 100644
+--- a/units/systemd-udevd.service.in
++++ b/units/systemd-udevd.service.in
+@@ -22,3 +22,4 @@ Restart=always
+ RestartSec=0
+ ExecStart=@rootlibexecdir@/systemd-udevd
+ MountFlags=slave
++KillMode=mixed

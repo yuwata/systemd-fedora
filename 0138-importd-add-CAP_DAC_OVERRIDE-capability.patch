@@ -1,0 +1,32 @@
+From 989f43ac4c07d47147facd62d3703d3d97b50e01 Mon Sep 17 00:00:00 2001
+From: Lubomir Rintel <lkundrak@v3.sk>
+Date: Mon, 13 Apr 2015 19:46:59 +0200
+Subject: [PATCH] importd: add CAP_DAC_OVERRIDE capability
+
+Fedora's filesystem package ships /usr/bin (and other directories) which are
+not writable by its owner. machinectl pull-dkr (and possibly others) are not
+able to extract those:
+
+  14182 mkdirat(3, "usr", 0700)           = 0
+  14182 mkdirat(3, "usr/bin", 0500)       = 0
+  14182 openat(3, "usr/bin/[", O_WRONLY|O_CREAT|O_EXCL|O_NOCTTY|O_NONBLOCK|O_CLOEXEC, 0700) = -1 EACCES (Permission denied)
+  ...
+
+(cherry picked from commit 15d7b51724cc9775f03f2af4d3eec7f48f39f7de)
+---
+ units/systemd-importd.service.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/units/systemd-importd.service.in b/units/systemd-importd.service.in
+index 26759ea0fb..45e98fd320 100644
+--- a/units/systemd-importd.service.in
++++ b/units/systemd-importd.service.in
+@@ -12,7 +12,7 @@ Documentation=man:systemd-importd.service(8)
+ [Service]
+ ExecStart=@rootlibexecdir@/systemd-importd
+ BusName=org.freedesktop.import1
+-CapabilityBoundingSet=CAP_CHOWN CAP_FOWNER CAP_FSETID CAP_MKNOD CAP_SETFCAP CAP_SYS_ADMIN CAP_SETPCAP
++CapabilityBoundingSet=CAP_CHOWN CAP_FOWNER CAP_FSETID CAP_MKNOD CAP_SETFCAP CAP_SYS_ADMIN CAP_SETPCAP CAP_DAC_OVERRIDE
+ NoNewPrivileges=yes
+ WatchdogSec=1min
+ PrivateTmp=yes

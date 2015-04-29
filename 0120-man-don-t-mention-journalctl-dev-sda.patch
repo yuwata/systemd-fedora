@@ -1,0 +1,28 @@
+From 4e19d468a0d5af50fcff6db4f67572689d28b706 Mon Sep 17 00:00:00 2001
+From: Lennart Poettering <lennart@poettering.net>
+Date: Thu, 2 Apr 2015 12:14:57 +0200
+Subject: [PATCH] man: don't mention "journalctl /dev/sda"
+
+It never worked, and nobody ever worked on it, hence don't mention it.
+
+(cherry picked from commit c4f54721175bde35e2051d61d3d23285def9619d)
+---
+ man/journalctl.xml | 5 -----
+ 1 file changed, 5 deletions(-)
+
+diff --git a/man/journalctl.xml b/man/journalctl.xml
+index 770cf9bb29..08de0ff068 100644
+--- a/man/journalctl.xml
++++ b/man/journalctl.xml
+@@ -817,11 +817,6 @@
+ 
+     <programlisting>journalctl /usr/bin/dbus-daemon</programlisting>
+ 
+-    <para>Show all logs of the kernel device node
+-    <filename noindex='true'>/dev/sda</filename>:</para>
+-
+-    <programlisting>journalctl /dev/sda</programlisting>
+-
+     <para>Show all kernel logs from previous boot:</para>
+ 
+     <programlisting>journalctl -k -b -1</programlisting>

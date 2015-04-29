@@ -1,0 +1,178 @@
+From b66b41c3b5c9567cafce132782bae32055d6a69a Mon Sep 17 00:00:00 2001
+From: Chris Morgan <chmorgan@gmail.com>
+Date: Sat, 21 Mar 2015 20:47:46 -0400
+Subject: [PATCH] man: add journal-remote.conf(5)
+
+(cherry picked from commit eaa5251d9167027275d8275862e23e0b7dc8866e)
+---
+ Makefile-man.am                |   7 +++
+ man/journal-remote.conf.xml    | 114 +++++++++++++++++++++++++++++++++++++++++
+ man/systemd-journal-remote.xml |   1 +
+ 3 files changed, 122 insertions(+)
+ create mode 100644 man/journal-remote.conf.xml
+
+diff --git a/Makefile-man.am b/Makefile-man.am
+index d0fb9aa1ae..28e1007c38 100644
+--- a/Makefile-man.am
++++ b/Makefile-man.am
+@@ -1330,14 +1330,20 @@ endif
+ 
+ if HAVE_MICROHTTPD
+ MANPAGES += \
++	man/journal-remote.conf.5 \
+ 	man/systemd-journal-gatewayd.service.8 \
+ 	man/systemd-journal-remote.8 \
+ 	man/systemd-journal-upload.8
+ MANPAGES_ALIAS += \
++	man/journal-remote.conf.d.5 \
+ 	man/systemd-journal-gatewayd.8 \
+ 	man/systemd-journal-gatewayd.socket.8
++man/journal-remote.conf.d.5: man/journal-remote.conf.5
+ man/systemd-journal-gatewayd.8: man/systemd-journal-gatewayd.service.8
+ man/systemd-journal-gatewayd.socket.8: man/systemd-journal-gatewayd.service.8
++man/journal-remote.conf.d.html: man/journal-remote.conf.html
++	$(html-alias)
++
+ man/systemd-journal-gatewayd.html: man/systemd-journal-gatewayd.service.html
+ 	$(html-alias)
+ 
+@@ -1634,6 +1640,7 @@ EXTRA_DIST += \
+ 	man/hostname.xml \
+ 	man/hostnamectl.xml \
+ 	man/hwdb.xml \
++	man/journal-remote.conf.xml \
+ 	man/journalctl.xml \
+ 	man/journald.conf.xml \
+ 	man/kernel-command-line.xml \
+diff --git a/man/journal-remote.conf.xml b/man/journal-remote.conf.xml
+new file mode 100644
+index 0000000000..a7b2227182
+--- /dev/null
++++ b/man/journal-remote.conf.xml
+@@ -0,0 +1,114 @@
++<?xml version='1.0'?> <!--*-nxml-*-->
++<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
++  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
++
++<!--
++  This file is part of systemd.
++
++  Copyright 2015 Chris Morgan
++
++  systemd is free software; you can redistribute it and/or modify it
++  under the terms of the GNU Lesser General Public License as published by
++  the Free Software Foundation; either version 2.1 of the License, or
++  (at your option) any later version.
++
++  systemd is distributed in the hope that it will be useful, but
++  WITHOUT ANY WARRANTY; without even the implied warranty of
++  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++  Lesser General Public License for more details.
++
++  You should have received a copy of the GNU Lesser General Public License
++  along with systemd; If not, see <http://www.gnu.org/licenses/>.
++-->
++
++<refentry id="journal-remote.conf" conditional='HAVE_MICROHTTPD'
++          xmlns:xi="http://www.w3.org/2001/XInclude">
++  <refentryinfo>
++    <title>journal-remote.conf</title>
++    <productname>systemd</productname>
++
++    <authorgroup>
++      <author>
++        <contrib>Developer</contrib>
++        <firstname>Chris</firstname>
++        <surname>Morgan</surname>
++        <email>chmorgan@gmail.com</email>
++      </author>
++    </authorgroup>
++  </refentryinfo>
++
++  <refmeta>
++    <refentrytitle>journal-remote.conf</refentrytitle>
++    <manvolnum>5</manvolnum>
++  </refmeta>
++
++  <refnamediv>
++    <refname>journal-remote.conf</refname>
++    <refname>journal-remote.conf.d</refname>
++    <refpurpose>Journal remote service configuration files</refpurpose>
++  </refnamediv>
++
++  <refsynopsisdiv>
++    <para><filename>/etc/systemd/journal-remote.conf</filename></para>
++    <para><filename>/etc/systemd/journald.conf.d/*.conf</filename></para>
++    <para><filename>/run/systemd/journald.conf.d/*.conf</filename></para>
++    <para><filename>/usr/lib/systemd/journald.conf.d/*.conf</filename></para>
++  </refsynopsisdiv>
++
++  <refsect1>
++    <title>Description</title>
++
++    <para>These files configure various parameters of the systemd-remote-journal
++    application,
++    <citerefentry><refentrytitle>systemd-journal-remote</refentrytitle><manvolnum>8</manvolnum></citerefentry>.</para>
++  </refsect1>
++
++  <xi:include href="standard-conf.xml" xpointer="main-conf" />
++
++  <refsect1>
++    <title>Options</title>
++
++    <para>All options are configured in the
++    <literal>[Remote]</literal> section:</para>
++
++    <variablelist>
++
++      <varlistentry>
++        <term><varname>SplitMode=</varname></term>
++
++        <listitem><para>One of <literal>host</literal> or <literal>none</literal>.
++        </para></listitem>
++      </varlistentry>
++
++      <varlistentry>
++        <term><varname>ServerKeyFile=</varname></term>
++
++        <listitem><para>SSL key in PEM format</para></listitem>
++      </varlistentry>
++
++      <varlistentry>
++        <term><varname>ServerCertificateFile=</varname></term>
++
++        <listitem><para>SSL CA certificate in PEM format.</para></listitem>
++      </varlistentry>
++
++      <varlistentry>
++        <term><varname>TrustedCertificateFile=</varname></term>
++
++        <listitem><para>SSL CA certificate.</para></listitem>
++      </varlistentry>
++
++    </variablelist>
++
++  </refsect1>
++
++  <refsect1>
++      <title>See Also</title>
++      <para>
++        <citerefentry><refentrytitle>systemd-journal-remote</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
++        <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
++        <citerefentry><refentrytitle>systemd-journald.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>
++      </para>
++  </refsect1>
++
++</refentry>
+diff --git a/man/systemd-journal-remote.xml b/man/systemd-journal-remote.xml
+index 2687662a14..d5bda635c4 100644
+--- a/man/systemd-journal-remote.xml
++++ b/man/systemd-journal-remote.xml
+@@ -310,6 +310,7 @@ systemd-journal-remote --url http://some.host:19531/
+       <citerefentry><refentrytitle>journalctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd-journald.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+       <citerefentry><refentrytitle>systemd-journal-gatewayd.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>
++      <citerefentry><refentrytitle>journal-remote.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+     </para>
+   </refsect1>
+ </refentry>

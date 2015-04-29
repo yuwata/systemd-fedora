@@ -1,0 +1,26 @@
+From 7a6c9117eca12a1a59f1323ba7407e7b6dedfa66 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Thu, 2 Apr 2015 22:58:39 -0400
+Subject: [PATCH] core/automount: beef up error message
+
+This should not happen... but when it does more information is nice.
+
+(cherry picked from commit 50b03c8ea1248f2d35a9042a3fa959adc0ceb819)
+---
+ src/core/automount.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/core/automount.c b/src/core/automount.c
+index e4c79415d1..b391f6198e 100644
+--- a/src/core/automount.c
++++ b/src/core/automount.c
+@@ -734,7 +734,8 @@ static int automount_dispatch_io(sd_event_source *s, int fd, uint32_t events, vo
+         assert(fd == a->pipe_fd);
+ 
+         if (events != EPOLLIN) {
+-                log_unit_error(UNIT(a)->id, "Got invalid poll event on pipe.");
++                log_unit_error(UNIT(a)->id, "%s: got invalid poll event %"PRIu32" on pipe (fd=%d)",
++                               UNIT(a)->id, events, fd);
+                 goto fail;
+         }
+ 

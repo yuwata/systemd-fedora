@@ -16,7 +16,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        219
-Release:        12%{?gitcommit:.git%{gitcommit}}%{?dist}
+Release:        13%{?gitcommit:.git%{gitcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -153,6 +153,41 @@ Patch0109:      0109-timedated-fix-enable-disable-reversal.patch
 Patch0110:      0110-core-make-SELinux-enable-disable-check-symmetric.patch
 Patch0111:      0111-shared-add-path_compare-an-ordering-path-comparison.patch
 Patch0112:      0112-core-namespace-fix-path-sorting.patch
+Patch0113:      0113-console-getty.service-don-t-start-when-dev-console-i.patch
+Patch0114:      0114-resolved-Do-not-add-.busname-dependencies-when-compi.patch
+Patch0115:      0115-man-add-journal-remote.conf-5.patch
+Patch0116:      0116-hwdb-Update-database-of-Bluetooth-company-identifier.patch
+Patch0117:      0117-mount-don-t-run-quotaon-only-for-network-filesystems.patch
+Patch0118:      0118-mount-fix-up-wording-in-the-comment.patch
+Patch0119:      0119-udev-net_id-fix-copy-paste-error.patch
+Patch0120:      0120-man-don-t-mention-journalctl-dev-sda.patch
+Patch0121:      0121-units-move-After-systemd-hwdb-update.service-depende.patch
+Patch0122:      0122-units-explicitly-order-systemd-user-sessions.service.patch
+Patch0123:      0123-zsh-completion-update-loginctl.patch
+Patch0124:      0124-zsh-completion-add-missing-M-completion-for-journalc.patch
+Patch0125:      0125-zsh-completion-update-hostnamectl.patch
+Patch0126:      0126-shell-completion-systemctl-switch-root-verb.patch
+Patch0127:      0127-core-automount-beef-up-error-message.patch
+Patch0128:      0128-man-remove-fs-from-rootfsflags.patch
+Patch0129:      0129-shared-fix-memleak.patch
+Patch0130:      0130-udev-restore-udevadm-settle-timeout.patch
+Patch0131:      0131-hwdb-add-Samsung-ATIV-Book-6-8.patch
+Patch0132:      0132-udevd-fix-synchronization-with-settle-when-handling-.patch
+Patch0133:      0133-python-systemd-fix-is_socket_inet-to-cope-with-ports.patch
+Patch0134:      0134-man-fix-examples-indentation-in-tmpfiles.d-5.patch
+Patch0135:      0135-systemctl-avoid-bumping-NOFILE-rlimit-unless-needed.patch
+Patch0136:      0136-exit-status-Fix-NOTINSSTALLED-typo.patch
+Patch0137:      0137-udev-settle-should-return-immediately-when-timeout-i.patch
+Patch0138:      0138-importd-add-CAP_DAC_OVERRIDE-capability.patch
+Patch0139:      0139-tmpfiles-there-s-no-systemd-forbid-user-logins.servi.patch
+Patch0140:      0140-kmod-setup-load-ip_tables-kmod-at-boot.patch
+Patch0141:      0141-udev-Fix-ping-timeout-when-settle-timeout-is-0.patch
+Patch0142:      0142-util-Fix-assertion-in-split-on-missing.patch
+Patch0143:      0143-hwdb-add-HP-X1000-DPI-info.patch
+Patch0144:      0144-units-set-KillMode-mixed-for-our-daemons-that-fork-w.patch
+Patch0145:      0145-unit-don-t-add-automatic-dependencies-on-device-unit.patch
+Patch0146:      0146-update-done-ignore-nanosecond-file-timestamp-compone.patch
+Patch0147:      0147-sd-daemon-simplify-sd_pid_notify_with_fds.patch
 
 
 # kernel-install patch for grubby, drop if grubby is obsolete
@@ -994,6 +1029,10 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Wed Apr 29 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 219-13
+- Patches for some outstanding annoyances
+- Small keyboard hwdb updates
+
 * Wed Apr  8 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 219-12
 - Tighten requirements between subpackages (#1207381).
 
