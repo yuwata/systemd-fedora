@@ -641,7 +641,7 @@ grep -v -E -q '^(devpts|tmpfs|sysfs|proc)' /etc/fstab || \
 
 # Replace obsolete keymaps
 # https://bugzilla.redhat.com/show_bug.cgi?id=1151958
-grep -v -E -q '^KEYMAP="?fi-latin[19]"?' /etc/vconsole.conf || \
+grep -q -E '^KEYMAP="?fi-latin[19]"?' /etc/vconsole.conf 2>/dev/null &&
     sed -i.rpm.bak -r 's/^KEYMAP="?fi-latin[19]"?/KEYMAP="fi"/' /etc/vconsole.conf || :
 
 # Services we install by default, and which are controlled by presets.
