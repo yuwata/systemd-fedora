@@ -1,4 +1,4 @@
-From c374a32aa317517702ee3531f6fa59be52c4a9f0 Mon Sep 17 00:00:00 2001
+From c3c65351593dde09a2d37b571e0737af94386fe6 Mon Sep 17 00:00:00 2001
 From: Lennart Poettering <lennart@poettering.net>
 Date: Mon, 18 May 2015 23:38:47 +0200
 Subject: [PATCH] resolved: allow DnsAnswer objects with no space for RRs

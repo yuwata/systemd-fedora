@@ -1,0 +1,25 @@
+From a9303ae3af9bbf482842c084cc7ba49e206538c2 Mon Sep 17 00:00:00 2001
+From: Lennart Poettering <lennart@poettering.net>
+Date: Tue, 24 Feb 2015 00:10:35 +0100
+Subject: [PATCH] id128: add new sd_id128_is_null() call
+
+(cherry picked from commit 15e80c7b75c3a3188bfaaa0baddccf31ae661a7a)
+---
+ src/systemd/sd-id128.h | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/src/systemd/sd-id128.h b/src/systemd/sd-id128.h
+index 48fd87671b..9f445278bb 100644
+--- a/src/systemd/sd-id128.h
++++ b/src/systemd/sd-id128.h
+@@ -106,6 +106,10 @@ _sd_pure_ static inline int sd_id128_equal(sd_id128_t a, sd_id128_t b) {
+         return memcmp(&a, &b, 16) == 0;
+ }
+ 
++_sd_pure_ static inline int sd_id128_is_null(sd_id128_t a) {
++        return a.qwords[0] == 0 && a.qwords[1] == 0;
++}
++
+ #define SD_ID128_NULL ((const sd_id128_t) { .qwords = { 0, 0 }})
+ 
+ _SD_END_DECLARATIONS;

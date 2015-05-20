@@ -1,4 +1,4 @@
-From 8851f051210fa9c18ffb94ebe601261bacaf37d4 Mon Sep 17 00:00:00 2001
+From 94fa50b44f5b23a075df80bfd4854865ca0b649b Mon Sep 17 00:00:00 2001
 From: Lennart Poettering <lennart@poettering.net>
 Date: Mon, 18 May 2015 23:23:17 +0200
 Subject: [PATCH] resolved: fix crash when shutting down
@@ -11,28 +11,25 @@ Reported by Cristian Rodríguez
 http://lists.freedesktop.org/archives/systemd-devel/2015-May/031626.html
 (cherry picked from commit cab5b05903096e1c9cf5575ccc73f89d15c8db69)
 ---
- src/resolve/resolved-dns-cache.c  |  7 ++-----
+ src/resolve/resolved-dns-cache.c  |  4 +---
  src/resolve/resolved-dns-server.c | 15 ++++++++-------
  src/resolve/resolved-link.c       |  6 +++---
  src/resolve/resolved-manager.c    |  4 ++--
  src/shared/prioq.c                |  6 ++++--
  src/shared/prioq.h                |  2 +-
- 6 files changed, 20 insertions(+), 20 deletions(-)
+ 6 files changed, 19 insertions(+), 18 deletions(-)
 
 diff --git a/src/resolve/resolved-dns-cache.c b/src/resolve/resolved-dns-cache.c
-index 33ca4d1a45..be52891681 100644
+index 33ca4d1a45..874207cfb8 100644
 --- a/src/resolve/resolved-dns-cache.c
 +++ b/src/resolve/resolved-dns-cache.c
-@@ -91,11 +91,8 @@ void dns_cache_flush(DnsCache *c) {
-         assert(hashmap_size(c->by_key) == 0);
-         assert(prioq_size(c->by_expiry) == 0);
+@@ -93,9 +93,7 @@ void dns_cache_flush(DnsCache *c) {
  
--        hashmap_free(c->by_key);
--        c->by_key = NULL;
+         hashmap_free(c->by_key);
+         c->by_key = NULL;
 -
 -        prioq_free(c->by_expiry);
 -        c->by_expiry = NULL;
-+        c->by_key = hashmap_free(c->by_key);
 +        c->by_expiry = prioq_free(c->by_expiry);
  }
  

@@ -1,4 +1,4 @@
-From a1b1bfdb3e18c69fe7b7665ac9f7256cf4485bbc Mon Sep 17 00:00:00 2001
+From fb2b7ef1b9a4247adae4a9c85516c72674327488 Mon Sep 17 00:00:00 2001
 From: Jan Janssen <medhefgo@web.de>
 Date: Fri, 1 May 2015 15:15:16 +0200
 Subject: [PATCH] journalctl: Improve boot ID lookup

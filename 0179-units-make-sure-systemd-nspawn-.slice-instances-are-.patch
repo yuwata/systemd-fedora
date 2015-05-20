@@ -1,4 +1,4 @@
-From 97f36b10cbbcc61c6c8194be0af3bb526bab6df2 Mon Sep 17 00:00:00 2001
+From c1d39ccd066356ef5581081a97acfbe847103de7 Mon Sep 17 00:00:00 2001
 From: Lennart Poettering <lennart@poettering.net>
 Date: Tue, 19 May 2015 19:47:52 +0200
 Subject: [PATCH] units: make sure systemd-nspawn@.slice instances are actually

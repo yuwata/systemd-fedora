@@ -213,9 +213,10 @@ Patch0172:      0172-zsh-completion-removing-more-pointless-forks.patch
 Patch0173:      0173-zsh-completion-make-the-arrays-_sys_active_units-_sy.patch
 Patch0174:      0174-resolved-fix-crash-when-shutting-down.patch
 Patch0175:      0175-resolved-allow-DnsAnswer-objects-with-no-space-for-R.patch
-Patch0176:      0176-journalctl-Improve-boot-ID-lookup.patch
-Patch0177:      0177-test-hashmap-fix-an-assert.patch
-Patch0178:      0178-units-make-sure-systemd-nspawn-.slice-instances-are-.patch
+Patch0176:      0176-id128-add-new-sd_id128_is_null-call.patch
+Patch0177:      0177-journalctl-Improve-boot-ID-lookup.patch
+Patch0178:      0178-test-hashmap-fix-an-assert.patch
+Patch0179:      0179-units-make-sure-systemd-nspawn-.slice-instances-are-.patch
 
 
 # kernel-install patch for grubby, drop if grubby is obsolete
@@ -907,6 +908,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_prefix}/lib/sysctl.d/50-coredump.conf
 %{_prefix}/lib/sysusers.d/basic.conf
 %{_prefix}/lib/sysusers.d/systemd.conf
+%{pkgdir}/system-preset/90-systemd.preset
 %{pkgdir}/catalog/systemd.catalog
 %{_prefix}/lib/kernel/install.d/50-depmod.install
 %{_prefix}/lib/kernel/install.d/90-loaderentry.install
