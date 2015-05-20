@@ -16,7 +16,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        219
-Release:        14%{?gitcommit:.git%{gitcommit}}%{?dist}
+Release:        15%{?gitcommit:.git%{gitcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -301,7 +301,7 @@ Obsoletes:      systemd < 204-10
 Obsoletes:      systemd-sysv < 206
 Provides:       systemd-sysv = 206
 Conflicts:      initscripts < 9.56.1
-Conflicts:      fedora-release < 23.0.12
+Conflicts:      fedora-release < 23-0.12
 
 %description
 systemd is a system and service manager for Linux, compatible with
@@ -1046,6 +1046,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Wed May 20 2015 Dennis Gilmore <dennis@ausil.us> - 219-15
+- fix up the conflicts version for fedora-release
+
 * Wed May 20 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 219-14
 - Remove presets (#1221340)
 - Fix (potential) crash and memory leak in timedated, locking failure
