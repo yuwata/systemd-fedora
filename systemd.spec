@@ -27,10 +27,7 @@ Source0:        %{name}-git%{gitcommit}.tar.xz
 %else
 Source0:        http://www.freedesktop.org/software/systemd/%{name}-%{version}.tar.xz
 %endif
-# Fedora's default preset policy
-Source1:        90-default.preset
-Source2:        99-default-disable.preset
-Source3:        85-display-manager.preset
+
 # Prevent accidental removal of the systemd package
 Source4:        yum-protect-systemd.conf
 Source5:        inittab
@@ -272,6 +269,7 @@ Obsoletes:      systemd < 204-10
 Obsoletes:      systemd-sysv < 206
 Provides:       systemd-sysv = 206
 Conflicts:      initscripts < 9.56.1
+Conflicts:      fedora-release < 23.0.12
 
 %description
 systemd is a system and service manager for Linux, compatible with
@@ -553,12 +551,6 @@ touch %{buildroot}%{_sysconfdir}/localtime
 mkdir -p %{buildroot}%{_sysconfdir}/X11/xorg.conf.d
 touch %{buildroot}%{_sysconfdir}/X11/xorg.conf.d/00-keyboard.conf
 
-# Install Fedora default preset policy
-install -Dm0644 %{SOURCE1} %{buildroot}%{pkgdir}/system-preset/
-install -Dm0644 %{SOURCE2} %{buildroot}%{pkgdir}/system-preset/
-install -Dm0644 %{SOURCE3} %{buildroot}%{pkgdir}/system-preset/
-mkdir -p %{buildroot}%{pkgdir}/user-preset/
-
 # Make sure the shutdown/sleep drop-in dirs exist
 mkdir -p %{buildroot}%{pkgdir}/system-shutdown/
 mkdir -p %{buildroot}%{pkgdir}/system-sleep/
@@ -653,8 +645,6 @@ if [ $1 -eq 1 ] ; then
                 console-getty.service \
                 console-shell.service \
                 debug-shell.service \
-                systemd-readahead-replay.service \
-                systemd-readahead-collect.service \
                 systemd-timesyncd.service \
                 systemd-networkd.service \
                 systemd-networkd-wait-online.service \
@@ -771,8 +761,6 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %dir %{_prefix}/lib/systemd
 %{pkgdir}/system-generators
 %{pkgdir}/user-generators
-%dir %{pkgdir}/system-preset
-%dir %{pkgdir}/user-preset
 %dir %{pkgdir}/system-shutdown
 %dir %{pkgdir}/system-sleep
 %dir %{pkgdir}/catalog
@@ -888,10 +876,6 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_prefix}/lib/sysctl.d/50-coredump.conf
 %{_prefix}/lib/sysusers.d/basic.conf
 %{_prefix}/lib/sysusers.d/systemd.conf
-%{pkgdir}/system-preset/85-display-manager.preset
-%{pkgdir}/system-preset/90-default.preset
-%{pkgdir}/system-preset/90-systemd.preset
-%{pkgdir}/system-preset/99-default-disable.preset
 %{pkgdir}/catalog/systemd.catalog
 %{_prefix}/lib/kernel/install.d/50-depmod.install
 %{_prefix}/lib/kernel/install.d/90-loaderentry.install
@@ -1029,6 +1013,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Wed May 20 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 219-14
+- Remove presets (#1221340)
+
 * Wed Apr 29 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 219-13
 - Patches for some outstanding annoyances
 - Small keyboard hwdb updates
