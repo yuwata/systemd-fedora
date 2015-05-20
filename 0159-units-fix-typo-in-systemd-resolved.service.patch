@@ -1,0 +1,30 @@
+From 225d44db2d85b493d36bc159945191cc36a3fa21 Mon Sep 17 00:00:00 2001
+From: Lennart Poettering <lennart@poettering.net>
+Date: Thu, 14 May 2015 22:32:35 +0200
+Subject: [PATCH] units: fix typo in systemd-resolved.service
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+There's no network.service unit, we actually mean network.target here.
+
+Reported by Fco. Eduardo Ramírez.
+
+(cherry picked from commit 1dff3202941786dd00060f078f6b031efe52d3c3)
+---
+ units/systemd-resolved.service.m4.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/units/systemd-resolved.service.m4.in b/units/systemd-resolved.service.m4.in
+index d133847d5e..98ae564af6 100644
+--- a/units/systemd-resolved.service.m4.in
++++ b/units/systemd-resolved.service.m4.in
+@@ -8,7 +8,7 @@
+ [Unit]
+ Description=Network Name Resolution
+ Documentation=man:systemd-resolved.service(8)
+-After=systemd-networkd.service network.service
++After=systemd-networkd.service network.target
+ 
+ m4_ifdef(`ENABLE_KDBUS',
+ # On kdbus systems we pull in the busname explicitly, because it

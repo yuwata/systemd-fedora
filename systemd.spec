@@ -185,6 +185,37 @@ Patch0144:      0144-units-set-KillMode-mixed-for-our-daemons-that-fork-w.patch
 Patch0145:      0145-unit-don-t-add-automatic-dependencies-on-device-unit.patch
 Patch0146:      0146-update-done-ignore-nanosecond-file-timestamp-compone.patch
 Patch0147:      0147-sd-daemon-simplify-sd_pid_notify_with_fds.patch
+Patch0148:      0148-timedated-correctly-set-context-on-etc-localtime.patch
+Patch0149:      0149-Revert-timedated-correctly-set-context-on-etc-localt.patch
+Patch0150:      0150-run-synchronously-wait-until-the-scope-unit-we-creat.patch
+Patch0151:      0151-sysv-generator-test-Fix-assertion.patch
+Patch0152:      0152-man-avoid-line-break-in-url.patch
+Patch0153:      0153-Add-VARIANT-as-a-standard-value-for-etc-os-release.patch
+Patch0154:      0154-Fix-permissions-on-run-systemd-nspawn-locks.patch
+Patch0155:      0155-man-document-forwarding-to-syslog-better.patch
+Patch0156:      0156-man-fix-typos-in-previous-comimt.patch
+Patch0157:      0157-generators-rename-add_-root-usr-_mount-to-add_-sysro.patch
+Patch0158:      0158-Generate-systemd-fsck-root.service-in-the-initramfs.patch
+Patch0159:      0159-units-fix-typo-in-systemd-resolved.service.patch
+Patch0160:      0160-core-don-t-consider-umask-for-SocketMode.patch
+Patch0161:      0161-timedate-fix-memory-leak-in-timedated.patch
+Patch0162:      0162-core-Fix-assertion-with-empty-Exec-paths.patch
+Patch0163:      0163-coredump-make-sure-we-vacuum-by-default.patch
+Patch0164:      0164-tmpfiles-don-t-fail-if-we-cannot-create-a-subvolume-.patch
+Patch0165:      0165-zsh-completion-add-missing-completions-for-machinect.patch
+Patch0166:      0166-zsh-completion-update-M-completion-for-systemd-analy.patch
+Patch0167:      0167-zsh-completion-add-missing-completions-for-systemd-n.patch
+Patch0168:      0168-zsh-completion-actually-run-_filter_units_by_propert.patch
+Patch0169:      0169-zsh-completion-actually-complete-template-names-for-.patch
+Patch0170:      0170-zsh-completion-less-forking-in-_systemctl_get_templa.patch
+Patch0171:      0171-zsh-completion-less-forking-in-_systemctl_failed_uni.patch
+Patch0172:      0172-zsh-completion-removing-more-pointless-forks.patch
+Patch0173:      0173-zsh-completion-make-the-arrays-_sys_active_units-_sy.patch
+Patch0174:      0174-resolved-fix-crash-when-shutting-down.patch
+Patch0175:      0175-resolved-allow-DnsAnswer-objects-with-no-space-for-R.patch
+Patch0176:      0176-journalctl-Improve-boot-ID-lookup.patch
+Patch0177:      0177-test-hashmap-fix-an-assert.patch
+Patch0178:      0178-units-make-sure-systemd-nspawn-.slice-instances-are-.patch
 
 
 # kernel-install patch for grubby, drop if grubby is obsolete
@@ -1015,6 +1046,14 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %changelog
 * Wed May 20 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 219-14
 - Remove presets (#1221340)
+- Fix (potential) crash and memory leak in timedated, locking failure
+  in systemd-nspawn, crash in resolved.
+- journalctl --list-boots should be faster
+- zsh completions are improved
+- various ommissions in docs are corrected (#1147651)
+- VARIANT and VARIANT_ID fields in os-release are documented
+- systemd-fsck-root.service is generated in the initramfs (#1201979, #1107818)
+- systemd-tmpfiles should behave better on read-only file systems (#1207083)
 
 * Wed Apr 29 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 219-13
 - Patches for some outstanding annoyances

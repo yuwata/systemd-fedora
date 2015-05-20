@@ -1,0 +1,54 @@
+From 705313fc28f30ba3535d190ecb7ded21f66cc870 Mon Sep 17 00:00:00 2001
+From: Lennart Poettering <lennart@poettering.net>
+Date: Fri, 15 May 2015 20:56:55 +0200
+Subject: [PATCH] coredump: make sure we vacuum by default
+
+Only if both keep_free and max_use are actually 0 we can shortcut things
+and avoid vacuuming. If either are positive or -1 we need to execute the
+vacuuming.
+
+http://lists.freedesktop.org/archives/systemd-devel/2015-April/031382.html
+(cherry picked from commit 5470c03b37d8421a903564c2c8028c8b8d67d403)
+---
+ man/coredump.conf.xml         | 4 +++-
+ src/journal/coredump-vacuum.c | 5 ++---
+ 2 files changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/man/coredump.conf.xml b/man/coredump.conf.xml
+index 0b7329bf55..fd54c59e6b 100644
+--- a/man/coredump.conf.xml
++++ b/man/coredump.conf.xml
+@@ -134,7 +134,9 @@
+         by coredumps might temporarily exceed these limits while
+         coredumps are processed. Note that old coredumps are also
+         removed based on time via
+-        <citerefentry><refentrytitle>systemd-tmpfiles</refentrytitle><manvolnum>8</manvolnum></citerefentry>.</para></listitem>
++        <citerefentry><refentrytitle>systemd-tmpfiles</refentrytitle><manvolnum>8</manvolnum></citerefentry>. Set
++        either value to 0 to turn off size based
++        clean-up.</para></listitem>
+       </varlistentry>
+     </variablelist>
+ 
+diff --git a/src/journal/coredump-vacuum.c b/src/journal/coredump-vacuum.c
+index 9b73795e5b..c0347ef569 100644
+--- a/src/journal/coredump-vacuum.c
++++ b/src/journal/coredump-vacuum.c
+@@ -103,8 +103,7 @@ static bool vacuum_necessary(int fd, off_t sum, off_t keep_free, off_t max_use)
+ 
+                         if (max_use < DEFAULT_MAX_USE_LOWER)
+                                 max_use = DEFAULT_MAX_USE_LOWER;
+-                }
+-                else
++                } else
+                         max_use = DEFAULT_MAX_USE_LOWER;
+         } else
+                 max_use = PAGE_ALIGN(max_use);
+@@ -135,7 +134,7 @@ int coredump_vacuum(int exclude_fd, off_t keep_free, off_t max_use) {
+         struct stat exclude_st;
+         int r;
+ 
+-        if (keep_free <= 0 && max_use <= 0)
++        if (keep_free == 0 && max_use == 0)
+                 return 0;
+ 
+         if (exclude_fd >= 0) {

@@ -1,0 +1,25 @@
+From 094ea5dd03ece57d3162caf33755d76ff2399bb3 Mon Sep 17 00:00:00 2001
+From: Thomas Hindoe Paaboel Andersen <phomes@gmail.com>
+Date: Tue, 19 May 2015 06:33:54 +0200
+Subject: [PATCH] test-hashmap: fix an assert
+
+CID#1299016
+
+(cherry picked from commit b669934fae49c9158c35e612e54e1765edca8584)
+---
+ src/test/test-hashmap-plain.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/test/test-hashmap-plain.c b/src/test/test-hashmap-plain.c
+index 84b508f874..c1a5ccf1f5 100644
+--- a/src/test/test-hashmap-plain.c
++++ b/src/test/test-hashmap-plain.c
+@@ -682,7 +682,7 @@ static void test_hashmap_get2(void) {
+         r = hashmap_get2(m, key_orig, &key_copy);
+         assert_se(streq(r, val));
+         assert_se(key_orig != key_copy);
+-        assert_se(streq(key_orig, key_orig));
++        assert_se(streq(key_orig, key_copy));
+ 
+         r = hashmap_get2(m, "no such key", NULL);
+         assert_se(r == NULL);

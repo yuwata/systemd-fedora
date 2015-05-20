@@ -1,0 +1,48 @@
+From b505f6560ea203ff1440da4d2b653b839e621aba Mon Sep 17 00:00:00 2001
+From: Lennart Poettering <lennart@poettering.net>
+Date: Fri, 15 May 2015 21:47:22 +0200
+Subject: [PATCH] tmpfiles: don't fail if we cannot create a subvolume because
+ a file system is read-only but a dir already exists anyway
+
+https://bugs.freedesktop.org/show_bug.cgi?id=90281
+(cherry picked from commit 7b135a73999b6911ebb85c053b6f7701fdac1883)
+---
+ src/tmpfiles/tmpfiles.c | 17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
+
+diff --git a/src/tmpfiles/tmpfiles.c b/src/tmpfiles/tmpfiles.c
+index 73a9c9d5b6..d0e6567d8a 100644
+--- a/src/tmpfiles/tmpfiles.c
++++ b/src/tmpfiles/tmpfiles.c
+@@ -1002,20 +1002,25 @@ static int create_item(Item *i) {
+                                 r = mkdir_label(i->path, i->mode);
+ 
+                 if (r < 0) {
+-                        if (r != -EEXIST)
+-                                return log_error_errno(r, "Failed to create directory or subvolume \"%s\": %m", i->path);
++                        int k;
+ 
+-                        if (stat(i->path, &st) < 0)
+-                                return log_error_errno(errno, "stat(%s) failed: %m", i->path);
++                        if (r != -EEXIST && r != -EROFS)
++                                return log_error_errno(r, "Failed to create directory or subvolume \"%s\": %m", i->path);
+ 
+-                        if (!S_ISDIR(st.st_mode)) {
+-                                log_debug("\"%s\" already exists and is not a directory.", i->path);
++                        k = is_dir(i->path, false);
++                        if (k == -ENOENT && r == -EROFS)
++                                return log_error_errno(r, "%s does not exist and cannot be created as the file system is read-only.", i->path);
++                        if (k < 0)
++                                return log_error_errno(k, "Failed to check if %s exists: %m", i->path);
++                        if (!k) {
++                                log_warning("\"%s\" already exists and is not a directory.", i->path);
+                                 return 0;
+                         }
+ 
+                         creation = CREATION_EXISTING;
+                 } else
+                         creation = CREATION_NORMAL;
++
+                 log_debug("%s directory \"%s\".", creation_mode_verb_to_string(creation), i->path);
+ 
+                 r = path_set_perms(i, i->path);

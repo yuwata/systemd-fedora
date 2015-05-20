@@ -1,0 +1,41 @@
+From 185aa53dbf2dc882940487b35fae6dccd5097466 Mon Sep 17 00:00:00 2001
+From: Seth Jennings <sjenning@redhat.com>
+Date: Tue, 5 May 2015 13:31:01 -0500
+Subject: [PATCH] Fix permissions on /run/systemd/nspawn/locks
+
+machined is getting an EACCES when trying to create the lock file for
+images because the mode on /run/systemd/nspawn/locks is 0600.
+
+mkdir("/run/systemd/nspawn/locks", 0600) = -1 EEXIST (File exists)
+stat("/run/systemd/nspawn/locks", {st_mode=S_IFDIR|0600, st_size=40, ...}) = 0
+open("/run/systemd/nspawn/locks/inode-41:256", O_RDWR|O_CREAT|O_NOCTTY|O_NOFOLLOW|O_CLOEXEC, 0600) = -1 EACCES (Permission denied)
+
+This commit adjusts the mode to 0700 to correct the issue.
+
+(cherry picked from commit 7e7cddb22493642dad826ec42ac00979f40b2d17)
+---
+ src/shared/machine-image.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/shared/machine-image.c b/src/shared/machine-image.c
+index 8d61507e84..c02ee814c4 100644
+--- a/src/shared/machine-image.c
++++ b/src/shared/machine-image.c
+@@ -601,7 +601,7 @@ int image_path_lock(const char *path, int operation, LockFile *global, LockFile
+                 return r;
+ 
+         if (p) {
+-                mkdir_p("/run/systemd/nspawn/locks", 0600);
++                mkdir_p("/run/systemd/nspawn/locks", 0700);
+ 
+                 r = make_lock_file(p, operation, global);
+                 if (r < 0) {
+@@ -628,7 +628,7 @@ int image_name_lock(const char *name, int operation, LockFile *ret) {
+         if (streq(name, ".host"))
+                 return -EBUSY;
+ 
+-        mkdir_p("/run/systemd/nspawn/locks", 0600);
++        mkdir_p("/run/systemd/nspawn/locks", 0700);
+         p = strjoina("/run/systemd/nspawn/locks/name-", name);
+ 
+         return make_lock_file(p, operation, ret);

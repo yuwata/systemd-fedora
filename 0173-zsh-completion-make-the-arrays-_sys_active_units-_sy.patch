@@ -1,0 +1,51 @@
+From 29ead1919564e18dc7a3aee2214543db02aea72d Mon Sep 17 00:00:00 2001
+From: Eric Cook <llua@gmx.com>
+Date: Mon, 18 May 2015 01:02:43 -0400
+Subject: [PATCH] zsh-completion: make the arrays _sys_active_units,
+ _sys_startable_units and _sys_restartable_units local to the completer.
+
+(cherry picked from commit bf8864c2c07f3bdab4ab4287bf2b5d3b5ce21f5c)
+---
+ shell-completion/zsh/_systemctl.in | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/shell-completion/zsh/_systemctl.in b/shell-completion/zsh/_systemctl.in
+index 2a3e21bf17..673b976e34 100644
+--- a/shell-completion/zsh/_systemctl.in
++++ b/shell-completion/zsh/_systemctl.in
+@@ -208,7 +208,7 @@ done
+ # Completion functions for STARTABLE_UNITS
+ (( $+functions[_systemctl_start] )) || _systemctl_start()
+ {
+-   _systemctl_startable_units
++   local _sys_startable_units; _systemctl_startable_units
+    compadd "$@" - ${_sys_startable_units[*]} $(_systemctl_get_template_names)
+ }
+ 
+@@ -216,7 +216,7 @@ done
+ for fun in stop kill try-restart condrestart ; do
+   (( $+functions[_systemctl_$fun] )) || _systemctl_$fun()
+   {
+-    _systemctl_active_units
++    local _sys_active_units; _systemctl_active_units
+     compadd "$@" - $( _filter_units_by_property CanStop yes \
+       ${_sys_active_units[*]} )
+   }
+@@ -234,7 +234,7 @@ done
+ for fun in reload reload-or-try-restart force-reload ; do
+   (( $+functions[_systemctl_$fun] )) || _systemctl_$fun()
+   {
+-    _systemctl_active_units
++    local _sys_active_units; _systemctl_active_units
+     compadd "$@" - $( _filter_units_by_property CanReload yes \
+       ${_sys_active_units[*]} )
+   }
+@@ -244,7 +244,7 @@ done
+ for fun in restart reload-or-restart ; do
+   (( $+functions[_systemctl_$fun] )) || _systemctl_$fun()
+   {
+-    _systemctl_restartable_units
++    local _sys_restartable_units; _systemctl_restartable_units
+     compadd "$@" - ${_sys_restartable_units[*]} $(_systemctl_get_template_names)
+   }
+ done

@@ -1,0 +1,71 @@
+From c10fe187879d57c4e2290abc7e3f1017a39357f0 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Wed, 20 May 2015 01:24:36 -0400
+Subject: [PATCH] Revert "timedated: correctly set context on /etc/localtime"
+
+This reverts commit 22eade6dd8422ba6d044c265f0620e3ebb900320.
+
+This commit was never supposed to be pushed.
+---
+ src/shared/label.c       | 18 ------------------
+ src/shared/label.h       |  1 -
+ src/timedate/timedated.c |  4 +---
+ 3 files changed, 1 insertion(+), 22 deletions(-)
+
+diff --git a/src/shared/label.c b/src/shared/label.c
+index 7d0a6bc7ca..82f10b21bd 100644
+--- a/src/shared/label.c
++++ b/src/shared/label.c
+@@ -78,21 +78,3 @@ int symlink_label(const char *old_path, const char *new_path) {
+ 
+         return mac_smack_fix(new_path, false, false);
+ }
+-
+-int symlink_label_atomic(const char *old_path, const char *new_path) {
+-        int r;
+-
+-        assert(old_path);
+-        assert(new_path);
+-
+-        r = mac_selinux_create_file_prepare(new_path, S_IFLNK);
+-        if (r < 0)
+-                return r;
+-
+-        r = symlink_atomic(old_path, new_path);
+-        mac_selinux_create_file_clear();
+-        if (r < 0)
+-                return r;
+-
+-        return mac_smack_fix(new_path, false, false);
+-}
+diff --git a/src/shared/label.h b/src/shared/label.h
+index 793596409b..8070bcb021 100644
+--- a/src/shared/label.h
++++ b/src/shared/label.h
+@@ -28,4 +28,3 @@ int label_fix(const char *path, bool ignore_enoent, bool ignore_erofs);
+ 
+ int mkdir_label(const char *path, mode_t mode);
+ int symlink_label(const char *old_path, const char *new_path);
+-int symlink_label_atomic(const char *old_path, const char *new_path);
+diff --git a/src/timedate/timedated.c b/src/timedate/timedated.c
+index 01ab9c98c7..f2d23f34b1 100644
+--- a/src/timedate/timedated.c
++++ b/src/timedate/timedated.c
+@@ -34,7 +34,6 @@
+ #include "clock-util.h"
+ #include "conf-files.h"
+ #include "path-util.h"
+-#include "label.h"
+ #include "fileio-label.h"
+ #include "label.h"
+ #include "bus-util.h"
+@@ -124,8 +123,7 @@ static int context_write_data_timezone(Context *c) {
+         if (!p)
+                 return log_oom();
+ 
+-        mac_selinux_init("/etc");
+-        r = symlink_label_atomic(p, "/etc/localtime");
++        r = symlink_atomic(p, "/etc/localtime");
+         if (r < 0)
+                 return r;
+ 
