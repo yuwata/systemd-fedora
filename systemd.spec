@@ -15,8 +15,8 @@
 
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        219
-Release:        15%{?gitcommit:.git%{gitcommit}}%{?dist}
+Version:        220
+Release:        1%{?gitcommit:.git%{gitcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -35,189 +35,9 @@ Source6:        sysctl.conf.README
 Source7:        systemd-journal-remote.xml
 Source8:        systemd-journal-gatewayd.xml
 
-# Patch series is available from http://cgit.freedesktop.org/systemd/systemd-stable/log/?h=v219-stable
-# GIT_DIR=~/src/systemd/.git git format-patch-ab -M -N --no-signature v219..v219-stable
+# Patch series is available from http://cgit.freedesktop.org/systemd/systemd-stable/log/?h=v220-stable
+# GIT_DIR=~/src/systemd/.git git format-patch-ab -M -N --no-signature v220..v220-stable
 # i=1; for p in 0*patch;do printf "Patch%04d:      %s\n" $i $p; ((i++));done
-Patch0001:      0001-journal-remote-fix-certificate-status-memory-leak.patch
-Patch0002:      0002-journal-remote-fix-client_cert-memory-leak.patch
-Patch0003:      0003-tmpfiles-Fix-parse_acl-error-message.patch
-Patch0004:      0004-test-utf8-fix-utf16-tests-on-BE-machines.patch
-Patch0005:      0005-tmpfiles-avoid-creating-duplicate-acl-entries.patch
-Patch0006:      0006-shared-time-util-fix-gcc5-warning.patch
-Patch0007:      0007-test-time-test-infinity-parsing-in-nanoseconds.patch
-Patch0008:      0008-bootchart-fix-default-init-path.patch
-Patch0009:      0009-systemctl-bump-NOFILE-only-for-systemctl_main.patch
-Patch0010:      0010-acl-util-avoid-freeing-uninitialized-pointer.patch
-Patch0011:      0011-bootchart-svg-fix-checking-of-list-end.patch
-Patch0012:      0012-systemd-add-getrandom-syscall-numbers-for-MIPS.patch
-Patch0013:      0013-unit-use-weaker-dependencies-between-mount-and-devic.patch
-Patch0014:      0014-unit-When-stopping-due-to-BindsTo-log-which-unit-cau.patch
-Patch0015:      0015-sysctl-downgrade-message-about-sysctl-overrides-to-d.patch
-Patch0016:      0016-sysctl-add-some-hints-how-to-override-settings.patch
-Patch0017:      0017-core-rework-device-state-logic.patch
-Patch0018:      0018-core-fix-return-value-on-OOM.patch
-Patch0019:      0019-machined-use-x-machine-unix-prefix-for-the-container.patch
-Patch0020:      0020-shared-AFS-is-also-a-network-filesystem.patch
-Patch0021:      0021-core-downgrade-unit-type-not-supported-message.patch
-Patch0022:      0022-journal-remote-fix-saving-of-binary-fields.patch
-Patch0023:      0023-journal-fix-Inappropriate-ioctl-for-device-on-ext4.patch
-Patch0024:      0024-sd-daemon-replace-VLA-with-alloca-to-make-llvm-happy.patch
-Patch0025:      0025-tmpfiles-quietly-ignore-ACLs-on-unsupported-filesyst.patch
-Patch0026:      0026-shared-util-assume-ac-when-sys-class-power_supply-is.patch
-Patch0027:      0027-import-remove-unused-variable.patch
-Patch0028:      0028-hwdb-fix-ThinkPad-X-Tablet-special-keys.patch
-Patch0029:      0029-man-add-newlines-to-the-pull-raw-example-in-machinec.patch
-Patch0030:      0030-core-shared-in-deserializing-match-same-files-reache.patch
-Patch0031:      0031-shared-use-SocketAddress-in-socket_address_matches_f.patch
-Patch0032:      0032-shared-avoid-semi-duplicating-socket_address_equal.patch
-Patch0033:      0033-shared-handle-unnamed-sockets-in-socket_address_equa.patch
-Patch0034:      0034-man-make-bootup-graph-consistent.patch
-Patch0035:      0035-nspawn-fix-whitespace-and-typo-in-partition-table-bl.patch
-Patch0036:      0036-man-explain-time-units-in-tmpfiles.patch
-Patch0037:      0037-systemctl-check-validity-of-PID-we-received.patch
-Patch0038:      0038-systemctl-support-auditd.service-better.patch
-Patch0039:      0039-shared-unit-name-fix-gcc5-warning.patch
-Patch0040:      0040-test-hashmap-fix-gcc5-warning.patch
-Patch0041:      0041-shared-fix-wrong-assertion-in-barrier_set_role.patch
-Patch0042:      0042-hwdb-Update-database-of-Bluetooth-company-identifier.patch
-Patch0043:      0043-journal-make-skipping-of-exhausted-journal-files-eff.patch
-Patch0044:      0044-hwdb-add-sdio-identifiers-for-Broadcom-WLAN-cards.patch
-Patch0045:      0045-shared-condition-fix-gcc5-warning.patch
-Patch0046:      0046-man-correct-description-of-systemd-user-sessions.patch
-Patch0047:      0047-build-sys-allow-lto-and-FORTIFY_SOURCE-with-O-sz.patch
-Patch0048:      0048-man-fix-typo.patch
-Patch0049:      0049-bus-proxyd-avoid-logging-oom-twice.patch
-Patch0050:      0050-Do-not-run-sysv-generator-test-when-sysv-compat-is-d.patch
-Patch0051:      0051-README-mention-ACLs-more.patch
-Patch0052:      0052-Do-not-advertise-.d-snippets-over-main-config-file.patch
-Patch0053:      0053-hwdb-add-pnpid-for-the-T450s-touchpad.patch
-Patch0054:      0054-networkd-netdev-inform-when-we-take-over-an-existing.patch
-Patch0055:      0055-man-replace-obsolete-wiki-link-with-man-page.patch
-Patch0056:      0056-Use-correct-uname-identifiers-in-arch_map-for-SuperH.patch
-Patch0057:      0057-hwdb-fix-Dell-XPS12-9Q33-key-name.patch
-Patch0058:      0058-Remove-the-cap-on-epoll-events.patch
-Patch0059:      0059-Allow-up-to-4096-simultaneous-connections.patch
-Patch0060:      0060-hwdb-add-Logitech-G5-Laser-Mouse.patch
-Patch0061:      0061-tmpfiles-Fix-handling-of-duplicate-lines.patch
-Patch0062:      0062-hwdb-add-Lenovo-W451-to-TOUCHPAD_HAS_TRACKPOINT_BUTT.patch
-Patch0063:      0063-vconsole-match-on-vtcon-events-not-fbcon-ones.patch
-Patch0064:      0064-core-do-not-spawn-jobs-or-touch-other-units-during-c.patch
-Patch0065:      0065-firstboot-set-all-spwd-fields-to-1-for-consistency-w.patch
-Patch0066:      0066-sysusers-do-not-reject-users-with-already-present-et.patch
-Patch0067:      0067-nspawn-fix-use-after-free-and-leak-in-error-paths.patch
-Patch0068:      0068-login-fix-copy-pasto-in-error-path.patch
-Patch0069:      0069-journalctl-update-hint-now-that-we-set-ACL-everywher.patch
-Patch0070:      0070-sd-journal-return-error-when-we-cannot-open-a-file.patch
-Patch0071:      0071-missing.h-add-NDA_.patch
-Patch0072:      0072-udevd-close-race-in-udev-settle.patch
-Patch0073:      0073-man-document-that-ExecStartPre-is-not-the-place-to-s.patch
-Patch0074:      0074-journal-fix-return-code.patch
-Patch0075:      0075-console-fix-error-code-inversion.patch
-Patch0076:      0076-bus-proxy-complain-only-once-about-queue-overflows.patch
-Patch0077:      0077-cgtop-fix-assert-when-not-on-tty.patch
-Patch0078:      0078-man-split-paragraph.patch
-Patch0079:      0079-hwdb-update.patch
-Patch0080:      0080-networkd-Begin-with-serial-number-1-for-netlink-requ.patch
-Patch0081:      0081-journal-remote-downgrade-routine-messages-to-debug.patch
-Patch0082:      0082-journal-remote-process-events-without-delay.patch
-Patch0083:      0083-man-update-example-2-in-systemd.network-5.patch
-Patch0084:      0084-gpt-auto-generator-fix-detection-of-srv.patch
-Patch0085:      0085-sd-rtnl-never-set-serial-to-0.patch
-Patch0086:      0086-gpt-auto-generator-allow-type-check-to-fail.patch
-Patch0087:      0087-man-fix-a-bunch-of-links.patch
-Patch0088:      0088-man-link-to-fd.o-for-dbus-stuff.patch
-Patch0089:      0089-man-fix-name-of-systemd.resource-control-5.patch
-Patch0090:      0090-selinux-fix-SEGV-during-switch-root-if-SELinux-polic.patch
-Patch0091:      0091-service-don-t-add-After-dependencies-on-.busname-uni.patch
-Patch0092:      0092-libudev-monitor-fix-error-path-in-send_device.patch
-Patch0093:      0093-core-remove-left-over-debug-message.patch
-Patch0094:      0094-units-there-is-no-systemd-udev-hwdb-update.service.patch
-Patch0095:      0095-util-remove-redundant-debug-message.patch
-Patch0096:      0096-tmpfiles-remove-redundant-debug-message.patch
-Patch0097:      0097-sysv-generator-initialize-LookupPaths-just-once.patch
-Patch0098:      0098-core-do-not-use-quotes-around-virt-and-arch.patch
-Patch0099:      0099-udev-downgrade-has-devpath-and-filled-with-db-file-m.patch
-Patch0100:      0100-cryptsetup-generator-remove-warning-about-crypttab-a.patch
-Patch0101:      0101-sysctl-tweak-debug-message.patch
-Patch0102:      0102-journald-add-syslog-fields-for-audit-messages.patch
-Patch0103:      0103-core-remove-useless-debug-message.patch
-Patch0104:      0104-man-standard-conf-change-directory-reference-to-wild.patch
-Patch0105:      0105-core-don-t-change-removed-devices-to-state-tentative.patch
-Patch0106:      0106-fstab-generator-ignore-invalid-swap-priority.patch
-Patch0107:      0107-missing.h-add-more-btrfs-types-and-defines.patch
-Patch0108:      0108-timedated-flip-internal-status-after-executing-opera.patch
-Patch0109:      0109-timedated-fix-enable-disable-reversal.patch
-Patch0110:      0110-core-make-SELinux-enable-disable-check-symmetric.patch
-Patch0111:      0111-shared-add-path_compare-an-ordering-path-comparison.patch
-Patch0112:      0112-core-namespace-fix-path-sorting.patch
-Patch0113:      0113-console-getty.service-don-t-start-when-dev-console-i.patch
-Patch0114:      0114-resolved-Do-not-add-.busname-dependencies-when-compi.patch
-Patch0115:      0115-man-add-journal-remote.conf-5.patch
-Patch0116:      0116-hwdb-Update-database-of-Bluetooth-company-identifier.patch
-Patch0117:      0117-mount-don-t-run-quotaon-only-for-network-filesystems.patch
-Patch0118:      0118-mount-fix-up-wording-in-the-comment.patch
-Patch0119:      0119-udev-net_id-fix-copy-paste-error.patch
-Patch0120:      0120-man-don-t-mention-journalctl-dev-sda.patch
-Patch0121:      0121-units-move-After-systemd-hwdb-update.service-depende.patch
-Patch0122:      0122-units-explicitly-order-systemd-user-sessions.service.patch
-Patch0123:      0123-zsh-completion-update-loginctl.patch
-Patch0124:      0124-zsh-completion-add-missing-M-completion-for-journalc.patch
-Patch0125:      0125-zsh-completion-update-hostnamectl.patch
-Patch0126:      0126-shell-completion-systemctl-switch-root-verb.patch
-Patch0127:      0127-core-automount-beef-up-error-message.patch
-Patch0128:      0128-man-remove-fs-from-rootfsflags.patch
-Patch0129:      0129-shared-fix-memleak.patch
-Patch0130:      0130-udev-restore-udevadm-settle-timeout.patch
-Patch0131:      0131-hwdb-add-Samsung-ATIV-Book-6-8.patch
-Patch0132:      0132-udevd-fix-synchronization-with-settle-when-handling-.patch
-Patch0133:      0133-python-systemd-fix-is_socket_inet-to-cope-with-ports.patch
-Patch0134:      0134-man-fix-examples-indentation-in-tmpfiles.d-5.patch
-Patch0135:      0135-systemctl-avoid-bumping-NOFILE-rlimit-unless-needed.patch
-Patch0136:      0136-exit-status-Fix-NOTINSSTALLED-typo.patch
-Patch0137:      0137-udev-settle-should-return-immediately-when-timeout-i.patch
-Patch0138:      0138-importd-add-CAP_DAC_OVERRIDE-capability.patch
-Patch0139:      0139-tmpfiles-there-s-no-systemd-forbid-user-logins.servi.patch
-Patch0140:      0140-kmod-setup-load-ip_tables-kmod-at-boot.patch
-Patch0141:      0141-udev-Fix-ping-timeout-when-settle-timeout-is-0.patch
-Patch0142:      0142-util-Fix-assertion-in-split-on-missing.patch
-Patch0143:      0143-hwdb-add-HP-X1000-DPI-info.patch
-Patch0144:      0144-units-set-KillMode-mixed-for-our-daemons-that-fork-w.patch
-Patch0145:      0145-unit-don-t-add-automatic-dependencies-on-device-unit.patch
-Patch0146:      0146-update-done-ignore-nanosecond-file-timestamp-compone.patch
-Patch0147:      0147-sd-daemon-simplify-sd_pid_notify_with_fds.patch
-Patch0148:      0148-timedated-correctly-set-context-on-etc-localtime.patch
-Patch0149:      0149-Revert-timedated-correctly-set-context-on-etc-localt.patch
-Patch0150:      0150-run-synchronously-wait-until-the-scope-unit-we-creat.patch
-Patch0151:      0151-sysv-generator-test-Fix-assertion.patch
-Patch0152:      0152-man-avoid-line-break-in-url.patch
-Patch0153:      0153-Add-VARIANT-as-a-standard-value-for-etc-os-release.patch
-Patch0154:      0154-Fix-permissions-on-run-systemd-nspawn-locks.patch
-Patch0155:      0155-man-document-forwarding-to-syslog-better.patch
-Patch0156:      0156-man-fix-typos-in-previous-comimt.patch
-Patch0157:      0157-generators-rename-add_-root-usr-_mount-to-add_-sysro.patch
-Patch0158:      0158-Generate-systemd-fsck-root.service-in-the-initramfs.patch
-Patch0159:      0159-units-fix-typo-in-systemd-resolved.service.patch
-Patch0160:      0160-core-don-t-consider-umask-for-SocketMode.patch
-Patch0161:      0161-timedate-fix-memory-leak-in-timedated.patch
-Patch0162:      0162-core-Fix-assertion-with-empty-Exec-paths.patch
-Patch0163:      0163-coredump-make-sure-we-vacuum-by-default.patch
-Patch0164:      0164-tmpfiles-don-t-fail-if-we-cannot-create-a-subvolume-.patch
-Patch0165:      0165-zsh-completion-add-missing-completions-for-machinect.patch
-Patch0166:      0166-zsh-completion-update-M-completion-for-systemd-analy.patch
-Patch0167:      0167-zsh-completion-add-missing-completions-for-systemd-n.patch
-Patch0168:      0168-zsh-completion-actually-run-_filter_units_by_propert.patch
-Patch0169:      0169-zsh-completion-actually-complete-template-names-for-.patch
-Patch0170:      0170-zsh-completion-less-forking-in-_systemctl_get_templa.patch
-Patch0171:      0171-zsh-completion-less-forking-in-_systemctl_failed_uni.patch
-Patch0172:      0172-zsh-completion-removing-more-pointless-forks.patch
-Patch0173:      0173-zsh-completion-make-the-arrays-_sys_active_units-_sy.patch
-Patch0174:      0174-resolved-fix-crash-when-shutting-down.patch
-Patch0175:      0175-resolved-allow-DnsAnswer-objects-with-no-space-for-R.patch
-Patch0176:      0176-id128-add-new-sd_id128_is_null-call.patch
-Patch0177:      0177-journalctl-Improve-boot-ID-lookup.patch
-Patch0178:      0178-test-hashmap-fix-an-assert.patch
-Patch0179:      0179-units-make-sure-systemd-nspawn-.slice-instances-are-.patch
-
 
 # kernel-install patch for grubby, drop if grubby is obsolete
 Patch1000:      kernel-install-grubby.patch
@@ -510,7 +330,6 @@ pushd build2
 popd
 
 find %{buildroot} \( -name '*.a' -o -name '*.la' \) -delete
-sed -i 's/L+/#/' %{buildroot}/usr/lib/tmpfiles.d/etc.conf
 
 # udev links
 mkdir -p %{buildroot}/%{_sbindir}
@@ -540,30 +359,11 @@ ln -s ../sysctl.conf %{buildroot}/etc/sysctl.d/99-sysctl.conf
 # them.
 rm -r %{buildroot}%{_sysconfdir}/systemd/system/*.target.wants
 
-# Make sure the ghost-ing below works
-touch %{buildroot}%{_sysconfdir}/systemd/system/runlevel2.target
-touch %{buildroot}%{_sysconfdir}/systemd/system/runlevel3.target
-touch %{buildroot}%{_sysconfdir}/systemd/system/runlevel4.target
-touch %{buildroot}%{_sysconfdir}/systemd/system/runlevel5.target
-
 # Make sure these directories are properly owned
 mkdir -p %{buildroot}%{system_unit_dir}/basic.target.wants
 mkdir -p %{buildroot}%{system_unit_dir}/default.target.wants
 mkdir -p %{buildroot}%{system_unit_dir}/dbus.target.wants
 mkdir -p %{buildroot}%{system_unit_dir}/syslog.target.wants
-
-# Temporary workaround for #1002806
-mkdir -p %{buildroot}%{system_unit_dir}/poweroff.target.wants
-mkdir -p %{buildroot}%{system_unit_dir}/rescue.target.wants
-mkdir -p %{buildroot}%{system_unit_dir}/multi-user.target.wants
-mkdir -p %{buildroot}%{system_unit_dir}/graphical.target.wants
-mkdir -p %{buildroot}%{system_unit_dir}/reboot.target.wants
-ln -s ../systemd-update-utmp-runlevel.service %{buildroot}%{system_unit_dir}/poweroff.target.wants/
-ln -s ../systemd-update-utmp-runlevel.service %{buildroot}%{system_unit_dir}/rescue.target.wants/
-ln -s ../systemd-update-utmp-runlevel.service %{buildroot}%{system_unit_dir}/multi-user.target.wants/
-ln -s ../systemd-update-utmp-runlevel.service %{buildroot}%{system_unit_dir}/graphical.target.wants/
-ln -s ../systemd-update-utmp-runlevel.service %{buildroot}%{system_unit_dir}/reboot.target.wants/
-
 mkdir -p %{buildroot}%{_localstatedir}/run
 mkdir -p %{buildroot}%{_localstatedir}/log
 touch %{buildroot}%{_localstatedir}/run/utmp
@@ -776,7 +576,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %files -f %{name}.lang
 %doc %{_pkgdocdir}
 %exclude %{_pkgdocdir}/LICENSE.*
-%license LICENSE.GPL2 LICENSE.LGPL2.1 LICENSE.MIT
+%license LICENSE.GPL2 LICENSE.LGPL2.1
 %dir %{_sysconfdir}/systemd
 %dir %{_sysconfdir}/systemd/system
 %dir %{_sysconfdir}/systemd/user
@@ -904,6 +704,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_prefix}/lib/tmpfiles.d/tmp.conf
 %{_prefix}/lib/tmpfiles.d/var.conf
 %{_prefix}/lib/tmpfiles.d/etc.conf
+%{_prefix}/lib/tmpfiles.d/home.conf
 %{_prefix}/lib/sysctl.d/50-default.conf
 %{_prefix}/lib/sysctl.d/50-coredump.conf
 %{_prefix}/lib/sysusers.d/basic.conf
@@ -952,7 +753,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_datadir}/polkit-1/actions/org.freedesktop.timedate1.policy
 %{_datadir}/polkit-1/actions/org.freedesktop.import1.policy
 %{_datadir}/polkit-1/actions/org.freedesktop.machine1.policy
-%{_libdir}/pkgconfig/systemd.pc
+%{_datadir}/pkgconfig/systemd.pc
 %{_datadir}/pkgconfig/udev.pc
 %{_datadir}/bash-completion/completions/*
 %{_datadir}/zsh/site-functions/*
@@ -960,13 +761,6 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{pkgdir}/network/99-default.link
 %{pkgdir}/network/80-container-host0.network
 %{pkgdir}/network/80-container-ve.network
-
-# Make sure we don't remove runlevel targets from F14 alpha installs,
-# but make sure we don't create then anew.
-%ghost %config(noreplace) %{_sysconfdir}/systemd/system/runlevel2.target
-%ghost %config(noreplace) %{_sysconfdir}/systemd/system/runlevel3.target
-%ghost %config(noreplace) %{_sysconfdir}/systemd/system/runlevel4.target
-%ghost %config(noreplace) %{_sysconfdir}/systemd/system/runlevel5.target
 
 %files libs
 %{_libdir}/security/pam_systemd.so
@@ -1046,6 +840,12 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Thu May 21 2015 Lennart Poettering <lpoetter@redhat.com> - 220-1
+- New upstream release
+- Drop /etc/mtab hack, as that's apparently fixed in mock now (#1116158)
+- Remove ghosting for %{_sysconfdir}/systemd/system/runlevel*.target, these targets are not configurable anymore in systemd upstream
+- Drop work-around for #1002806, since this is solved upstream now
+
 * Wed May 20 2015 Dennis Gilmore <dennis@ausil.us> - 219-15
 - fix up the conflicts version for fedora-release
 
