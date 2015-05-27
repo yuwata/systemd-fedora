@@ -16,7 +16,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        220
-Release:        2%{?gitcommit:.git%{gitcommit}}%{?dist}
+Release:        3%{?gitcommit:.git%{gitcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -46,6 +46,12 @@ Patch1000:      kernel-install-grubby.patch
 # http://comments.gmane.org/gmane.comp.sysutils.systemd.devel/32067
 # This is upstream commit 040e689654ef08.
 Patch1001:      0001-udevd-event-fix-event-queue-in-daemenozied-mode.patch
+
+# Fix udev --daemon not cleaning child processes:
+# https://www.mail-archive.com/systemd-devel@lists.freedesktop.org/msg31806.html
+# https://bugzilla.redhat.com/show_bug.cgi?id=1225641
+# This is upstream commit 86c3bece38bcf5.
+Patch1002:      0001-udevd-fix-SIGCHLD-handling-in-daemon-mode.patch
 
 %global num_patches %{lua: c=0; for i,p in ipairs(patches) do c=c+1; end; print(c);}
 
@@ -845,6 +851,10 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Thu May 28 2015 Richard W.M. Jones <rjones@redhat.com> - 220-3
+- Add patch to fix udev --daemon not cleaning child processes
+  (upstream commit 86c3bece38bcf5).
+
 * Wed May 27 2015 Richard W.M. Jones <rjones@redhat.com> - 220-2
 - Add patch to fix udev --daemon crash (upstream commit 040e689654ef08).
 
