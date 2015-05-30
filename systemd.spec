@@ -423,6 +423,9 @@ install -Dm0644 %{SOURCE8} %{buildroot}/usr/lib/firewalld/services/
 make -C build2 check VERBOSE=1
 make -C build3 check VERBOSE=1
 
+# Check for botched translations (https://bugzilla.redhat.com/show_bug.cgi?id=1226301)
+test -z "$(grep -L xml:lang %{buildroot}%{_datadir}/polkit-1/actions/org.freedesktop.*.policy)"
+
 %pre
 getent group cdrom >/dev/null 2>&1 || groupadd -r -g 11 cdrom >/dev/null 2>&1 || :
 getent group utmp >/dev/null 2>&1 || groupadd -r -g 22 utmp >/dev/null 2>&1 || :
@@ -851,6 +854,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Sat May 30 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 220-4:.git%{gitcommit}}%{?dist}
+- Check for botched translations (#1226566)
+
 * Sat May 30 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 220-4
 - systemd-devel should require systemd-libs, not the main package (#1226301)
 
