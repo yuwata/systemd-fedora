@@ -600,6 +600,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %dir %{_sysconfdir}/binfmt.d
 %dir %{_sysconfdir}/udev
 %dir %{_sysconfdir}/udev/rules.d
+%dir %{_sysconfdir}/udev/hwdb.d
 %ghost %verify(not md5 size mtime) %config(noreplace,missingok) /etc/crypttab
 /etc/inittab
 %config(noreplace) %{_sysconfdir}/sysctl.conf
@@ -854,11 +855,10 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
-* Sat May 30 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 220-4:.git%{gitcommit}}%{?dist}
-- Check for botched translations (#1226566)
-
 * Sat May 30 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 220-4
 - systemd-devel should require systemd-libs, not the main package (#1226301)
+- Check for botched translations (#1226566)
+- Make /etc/udev/hwdb.d part of the rpm (#1226379)
 
 * Thu May 28 2015 Richard W.M. Jones <rjones@redhat.com> - 220-3
 - Add patch to fix udev --daemon not cleaning child processes
