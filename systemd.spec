@@ -16,7 +16,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        220
-Release:        7%{?gitcommit:.git%{gitcommit}}%{?dist}
+Release:        8%{?gitcommit:.git%{gitcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -70,7 +70,6 @@ BuildRequires:  audit-libs-devel
 BuildRequires:  cryptsetup-devel
 BuildRequires:  dbus-devel
 BuildRequires:  libacl-devel
-BuildRequires:  glib2-devel
 BuildRequires:  gobject-introspection-devel
 BuildRequires:  libblkid-devel
 BuildRequires:  xz-devel
@@ -202,25 +201,6 @@ systemd APIs
 This package contains bindings which allow Python 3 programs to use
 systemd APIs
 
-%package -n libgudev1
-Summary:        Libraries for adding libudev support to applications that use glib
-Conflicts:      filesystem < 3
-License:        LGPLv2+
-Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
-
-%description -n libgudev1
-This package contains the libraries that make it easier to use libudev
-functionality from applications that use glib.
-
-%package -n libgudev1-devel
-Summary:        Header files for adding libudev support to applications that use glib
-Requires:       libgudev1%{?_isa} = %{version}-%{release}
-License:        LGPLv2+
-
-%description -n libgudev1-devel
-This package contains the header and pkg-config files for developing
-glib-based applications using libudev functionality.
-
 %package journal-gateway
 Summary:        Gateway for serving journal events over the network using HTTP
 Requires:       %{name}%{?_isa} = %{version}-%{release}
@@ -317,6 +297,7 @@ CONFIGURE_OPTS=(
         --with-ntp-servers='0.%{ntpvendor}.pool.ntp.org 1.%{ntpvendor}.pool.ntp.org 2.%{ntpvendor}.pool.ntp.org 3.%{ntpvendor}.pool.ntp.org'
         --disable-kdbus
         --disable-terminal
+        --disable-gudev
 	# gold on aarch64 is broken
 	# rhbz #1225156
 	%ifarch aarch64
@@ -570,9 +551,6 @@ fi
 
 %post compat-libs -p /sbin/ldconfig
 %postun compat-libs -p /sbin/ldconfig
-
-%post -n libgudev1 -p /sbin/ldconfig
-%postun -n libgudev1 -p /sbin/ldconfig
 
 %pre journal-gateway
 getent group systemd-journal-gateway >/dev/null 2>&1 || groupadd -r -g 191 systemd-journal-gateway 2>&1 || :
@@ -834,20 +812,6 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %files python3
 %{python3_sitearch}/systemd
 
-%files -n libgudev1
-%{_libdir}/libgudev-1.0.so.*
-%{_libdir}/girepository-1.0/GUdev-1.0.typelib
-
-%files -n libgudev1-devel
-%{_libdir}/libgudev-1.0.so
-%dir %{_includedir}/gudev-1.0
-%dir %{_includedir}/gudev-1.0/gudev
-%{_includedir}/gudev-1.0/gudev/*.h
-%{_datadir}/gir-1.0/GUdev-1.0.gir
-%dir %{_datadir}/gtk-doc/html/gudev
-%{_datadir}/gtk-doc/html/gudev/*
-%{_libdir}/pkgconfig/gudev-1.0*
-
 %files journal-gateway
 %config(noreplace) %{_sysconfdir}/systemd/journal-remote.conf
 %config(noreplace) %{_sysconfdir}/systemd/journal-upload.conf
@@ -867,6 +831,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Tue Jun  9 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 220-8
+- Remove gudev
+
 * Tue Jun 09 2015 Harald Hoyer <harald@redhat.com> 220-7
 - fix udev block device watch
 
