@@ -16,7 +16,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        220
-Release:        4%{?gitcommit:.git%{gitcommit}}%{?dist}
+Release:        5%{?gitcommit:.git%{gitcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -310,6 +310,11 @@ CONFIGURE_OPTS=(
         --with-ntp-servers='0.%{ntpvendor}.pool.ntp.org 1.%{ntpvendor}.pool.ntp.org 2.%{ntpvendor}.pool.ntp.org 3.%{ntpvendor}.pool.ntp.org'
         --disable-kdbus
         --disable-terminal
+	# gold on aarch64 is broken
+	# rhbz #1225156
+	%ifarch aarch64
+	        LDFLAGS=-Wl,-fuse-ld=bfd
+	%endif
 )
 
 pushd build3
@@ -855,6 +860,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Sun Jun  7 2015 Peter Robinson <pbrobinson@fedoraproject.org> 220-5
+- Disable gold on aarch64 until it's fixed (tracked in rhbz #1225156)
+
 * Sat May 30 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 220-4
 - systemd-devel should require systemd-libs, not the main package (#1226301)
 - Check for botched translations (#1226566)
