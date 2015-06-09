@@ -16,7 +16,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        220
-Release:        5%{?gitcommit:.git%{gitcommit}}%{?dist}
+Release:        6%{?gitcommit:.git%{gitcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -52,6 +52,9 @@ Patch1001:      0001-udevd-event-fix-event-queue-in-daemenozied-mode.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=1225641
 # This is upstream commit 86c3bece38bcf5.
 Patch1002:      0001-udevd-fix-SIGCHLD-handling-in-daemon-mode.patch
+
+# Add support for petera disk encryption
+Patch1003:      0004-cryptsetup-craft-a-unique-ID-with-the-source-device.patch
 
 %global num_patches %{lua: c=0; for i,p in ipairs(patches) do c=c+1; end; print(c);}
 
@@ -860,6 +863,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Tue Jun 09 2015 Harald Hoyer <harald@redhat.com> 220-6
+- add support for network disk encryption
+
 * Sun Jun  7 2015 Peter Robinson <pbrobinson@fedoraproject.org> 220-5
 - Disable gold on aarch64 until it's fixed (tracked in rhbz #1225156)
 
