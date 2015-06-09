@@ -16,7 +16,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        220
-Release:        6%{?gitcommit:.git%{gitcommit}}%{?dist}
+Release:        7%{?gitcommit:.git%{gitcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -55,6 +55,10 @@ Patch1002:      0001-udevd-fix-SIGCHLD-handling-in-daemon-mode.patch
 
 # Add support for petera disk encryption
 Patch1003:      0004-cryptsetup-craft-a-unique-ID-with-the-source-device.patch
+
+# Fix udev block device watch
+Patch1004:      0005-rules-fix-typo-in-block-watch-rule.patch
+Patch1005:      0006-rules-restore-block-watch-after-CHANGE-events.patch
 
 %global num_patches %{lua: c=0; for i,p in ipairs(patches) do c=c+1; end; print(c);}
 
@@ -863,6 +867,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Tue Jun 09 2015 Harald Hoyer <harald@redhat.com> 220-7
+- fix udev block device watch
+
 * Tue Jun 09 2015 Harald Hoyer <harald@redhat.com> 220-6
 - add support for network disk encryption
 
