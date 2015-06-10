@@ -1,0 +1,33 @@
+From 4ee8c1c46cdb745db3e62dfc8e945dc73427ba04 Mon Sep 17 00:00:00 2001
+From: Ronny Chevalier <chevalier.ronny@gmail.com>
+Date: Sun, 24 May 2015 13:25:52 +0200
+Subject: [PATCH] zsh-completion: update bootctl
+
+(cherry picked from commit da090dfd0b6a86694084ebc27645ead3f25ef0b6)
+---
+ shell-completion/zsh/_bootctl | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/shell-completion/zsh/_bootctl b/shell-completion/zsh/_bootctl
+index 7d2453cc2c..ce776c052f 100644
+--- a/shell-completion/zsh/_bootctl
++++ b/shell-completion/zsh/_bootctl
+@@ -4,7 +4,10 @@
+ {
+     local -a _bootctl_cmds
+     _bootctl_cmds=(
+-        "status:Show current firmware and boot settings"
++        "status:Show status of installed systemd-boot and EFI variables"
++        "instal:Install systemd-boot to the ESP and EFI variables"
++        "update:Update systemd-boot in the ESP and EFI variables"
++        "remove:Remove systemd-boot from the ESP and EFI variables"
+     )
+     if (( CURRENT == 1 )); then
+         _describe -t commands 'bootctl command' _bootctl_cmds || compadd "$@"
+@@ -22,4 +25,6 @@
+ _arguments \
+     {-h,--help}'[Prints a short help text and exits.]' \
+     '--version[Prints a short version string and exits.]' \
++    '--path=[Path to the EFI System Partition (ESP)]:path:_directories' \
++    '--no-variables[Do not touch EFI variables]' \
+     '*::bootctl command:_bootctl_command'

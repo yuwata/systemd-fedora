@@ -1,0 +1,41 @@
+From f6c1eee14b2c568008f8f43f6c4ee0aebbf2acff Mon Sep 17 00:00:00 2001
+From: kloun <andrey0bolkonsky@gmail.com>
+Date: Thu, 4 Jun 2015 17:56:59 +0300
+Subject: [PATCH] small fix ru translation (cherry picked from commit
+ fcf3f5958e0441c9cc00f035ef6c86c278442366)
+
+---
+ catalog/systemd.ru.catalog | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/catalog/systemd.ru.catalog b/catalog/systemd.ru.catalog
+index f99532469a..03eea04c9f 100644
+--- a/catalog/systemd.ru.catalog
++++ b/catalog/systemd.ru.catalog
+@@ -81,7 +81,7 @@ Documentation: man:core(5)
+ Записан дамп памяти.
+ 
+ Вероятно, это произошло из-за ошибки, допущенной в коде программы.
+-Рекомендуется сообщить ее разработчикам о возникшей проблеме.
++Рекомендуется сообщить её разработчикам о возникшей проблеме.
+ 
+ # Subject: A new session @SESSION_ID@ has been created for user @USER_ID@
+ -- 8d45620c1a4348dbb17410da57c60c66
+@@ -146,7 +146,7 @@ Defined-By: systemd
+ Support: http://lists.freedesktop.org/mailman/listinfo/systemd-devel
+ 
+ Все системные службы, запуск которых предписан настройками, были запущены.
+-Впрочем, это еще не означает, что система в данный момент ничем не занята,
++Впрочем, это ещё не означает, что система в данный момент ничем не занята,
+ так как некоторые службы могут продолжать инициализацию даже после того, как
+ отчитались о своем запуске.
+ 
+@@ -274,7 +274,7 @@ Support: http://lists.freedesktop.org/mailman/listinfo/systemd-devel
+ столбце файла /etc/fstab, либо в параметре Where= файла конфигурации юнита),
+ не является пустым. Это никак не мешает монтированию, однако ранее находившиеся
+ в нем файлы будут недоступны. Чтобы получить к ним доступ, вы можете вручную
+-перемонтировать нижележащую файловую систему в другую точку.
++перемонтировать эту файловую систему в другую точку.
+ 
+ # Subject: A virtual machine or container has been started
+ -- 24d8d4452573402496068381a6312df2

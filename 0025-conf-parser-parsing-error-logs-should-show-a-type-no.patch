@@ -1,0 +1,30 @@
+From 4cdc2411e6d31879ac3409ccd8cdd5eebee9ed35 Mon Sep 17 00:00:00 2001
+From: Ronny Chevalier <chevalier.ronny@gmail.com>
+Date: Sat, 30 May 2015 12:21:26 +0200
+Subject: [PATCH] conf-parser: parsing error logs should show a type not a
+ vartype
+
+Instead of this:
+[filename:1] Failed to parse nsec_t value, ignoring: garbage
+
+we show this:
+[filename:1] Failed to parse nsec value, ignoring: garbage
+
+(cherry picked from commit 98d75800461c091e95398936ceb1efc2d5a3f699)
+---
+ src/shared/conf-parser.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/shared/conf-parser.c b/src/shared/conf-parser.c
+index 2c855157a9..7370c786f9 100644
+--- a/src/shared/conf-parser.c
++++ b/src/shared/conf-parser.c
+@@ -444,7 +444,7 @@ int config_parse_many(const char *conf_file,
+                 if (r < 0)                                              \
+                         log_syntax(unit, LOG_ERR, filename, line, -r,   \
+                                    "Failed to parse %s value, ignoring: %s", \
+-                                   #vartype, rvalue);                   \
++                                   #type, rvalue);                      \
+                                                                         \
+                 return 0;                                               \
+         }

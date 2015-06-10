@@ -1,0 +1,28 @@
+From 8241402c1aadd32f1918d75d04da485430818dcb Mon Sep 17 00:00:00 2001
+From: Tom Gundersen <teg@jklm.no>
+Date: Mon, 25 May 2015 22:47:42 +0200
+Subject: [PATCH] import: dkr - avoid NULL-pointer dereference
+
+A malformed manifest could in principle cause a NULL pointer dereference of. Check
+for this and fail early.
+
+Fixes CID 1299642.
+
+(cherry picked from commit 37591152d261ba980b8992de37ee940c9e5c5da0)
+---
+ src/import/pull-dkr.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/import/pull-dkr.c b/src/import/pull-dkr.c
+index 40aca786a5..d7476dc340 100644
+--- a/src/import/pull-dkr.c
++++ b/src/import/pull-dkr.c
+@@ -864,7 +864,7 @@ static void dkr_pull_job_on_finished_v2(PullJob *j) {
+                 }
+ 
+                 e = json_variant_value(doc, "fsLayers");
+-                if (!e || e->type != JSON_VARIANT_ARRAY) {
++                if (!e || e->type != JSON_VARIANT_ARRAY || e->size == 0) {
+                         r = -EBADMSG;
+                         goto finish;
+                 }

@@ -1,0 +1,55 @@
+From 091acba43685c70d0a38d43167f44fe2622b3c15 Mon Sep 17 00:00:00 2001
+From: Michael Olbrich <m.olbrich@pengutronix.de>
+Date: Tue, 26 May 2015 07:48:48 +0200
+Subject: [PATCH] missing: add more IFLA_VXLAN_* defines
+
+Otherwise building faild with kernel headers < v3.16
+
+(cherry picked from commit 583c14fc04a089e9af70a3fa0b8c0a8c27c06ec0)
+---
+ configure.ac         |  2 +-
+ src/shared/missing.h | 11 +++++++++--
+ 2 files changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 48cedb5ab6..0818dd80cf 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -334,7 +334,7 @@ AC_CHECK_DECLS([IFLA_INET6_ADDR_GEN_MODE,
+                 IFLA_PHYS_PORT_ID,
+                 IFLA_BOND_AD_INFO,
+                 IFLA_VLAN_PROTOCOL,
+-                IFLA_VXLAN_LOCAL6,
++                IFLA_VXLAN_REMCSUM_NOPARTIAL,
+                 IFLA_IPTUN_6RD_RELAY_PREFIXLEN,
+                 IFLA_BRIDGE_VLAN_INFO,
+                 IFLA_BRPORT_UNICAST_FLOOD,
+diff --git a/src/shared/missing.h b/src/shared/missing.h
+index 8ca6f8edb6..9194009491 100644
+--- a/src/shared/missing.h
++++ b/src/shared/missing.h
+@@ -713,7 +713,7 @@ static inline int setns(int fd, int nstype) {
+ #define IFLA_VLAN_MAX   (__IFLA_VLAN_MAX - 1)
+ #endif
+ 
+-#if !HAVE_DECL_IFLA_VXLAN_LOCAL6
++#if !HAVE_DECL_IFLA_VXLAN_REMCSUM_NOPARTIAL
+ #define IFLA_VXLAN_UNSPEC 0
+ #define IFLA_VXLAN_ID 1
+ #define IFLA_VXLAN_GROUP 2
+@@ -732,7 +732,14 @@ static inline int setns(int fd, int nstype) {
+ #define IFLA_VXLAN_PORT 15
+ #define IFLA_VXLAN_GROUP6 16
+ #define IFLA_VXLAN_LOCAL6 17
+-#define __IFLA_VXLAN_MAX 18
++#define IFLA_VXLAN_UDP_CSUM 18
++#define IFLA_VXLAN_UDP_ZERO_CSUM6_TX 19
++#define IFLA_VXLAN_UDP_ZERO_CSUM6_RX 20
++#define IFLA_VXLAN_REMCSUM_TX 21
++#define IFLA_VXLAN_REMCSUM_RX 22
++#define IFLA_VXLAN_GBP 23
++#define IFLA_VXLAN_REMCSUM_NOPARTIAL 24
++#define __IFLA_VXLAN_MAX 25
+ 
+ #define IFLA_VXLAN_MAX  (__IFLA_VXLAN_MAX - 1)
+ #endif

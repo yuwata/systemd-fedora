@@ -1,0 +1,26 @@
+From d9b766a4343cf07a0b4e4ab13401f4aec6e2eece Mon Sep 17 00:00:00 2001
+From: dslul <laudanidaniele@gmail.com>
+Date: Wed, 10 Jun 2015 12:18:22 +0200
+Subject: [PATCH] keymap: Add Samsung NP350V and NP670Z
+
+typo
+
+keymap: Add Samsung NP350V and NP670Z
+(cherry picked from commit ff48c774236967273732a7ee154b4b8e834b4409)
+---
+ hwdb/60-keyboard.hwdb | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/hwdb/60-keyboard.hwdb b/hwdb/60-keyboard.hwdb
+index 9c7e553a41..007c6a809e 100644
+--- a/hwdb/60-keyboard.hwdb
++++ b/hwdb/60-keyboard.hwdb
+@@ -980,6 +980,8 @@ evdev:atkbd:dmi:bvn*:bvr*:bd*:svn[sS][aA][mM][sS][uU][nN][gG]*:pn*550P*:pvr*
+  KEYBOARD_KEY_a9=!                                      # Fn Lock - Function lock off
+ 
+ # Series 7 / 9
++evdev:atkbd:dmi:bvn*:bvr*:bd*:svn[sS][aA][mM][sS][uU][nN][gG]*:pn*350V*:pvr*
++evdev:atkbd:dmi:bvn*:bvr*:bd*:svn[sS][aA][mM][sS][uU][nN][gG]*:pn*670Z*:pvr*
+ evdev:atkbd:dmi:bvn*:bvr*:bd*:svn[sS][aA][mM][sS][uU][nN][gG]*:pn*700Z*:pvr*
+ evdev:atkbd:dmi:bvn*:bvr*:bd*:svn[sS][aA][mM][sS][uU][nN][gG]*:pn*700G*:pvr*
+ evdev:atkbd:dmi:bvn*:bvr*:bd*:svn[sS][aA][mM][sS][uU][nN][gG]*:pn*900X[34]*:pvr*

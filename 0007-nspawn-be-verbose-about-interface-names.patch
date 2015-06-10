@@ -1,0 +1,32 @@
+From 3f712cd14c3af1ba2d177f5aa72ee63df9a41d0f Mon Sep 17 00:00:00 2001
+From: Umut Tezduyar Lindskog <umut.tezduyar@axis.com>
+Date: Fri, 22 May 2015 16:02:09 +0200
+Subject: [PATCH] nspawn: be verbose about interface names
+
+Allowed interface name is relatively small. Lets not make
+users go in to the source code to figure out what happened.
+
+--machine=debian-tree conflicts with
+--machine=debian-tree2
+
+ex: Failed to add new veth \
+         interfaces (host0, vb-debian-tree): File exists
+
+(cherry picked from commit 637aa8a36ce21e0c83466d9b91ee1bfad2404d1c)
+---
+ src/nspawn/nspawn.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/nspawn/nspawn.c b/src/nspawn/nspawn.c
+index 500936387f..646edea700 100644
+--- a/src/nspawn/nspawn.c
++++ b/src/nspawn/nspawn.c
+@@ -2627,7 +2627,7 @@ static int setup_veth(pid_t pid, char iface_name[IFNAMSIZ], int *ifi) {
+ 
+         r = sd_rtnl_call(rtnl, m, 0, NULL);
+         if (r < 0)
+-                return log_error_errno(r, "Failed to add new veth interfaces: %m");
++                return log_error_errno(r, "Failed to add new veth interfaces (host0, %s): %m", iface_name);
+ 
+         i = (int) if_nametoindex(iface_name);
+         if (i <= 0)

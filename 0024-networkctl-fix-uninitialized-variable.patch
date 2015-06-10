@@ -1,0 +1,27 @@
+From fb9a5b5144ab5654197cd9dab7a339976f10450b Mon Sep 17 00:00:00 2001
+From: Ronny Chevalier <chevalier.ronny@gmail.com>
+Date: Sat, 30 May 2015 10:51:41 +0200
+Subject: [PATCH] networkctl: fix uninitialized variable
+
+We ignore the return value of sd_device_get_devtype, then devtype could
+be uninitialized when used with streq_ptr. So we need to initialize it
+first.
+
+(cherry picked from commit 732b7f39a2b3b1a2af90102c6262186ae71197ac)
+---
+ src/network/networkctl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/network/networkctl.c b/src/network/networkctl.c
+index 69b4ab4a5c..3454394977 100644
+--- a/src/network/networkctl.c
++++ b/src/network/networkctl.c
+@@ -62,7 +62,7 @@ static int link_get_type_string(int iftype, sd_device *d, char **ret) {
+         assert(ret);
+ 
+         if (iftype == ARPHRD_ETHER && d) {
+-                const char *devtype, *id = NULL;
++                const char *devtype = NULL, *id = NULL;
+                 /* WLANs have iftype ARPHRD_ETHER, but we want
+                  * to show a more useful type string for
+                  * them */

@@ -1,0 +1,95 @@
+From 6829b6250d10c3a6a773374bffc58ec8cc98bc36 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Sat, 6 Jun 2015 21:24:45 -0400
+Subject: [PATCH] sd-bus: store selinux context at connection time
+
+This appears to be the right time to do it for SOCK_STREAM
+unix sockets.
+
+Also: condition bus_get_owner_creds_dbus1 was reversed. Split
+it out to a separate variable for clarity and fix.
+
+https://bugzilla.redhat.com/show_bug.cgi?id=1224211
+(cherry picked from commit c4e6556c46cea1b7195cfb81c8cfab8342ebd852)
+
+Conflicts:
+	src/libsystemd/sd-bus/bus-control.c
+---
+ src/libsystemd/sd-bus/bus-control.c  | 6 ++++--
+ src/libsystemd/sd-bus/bus-internal.h | 2 +-
+ src/libsystemd/sd-bus/bus-socket.c   | 7 +++++++
+ src/libsystemd/sd-bus/sd-bus.c       | 1 +
+ 4 files changed, 13 insertions(+), 3 deletions(-)
+
+diff --git a/src/libsystemd/sd-bus/bus-control.c b/src/libsystemd/sd-bus/bus-control.c
+index b4ca177f76..1103903358 100644
+--- a/src/libsystemd/sd-bus/bus-control.c
++++ b/src/libsystemd/sd-bus/bus-control.c
+@@ -979,8 +979,10 @@ static int bus_get_owner_creds_dbus1(sd_bus *bus, uint64_t mask, sd_bus_creds **
+         _cleanup_bus_creds_unref_ sd_bus_creds *c = NULL;
+         pid_t pid = 0;
+         int r;
++        bool do_label = bus->label && (mask & SD_BUS_CREDS_SELINUX_CONTEXT);
+ 
+-        if (!bus->ucred_valid && isempty(bus->label))
++        /* Avoid allocating anything if we have no chance of returning useful data */
++        if (!bus->ucred_valid && !do_label)
+                 return -ENODATA;
+ 
+         c = bus_creds_new();
+@@ -1004,7 +1006,7 @@ static int bus_get_owner_creds_dbus1(sd_bus *bus, uint64_t mask, sd_bus_creds **
+                 }
+         }
+ 
+-        if (!isempty(bus->label) && (mask & SD_BUS_CREDS_SELINUX_CONTEXT)) {
++        if (do_label) {
+                 c->label = strdup(bus->label);
+                 if (!c->label)
+                         return -ENOMEM;
+diff --git a/src/libsystemd/sd-bus/bus-internal.h b/src/libsystemd/sd-bus/bus-internal.h
+index 1351938c80..2ee0eabc02 100644
+--- a/src/libsystemd/sd-bus/bus-internal.h
++++ b/src/libsystemd/sd-bus/bus-internal.h
+@@ -261,7 +261,7 @@ struct sd_bus {
+         usec_t auth_timeout;
+ 
+         struct ucred ucred;
+-        char label[NAME_MAX];
++        char *label;
+ 
+         uint64_t creds_mask;
+ 
+diff --git a/src/libsystemd/sd-bus/bus-socket.c b/src/libsystemd/sd-bus/bus-socket.c
+index ec4fcfbcd3..1fde95d2e8 100644
+--- a/src/libsystemd/sd-bus/bus-socket.c
++++ b/src/libsystemd/sd-bus/bus-socket.c
+@@ -587,10 +587,17 @@ void bus_socket_setup(sd_bus *b) {
+ }
+ 
+ static void bus_get_peercred(sd_bus *b) {
++        int r;
++
+         assert(b);
+ 
+         /* Get the peer for socketpair() sockets */
+         b->ucred_valid = getpeercred(b->input_fd, &b->ucred) >= 0;
++
++        /* Get the SELinux context of the peer */
++        r = getpeersec(b->input_fd, &b->label);
++        if (r < 0 && r != -EOPNOTSUPP)
++                log_debug_errno(r, "Failed to determine peer security context: %m");
+ }
+ 
+ static int bus_socket_start_auth_client(sd_bus *b) {
+diff --git a/src/libsystemd/sd-bus/sd-bus.c b/src/libsystemd/sd-bus/sd-bus.c
+index 214b3d04df..ef0f51be53 100644
+--- a/src/libsystemd/sd-bus/sd-bus.c
++++ b/src/libsystemd/sd-bus/sd-bus.c
+@@ -116,6 +116,7 @@ static void bus_free(sd_bus *b) {
+         if (b->kdbus_buffer)
+                 munmap(b->kdbus_buffer, KDBUS_POOL_SIZE);
+ 
++        free(b->label);
+         free(b->rbuffer);
+         free(b->unique_name);
+         free(b->auth_buffer);

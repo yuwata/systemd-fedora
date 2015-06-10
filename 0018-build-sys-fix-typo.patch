@@ -1,0 +1,27 @@
+From bb3f5d2012812ff6ce56ca3139e17c488b7ca30b Mon Sep 17 00:00:00 2001
+From: Karel Zak <kzak@redhat.com>
+Date: Fri, 29 May 2015 13:42:35 +0200
+Subject: [PATCH] build-sys: fix typo
+
+There is nothing like systemd_verify_* in Makefile.am. The bug has
+been invisible because automake uses the default CFLAGS when component
+CFLAGS are undefined.
+
+(cherry picked from commit 144b1b4b34b6ae20a690e31c3d14dbb96341448b)
+---
+ Makefile.am | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile.am b/Makefile.am
+index dd1e9e4e48..5310a30284 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -2132,7 +2132,7 @@ systemd_analyze_SOURCES = \
+ 	src/analyze/analyze-verify.c \
+ 	src/analyze/analyze-verify.h
+ 
+-systemd_verify_CFLAGS = \
++systemd_analyze_CFLAGS = \
+ 	$(AM_CFLAGS) \
+ 	$(SECCOMP_CFLAGS)
+ 

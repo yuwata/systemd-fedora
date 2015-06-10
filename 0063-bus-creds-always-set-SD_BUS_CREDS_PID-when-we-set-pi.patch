@@ -1,0 +1,59 @@
+From 5e6a495495972f748e69d6ec1a8ba2b78aaa7f5a Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Sun, 24 May 2015 20:20:06 -0400
+Subject: [PATCH] bus-creds: always set SD_BUS_CREDS_PID when we set pid in the
+ mask
+
+Also reorder the code a bit to be easier to parse.
+
+(cherry picked from commit 236f83afa935d6e07fcd5c17b5db7b1cf424267a)
+---
+ src/core/selinux-access.c         |  2 +-
+ src/libsystemd/sd-bus/bus-creds.c | 13 ++++++-------
+ 2 files changed, 7 insertions(+), 8 deletions(-)
+
+diff --git a/src/core/selinux-access.c b/src/core/selinux-access.c
+index 5e9a4a5e02..decd42f95a 100644
+--- a/src/core/selinux-access.c
++++ b/src/core/selinux-access.c
+@@ -261,7 +261,7 @@ int mac_selinux_generic_access_check(
+         audit_info.path = path;
+         audit_info.cmdline = cl;
+ 
+-        r = selinux_check_access((security_context_t) scon, fcon, tclass, permission, &audit_info);
++        r = selinux_check_access(scon, fcon, tclass, permission, &audit_info);
+         if (r < 0)
+                 r = sd_bus_error_setf(error, SD_BUS_ERROR_ACCESS_DENIED, "SELinux policy denies access.");
+ 
+diff --git a/src/libsystemd/sd-bus/bus-creds.c b/src/libsystemd/sd-bus/bus-creds.c
+index 4d67619cf8..1c365b7fcd 100644
+--- a/src/libsystemd/sd-bus/bus-creds.c
++++ b/src/libsystemd/sd-bus/bus-creds.c
+@@ -773,11 +773,13 @@ int bus_creds_add_more(sd_bus_creds *c, uint64_t mask, pid_t pid, pid_t tid) {
+                 return 0;
+ 
+         /* Try to retrieve PID from creds if it wasn't passed to us */
+-        if (pid <= 0 && (c->mask & SD_BUS_CREDS_PID))
++        if (pid > 0) {
++                c->pid = pid;
++                c->mask |= SD_BUS_CREDS_PID;
++        } else if (c->mask & SD_BUS_CREDS_PID)
+                 pid = c->pid;
+-
+-        /* Without pid we cannot do much... */
+-        if (pid <= 0)
++        else
++                /* Without pid we cannot do much... */
+                 return 0;
+ 
+         /* Try to retrieve TID from creds if it wasn't passed to us */
+@@ -789,9 +791,6 @@ int bus_creds_add_more(sd_bus_creds *c, uint64_t mask, pid_t pid, pid_t tid) {
+         if (missing == 0)
+                 return 0;
+ 
+-        c->pid = pid;
+-        c->mask |= SD_BUS_CREDS_PID;
+-
+         if (tid > 0) {
+                 c->tid = tid;
+                 c->mask |= SD_BUS_CREDS_TID;

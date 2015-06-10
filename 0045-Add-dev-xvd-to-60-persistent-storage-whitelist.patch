@@ -1,0 +1,25 @@
+From fa7f0bc082bbcfaa997f949b8b4a035fd8a01eda Mon Sep 17 00:00:00 2001
+From: Ed Swierk <eswierk@skyportsystems.com>
+Date: Wed, 3 Jun 2015 08:08:37 -0700
+Subject: [PATCH] Add /dev/xvd* to 60-persistent-storage whitelist Without
+ this, systemd-udevd does not create persistent storage symlinks for xen block
+ devices.
+
+(cherry picked from commit ff2aa01e61f8aff149b63231365f1cef008296a2)
+---
+ rules/60-persistent-storage.rules | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/rules/60-persistent-storage.rules b/rules/60-persistent-storage.rules
+index 2aa15f3411..64c5f1cfdd 100644
+--- a/rules/60-persistent-storage.rules
++++ b/rules/60-persistent-storage.rules
+@@ -6,7 +6,7 @@
+ ACTION=="remove", GOTO="persistent_storage_end"
+ 
+ SUBSYSTEM!="block", GOTO="persistent_storage_end"
+-KERNEL!="loop*|mmcblk*[0-9]|msblk*[0-9]|mspblk*[0-9]|nvme*|sd*|sr*|vd*|bcache*", GOTO="persistent_storage_end"
++KERNEL!="loop*|mmcblk*[0-9]|msblk*[0-9]|mspblk*[0-9]|nvme*|sd*|sr*|vd*|bcache*|xvd*", GOTO="persistent_storage_end"
+ 
+ # ignore partitions that span the entire disk
+ TEST=="whole_disk", GOTO="persistent_storage_end"

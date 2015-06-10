@@ -1,0 +1,23 @@
+From 6ef870184fd2952802c72cf8782745fc613aa233 Mon Sep 17 00:00:00 2001
+From: Patrick Donnelly <batrick@batbytes.com>
+Date: Wed, 27 May 2015 15:47:02 -0400
+Subject: [PATCH] man: fix systemd.resource-control(5) volume number
+
+(cherry picked from commit c4e87748d5d3f574d335a87e3a6272276814b2fd)
+---
+ man/systemd.slice.xml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/man/systemd.slice.xml b/man/systemd.slice.xml
+index f0bac41763..a501327335 100644
+--- a/man/systemd.slice.xml
++++ b/man/systemd.slice.xml
+@@ -90,7 +90,7 @@
+     slice specific configuration options are configured in
+     the [Slice] section. Currently, only generic resource control settings
+     as described in
+-    <citerefentry><refentrytitle>systemd.resource-control</refentrytitle><manvolnum>7</manvolnum></citerefentry> are allowed.
++    <citerefentry><refentrytitle>systemd.resource-control</refentrytitle><manvolnum>5</manvolnum></citerefentry> are allowed.
+     </para>
+ 
+     <para>Unless <varname>DefaultDependencies=false</varname>

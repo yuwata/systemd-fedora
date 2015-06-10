@@ -1,0 +1,137 @@
+From 929227823d61ecc408d85b328ab04604e7f540cf Mon Sep 17 00:00:00 2001
+From: Tom Gundersen <teg@jklm.no>
+Date: Wed, 3 Jun 2015 22:08:46 +0200
+Subject: [PATCH] libudev: enumerate - accept NULL parameters in add_match()
+
+This was a regression introduced when moving to sd-device.
+
+(cherry picked from commit 54f0b4d9a3e3e1b955d0b0021d9678571d91a5ef)
+---
+ src/libsystemd/sd-device/device-enumerator.c | 18 ++++++++++--------
+ src/libudev/libudev-enumerate.c              | 21 +++++++++++++++++++++
+ 2 files changed, 31 insertions(+), 8 deletions(-)
+
+diff --git a/src/libsystemd/sd-device/device-enumerator.c b/src/libsystemd/sd-device/device-enumerator.c
+index 3692d46e06..7fd77e9480 100644
+--- a/src/libsystemd/sd-device/device-enumerator.c
++++ b/src/libsystemd/sd-device/device-enumerator.c
+@@ -137,7 +137,6 @@ _public_ int sd_device_enumerator_add_match_sysattr(sd_device_enumerator *enumer
+ 
+         assert_return(enumerator, -EINVAL);
+         assert_return(_sysattr, -EINVAL);
+-        assert_return(_value, -EINVAL);
+ 
+         if (match)
+                 hashmap = &enumerator->match_sysattr;
+@@ -152,9 +151,11 @@ _public_ int sd_device_enumerator_add_match_sysattr(sd_device_enumerator *enumer
+         if (!sysattr)
+                 return -ENOMEM;
+ 
+-        value = strdup(_value);
+-        if (!value)
+-                return -ENOMEM;
++        if (_value) {
++                value = strdup(_value);
++                if (!value)
++                        return -ENOMEM;
++        }
+ 
+         r = hashmap_put(*hashmap, sysattr, value);
+         if (r < 0)
+@@ -174,7 +175,6 @@ _public_ int sd_device_enumerator_add_match_property(sd_device_enumerator *enume
+ 
+         assert_return(enumerator, -EINVAL);
+         assert_return(_property, -EINVAL);
+-        assert_return(_value, -EINVAL);
+ 
+         r = hashmap_ensure_allocated(&enumerator->match_property, NULL);
+         if (r < 0)
+@@ -184,9 +184,11 @@ _public_ int sd_device_enumerator_add_match_property(sd_device_enumerator *enume
+         if (!property)
+                 return -ENOMEM;
+ 
+-        value = strdup(_value);
+-        if (!value)
+-                return -ENOMEM;
++        if (_value) {
++                value = strdup(_value);
++                if (!value)
++                        return -ENOMEM;
++        }
+ 
+         r = hashmap_put(enumerator->match_property, property, value);
+         if (r < 0)
+diff --git a/src/libudev/libudev-enumerate.c b/src/libudev/libudev-enumerate.c
+index 255fbe808d..df088946df 100644
+--- a/src/libudev/libudev-enumerate.c
++++ b/src/libudev/libudev-enumerate.c
+@@ -196,6 +196,9 @@ _public_ struct udev_list_entry *udev_enumerate_get_list_entry(struct udev_enume
+ _public_ int udev_enumerate_add_match_subsystem(struct udev_enumerate *udev_enumerate, const char *subsystem) {
+         assert_return(udev_enumerate, -EINVAL);
+ 
++        if (!subsystem)
++                return 0;
++
+         return sd_device_enumerator_add_match_subsystem(udev_enumerate->enumerator, subsystem, true);
+ }
+ 
+@@ -211,6 +214,9 @@ _public_ int udev_enumerate_add_match_subsystem(struct udev_enumerate *udev_enum
+ _public_ int udev_enumerate_add_nomatch_subsystem(struct udev_enumerate *udev_enumerate, const char *subsystem) {
+         assert_return(udev_enumerate, -EINVAL);
+ 
++        if (!subsystem)
++                return 0;
++
+         return sd_device_enumerator_add_match_subsystem(udev_enumerate->enumerator, subsystem, false);
+ }
+ 
+@@ -227,6 +233,9 @@ _public_ int udev_enumerate_add_nomatch_subsystem(struct udev_enumerate *udev_en
+ _public_ int udev_enumerate_add_match_sysattr(struct udev_enumerate *udev_enumerate, const char *sysattr, const char *value) {
+         assert_return(udev_enumerate, -EINVAL);
+ 
++        if (!sysattr)
++                return 0;
++
+         return sd_device_enumerator_add_match_sysattr(udev_enumerate->enumerator, sysattr, value, true);
+ }
+ 
+@@ -243,6 +252,9 @@ _public_ int udev_enumerate_add_match_sysattr(struct udev_enumerate *udev_enumer
+ _public_ int udev_enumerate_add_nomatch_sysattr(struct udev_enumerate *udev_enumerate, const char *sysattr, const char *value) {
+         assert_return(udev_enumerate, -EINVAL);
+ 
++        if (!sysattr)
++                return 0;
++
+         return sd_device_enumerator_add_match_sysattr(udev_enumerate->enumerator, sysattr, value, false);
+ }
+ 
+@@ -259,6 +271,9 @@ _public_ int udev_enumerate_add_nomatch_sysattr(struct udev_enumerate *udev_enum
+ _public_ int udev_enumerate_add_match_property(struct udev_enumerate *udev_enumerate, const char *property, const char *value) {
+         assert_return(udev_enumerate, -EINVAL);
+ 
++        if (!property)
++                return 0;
++
+         return sd_device_enumerator_add_match_property(udev_enumerate->enumerator, property, value);
+ }
+ 
+@@ -274,6 +289,9 @@ _public_ int udev_enumerate_add_match_property(struct udev_enumerate *udev_enume
+ _public_ int udev_enumerate_add_match_tag(struct udev_enumerate *udev_enumerate, const char *tag) {
+         assert_return(udev_enumerate, -EINVAL);
+ 
++        if (!tag)
++                return 0;
++
+         return sd_device_enumerator_add_match_tag(udev_enumerate->enumerator, tag);
+ }
+ 
+@@ -335,6 +353,9 @@ _public_ int udev_enumerate_add_match_is_initialized(struct udev_enumerate *udev
+ _public_ int udev_enumerate_add_match_sysname(struct udev_enumerate *udev_enumerate, const char *sysname) {
+         assert_return(udev_enumerate, -EINVAL);
+ 
++        if (!sysname)
++                return 0;
++
+         return sd_device_enumerator_add_match_sysname(udev_enumerate->enumerator, sysname);
+ }
+ 

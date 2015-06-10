@@ -1,7 +1,7 @@
-From f6373b7dd7a2b8a8e38c289f289728d289382f29 Mon Sep 17 00:00:00 2001
+From 3357627f3380e680cbaaaddb9ecf4cd2872d46dd Mon Sep 17 00:00:00 2001
 From: Harald Hoyer <harald@redhat.com>
 Date: Mon, 1 Jun 2015 17:26:27 +0200
-Subject: [PATCH 4/4] cryptsetup: craft a unique ID with the source device
+Subject: [PATCH] cryptsetup: craft a unique ID with the source device
 
 If cryptsetup is called with a source device as argv[3], then craft the
 ID for the password agent with a unique device path.
@@ -18,12 +18,14 @@ With this patch the ID of the ask.XXX ini file looks like this:
 ID=cryptsetup:/dev/block/<maj>:<min>
 
 [1] https://github.com/npmccallum/petera
+
+(cherry picked from commit e51b9486d1b59e72c293028fed1384f4e4ef09aa)
 ---
  src/cryptsetup/cryptsetup.c | 90 +++++++++++++++++++++++++++++----------------
  1 file changed, 58 insertions(+), 32 deletions(-)
 
 diff --git a/src/cryptsetup/cryptsetup.c b/src/cryptsetup/cryptsetup.c
-index a5018f1..5c6c7c0 100644
+index a5018f13ed..5c6c7c0ed8 100644
 --- a/src/cryptsetup/cryptsetup.c
 +++ b/src/cryptsetup/cryptsetup.c
 @@ -238,6 +238,23 @@ static void log_glue(int level, const char *msg, void *usrptr) {
@@ -161,6 +163,3 @@ index a5018f1..5c6c7c0 100644
                                  if (k == -EAGAIN)
                                          continue;
                                  else if (k < 0)
--- 
-2.4.1
-

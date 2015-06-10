@@ -1,4 +1,4 @@
-From 040e689654ef08c63ab93bf0875865398e8d9c91 Mon Sep 17 00:00:00 2001
+From 8bfef09df8e1011c6f413822f4455d084b30ba15 Mon Sep 17 00:00:00 2001
 From: Tom Gundersen <teg@jklm.no>
 Date: Sun, 24 May 2015 15:20:36 +0200
 Subject: [PATCH] udevd: event - fix event queue in daemenozied mode
@@ -11,12 +11,14 @@ main process, but that brake in daemonized mode. Relax the restriction
 to only allow one process to add events to the queue.
 
 Reported by Mantas Mikulėnas.
+
+(cherry picked from commit 040e689654ef08c63ab93bf0875865398e8d9c91)
 ---
  src/udev/udevd.c | 7 ++++---
  1 file changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/src/udev/udevd.c b/src/udev/udevd.c
-index 4a44b03..b33a262 100644
+index afd4640ad1..2a9a429e66 100644
 --- a/src/udev/udevd.c
 +++ b/src/udev/udevd.c
 @@ -564,7 +564,10 @@ static int event_queue_insert(Manager *manager, struct udev_device *dev) {
@@ -40,6 +42,3 @@ index 4a44b03..b33a262 100644
          manager->fd_ep = -1;
          manager->fd_ctrl = -1;
          manager->fd_uevent = -1;
--- 
-2.3.1
-

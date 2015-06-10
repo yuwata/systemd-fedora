@@ -1,0 +1,24 @@
+From 73f05f079d5e319e8296683399a2548a37dadc5a Mon Sep 17 00:00:00 2001
+From: David Mohr <david@mcbf.net>
+Date: Mon, 1 Jun 2015 08:10:28 +0200
+Subject: [PATCH] udev: Bring back persistant storage symlinks for bcache
+
+https://bugs.debian.org/787367
+(cherry picked from commit 19672f1e5fd23ec3ea5b93b8268ae07f2b8e9645)
+---
+ rules/60-persistent-storage.rules | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/rules/60-persistent-storage.rules b/rules/60-persistent-storage.rules
+index 3f803ceb9a..2aa15f3411 100644
+--- a/rules/60-persistent-storage.rules
++++ b/rules/60-persistent-storage.rules
+@@ -6,7 +6,7 @@
+ ACTION=="remove", GOTO="persistent_storage_end"
+ 
+ SUBSYSTEM!="block", GOTO="persistent_storage_end"
+-KERNEL!="loop*|mmcblk*[0-9]|msblk*[0-9]|mspblk*[0-9]|nvme*|sd*|sr*|vd*", GOTO="persistent_storage_end"
++KERNEL!="loop*|mmcblk*[0-9]|msblk*[0-9]|mspblk*[0-9]|nvme*|sd*|sr*|vd*|bcache*", GOTO="persistent_storage_end"
+ 
+ # ignore partitions that span the entire disk
+ TEST=="whole_disk", GOTO="persistent_storage_end"

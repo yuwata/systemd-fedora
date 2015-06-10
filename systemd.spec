@@ -38,27 +38,76 @@ Source8:        systemd-journal-gatewayd.xml
 # Patch series is available from http://cgit.freedesktop.org/systemd/systemd-stable/log/?h=v220-stable
 # GIT_DIR=~/src/systemd/.git git format-patch-ab -M -N --no-signature v220..v220-stable
 # i=1; for p in 0*patch;do printf "Patch%04d:      %s\n" $i $p; ((i++));done
+Patch0001:      0001-NEWS-fix-date.patch
+Patch0002:      0002-udev-net_id-Only-read-the-first-64-bytes-of-PCI-conf.patch
+Patch0003:      0003-bootctl-ferror-must-be-called-before-FILE-is-closed.patch
+Patch0004:      0004-fix-typos-in-systemd-nspawn-man-page.patch
+Patch0005:      0005-bootctl-fix-an-error-check.patch
+Patch0006:      0006-udevd-event-fix-event-queue-in-daemenozied-mode.patch
+Patch0007:      0007-nspawn-be-verbose-about-interface-names.patch
+Patch0008:      0008-shared-generator-correct-path-to-systemd-fsck.patch
+Patch0009:      0009-networkd-fix-IFF_UP-when-ipv6-support-is-disabled.patch
+Patch0010:      0010-import-dkr-avoid-NULL-pointer-dereference.patch
+Patch0011:      0011-treewide-fix-typos.patch
+Patch0012:      0012-logind-unlink-run-nologin-when-shutdown-is-cancelled.patch
+Patch0013:      0013-missing-add-more-IFLA_VXLAN_-defines.patch
+Patch0014:      0014-udevd-fix-SIGCHLD-handling-in-daemon-mode.patch
+Patch0015:      0015-sd-device-fix-device_get_properties_strv.patch
+Patch0016:      0016-man-fix-systemd.resource-control-5-volume-number.patch
+Patch0017:      0017-sd-device-enumerator-fix-matching-on-properties-and-.patch
+Patch0018:      0018-build-sys-fix-typo.patch
+Patch0019:      0019-path-util-Fix-path_is_mount_point-for-files.patch
+Patch0020:      0020-rules-fix-typo-in-block-watch-rule.patch
+Patch0021:      0021-rules-restore-block-watch-after-CHANGE-events.patch
+Patch0022:      0022-zsh-completion-update-bootctl.patch
+Patch0023:      0023-README-fix-typo.patch
+Patch0024:      0024-networkctl-fix-uninitialized-variable.patch
+Patch0025:      0025-conf-parser-parsing-error-logs-should-show-a-type-no.patch
+Patch0026:      0026-core-namespace-Protect-usr-instead-of-home-with-Prot.patch
+Patch0027:      0027-udev-Bring-back-persistant-storage-symlinks-for-bcac.patch
+Patch0028:      0028-sd-device-fix-invalid-property-strv-pointers.patch
+Patch0029:      0029-zsh-completion-fix-typo-in-_bootctl.patch
+Patch0030:      0030-load-fragment-use-UNESCAPE_RELAX-flag-to-parse-exec-.patch
+Patch0031:      0031-test-unit-file-add-test-for-improperly-escaped-exec-.patch
+Patch0032:      0032-Separate-the-sign-from-the-number.patch
+Patch0033:      0033-zsh-completion-fix-completion-of-user-services.patch
+Patch0034:      0034-zsh-completion-a-more-style-tag-aware-_systemctl.patch
+Patch0035:      0035-missing-add-more-btrfs-defines.patch
+Patch0036:      0036-hwdb-Update-database-of-Bluetooth-company-identifier.patch
+Patch0037:      0037-hwdb-update.patch
+Patch0038:      0038-README-update-links-to-reference-new-home-GitHub.patch
+Patch0039:      0039-point-to-github-issues-instead-of-freedesktop-bugzil.patch
+Patch0040:      0040-configure.ac-add-missing-komma.patch
+Patch0041:      0041-util-fix-another-cunescape-regression.patch
+Patch0042:      0042-test-unit-file.c-fixup-the-test-for-commit-3b51f8ddd.patch
+Patch0043:      0043-systemctl-Use-usr-bin-editor-if-available.patch
+Patch0044:      0044-libudev-enumerate-accept-NULL-parameters-in-add_matc.patch
+Patch0045:      0045-Add-dev-xvd-to-60-persistent-storage-whitelist.patch
+Patch0046:      0046-hwdb-add-Apple-MagicMouse-entry.patch
+Patch0047:      0047-logind-Add-a-udev-rule-to-tag-all-DRM-cards-with-mas.patch
+Patch0048:      0048-logind-Save-the-user-s-state-when-a-session-enters-S.patch
+Patch0049:      0049-small-fix-ru-translation.patch
+Patch0050:      0050-core-mount-skip-incomplete-mountinfo-entries.patch
+Patch0051:      0051-fstab-generator-cescape-device-name-in-root-fsck-ser.patch
+Patch0052:      0052-logind-Fix-user_elect_display-to-be-more-stable.patch
+Patch0053:      0053-systemd-bootchart-Trivial-typo-fix-in-warning.patch
+Patch0054:      0054-man-systemd.link-explain-random-MAC-addresses.patch
+Patch0055:      0055-rules-whitelist-xvd-devices.patch
+Patch0056:      0056-cryptsetup-craft-a-unique-ID-with-the-source-device.patch
+Patch0057:      0057-util-bind_remount_recursive-handle-return-0-of-set_c.patch
+Patch0058:      0058-hwdb-add-Logitech-TrackMan-Marble-Wheel-USB.patch
+Patch0059:      0059-hwdb-update-Logitech-s-unifying-receiver-devices.patch
+Patch0060:      0060-keymap-Add-Samsung-NP350V-and-NP670Z.patch
+Patch0061:      0061-sd-bus-fix-early-exit-when-we-lack-all-data-in-bus_g.patch
+Patch0062:      0062-sd-bus-remove-ucred-parameter-from-bus_message_from_.patch
+Patch0063:      0063-bus-creds-always-set-SD_BUS_CREDS_PID-when-we-set-pi.patch
+Patch0064:      0064-sd-bus-do-not-use-per-datagram-auxiliary-information.patch
+Patch0065:      0065-sd-bus-store-selinux-context-at-connection-time.patch
+Patch0066:      0066-journald-simplify-context-handling.patch
+Patch0067:      0067-Fix-typo.patch
 
 # kernel-install patch for grubby, drop if grubby is obsolete
 Patch1000:      kernel-install-grubby.patch
-
-# Fix udev --daemon crash:
-# http://comments.gmane.org/gmane.comp.sysutils.systemd.devel/32067
-# This is upstream commit 040e689654ef08.
-Patch1001:      0001-udevd-event-fix-event-queue-in-daemenozied-mode.patch
-
-# Fix udev --daemon not cleaning child processes:
-# https://www.mail-archive.com/systemd-devel@lists.freedesktop.org/msg31806.html
-# https://bugzilla.redhat.com/show_bug.cgi?id=1225641
-# This is upstream commit 86c3bece38bcf5.
-Patch1002:      0001-udevd-fix-SIGCHLD-handling-in-daemon-mode.patch
-
-# Add support for petera disk encryption
-Patch1003:      0004-cryptsetup-craft-a-unique-ID-with-the-source-device.patch
-
-# Fix udev block device watch
-Patch1004:      0005-rules-fix-typo-in-block-watch-rule.patch
-Patch1005:      0006-rules-restore-block-watch-after-CHANGE-events.patch
 
 %global num_patches %{lua: c=0; for i,p in ipairs(patches) do c=c+1; end; print(c);}
 
@@ -832,7 +881,14 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 
 %changelog
 * Tue Jun  9 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 220-8
-- Remove gudev
+- Remove gudev which is now provided as separate package (libgudev)
+- Fix for spurious selinux denials (#1224211)
+- Udev change events (#1225905)
+- Patches for some potential crashes
+- ProtectSystem=yes does not touch /home
+- Man page fixes, hwdb updates, shell completion updates
+- Restored persistent device symlinks for bcache, xen block devices
+- Tag all DRM cards as master-of-seat
 
 * Tue Jun 09 2015 Harald Hoyer <harald@redhat.com> 220-7
 - fix udev block device watch

@@ -1,0 +1,29 @@
+From 0569c6e3c9d19c04eb2614bd8769e5eb32764371 Mon Sep 17 00:00:00 2001
+From: Daniel Mack <daniel@zonque.org>
+Date: Tue, 26 May 2015 18:56:40 +0200
+Subject: [PATCH] logind: unlink /run/nologin when shutdown is cancelled
+
+When a scheduled is cancelled, make sure to remove /run/nologin.
+This is a regression from the recent shutdownd removal and logind rework.
+
+(cherry picked from commit fb91034cf5907bbbabba1e8821b01f3b37aa56d5)
+---
+ src/login/logind-dbus.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/src/login/logind-dbus.c b/src/login/logind-dbus.c
+index 1f5cf865b1..3555bcc2f5 100644
+--- a/src/login/logind-dbus.c
++++ b/src/login/logind-dbus.c
+@@ -1964,6 +1964,11 @@ static int method_cancel_scheduled_shutdown(sd_bus_message *message, void *userd
+         m->scheduled_shutdown_type = NULL;
+         m->scheduled_shutdown_timeout = 0;
+ 
++        if (m->unlink_nologin) {
++                unlink("/run/nologin");
++                m->unlink_nologin = false;
++        }
++
+         if (cancelled) {
+                 _cleanup_bus_creds_unref_ sd_bus_creds *creds = NULL;
+                 const char *tty = NULL;

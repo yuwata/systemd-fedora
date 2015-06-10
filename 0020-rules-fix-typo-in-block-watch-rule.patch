@@ -1,16 +1,18 @@
-From 10c7cf9e109f6b59159e439774b5be5fd1faa24e Mon Sep 17 00:00:00 2001
+From 4fa8d70f0e914346c2a46c05bbb356eaae7d527c Mon Sep 17 00:00:00 2001
 From: Tom Gundersen <teg@jklm.no>
 Date: Fri, 29 May 2015 19:59:24 +0200
 Subject: [PATCH] rules: fix typo in block watch rule
 
 The intention was to turn this rule from using a blacklist to a whitelist, but
 there was a stray '!'.
+
+(cherry picked from commit f07689517e3715d03590e779841647aed0cd2ba7)
 ---
  rules/60-block.rules | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/rules/60-block.rules b/rules/60-block.rules
-index de41499..cfd5010 100644
+index de41499cb7..cfd5010bbd 100644
 --- a/rules/60-block.rules
 +++ b/rules/60-block.rules
 @@ -8,4 +8,4 @@ ACTION=="add", SUBSYSTEM=="module", KERNEL=="block", ATTR{parameters/events_dfl_

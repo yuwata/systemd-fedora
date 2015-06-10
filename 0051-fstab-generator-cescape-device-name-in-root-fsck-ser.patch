@@ -1,0 +1,49 @@
+From 413b9df4a84291dfeb28133f4b30790b7ad9f903 Mon Sep 17 00:00:00 2001
+From: Andrei Borzenkov <arvidjaar@gmail.com>
+Date: Wed, 3 Jun 2015 20:50:59 +0300
+Subject: [PATCH] fstab-generator: cescape device name in root-fsck service
+
+We unescape ExecStart line when parsing it, so escape device name
+before adding it to unit file.
+
+fixes #50
+
+(cherry picked from commit fa05e97257fc54b05e4c272dfc19cea46511b823)
+---
+ src/shared/generator.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/src/shared/generator.c b/src/shared/generator.c
+index 807569a1b8..e58bbea77c 100644
+--- a/src/shared/generator.c
++++ b/src/shared/generator.c
+@@ -34,9 +34,14 @@
+ static int write_fsck_sysroot_service(const char *dir, const char *what) {
+         const char *unit;
+         _cleanup_free_ char *device = NULL;
++        _cleanup_free_ char *escaped;
+         _cleanup_fclose_ FILE *f = NULL;
+         int r;
+ 
++        escaped = cescape(what);
++        if (!escaped)
++                return log_oom();
++
+         unit = strjoina(dir, "/systemd-fsck-root.service");
+         log_debug("Creating %s", unit);
+ 
+@@ -61,11 +66,12 @@ static int write_fsck_sysroot_service(const char *dir, const char *what) {
+                 "[Service]\n"
+                 "Type=oneshot\n"
+                 "RemainAfterExit=yes\n"
+-                "ExecStart=" SYSTEMD_FSCK_PATH " %2$s\n"
++                "ExecStart=" SYSTEMD_FSCK_PATH " %4$s\n"
+                 "TimeoutSec=0\n",
+                 program_invocation_short_name,
+                 what,
+-                device);
++                device,
++                escaped);
+ 
+         r = fflush_and_check(f);
+         if (r < 0)

@@ -1,0 +1,42 @@
+From a27d1804a1a1d1f522fe7742f42a44ced58dce2e Mon Sep 17 00:00:00 2001
+From: Eric Cook <llua@gmx.com>
+Date: Mon, 18 May 2015 18:45:31 -0400
+Subject: [PATCH] zsh-completion: fix completion of --user services
+
+By the time __systemctl is called, --user/--system are shifted out of
+`words' by _arguments. This patch queries the array sooner.
+
+In the case that both --user and --system are on the line when compsys runs,
+_sys_service_mgr is set to the latter. Which is seemingly how systemctl behaves.
+
+If neither are on the line, --system is set; for system services to be completed.
+
+(cherry picked from commit 68c4f6d406a2bdac6957a67a077f182b0287cc3b)
+---
+ shell-completion/zsh/_systemctl.in | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/shell-completion/zsh/_systemctl.in b/shell-completion/zsh/_systemctl.in
+index 1dc6406beb..db9bdb60c5 100644
+--- a/shell-completion/zsh/_systemctl.in
++++ b/shell-completion/zsh/_systemctl.in
+@@ -93,9 +93,7 @@
+ 
+ __systemctl()
+ {
+-  local -a _modes
+-  _modes=("--user" "--system")
+-  systemctl ${words:*_modes} --full --no-legend --no-pager "$@"
++  systemctl $_sys_service_mgr --full --no-legend --no-pager "$@"
+ }
+ 
+ 
+@@ -355,6 +353,8 @@ _job_modes() {
+     _values -s , "${_modes[@]}"
+ }
+ 
++local -a _modes; _modes=("--user" "--system")
++local _sys_service_mgr=${${words:*_modes}[(R)(${(j.|.)_modes})]:---system}
+ _arguments -s \
+     {-h,--help}'[Show help]' \
+     '--version[Show package version]' \

@@ -1,18 +1,20 @@
-From 86c3bece38bcf55da6387d20c6f01da9ad0284dc Mon Sep 17 00:00:00 2001
+From 8300a7a170f44490d4e86541fbbad2b90cd52ce0 Mon Sep 17 00:00:00 2001
 From: Tom Gundersen <teg@jklm.no>
 Date: Wed, 27 May 2015 18:39:36 +0200
 Subject: [PATCH] udevd: fix SIGCHLD handling in --daemon mode
 
 We were listening for SIGCHLD in the wrong process.
+
+(cherry picked from commit 86c3bece38bcf55da6387d20c6f01da9ad0284dc)
 ---
  src/udev/udevd.c | 33 ++++++++++++++++++++++-----------
  1 file changed, 22 insertions(+), 11 deletions(-)
 
 diff --git a/src/udev/udevd.c b/src/udev/udevd.c
-index 87e677e..299fda8 100644
+index 2a9a429e66..b5dadbc8e4 100644
 --- a/src/udev/udevd.c
 +++ b/src/udev/udevd.c
-@@ -1288,13 +1288,6 @@ static int parse_argv(int argc, char *argv[]) {
+@@ -1289,13 +1289,6 @@ static int parse_argv(int argc, char *argv[]) {
  
  static int manager_new(Manager **ret) {
          _cleanup_(manager_freep) Manager *manager = NULL;
@@ -26,7 +28,7 @@ index 87e677e..299fda8 100644
  
          assert(ret);
  
-@@ -1323,6 +1316,23 @@ static int manager_new(Manager **ret) {
+@@ -1324,6 +1317,23 @@ static int manager_new(Manager **ret) {
          udev_list_node_init(&manager->events);
          udev_list_init(manager->udev, &manager->properties, true);
  
@@ -50,7 +52,7 @@ index 87e677e..299fda8 100644
          r = systemd_fds(&manager->fd_ctrl, &manager->fd_uevent);
          if (r >= 0) {
                  /* get control and netlink socket from systemd */
-@@ -1404,10 +1414,7 @@ static int manager_new(Manager **ret) {
+@@ -1405,10 +1415,7 @@ static int manager_new(Manager **ret) {
              epoll_ctl(manager->fd_ep, EPOLL_CTL_ADD, manager->fd_worker, &ep_worker) < 0)
                  return log_error_errno(errno, "fail to add fds to epoll: %m");
  
@@ -62,7 +64,7 @@ index 87e677e..299fda8 100644
  }
  
  int main(int argc, char *argv[]) {
-@@ -1518,6 +1525,10 @@ int main(int argc, char *argv[]) {
+@@ -1519,6 +1526,10 @@ int main(int argc, char *argv[]) {
          } else
                  sd_notify(1, "READY=1");
  
@@ -73,6 +75,3 @@ index 87e677e..299fda8 100644
          for (;;) {
                  static usec_t last_usec;
                  struct epoll_event ev[8];
--- 
-2.3.1
-
