@@ -16,7 +16,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        220
-Release:        8%{?gitcommit:.git%{gitcommit}}%{?dist}
+Release:        9%{?gitcommit:.git%{gitcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -347,11 +347,6 @@ CONFIGURE_OPTS=(
         --disable-kdbus
         --disable-terminal
         --disable-gudev
-	# gold on aarch64 is broken
-	# rhbz #1225156
-	%ifarch aarch64
-	        LDFLAGS=-Wl,-fuse-ld=bfd
-	%endif
 )
 
 pushd build3
@@ -880,6 +875,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Thu Jun 11 2015 Peter Robinson <pbrobinson@fedoraproject.org> 220-9
+- The gold linker is now fixed on aarch64
+
 * Tue Jun  9 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 220-8
 - Remove gudev which is now provided as separate package (libgudev)
 - Fix for spurious selinux denials (#1224211)
