@@ -230,7 +230,8 @@ Provides:       libudev-devel = %{version}
 Obsoletes:      libudev-devel < 183
 
 %description devel
-Development headers and auxiliary files for developing applications for systemd.
+Development headers and auxiliary files for developing applications linking
+to libudev or libsystemd.
 
 %package python
 Summary:        Python 2 bindings for systemd
