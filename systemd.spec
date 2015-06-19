@@ -395,8 +395,8 @@ install -Dm0644 %{SOURCE9} %{buildroot}%{_pkgdocdir}/
 make -C build2 check VERBOSE=1
 make -C build3 check VERBOSE=1
 
-# Check for botched translations (https://bugzilla.redhat.com/show_bug.cgi?id=1226301)
-#test -z "$(grep -L xml:lang %{buildroot}%{_datadir}/polkit-1/actions/org.freedesktop.*.policy)"
+# Check for botched translations (https://bugzilla.redhat.com/show_bug.cgi?id=1226566)
+test -z "$(grep -L xml:lang %{buildroot}%{_datadir}/polkit-1/actions/org.freedesktop.*.policy)"
 
 %pre
 getent group cdrom >/dev/null 2>&1 || groupadd -r -g 11 cdrom >/dev/null 2>&1 || :
