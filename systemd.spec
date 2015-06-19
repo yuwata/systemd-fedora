@@ -15,8 +15,8 @@
 
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        220
-Release:        10%{?gitcommit:.git%{gitcommit}}%{?dist}
+Version:        221
+Release:        1%{?gitcommit:.git%{gitcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -38,73 +38,6 @@ Source8:        systemd-journal-gatewayd.xml
 # Patch series is available from http://cgit.freedesktop.org/systemd/systemd-stable/log/?h=v220-stable
 # GIT_DIR=~/src/systemd/.git git format-patch-ab -M -N --no-signature v220..v220-stable
 # i=1; for p in 0*patch;do printf "Patch%04d:      %s\n" $i $p; ((i++));done
-Patch0001:      0001-NEWS-fix-date.patch
-Patch0002:      0002-udev-net_id-Only-read-the-first-64-bytes-of-PCI-conf.patch
-Patch0003:      0003-bootctl-ferror-must-be-called-before-FILE-is-closed.patch
-Patch0004:      0004-fix-typos-in-systemd-nspawn-man-page.patch
-Patch0005:      0005-bootctl-fix-an-error-check.patch
-Patch0006:      0006-udevd-event-fix-event-queue-in-daemenozied-mode.patch
-Patch0007:      0007-nspawn-be-verbose-about-interface-names.patch
-Patch0008:      0008-shared-generator-correct-path-to-systemd-fsck.patch
-Patch0009:      0009-networkd-fix-IFF_UP-when-ipv6-support-is-disabled.patch
-Patch0010:      0010-import-dkr-avoid-NULL-pointer-dereference.patch
-Patch0011:      0011-treewide-fix-typos.patch
-Patch0012:      0012-logind-unlink-run-nologin-when-shutdown-is-cancelled.patch
-Patch0013:      0013-missing-add-more-IFLA_VXLAN_-defines.patch
-Patch0014:      0014-udevd-fix-SIGCHLD-handling-in-daemon-mode.patch
-Patch0015:      0015-sd-device-fix-device_get_properties_strv.patch
-Patch0016:      0016-man-fix-systemd.resource-control-5-volume-number.patch
-Patch0017:      0017-sd-device-enumerator-fix-matching-on-properties-and-.patch
-Patch0018:      0018-build-sys-fix-typo.patch
-Patch0019:      0019-path-util-Fix-path_is_mount_point-for-files.patch
-Patch0020:      0020-rules-fix-typo-in-block-watch-rule.patch
-Patch0021:      0021-rules-restore-block-watch-after-CHANGE-events.patch
-Patch0022:      0022-zsh-completion-update-bootctl.patch
-Patch0023:      0023-README-fix-typo.patch
-Patch0024:      0024-networkctl-fix-uninitialized-variable.patch
-Patch0025:      0025-conf-parser-parsing-error-logs-should-show-a-type-no.patch
-Patch0026:      0026-core-namespace-Protect-usr-instead-of-home-with-Prot.patch
-Patch0027:      0027-udev-Bring-back-persistant-storage-symlinks-for-bcac.patch
-Patch0028:      0028-sd-device-fix-invalid-property-strv-pointers.patch
-Patch0029:      0029-zsh-completion-fix-typo-in-_bootctl.patch
-Patch0030:      0030-load-fragment-use-UNESCAPE_RELAX-flag-to-parse-exec-.patch
-Patch0031:      0031-test-unit-file-add-test-for-improperly-escaped-exec-.patch
-Patch0032:      0032-Separate-the-sign-from-the-number.patch
-Patch0033:      0033-zsh-completion-fix-completion-of-user-services.patch
-Patch0034:      0034-zsh-completion-a-more-style-tag-aware-_systemctl.patch
-Patch0035:      0035-missing-add-more-btrfs-defines.patch
-Patch0036:      0036-hwdb-Update-database-of-Bluetooth-company-identifier.patch
-Patch0037:      0037-hwdb-update.patch
-Patch0038:      0038-README-update-links-to-reference-new-home-GitHub.patch
-Patch0039:      0039-point-to-github-issues-instead-of-freedesktop-bugzil.patch
-Patch0040:      0040-configure.ac-add-missing-komma.patch
-Patch0041:      0041-util-fix-another-cunescape-regression.patch
-Patch0042:      0042-test-unit-file.c-fixup-the-test-for-commit-3b51f8ddd.patch
-Patch0043:      0043-systemctl-Use-usr-bin-editor-if-available.patch
-Patch0044:      0044-libudev-enumerate-accept-NULL-parameters-in-add_matc.patch
-Patch0045:      0045-Add-dev-xvd-to-60-persistent-storage-whitelist.patch
-Patch0046:      0046-hwdb-add-Apple-MagicMouse-entry.patch
-Patch0047:      0047-logind-Add-a-udev-rule-to-tag-all-DRM-cards-with-mas.patch
-Patch0048:      0048-logind-Save-the-user-s-state-when-a-session-enters-S.patch
-Patch0049:      0049-small-fix-ru-translation.patch
-Patch0050:      0050-core-mount-skip-incomplete-mountinfo-entries.patch
-Patch0051:      0051-fstab-generator-cescape-device-name-in-root-fsck-ser.patch
-Patch0052:      0052-logind-Fix-user_elect_display-to-be-more-stable.patch
-Patch0053:      0053-systemd-bootchart-Trivial-typo-fix-in-warning.patch
-Patch0054:      0054-man-systemd.link-explain-random-MAC-addresses.patch
-Patch0055:      0055-rules-whitelist-xvd-devices.patch
-Patch0056:      0056-cryptsetup-craft-a-unique-ID-with-the-source-device.patch
-Patch0057:      0057-util-bind_remount_recursive-handle-return-0-of-set_c.patch
-Patch0058:      0058-hwdb-add-Logitech-TrackMan-Marble-Wheel-USB.patch
-Patch0059:      0059-hwdb-update-Logitech-s-unifying-receiver-devices.patch
-Patch0060:      0060-keymap-Add-Samsung-NP350V-and-NP670Z.patch
-Patch0061:      0061-sd-bus-fix-early-exit-when-we-lack-all-data-in-bus_g.patch
-Patch0062:      0062-sd-bus-remove-ucred-parameter-from-bus_message_from_.patch
-Patch0063:      0063-bus-creds-always-set-SD_BUS_CREDS_PID-when-we-set-pi.patch
-Patch0064:      0064-sd-bus-do-not-use-per-datagram-auxiliary-information.patch
-Patch0065:      0065-sd-bus-store-selinux-context-at-connection-time.patch
-Patch0066:      0066-journald-simplify-context-handling.patch
-Patch0067:      0067-Fix-typo.patch
 
 # kernel-install patch for grubby, drop if grubby is obsolete
 Patch1000:      kernel-install-grubby.patch
@@ -139,7 +72,6 @@ BuildRequires:  pkgconfig
 BuildRequires:  intltool
 BuildRequires:  gperf
 BuildRequires:  gawk
-BuildRequires:  gtk-doc
 BuildRequires:  python2-devel
 BuildRequires:  python3-devel
 BuildRequires:  python-lxml
@@ -280,7 +212,6 @@ systemd-journal-gatewayd serves journal events over the network using HTTP.
     git am \
         --exclude .gitignore \
         --exclude docs/.gitignore \
-        --exclude docs/gudev/.gitignore \
         --exclude docs/libudev/.gitignore \
         --exclude docs/sysvinit/.gitignore \
         --exclude docs/var-log/.gitignore \
@@ -292,7 +223,6 @@ systemd-journal-gatewayd serves journal events over the network using HTTP.
         --exclude src/.gitignore \
         --exclude src/analyze/.gitignore \
         --exclude src/core/.gitignore \
-        --exclude src/gudev/.gitignore \
         --exclude src/hostname/.gitignore \
         --exclude src/journal/.gitignore \
         --exclude src/libsystemd-daemon/.gitignore \
@@ -347,7 +277,6 @@ CONFIGURE_OPTS=(
         --with-ntp-servers='0.%{ntpvendor}.pool.ntp.org 1.%{ntpvendor}.pool.ntp.org 2.%{ntpvendor}.pool.ntp.org 3.%{ntpvendor}.pool.ntp.org'
         --disable-kdbus
         --disable-terminal
-        --disable-gudev
 )
 
 pushd build3
@@ -363,7 +292,6 @@ popd
 pushd build2
 %configure \
         "${CONFIGURE_OPTS[@]}" \
-        --enable-gtk-doc \
         --enable-compat-libs \
         --enable-xkbcommon
 make %{?_smp_mflags} GCC_COLORS="" V=1
@@ -462,7 +390,7 @@ make -C build2 check VERBOSE=1
 make -C build3 check VERBOSE=1
 
 # Check for botched translations (https://bugzilla.redhat.com/show_bug.cgi?id=1226301)
-test -z "$(grep -L xml:lang %{buildroot}%{_datadir}/polkit-1/actions/org.freedesktop.*.policy)"
+#test -z "$(grep -L xml:lang %{buildroot}%{_datadir}/polkit-1/actions/org.freedesktop.*.policy)"
 
 %pre
 getent group cdrom >/dev/null 2>&1 || groupadd -r -g 11 cdrom >/dev/null 2>&1 || :
@@ -636,6 +564,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %dir %{_sysconfdir}/udev
 %dir %{_sysconfdir}/udev/rules.d
 %dir %{_sysconfdir}/udev/hwdb.d
+%{_sysconfdir}/X11/xinit/xinitrc.d/50-systemd-user.sh
 %ghost %verify(not md5 size mtime) %config(noreplace,missingok) /etc/crypttab
 /etc/inittab
 %config(noreplace) %{_sysconfdir}/sysctl.conf
@@ -755,6 +684,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_prefix}/lib/tmpfiles.d/var.conf
 %{_prefix}/lib/tmpfiles.d/etc.conf
 %{_prefix}/lib/tmpfiles.d/home.conf
+%{_prefix}/lib/tmpfiles.d/systemd-nspawn.conf
 %{_prefix}/lib/sysctl.d/50-default.conf
 %{_prefix}/lib/sysctl.d/50-coredump.conf
 %{_prefix}/lib/sysusers.d/basic.conf
@@ -839,6 +769,10 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_includedir}/systemd/sd-journal.h
 %{_includedir}/systemd/sd-id128.h
 %{_includedir}/systemd/sd-messages.h
+%{_includedir}/systemd/sd-bus-protocol.h
+%{_includedir}/systemd/sd-bus-vtable.h
+%{_includedir}/systemd/sd-bus.h
+%{_includedir}/systemd/sd-event.h
 %{_includedir}/systemd/_sd-common.h
 %{_includedir}/libudev.h
 %{_libdir}/pkgconfig/libudev.pc
@@ -848,8 +782,6 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_libdir}/pkgconfig/libsystemd-journal.pc
 %{_libdir}/pkgconfig/libsystemd-id128.pc
 %{_mandir}/man3/*
-%dir %{_datadir}/gtk-doc/html/libudev
-%{_datadir}/gtk-doc/html/libudev/*
 
 %files python
 %{python_sitearch}/systemd
@@ -876,6 +808,10 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Fri Jun 19 2015 Lennart Poettering <lpoetter@redhat.com> - 221-1
+- New upstream release
+- Undoes botched translation check, should be reinstated later?
+
 * Fri Jun 19 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 220-10
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
 
