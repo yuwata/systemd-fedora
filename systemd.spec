@@ -16,7 +16,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        221
-Release:        1%{?gitcommit:.git%{gitcommit}}%{?dist}
+Release:        2%{?gitcommit:.git%{gitcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -77,6 +77,9 @@ BuildRequires:  python3-devel
 BuildRequires:  python-lxml
 BuildRequires:  python3-lxml
 BuildRequires:  firewalld-filesystem
+%ifarch %{ix86} x86_64
+BuildRequires:  gnu-efi gnu-efi-devel
+%endif
 # libseccomp is currently explicitly only supported on x86/arm*
 %ifarch %{arm} aarch64 %{ix86} x86_64
 # https://bugzilla.redhat.com/show_bug.cgi?id=1071278
@@ -569,7 +572,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /etc/inittab
 %config(noreplace) %{_sysconfdir}/sysctl.conf
 %{_sysconfdir}/sysctl.d/99-sysctl.conf
-%dir %{_prefix}/lib/systemd
+%dir %{pkgdir}
 %{pkgdir}/system-generators
 %{pkgdir}/user-generators
 %dir %{pkgdir}/system-shutdown
@@ -741,6 +744,12 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{pkgdir}/network/99-default.link
 %{pkgdir}/network/80-container-host0.network
 %{pkgdir}/network/80-container-ve.network
+%ifarch %{ix86} x86_64
+%dir %{pkgdir}/boot
+%dir %{pkgdir}/boot/efi
+%{pkgdir}/boot/efi/*.efi
+%{pkgdir}/boot/efi/*.stub
+%endif
 
 %files libs
 %{_libdir}/security/pam_systemd.so
@@ -808,6 +817,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Mon Jun 22 2015 Kay Sievers <kay@redhat.com> - 221-2
+- build systemd-boot EFI tools
+
 * Fri Jun 19 2015 Lennart Poettering <lpoetter@redhat.com> - 221-1
 - New upstream release
 - Undoes botched translation check, should be reinstated later?
