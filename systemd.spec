@@ -25,7 +25,7 @@ Summary:        A System and Service Manager
 # Snapshot tarball can be created using: ./make-git-shapshot.sh [gitcommit]
 Source0:        %{name}-git%{gitcommit}.tar.xz
 %else
-Source0:        http://www.freedesktop.org/software/systemd/%{name}-%{version}.tar.xz
+Source0:        %{name}-%{version}.tar.xz
 %endif
 
 # Prevent accidental removal of the systemd package
@@ -87,11 +87,9 @@ BuildRequires:  gnu-efi gnu-efi-devel
 # https://bugzilla.redhat.com/show_bug.cgi?id=1071284
 BuildRequires:  libseccomp-devel
 %endif
-%if %{defined gitcommit}%{num_patches}
 BuildRequires:  automake
 BuildRequires:  autoconf
 BuildRequires:  libtool
-%endif
 %if %{num_patches}
 BuildRequires:  git
 %endif
@@ -256,13 +254,7 @@ sed -r -i 's/\blibsystemd-(login|journal|id128|daemon).c \\/\\/' Makefile.am
 %endif
 
 %build
-%if %{defined gitcommit}
-    ./autogen.sh
-%else
-    %if %{num_patches}
-        autoreconf -i
-    %endif
-%endif
+./autogen.sh
 
 %{?fedora: %global ntpvendor fedora}
 %{?rhel:   %global ntpvendor rhel}

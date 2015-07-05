@@ -2,17 +2,14 @@
 set -e
 
 NAME=systemd
-UPSTREAM=git://anongit.freedesktop.org/systemd/systemd
-REFDIR="$HOME/git/systemd"  # for faster cloning, if available
-
+UPSTREAM=git@github.com:systemd/systemd.git
 
 [ -n "$1" ] && HEAD="$1" || HEAD="HEAD"
 
 WORKDIR="$(mktemp -d --tmpdir "$NAME.XXXXXXXXXX")"
 trap 'rm -rf $WORKDIR' exit
 
-[ -d "$REFDIR" ] && REFERENCE="--reference $REFDIR"
-git clone $REFERENCE "$UPSTREAM" "$WORKDIR"
+git clone "$UPSTREAM" "$WORKDIR"
 
 pushd "$WORKDIR" > /dev/null
 git branch to-archive $HEAD
