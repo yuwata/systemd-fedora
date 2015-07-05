@@ -1,4 +1,4 @@
-#global gitcommit f01de96
+%global gitcommit 604f02a
 
 %global _hardened_build 1
 
@@ -16,7 +16,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        221
-Release:        2%{?gitcommit:.git%{gitcommit}}%{?dist}
+Release:        3%{?gitcommit:.git%{gitcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -809,6 +809,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Sun Jul 5 2015 Kay Sievers <kay@redhat.com> - 221-3.gitf01de96
+- update to git snapshot
+
 * Mon Jun 22 2015 Kay Sievers <kay@redhat.com> - 221-2
 - build systemd-boot EFI tools
 
