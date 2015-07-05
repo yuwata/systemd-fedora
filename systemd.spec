@@ -822,7 +822,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
-* Sun Jul 5 2015 Kay Sievers <kay@redhat.com> - 221-3.gitf01de96
+* Sun Jul 5 2015 Kay Sievers <kay@redhat.com> - 221-3.git604f02a
 - update to git snapshot
 
 * Mon Jun 22 2015 Kay Sievers <kay@redhat.com> - 221-2
