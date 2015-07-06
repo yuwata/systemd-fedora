@@ -1,4 +1,4 @@
-%global gitcommit 604f02a
+%global gitcommit 619b80a
 
 %global _hardened_build 1
 
@@ -16,7 +16,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        221
-Release:        4%{?gitcommit:.git%{gitcommit}}%{?dist}
+Release:        5%{?gitcommit:.git%{gitcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -822,6 +822,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Mon Jul  6 2015 Kay Sievers <kay@redhat.com> - 221-5.git604f02a
+- update to git snapshot
+
 * Mon Jul  6 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@laptop> - 221-4.git604f02a
 - Add example file with yama config (#1234951)
 
