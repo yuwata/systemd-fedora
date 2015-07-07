@@ -1,4 +1,4 @@
-%global gitcommit 619b80a
+#global gitcommit 619b80a
 
 %global _hardened_build 1
 
@@ -15,8 +15,8 @@
 
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        221
-Release:        5%{?gitcommit:.git%{gitcommit}}%{?dist}
+Version:        222
+Release:        1%{?gitcommit:.git%{gitcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -35,9 +35,6 @@ Source6:        sysctl.conf.README
 Source7:        systemd-journal-remote.xml
 Source8:        systemd-journal-gatewayd.xml
 Source9:        20-yama-ptrace.conf
-
-# temporary fix for broken kernel headers
-Source99:       in.h
 
 # Patch series is available from http://cgit.freedesktop.org/systemd/systemd-stable/log/?h=v220-stable
 # GIT_DIR=~/src/systemd/.git git format-patch-ab -M -N --no-signature v220..v220-stable
@@ -256,9 +253,6 @@ systemd-journal-gatewayd serves journal events over the network using HTTP.
 # Disable link warnings, somehow they cause the link to fail.
 sed -r -i 's/\blibsystemd-(login|journal|id128|daemon).c \\/\\/' Makefile.am
 %endif
-
-# temporary fix for broken kernel headers
-install -Dm0644 %{SOURCE99} src/shared/linux
 
 %build
 ./autogen.sh
@@ -822,6 +816,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Tue Jul  7 2015 Kay Sievers <kay@redhat.com> - 222-1
+- New upstream release
+
 * Mon Jul  6 2015 Kay Sievers <kay@redhat.com> - 221-5.git619b80a
 - update to git snapshot
 
