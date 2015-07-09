@@ -22,10 +22,9 @@ License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
 
 %if %{defined gitcommit}
-# Snapshot tarball can be created using: ./make-git-shapshot.sh [gitcommit]
-Source0:        %{name}-git%{gitcommit}.tar.xz
+Source0:        https://github.com/systemd/systemd/archive/%{?gitcommit}.tar.gz#/%{name}-%{gitcommit}.tar.gz
 %else
-Source0:        %{name}-%{version}.tar.xz
+Source0:        https://github.com/systemd/systemd/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 %endif
 
 # Prevent accidental removal of the systemd package
