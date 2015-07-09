@@ -382,6 +382,9 @@ install -Dm0644 %{SOURCE8} %{buildroot}/usr/lib/firewalld/services/
 # https://bugzilla.redhat.com/show_bug.cgi?id=1234951
 install -Dm0644 %{SOURCE9} %{buildroot}%{_pkgdocdir}/
 
+# Remove hidden files
+rm %{buildroot}%{_pkgdocdir}/.[a-z]*
+
 %find_lang %{name}
 
 %check
@@ -874,7 +877,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 * Thu May 21 2015 Lennart Poettering <lpoetter@redhat.com> - 220-1
 - New upstream release
 - Drop /etc/mtab hack, as that's apparently fixed in mock now (#1116158)
-- Remove ghosting for %{_sysconfdir}/systemd/system/runlevel*.target, these targets are not configurable anymore in systemd upstream
+- Remove ghosting for %%{_sysconfdir}/systemd/system/runlevel*.target, these targets are not configurable anymore in systemd upstream
 - Drop work-around for #1002806, since this is solved upstream now
 
 * Wed May 20 2015 Dennis Gilmore <dennis@ausil.us> - 219-15
@@ -956,7 +959,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 - New upstream release
 - This removes the sysctl/bridge hack, a different solution needs to be found for this (see #634736)
 - This removes the /etc/resolv.conf hack, anaconda needs to fix their handling of /etc/resolv.conf as symlink
-- This enables "%check"
+- This enables "%%check"
 - disable gold on arm, as that is broken (see #1193212)
 
 * Mon Feb 16 2015 Peter Robinson <pbrobinson@fedoraproject.org> 218-6
