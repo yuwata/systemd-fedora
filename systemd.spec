@@ -69,7 +69,7 @@ BuildRequires:  pkgconfig
 BuildRequires:  intltool
 BuildRequires:  gperf
 BuildRequires:  gawk
-BuildRequires:  python3
+BuildRequires:  python3-devel
 BuildRequires:  python3-lxml
 BuildRequires:  firewalld-filesystem
 %ifarch %{ix86} x86_64
