@@ -7,16 +7,13 @@
 # directory.
 %global __requires_exclude pkg-config
 
-# Do not check .so files in the python_sitelib directory for provides.
-%global __provides_exclude_from ^(%{python_sitearch}|%{python3_sitearch})/.*\\.so
-
 %global pkgdir %{_prefix}/lib/systemd
 %global system_unit_dir %{pkgdir}/system
 
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        222
-Release:        1%{?gitcommit:.git%{gitcommit}}%{?dist}
+Release:        2%{?gitcommit:.git%{gitcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -72,9 +69,7 @@ BuildRequires:  pkgconfig
 BuildRequires:  intltool
 BuildRequires:  gperf
 BuildRequires:  gawk
-BuildRequires:  python2-devel
-BuildRequires:  python3-devel
-BuildRequires:  python-lxml
+BuildRequires:  python3
 BuildRequires:  python3-lxml
 BuildRequires:  firewalld-filesystem
 %ifarch %{ix86} x86_64
@@ -166,24 +161,6 @@ Obsoletes:      libudev-devel < 183
 Development headers and auxiliary files for developing applications linking
 to libudev or libsystemd.
 
-%package python
-Summary:        Python 2 bindings for systemd
-License:        LGPLv2+
-Requires:       %{name}%{?_isa} = %{version}-%{release}
-
-%package python3
-Summary:        Python 3 bindings for systemd
-License:        LGPLv2+
-Requires:       %{name}%{?_isa} = %{version}-%{release}
-
-%description python
-This package contains bindings which allow Python 2 programs to use
-systemd APIs
-
-%description python3
-This package contains bindings which allow Python 3 programs to use
-systemd APIs
-
 %package journal-gateway
 Summary:        Gateway for serving journal events over the network using HTTP
 Requires:       %{name}%{?_isa} = %{version}-%{release}
@@ -260,11 +237,6 @@ sed -r -i 's/\blibsystemd-(login|journal|id128|daemon).c \\/\\/' Makefile.am
 %{?rhel:   %global ntpvendor rhel}
 %{!?ntpvendor: echo 'NTP vendor zone is not set!'; exit 1}
 
-# first make python3 while source directory is empty
-rm -rf build2 build3
-mkdir build2
-mkdir build3
-
 CONFIGURE_OPTS=(
         --libexecdir=%{_prefix}/lib
         --with-sysvinit-path=/etc/rc.d/init.d
@@ -274,32 +246,16 @@ CONFIGURE_OPTS=(
         --disable-terminal
 )
 
-pushd build3
-%define _configure ../configure
-%configure \
-        "${CONFIGURE_OPTS[@]}" \
-        --disable-manpages \
-        --disable-compat-libs \
-        PYTHON=%{__python3}
-make %{?_smp_mflags} GCC_COLORS="" V=1
-popd
-
-pushd build2
 %configure \
         "${CONFIGURE_OPTS[@]}" \
         --enable-compat-libs \
-        --enable-xkbcommon
+        --enable-xkbcommon \
+        --disable-python-devel \
+        PYTHON=%{__python3}
 make %{?_smp_mflags} GCC_COLORS="" V=1
-popd
 
 %install
-# first install python3 so the binaries are overwritten by the python2 ones
-pushd build3
 %make_install
-popd
-pushd build2
-%make_install
-popd
 
 find %{buildroot} \( -name '*.a' -o -name '*.la' \) -delete
 
@@ -388,8 +344,7 @@ rm %{buildroot}%{_pkgdocdir}/.[a-z]*
 %find_lang %{name}
 
 %check
-make -C build2 check VERBOSE=1
-make -C build3 check VERBOSE=1
+make check VERBOSE=1
 
 # Check for botched translations (https://bugzilla.redhat.com/show_bug.cgi?id=1226566)
 test -z "$(grep -L xml:lang %{buildroot}%{_datadir}/polkit-1/actions/org.freedesktop.*.policy)"
@@ -793,12 +748,6 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_libdir}/pkgconfig/libsystemd-id128.pc
 %{_mandir}/man3/*
 
-%files python
-%{python_sitearch}/systemd
-
-%files python3
-%{python3_sitearch}/systemd
-
 %files journal-gateway
 %config(noreplace) %{_sysconfdir}/systemd/journal-remote.conf
 %config(noreplace) %{_sysconfdir}/systemd/journal-upload.conf
@@ -818,6 +767,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Thu Jul  9 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 222-2
+- Remove python subpackages (python-systemd in now standalone)
+
 * Tue Jul  7 2015 Kay Sievers <kay@redhat.com> - 222-1
 - New upstream release
 
