@@ -98,7 +98,7 @@ Requires(pre):  /usr/sbin/groupadd
 Requires:       dbus
 Requires:       %{name}-libs = %{version}-%{release}
 Requires:       kmod >= 18-4
-Wants:          diffutils
+Recommends:     diffutils
 Requires:       util-linux
 Provides:       /bin/systemctl
 Provides:       /sbin/shutdown
