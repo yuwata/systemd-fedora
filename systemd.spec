@@ -99,6 +99,7 @@ Requires:       dbus
 Requires:       %{name}-libs = %{version}-%{release}
 Requires:       kmod >= 18-4
 Requires:       diffutils
+Requires:       util-linux
 Provides:       /bin/systemctl
 Provides:       /sbin/shutdown
 Provides:       syslog
