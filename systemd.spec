@@ -12,8 +12,8 @@
 
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        222
-Release:        2%{?gitcommit:.git%{gitcommit}}%{?dist}
+Version:        223
+Release:        1%{?gitcommit:.git%{gitcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -337,9 +337,6 @@ install -Dm0644 %{SOURCE8} %{buildroot}/usr/lib/firewalld/services/
 # Install additional docs
 # https://bugzilla.redhat.com/show_bug.cgi?id=1234951
 install -Dm0644 %{SOURCE9} %{buildroot}%{_pkgdocdir}/
-
-# Remove hidden files
-rm %{buildroot}%{_pkgdocdir}/.[a-z]*
 
 %find_lang %{name}
 
@@ -767,6 +764,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Wed Jul 29 2015 Kay Sievers <kay@redhat.com> - 223-1
+- New upstream release
+
 * Thu Jul  9 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 222-2
 - Remove python subpackages (python-systemd in now standalone)
 
