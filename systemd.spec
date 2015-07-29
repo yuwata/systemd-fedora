@@ -1,5 +1,5 @@
-#global gitcommit 619b80a
-
+%global gitcommit 65c85ef5118d88bc0d3459b6e8854bf1846190b9
+%global gitcommitshort %(c=%{gitcommit}; echo ${c:0:7})
 %global _hardened_build 1
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
@@ -13,13 +13,14 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        223
-Release:        1%{?gitcommit:.git%{gitcommit}}%{?dist}
+Release:        2%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
 
+# download tarballs with "spectool -g systemd.spec"
 %if %{defined gitcommit}
-Source0:        https://github.com/systemd/systemd/archive/%{?gitcommit}.tar.gz#/%{name}-%{gitcommit}.tar.gz
+Source0:        https://github.com/systemd/systemd/archive/%{?gitcommit}.tar.gz#/%{name}-%{gitcommitshort}.tar.gz
 %else
 Source0:        https://github.com/systemd/systemd/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 %endif
@@ -178,7 +179,7 @@ Obsoletes:      systemd < 204-10
 systemd-journal-gatewayd serves journal events over the network using HTTP.
 
 %prep
-%setup -q %{?gitcommit:-n %{name}-git%{gitcommit}}
+%setup -q %{?gitcommit:-n %{name}-%{gitcommit}}
 
 %if %{num_patches}
     git init
@@ -765,6 +766,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Wed Jul 29 2015 Kay Sievers <kay@redhat.com> - 223-2
+- update to git snapshot
+
 * Wed Jul 29 2015 Kay Sievers <kay@redhat.com> - 223-1
 - New upstream release
 
