@@ -1,4 +1,4 @@
-%global gitcommit 65c85ef5118d88bc0d3459b6e8854bf1846190b9
+#global gitcommit 10fa421cd2abdc2ae1a07f7c13bfaa4ee6d6de4f
 %global gitcommitshort %(c=%{gitcommit}; echo ${c:0:7})
 %global _hardened_build 1
 
@@ -12,8 +12,8 @@
 
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        223
-Release:        2%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Version:        224
+Release:        1%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -433,6 +433,18 @@ if [ -f /etc/nsswitch.conf ] ; then
                 /\<mymachines\>/ b
                 s/[[:blank:]]*$/ mymachines/
                 ' /etc/nsswitch.conf >/dev/null 2>&1 || :
+
+        sed -i.bak -e '
+                /^passwd:/ !b
+                /\<mymachines\>/ b
+                s/[[:blank:]]*$/ mymachines/
+                ' /etc/nsswitch.conf >/dev/null 2>&1 || :
+
+        sed -i.bak -e '
+                /^group:/ !b
+                /\<mymachines\>/ b
+                s/[[:blank:]]*$/ mymachines/
+                ' /etc/nsswitch.conf >/dev/null 2>&1 || :
 fi
 
 # remove obsolete systemd-readahead file
@@ -766,6 +778,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Fri Jul 31 2015 Kay Sievers <kay@redhat.com> - 224-1
+- New upstream release
+
 * Wed Jul 29 2015 Kay Sievers <kay@redhat.com> - 223-2
 - update to git snapshot
 
