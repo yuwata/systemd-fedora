@@ -4,5 +4,4 @@
 /systemd-*src.rpm
 /systemd-*.tar.xz
 /*.rpm
-/systemd-65c85ef.tar.gz
 /systemd-224.tar.gz
