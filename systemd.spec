@@ -12,7 +12,7 @@
 
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        225
+Version:        226
 Release:        1%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
@@ -778,6 +778,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Tue Sep  8 2015 Kay Sievers <kay@redhat.com> - 226-1
+- New upstream release
+
 * Thu Aug 27 2015 Kay Sievers <kay@redhat.com> - 225-1
 - New upstream release
 

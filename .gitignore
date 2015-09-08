@@ -4,5 +4,4 @@
 /systemd-*src.rpm
 /systemd-*.tar.xz
 /*.rpm
-/systemd-224.tar.gz
-/systemd-225.tar.gz
+/systemd-226.tar.gz
