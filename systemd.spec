@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        226
-Release:        1%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        2%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -27,15 +27,15 @@ Source0:        https://github.com/systemd/systemd/archive/v%{version}.tar.gz#/%
 
 # Prevent accidental removal of the systemd package
 Source4:        yum-protect-systemd.conf
+
 Source5:        inittab
 Source6:        sysctl.conf.README
 Source7:        systemd-journal-remote.xml
 Source8:        systemd-journal-gatewayd.xml
 Source9:        20-yama-ptrace.conf
 
-# Patch series is available from http://cgit.freedesktop.org/systemd/systemd-stable/log/?h=v220-stable
-# GIT_DIR=~/src/systemd/.git git format-patch-ab -M -N --no-signature v220..v220-stable
-# i=1; for p in 0*patch;do printf "Patch%04d:      %s\n" $i $p; ((i++));done
+# Fix until upstream version is available
+Source100:      systemd-user
 
 # kernel-install patch for grubby, drop if grubby is obsolete
 Patch1000:      kernel-install-grubby.patch
@@ -76,11 +76,7 @@ BuildRequires:  firewalld-filesystem
 %ifarch %{ix86} x86_64
 BuildRequires:  gnu-efi gnu-efi-devel
 %endif
-# libseccomp is currently explicitly only supported on x86/arm*
 %ifarch %{arm} aarch64 %{ix86} x86_64
-# https://bugzilla.redhat.com/show_bug.cgi?id=1071278
-# https://bugzilla.redhat.com/show_bug.cgi?id=1073647
-# https://bugzilla.redhat.com/show_bug.cgi?id=1071284
 BuildRequires:  libseccomp-devel
 %endif
 BuildRequires:  automake
@@ -339,6 +335,9 @@ install -Dm0644 %{SOURCE8} %{buildroot}/usr/lib/firewalld/services/
 # Install additional docs
 # https://bugzilla.redhat.com/show_bug.cgi?id=1234951
 install -Dm0644 %{SOURCE9} %{buildroot}%{_pkgdocdir}/
+
+# Fix until upstream version is available
+install -Dm0644 %{SOURCE100} %{buildroot}%{_sysconfdir}/pam.d/
 
 %find_lang %{name}
 
@@ -778,6 +777,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Fri Sep 18 2015 Kay Sievers <kay@redhat.com> - 226-2
+- Add selinux to  system-user PAM config
+
 * Tue Sep  8 2015 Kay Sievers <kay@redhat.com> - 226-1
 - New upstream release
 

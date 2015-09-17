@@ -5,3 +5,4 @@
 /systemd-*.tar.xz
 /*.rpm
 /systemd-226.tar.gz
+/systemd-user
