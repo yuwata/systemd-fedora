@@ -12,8 +12,8 @@
 
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        226
-Release:        3%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Version:        227
+Release:        1%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -33,9 +33,6 @@ Source6:        sysctl.conf.README
 Source7:        systemd-journal-remote.xml
 Source8:        systemd-journal-gatewayd.xml
 Source9:        20-yama-ptrace.conf
-
-# Fix until upstream version is available
-Source100:      systemd-user
 
 # kernel-install patch for grubby, drop if grubby is obsolete
 Patch1000:      kernel-install-grubby.patch
@@ -335,9 +332,6 @@ install -Dm0644 %{SOURCE8} %{buildroot}/usr/lib/firewalld/services/
 # Install additional docs
 # https://bugzilla.redhat.com/show_bug.cgi?id=1234951
 install -Dm0644 %{SOURCE9} %{buildroot}%{_pkgdocdir}/
-
-# Fix until upstream version is available
-install -Dm0644 %{SOURCE100} %{buildroot}%{_sysconfdir}/pam.d/
 
 %find_lang %{name}
 
@@ -777,6 +771,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Wed Oct  7 2015 Kay Sievers <kay@redhat.com> - 227-1
+- New upstream release
+
 * Fri Sep 18 2015 Jan Synáček <jsynacek@redhat.com> - 226-3
 - user systemd-journal-upload should be in systemd-journal group (#1262743)
 
