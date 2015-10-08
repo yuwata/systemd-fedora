@@ -1,21 +1,21 @@
-From 0762c0681b00288ef2735a31c6d2478e45f0532c Mon Sep 17 00:00:00 2001
+From 860be9427dff48efc5e486b039be932094572047 Mon Sep 17 00:00:00 2001
 From: Harald Hoyer <harald@redhat.com>
 Date: Tue, 14 Jan 2014 17:48:08 -0500
 Subject: [PATCH] kernel-install: add fedora specific callouts to
  new-kernel-pkg
 
 ---
- src/kernel-install/kernel-install | 38 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 38 insertions(+)
+ src/kernel-install/kernel-install | 44 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 44 insertions(+)
  mode change 100644 => 100755 src/kernel-install/kernel-install
 
 diff --git a/src/kernel-install/kernel-install b/src/kernel-install/kernel-install
 old mode 100644
 new mode 100755
-index 3ae1d77..5925329
+index 3ae1d77..5c1e4fc
 --- a/src/kernel-install/kernel-install
 +++ b/src/kernel-install/kernel-install
-@@ -71,6 +71,44 @@ fi
+@@ -71,6 +71,50 @@ fi
  KERNEL_VERSION="$1"
  KERNEL_IMAGE="$2"
  
@@ -24,7 +24,6 @@ index 3ae1d77..5925329
 +    if [[ "${KERNEL_DIR}" != "/boot" ]]; then
 +        for i in \
 +            "$KERNEL_IMAGE" \
-+            "$KERNEL_DIR/.${KERNEL_IMAGE##*/}.hmac" \
 +            "$KERNEL_DIR"/System.map \
 +            "$KERNEL_DIR"/config \
 +            "$KERNEL_DIR"/zImage.stub \
@@ -34,6 +33,13 @@ index 3ae1d77..5925329
 +            cp -a "$i" "/boot/${i##*/}-${KERNEL_VERSION}"
 +            command -v restorecon &>/dev/null && \
 +                restorecon "/boot/${i##*/}-${KERNEL_VERSION}"
++        done
++        # hmac is .vmlinuz-<version>.hmac so needs a special treatment
++        i="$KERNEL_DIR/.${KERNEL_IMAGE##*/}.hmac"
++        if [[ -e "$i" ]]; then
++            cp -a "$i" "/boot/.${KERNEL_IMAGE##*/}-${KERNEL_VERSION}.hmac"
++            command -v restorecon &>/dev/null && \
++                restorecon "/boot/.${KERNEL_IMAGE##*/}-${KERNEL_VERSION}.hmac"
 +        done
 +    fi
 +
