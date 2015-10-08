@@ -1,21 +1,21 @@
-From 0256bbe384f243dbbcfbe87200c9d8613a992ecb Mon Sep 17 00:00:00 2001
+From 0762c0681b00288ef2735a31c6d2478e45f0532c Mon Sep 17 00:00:00 2001
 From: Harald Hoyer <harald@redhat.com>
 Date: Tue, 14 Jan 2014 17:48:08 -0500
 Subject: [PATCH] kernel-install: add fedora specific callouts to
  new-kernel-pkg
 
 ---
- src/kernel-install/kernel-install | 36 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 36 insertions(+)
+ src/kernel-install/kernel-install | 38 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
  mode change 100644 => 100755 src/kernel-install/kernel-install
 
 diff --git a/src/kernel-install/kernel-install b/src/kernel-install/kernel-install
 old mode 100644
 new mode 100755
-index 3ae1d77..f1c74de
+index 3ae1d77..5925329
 --- a/src/kernel-install/kernel-install
 +++ b/src/kernel-install/kernel-install
-@@ -71,6 +71,42 @@ fi
+@@ -71,6 +71,44 @@ fi
  KERNEL_VERSION="$1"
  KERNEL_IMAGE="$2"
  
@@ -32,6 +32,8 @@ index 3ae1d77..f1c74de
 +            ; do
 +            [[ -e "$i" ]] || continue
 +            cp -a "$i" "/boot/${i##*/}-${KERNEL_VERSION}"
++            command -v restorecon &>/dev/null && \
++                restorecon "/boot/${i##*/}-${KERNEL_VERSION}"
 +        done
 +    fi
 +
@@ -59,5 +61,5 @@ index 3ae1d77..f1c74de
      read MACHINE_ID < /etc/machine-id
  fi
 -- 
-2.0.4
+2.6.0
 
