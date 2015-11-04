@@ -15,7 +15,7 @@ new mode 100755
 index 3ae1d77..5c1e4fc
 --- a/src/kernel-install/kernel-install
 +++ b/src/kernel-install/kernel-install
-@@ -71,7 +71,50 @@ fi
+@@ -71,6 +71,50 @@ fi
  KERNEL_VERSION="$1"
  KERNEL_IMAGE="$2"
  
