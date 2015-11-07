@@ -104,8 +104,6 @@ Obsoletes:      system-setup-keyboard < 0.9
 Provides:       system-setup-keyboard = 0.9
 Obsoletes:      nss-myhostname < 0.4
 Provides:       nss-myhostname = 0.4
-# For the journal-gateway split in F20, drop at F22
-Obsoletes:      systemd < 204-10
 # systemd-sysv-convert was removed in f20: https://fedorahosted.org/fpc/ticket/308
 Obsoletes:      systemd-sysv < 206
 Provides:       systemd-sysv = 206
@@ -164,8 +162,6 @@ Requires(post):   systemd
 Requires(preun):  systemd
 Requires(postun): systemd
 Requires:       firewalld-filesystem
-# For the journal-gateway split in F20, drop at F22
-Obsoletes:      systemd < 204-10
 
 %description journal-gateway
 systemd-journal-gatewayd serves journal events over the network using HTTP.
