@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        227
-Release:        6%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        7%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -153,8 +153,9 @@ Obsoletes:      libudev-devel < 183
 Development headers and auxiliary files for developing applications linking
 to libudev or libsystemd.
 
-%package journal-gateway
-Summary:        Gateway for serving journal events over the network using HTTP
+%package journal-remote
+# Name is the same as in Debian
+Summary:        Tools to send journal events over the network
 Requires:       %{name}%{?_isa} = %{version}-%{release}
 License:        LGPLv2+
 Requires(pre):    /usr/bin/getent
@@ -162,9 +163,15 @@ Requires(post):   systemd
 Requires(preun):  systemd
 Requires(postun): systemd
 Requires:       firewalld-filesystem
+Provides:       %{name}-journal-gateway = %{version}-%{release}
+Obsoletes:      %{name}-journal-gateway < 227-5
 
-%description journal-gateway
-systemd-journal-gatewayd serves journal events over the network using HTTP.
+%description journal-remote
+Programs to forward journal entries over the network, using encrypted HTTP,
+and to write journal files from serialized journal contents.
+
+This package contains systemd-journal-gatewayd,
+systemd-journal-remote, and systemd-journal-upload.
 
 %prep
 %setup -q %{?gitcommit:-n %{name}-%{gitcommit}}
@@ -481,7 +488,7 @@ fi
 %post compat-libs -p /sbin/ldconfig
 %postun compat-libs -p /sbin/ldconfig
 
-%pre journal-gateway
+%pre journal-remote
 getent group systemd-journal-gateway >/dev/null 2>&1 || groupadd -r -g 191 systemd-journal-gateway 2>&1 || :
 getent passwd systemd-journal-gateway >/dev/null 2>&1 || useradd -r -l -u 191 -g systemd-journal-gateway -d %{_localstatedir}/log/journal -s /sbin/nologin -c "Journal Gateway" systemd-journal-gateway >/dev/null 2>&1 || :
 getent group systemd-journal-remote >/dev/null 2>&1 || groupadd -r systemd-journal-remote 2>&1 || :
@@ -489,18 +496,18 @@ getent passwd systemd-journal-remote >/dev/null 2>&1 || useradd -r -l -g systemd
 getent group systemd-journal-upload >/dev/null 2>&1 || groupadd -r systemd-journal-upload 2>&1 || :
 getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd-journal-upload -G systemd-journal -d /%{_localstatedir}/log/journal/upload -s /sbin/nologin -c "Journal Upload" systemd-journal-upload >/dev/null 2>&1 || :
 
-%post journal-gateway
+%post journal-remote
 %systemd_post systemd-journal-gatewayd.socket systemd-journal-gatewayd.service
 %systemd_post systemd-journal-remote.socket systemd-journal-remote.service
 %systemd_post systemd-journal-upload.service
 %firewalld_reload
 
-%preun journal-gateway
+%preun journal-remote
 %systemd_preun systemd-journal-gatewayd.socket systemd-journal-gatewayd.service
 %systemd_preun systemd-journal-remote.socket systemd-journal-remote.service
 %systemd_preun systemd-journal-upload.service
 
-%postun journal-gateway
+%postun journal-remote
 %systemd_postun_with_restart systemd-journal-gatewayd.service
 %systemd_postun_with_restart systemd-journal-remote.service
 %systemd_postun_with_restart systemd-journal-upload.service
@@ -747,7 +754,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_libdir}/pkgconfig/libsystemd-id128.pc
 %{_mandir}/man3/*
 
-%files journal-gateway
+%files journal-remote
 %config(noreplace) %{_sysconfdir}/systemd/journal-remote.conf
 %config(noreplace) %{_sysconfdir}/systemd/journal-upload.conf
 %{system_unit_dir}/systemd-journal-gatewayd.*
@@ -766,6 +773,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Thu Nov 12 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 227-7
+- Rename journal-gateway subpackage to journal-remote
+
 * Wed Nov 11 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 227-6
 - Rebuilt for https://fedoraproject.org/wiki/Changes/python3.5
 
