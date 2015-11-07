@@ -119,8 +119,7 @@ capabilities, uses socket and D-Bus activation for starting services,
 offers on-demand starting of daemons, keeps track of processes using
 Linux cgroups, supports snapshotting and restoring of the system
 state, maintains mount and automount points and implements an
-elaborate transactional dependency-based service control logic. It can
-work as a drop-in replacement for sysvinit.
+elaborate transactional dependency-based service control logic.
 
 %package libs
 Summary:        systemd libraries
