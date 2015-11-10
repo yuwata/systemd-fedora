@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        227
-Release:        4%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        5%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -771,6 +771,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Tue Nov 10 2015 Lukáš Nykrýn <lnykryn@redhat.com> - 227-5
+- Rebuild for libmicrohttpd soname bump
+
 * Fri Nov 06 2015 Robert Kuska <rkuska@redhat.com> - 227-4
 - Rebuilt for Python3.5 rebuild
 
