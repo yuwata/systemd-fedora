@@ -547,7 +547,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %dir %{_datadir}/pkgconfig
 %dir %{_datadir}/zsh
 %dir %{_datadir}/zsh/site-functions
-%dir %attr(2755,root,systemd-journal) %{_localstatedir}/log/journal
+%dir %attr(2755,root,systemd-journal) %verify(not mode) %{_localstatedir}/log/journal
 %dir %{_localstatedir}/lib/systemd
 %dir %{_localstatedir}/lib/systemd/catalog
 %ghost %dir %{_localstatedir}/lib/systemd/coredump
@@ -771,6 +771,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %changelog
 * Thu Nov 12 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 227-7
 - Rename journal-gateway subpackage to journal-remote
+- Ignore the access mode on /var/log/journal (#1048424)
 
 * Wed Nov 11 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 227-6
 - Rebuilt for https://fedoraproject.org/wiki/Changes/python3.5
