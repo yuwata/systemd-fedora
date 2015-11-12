@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        229
-Release:        4%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        5%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -158,6 +158,22 @@ Obsoletes:      libudev-devel < 183
 %description devel
 Development headers and auxiliary files for developing applications linking
 to libudev or libsystemd.
+
+%package container
+# Name is the same as in Debian
+Summary: Tools for containers and VMs
+Requires:       %{name}%{?_isa} = %{version}-%{release}
+Requires(post):   systemd
+Requires(preun):  systemd
+Requires(postun): systemd
+Obsoletes:      %{name} < 229-5
+License:        LGPLv2+
+
+%description container
+Systemd tools to spawn and manage containers and virtual machines.
+
+This package contains systemd-nspawn, machinectl, systemd-machined,
+and systemd-importd.
 
 %package journal-remote
 # Name is the same as in Debian
@@ -596,9 +612,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.login1.conf
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.locale1.conf
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.timedate1.conf
-%config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.machine1.conf
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.resolve1.conf
-%config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.import1.conf
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.network1.conf
 %config(noreplace) %{_sysconfdir}/systemd/system.conf
 %config(noreplace) %{_sysconfdir}/systemd/user.conf
@@ -632,12 +646,10 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_bindir}/systemd-machine-id-setup
 %{_bindir}/loginctl
 %{_bindir}/journalctl
-%{_bindir}/machinectl
 %{_bindir}/busctl
 %{_bindir}/networkctl
 %{_bindir}/coredumpctl
 %{_bindir}/systemd-tmpfiles
-%{_bindir}/systemd-nspawn
 %{_bindir}/systemd-stdio-bridge
 %{_bindir}/systemd-cat
 %{_bindir}/systemd-cgls
@@ -660,9 +672,23 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{pkgdir}/systemd
 %{system_unit_dir}
 %{pkgdir}/user
+%exclude %{system_unit_dir}/*.machine1.*
+%exclude %{system_unit_dir}/*/*.machine1.*
+%exclude %{system_unit_dir}/*.import1.*
+%exclude %{system_unit_dir}/*/*.import1.*
+%exclude %{system_unit_dir}/systemd-machined.service
+%exclude %{system_unit_dir}/systemd-importd.service
+%exclude %{system_unit_dir}/machine.slice
+%exclude %{system_unit_dir}/machines.target
+%exclude %{system_unit_dir}/var-lib-machines.mount
+%exclude %{system_unit_dir}/*/var-lib-machines.mount
 %exclude %{system_unit_dir}/systemd-journal-gatewayd.*
 %exclude %{system_unit_dir}/systemd-journal-remote.*
 %exclude %{system_unit_dir}/systemd-journal-upload.*
+%exclude %{pkgdir}/systemd-machined
+%exclude %{pkgdir}/systemd-import
+%exclude %{pkgdir}/systemd-importd
+%exclude %{pkgdir}/systemd-pull
 %exclude %{pkgdir}/systemd-journal-gatewayd
 %exclude %{pkgdir}/systemd-journal-remote
 %exclude %{pkgdir}/systemd-journal-upload
@@ -676,7 +702,6 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_prefix}/lib/tmpfiles.d/var.conf
 %{_prefix}/lib/tmpfiles.d/etc.conf
 %{_prefix}/lib/tmpfiles.d/home.conf
-%{_prefix}/lib/tmpfiles.d/systemd-nspawn.conf
 %{_prefix}/lib/tmpfiles.d/journal-nocow.conf
 %{_prefix}/lib/sysctl.d/50-default.conf
 %{_prefix}/lib/sysctl.d/50-coredump.conf
@@ -686,7 +711,6 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{pkgdir}/catalog/systemd.catalog
 %{_prefix}/lib/kernel/install.d/50-depmod.install
 %{_prefix}/lib/kernel/install.d/90-loaderentry.install
-%{pkgdir}/import-pubring.gpg
 %{_sbindir}/init
 %{_sbindir}/reboot
 %{_sbindir}/halt
@@ -698,6 +722,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_mandir}/man1/*
 %{_mandir}/man5/*
 %{_mandir}/man7/*
+%exclude %{_mandir}/man1/machinectl.*
+%exclude %{_mandir}/man8/systemd-machined.*
+%exclude %{_mandir}/man8/*mymachines.*
 %exclude %{_mandir}/man8/systemd-journal-gatewayd.*
 %exclude %{_mandir}/man8/systemd-journal-remote.*
 %exclude %{_mandir}/man8/systemd-journal-upload.*
@@ -713,9 +740,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_datadir}/dbus-1/system-services/org.freedesktop.login1.service
 %{_datadir}/dbus-1/system-services/org.freedesktop.locale1.service
 %{_datadir}/dbus-1/system-services/org.freedesktop.timedate1.service
-%{_datadir}/dbus-1/system-services/org.freedesktop.machine1.service
 %{_datadir}/dbus-1/system-services/org.freedesktop.resolve1.service
-%{_datadir}/dbus-1/system-services/org.freedesktop.import1.service
 %{_datadir}/dbus-1/system-services/org.freedesktop.network1.service
 %dir %{_datadir}/polkit-1
 %dir %{_datadir}/polkit-1/actions
@@ -724,12 +749,12 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_datadir}/polkit-1/actions/org.freedesktop.login1.policy
 %{_datadir}/polkit-1/actions/org.freedesktop.locale1.policy
 %{_datadir}/polkit-1/actions/org.freedesktop.timedate1.policy
-%{_datadir}/polkit-1/actions/org.freedesktop.import1.policy
-%{_datadir}/polkit-1/actions/org.freedesktop.machine1.policy
 %{_datadir}/pkgconfig/systemd.pc
 %{_datadir}/pkgconfig/udev.pc
 %{_datadir}/bash-completion/completions/*
+%exclude %{_datadir}/bash-completion/completions/machinectl
 %{_datadir}/zsh/site-functions/*
+%exclude %{_datadir}/zsh/site-functions/_machinectl
 %{pkgdir}/catalog/systemd.*.catalog
 %{pkgdir}/network/99-default.link
 %{pkgdir}/network/80-container-host0.network
@@ -746,7 +771,6 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %files libs
 %{_libdir}/security/pam_systemd.so
 %{_libdir}/libnss_myhostname.so.2
-%{_libdir}/libnss_mymachines.so.2
 %{_libdir}/libnss_resolve.so.2
 %{_libdir}/libudev.so.*
 %{_libdir}/libsystemd.so.*
@@ -784,6 +808,38 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_libdir}/pkgconfig/libsystemd-id128.pc
 %{_mandir}/man3/*
 
+%files container
+%config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.machine1.conf
+%config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.import1.conf
+%{_libdir}/libnss_mymachines.so.2
+%{_bindir}/machinectl
+%{_bindir}/systemd-nspawn
+%{pkgdir}/import-pubring.gpg
+%{_prefix}/lib/tmpfiles.d/systemd-nspawn.conf
+%{system_unit_dir}/*.machine1.*
+%{system_unit_dir}/*/*.machine1.*
+%{system_unit_dir}/*.import1.*
+%{system_unit_dir}/*/*.import1.*
+%{system_unit_dir}/systemd-machined.service
+%{system_unit_dir}/systemd-importd.service
+%{system_unit_dir}/machine.slice
+%{system_unit_dir}/machines.target
+%{system_unit_dir}/var-lib-machines.mount
+%{system_unit_dir}/*/var-lib-machines.mount
+%{pkgdir}/systemd-journal-gatewayd
+%{pkgdir}/systemd-journal-remote
+%{pkgdir}/systemd-journal-upload
+%{pkgdir}/systemd-machined
+%{pkgdir}/systemd-import
+%{pkgdir}/systemd-importd
+%{pkgdir}/systemd-pull
+%{_datadir}/dbus-1/system-services/org.freedesktop.machine1.service
+%{_datadir}/dbus-1/system-services/org.freedesktop.import1.service
+%{_datadir}/polkit-1/actions/org.freedesktop.import1.policy
+%{_datadir}/polkit-1/actions/org.freedesktop.machine1.policy
+%{_datadir}/bash-completion/completions/machinectl
+%{_datadir}/zsh/site-functions/_machinectl
+
 %files journal-remote
 %config(noreplace) %{_sysconfdir}/systemd/journal-remote.conf
 %config(noreplace) %{_sysconfdir}/systemd/journal-upload.conf
@@ -803,6 +859,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Fri Mar  4 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@bupkis> - 229-5
+- Split out systemd-container subpackage (#1163412)
+
 * Tue Mar  1 2016 Peter Robinson <pbrobinson@fedoraproject.org> 229-4
 - Power64 and s390(x) now have libseccomp support
 - aarch64 has gnu-efi
