@@ -102,14 +102,14 @@ Provides:       /bin/systemctl
 Provides:       /sbin/shutdown
 Provides:       syslog
 Provides:       systemd-units = %{version}-%{release}
-Provides:       udev = %{version}
-Obsoletes:      udev < 183
 Obsoletes:      system-setup-keyboard < 0.9
 Provides:       system-setup-keyboard = 0.9
 Obsoletes:      nss-myhostname < 0.4
 Provides:       nss-myhostname = 0.4
 # systemd-sysv-convert was removed in f20: https://fedorahosted.org/fpc/ticket/308
 Obsoletes:      systemd-sysv < 206
+# self-obsoletes so that dnf will install new subpackages on upgrade (#1260394)
+Obsoletes:      %{name} < 229-5
 Provides:       systemd-sysv = 206
 Conflicts:      initscripts < 9.56.1
 %if 0%{?fedora}
@@ -159,6 +159,23 @@ Obsoletes:      libudev-devel < 183
 Development headers and auxiliary files for developing applications linking
 to libudev or libsystemd.
 
+%package udev
+Summary: Rule-based device node and kernel event manager
+Requires:       %{name}%{?_isa} = %{version}-%{release}
+Requires(post):   systemd
+Requires(preun):  systemd
+Requires(postun): systemd
+# obsolete parent package so that dnf will install new subpackage on upgrade (#1260394)
+Obsoletes:      %{name} < 229-5
+Provides:       udev = %{version}
+Obsoletes:      udev < 183
+License:        LGPLv2+
+
+%description udev
+This package contains systemd-udev and the rules and hardware database
+needed to manage device nodes. This package is necessary on physical
+machines and in virtual machines, but not in containers.
+
 %package container
 # Name is the same as in Debian
 Summary: Tools for containers and VMs
@@ -166,6 +183,7 @@ Requires:       %{name}%{?_isa} = %{version}-%{release}
 Requires(post):   systemd
 Requires(preun):  systemd
 Requires(postun): systemd
+# obsolete parent package so that dnf will install new subpackage on upgrade (#1260394)
 Obsoletes:      %{name} < 229-5
 License:        LGPLv2+
 
@@ -431,7 +449,6 @@ systemd-machine-id-setup >/dev/null 2>&1 || :
 /usr/lib/systemd/systemd-random-seed save >/dev/null 2>&1 || :
 systemctl daemon-reexec >/dev/null 2>&1 || :
 systemctl start systemd-udevd.service >/dev/null 2>&1 || :
-udevadm hwdb --update >/dev/null 2>&1 || :
 journalctl --update-catalog >/dev/null 2>&1 || :
 systemd-tmpfiles --create >/dev/null 2>&1 || :
 
@@ -531,6 +548,16 @@ fi
 %post compat-libs -p /sbin/ldconfig
 %postun compat-libs -p /sbin/ldconfig
 
+%post udev
+udevadm hwdb --update >/dev/null 2>&1 || :
+%systemd_post systemd-udev-{settle,trigger}.service systemd-udevd-{control,kernel}.socket systemd-udevd.service
+
+%preun udev
+%systemd_preun systemd-udev-{settle,trigger}.service systemd-udevd-{control,kernel}.socket systemd-udevd.service
+
+%postun udev
+%systemd_postun_with_restart systemd-udev-{settle,trigger}.service systemd-udevd-{control,kernel}.socket systemd-udevd.service
+
 %pre journal-remote
 getent group systemd-journal-gateway >/dev/null 2>&1 || groupadd -r -g 191 systemd-journal-gateway 2>&1 || :
 getent passwd systemd-journal-gateway >/dev/null 2>&1 || useradd -r -l -u 191 -g systemd-journal-gateway -d %{_localstatedir}/log/journal -s /sbin/nologin -c "Journal Gateway" systemd-journal-gateway >/dev/null 2>&1 || :
@@ -568,9 +595,6 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %dir %{_sysconfdir}/sysctl.d
 %dir %{_sysconfdir}/modules-load.d
 %dir %{_sysconfdir}/binfmt.d
-%dir %{_sysconfdir}/udev
-%dir %{_sysconfdir}/udev/rules.d
-%dir %{_sysconfdir}/udev/hwdb.d
 %{_sysconfdir}/X11/xinit/xinitrc.d/50-systemd-user.sh
 %ghost %verify(not md5 size mtime) %config(noreplace,missingok) /etc/crypttab
 /etc/inittab
@@ -622,10 +646,8 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %config(noreplace) %{_sysconfdir}/systemd/resolved.conf
 %config(noreplace) %{_sysconfdir}/systemd/timesyncd.conf
 %config(noreplace) %{_sysconfdir}/systemd/coredump.conf
-%config(noreplace) %{_sysconfdir}/udev/udev.conf
 %config(noreplace) %{_sysconfdir}/yum/protected.d/systemd.conf
 %config(noreplace) %{_sysconfdir}/pam.d/systemd-user
-%ghost %{_sysconfdir}/udev/hwdb.bin
 %{_rpmconfigdir}/macros.d/macros.systemd
 %{_sysconfdir}/xdg/systemd
 %{_sysconfdir}/rc.d/init.d/README
@@ -662,16 +684,18 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_bindir}/systemd-resolve
 %{_bindir}/systemd-sysusers
 %{_bindir}/systemd-firstboot
-%{_bindir}/systemd-hwdb
 %{_bindir}/hostnamectl
 %{_bindir}/localectl
 %{_bindir}/timedatectl
 %{_bindir}/bootctl
-%{_bindir}/udevadm
 %{_bindir}/kernel-install
 %{pkgdir}/systemd
 %{system_unit_dir}
 %{pkgdir}/user
+%exclude %{system_unit_dir}/*udev*
+%exclude %{system_unit_dir}/*/*udev*
+%exclude %{system_unit_dir}/*hwdb*
+%exclude %{system_unit_dir}/*/*hwdb*
 %exclude %{system_unit_dir}/*.machine1.*
 %exclude %{system_unit_dir}/*/*.machine1.*
 %exclude %{system_unit_dir}/*.import1.*
@@ -685,6 +709,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %exclude %{system_unit_dir}/systemd-journal-gatewayd.*
 %exclude %{system_unit_dir}/systemd-journal-remote.*
 %exclude %{system_unit_dir}/systemd-journal-upload.*
+%exclude %{pkgdir}/systemd-udevd
 %exclude %{pkgdir}/systemd-machined
 %exclude %{pkgdir}/systemd-import
 %exclude %{pkgdir}/systemd-importd
@@ -693,7 +718,6 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %exclude %{pkgdir}/systemd-journal-remote
 %exclude %{pkgdir}/systemd-journal-upload
 %{pkgdir}/systemd-*
-%{_prefix}/lib/udev
 %{_prefix}/lib/tmpfiles.d/systemd.conf
 %{_prefix}/lib/tmpfiles.d/systemd-nologin.conf
 %{_prefix}/lib/tmpfiles.d/x11.conf
@@ -718,17 +742,19 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_sbindir}/shutdown
 %{_sbindir}/telinit
 %{_sbindir}/runlevel
-%{_sbindir}/udevadm
 %{_mandir}/man1/*
 %{_mandir}/man5/*
 %{_mandir}/man7/*
+%{_mandir}/man8/*
+%exclude %{_mandir}/man*/*udev*
+%exclude %{_mandir}/man*/*hwdb*
+%exclude %{_mandir}/man5/systemd.link.*
 %exclude %{_mandir}/man1/machinectl.*
 %exclude %{_mandir}/man8/systemd-machined.*
 %exclude %{_mandir}/man8/*mymachines.*
 %exclude %{_mandir}/man8/systemd-journal-gatewayd.*
 %exclude %{_mandir}/man8/systemd-journal-remote.*
 %exclude %{_mandir}/man8/systemd-journal-upload.*
-%{_mandir}/man8/*
 %{_datadir}/factory/etc/nsswitch.conf
 %{_datadir}/factory/etc/pam.d/other
 %{_datadir}/factory/etc/pam.d/system-auth
@@ -752,11 +778,12 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_datadir}/pkgconfig/systemd.pc
 %{_datadir}/pkgconfig/udev.pc
 %{_datadir}/bash-completion/completions/*
+%exclude %{_datadir}/bash-completion/completions/udevadm
 %exclude %{_datadir}/bash-completion/completions/machinectl
 %{_datadir}/zsh/site-functions/*
+%exclude %{_datadir}/zsh/site-functions/_udevadm
 %exclude %{_datadir}/zsh/site-functions/_machinectl
 %{pkgdir}/catalog/systemd.*.catalog
-%{pkgdir}/network/99-default.link
 %{pkgdir}/network/80-container-host0.network
 %{pkgdir}/network/80-container-ve.network
 %ifarch %{ix86} x86_64 aarch64
@@ -807,6 +834,28 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_libdir}/pkgconfig/libsystemd-journal.pc
 %{_libdir}/pkgconfig/libsystemd-id128.pc
 %{_mandir}/man3/*
+
+%files udev
+%dir %{_sysconfdir}/udev
+%dir %{_sysconfdir}/udev/rules.d
+%dir %{_sysconfdir}/udev/hwdb.d
+%config(noreplace) %{_sysconfdir}/udev/udev.conf
+%ghost %{_sysconfdir}/udev/hwdb.bin
+%{system_unit_dir}/*udev*
+%{system_unit_dir}/*/*udev*
+%{system_unit_dir}/*hwdb*
+%{system_unit_dir}/*/*hwdb*
+%{_bindir}/udevadm
+%{_sbindir}/udevadm
+%{_bindir}/systemd-hwdb
+%{pkgdir}/systemd-udevd
+%{pkgdir}/network/99-default.link
+%{_prefix}/lib/udev
+%{_mandir}/man*/*udev*
+%{_mandir}/man*/*hwdb*
+%{_mandir}/man5/systemd.link.*
+%{_datadir}/bash-completion/completions/udevadm
+%{_datadir}/zsh/site-functions/_udevadm
 
 %files container
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.machine1.conf
@@ -861,6 +910,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %changelog
 * Fri Mar  4 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@bupkis> - 229-5
 - Split out systemd-container subpackage (#1163412)
+- Split out system-udev subpackage
 
 * Tue Mar  1 2016 Peter Robinson <pbrobinson@fedoraproject.org> 229-4
 - Power64 and s390(x) now have libseccomp support
