@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        227
-Release:        10%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        11%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -718,6 +718,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_mandir}/man8/*
 %exclude %{_mandir}/man*/*udev*
 %exclude %{_mandir}/man*/*hwdb*
+%exclude %{_mandir}/man5/systemd.link.*
 %exclude %{_mandir}/man1/machinectl.*
 %exclude %{_mandir}/man8/systemd-machined.*
 %exclude %{_mandir}/man8/*mymachines.*
@@ -753,7 +754,6 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %exclude %{_datadir}/zsh/site-functions/_udevadm
 %exclude %{_datadir}/zsh/site-functions/_machinectl
 %{pkgdir}/catalog/systemd.*.catalog
-%{pkgdir}/network/99-default.link
 %{pkgdir}/network/80-container-host0.network
 %{pkgdir}/network/80-container-ve.network
 %ifarch %{ix86} x86_64
@@ -817,9 +817,11 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_sbindir}/udevadm
 %{_bindir}/systemd-hwdb
 %{pkgdir}/systemd-udevd
+%{pkgdir}/network/99-default.link
 %{_prefix}/lib/udev
 %{_mandir}/man*/*udev*
 %{_mandir}/man*/*hwdb*
+%{_mandir}/man5/systemd.link.*
 %{_datadir}/bash-completion/completions/udevadm
 %{_datadir}/zsh/site-functions/_udevadm
 
@@ -874,7 +876,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
-* Fri Nov 13 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 227-10
+* Fri Nov 13 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 227-11
 - Split out systemd-container subpackage (#1163412)
 - Split out system-udev subpackage
 
