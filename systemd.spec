@@ -387,8 +387,10 @@ ln -s /usr/lib/systemd/system/rsyslog.service /etc/systemd/system/syslog.service
 
 # Remove spurious /etc/fstab entries from very old installations
 # https://bugzilla.redhat.com/show_bug.cgi?id=1009023
-grep -v -E -q '^(devpts|tmpfs|sysfs|proc)' /etc/fstab || \
-    sed -i.rpm.bak -r '/^devpts\s+\/dev\/pts\s+devpts\s+defaults\s+/d; /^tmpfs\s+\/dev\/shm\s+tmpfs\s+defaults\s+/d; /^sysfs\s+\/sys\s+sysfs\s+defaults\s+/d; /^proc\s+\/proc\s+proc\s+defaults\s+/d' /etc/fstab || :
+if [ -e /etc/fstab ]; then
+   grep -v -E -q '^(devpts|tmpfs|sysfs|proc)' /etc/fstab || \
+         sed -i.rpm.bak -r '/^devpts\s+\/dev\/pts\s+devpts\s+defaults\s+/d; /^tmpfs\s+\/dev\/shm\s+tmpfs\s+defaults\s+/d; /^sysfs\s+\/sys\s+sysfs\s+defaults\s+/d; /^proc\s+\/proc\s+proc\s+defaults\s+/d' /etc/fstab || :
+fi
 
 # Replace obsolete keymaps
 # https://bugzilla.redhat.com/show_bug.cgi?id=1151958
@@ -772,6 +774,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 * Thu Nov 12 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 227-7
 - Rename journal-gateway subpackage to journal-remote
 - Ignore the access mode on /var/log/journal (#1048424)
+- Do not assume fstab is present (#1281606)
 
 * Wed Nov 11 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 227-6
 - Rebuilt for https://fedoraproject.org/wiki/Changes/python3.5
