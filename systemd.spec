@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        228
-Release:        2%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        3%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -343,6 +343,14 @@ make check VERBOSE=1
 # Check for botched translations (https://bugzilla.redhat.com/show_bug.cgi?id=1226566)
 test -z "$(grep -L xml:lang %{buildroot}%{_datadir}/polkit-1/actions/org.freedesktop.*.policy)"
 
+#############################################################################################
+
+%transfiletriggerin -- /usr/lib/systemd/system /etc/systemd/system
+systemctl daemon-reload &>/dev/null || :
+
+%transfiletriggerun -- /usr/lib/systemd/system /etc/systemd/system
+systemctl daemon-reload &>/dev/null || :
+
 %pre
 getent group cdrom >/dev/null 2>&1 || groupadd -r -g 11 cdrom >/dev/null 2>&1 || :
 getent group utmp >/dev/null 2>&1 || groupadd -r -g 22 utmp >/dev/null 2>&1 || :
@@ -442,11 +450,6 @@ fi
 
 # remove obsolete systemd-readahead file
 rm -f /.readahead > /dev/null 2>&1 || :
-
-%postun
-if [ $1 -ge 1 ] ; then
-        systemctl daemon-reload > /dev/null 2>&1 || :
-fi
 
 %preun
 if [ $1 -eq 0 ] ; then
@@ -771,6 +774,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Thu Nov 19 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 228-3
+- Enable rpm file triggers for daemon-reload
+
 * Thu Nov 19 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 228-2
 - Fix version number in obsoleted package name (#1283452)
 
