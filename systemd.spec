@@ -34,6 +34,8 @@ Source7:        systemd-journal-remote.xml
 Source8:        systemd-journal-gatewayd.xml
 Source9:        20-yama-ptrace.conf
 
+Source10:       macros.systemd
+
 # kernel-install patch for grubby, drop if grubby is obsolete
 Patch1000:      kernel-install-grubby.patch
 
@@ -369,6 +371,8 @@ install -Dm0644 %{SOURCE8} %{buildroot}/usr/lib/firewalld/services/
 # https://bugzilla.redhat.com/show_bug.cgi?id=1234951
 install -Dm0644 %{SOURCE9} %{buildroot}%{_pkgdocdir}/
 
+install -Dm0644 %{SOURCE10} %{buildroot}%{_rpmconfigdir}/macros.d/macros.systemd
+
 %find_lang %{name}
 
 %check
@@ -376,6 +380,14 @@ make check VERBOSE=1
 
 # Check for botched translations (https://bugzilla.redhat.com/show_bug.cgi?id=1226566)
 test -z "$(grep -L xml:lang %{buildroot}%{_datadir}/polkit-1/actions/org.freedesktop.*.policy)"
+
+#############################################################################################
+
+%transfiletriggerin -- /usr/lib/systemd/system /etc/systemd/system
+systemctl daemon-reload &>/dev/null || :
+
+%transfiletriggerun -- /usr/lib/systemd/system /etc/systemd/system
+systemctl daemon-reload &>/dev/null || :
 
 %pre
 getent group cdrom >/dev/null 2>&1 || groupadd -r -g 11 cdrom >/dev/null 2>&1 || :
@@ -475,11 +487,6 @@ fi
 
 # remove obsolete systemd-readahead file
 rm -f /.readahead > /dev/null 2>&1 || :
-
-%postun
-if [ $1 -ge 1 ] ; then
-        systemctl daemon-reload > /dev/null 2>&1 || :
-fi
 
 %preun
 if [ $1 -eq 0 ] ; then
