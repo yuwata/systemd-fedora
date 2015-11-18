@@ -12,8 +12,8 @@
 
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        227
-Release:        7%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Version:        228
+Release:        1%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -771,6 +771,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Wed Nov 18 2015 Kay Sievers <kay@redhat.com> - 228-1
+- New upstream release
+
 * Thu Nov 12 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 227-7
 - Rename journal-gateway subpackage to journal-remote
 - Ignore the access mode on /var/log/journal (#1048424)
