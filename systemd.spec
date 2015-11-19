@@ -50,6 +50,8 @@ BuildRequires:  libacl-devel
 BuildRequires:  gobject-introspection-devel
 BuildRequires:  libblkid-devel
 BuildRequires:  xz-devel
+BuildRequires:  lz4-devel
+BuildRequires:  bzip2-devel
 BuildRequires:  libidn-devel
 BuildRequires:  libcurl-devel
 BuildRequires:  kmod-devel
@@ -60,7 +62,6 @@ BuildRequires:  qrencode-devel
 BuildRequires:  libmicrohttpd-devel
 BuildRequires:  libxkbcommon-devel
 BuildRequires:  iptables-devel
-BuildRequires:  bzip2-devel
 BuildRequires:  libxslt
 BuildRequires:  docbook-style-xsl
 BuildRequires:  pkgconfig
