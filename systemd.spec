@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        228
-Release:        1%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        2%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -164,7 +164,7 @@ Requires(preun):  systemd
 Requires(postun): systemd
 Requires:       firewalld-filesystem
 Provides:       %{name}-journal-gateway = %{version}-%{release}
-Obsoletes:      %{name}-journal-gateway < 227-5
+Obsoletes:      %{name}-journal-gateway < 227-7
 
 %description journal-remote
 Programs to forward journal entries over the network, using encrypted HTTP,
@@ -771,6 +771,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Thu Nov 19 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 228-2
+- Fix version number in obsoleted package name (#1283452)
+
 * Wed Nov 18 2015 Kay Sievers <kay@redhat.com> - 228-1
 - New upstream release
 
