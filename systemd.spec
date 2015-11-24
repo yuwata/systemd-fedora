@@ -1,4 +1,4 @@
-#global gitcommit 10fa421cd2abdc2ae1a07f7c13bfaa4ee6d6de4f
+%global gitcommit e35a7876b4ab1d53a7539a905613e31dc6ae50fd
 %global gitcommitshort %(c=%{gitcommit}; echo ${c:0:7})
 %global _hardened_build 1
 
@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        228
-Release:        3%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        4%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -815,6 +815,12 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Tue Nov 24 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 228-4.gite35a787
+- Update to latest upstream git: there is a bunch of fixes
+  (nss-mymachines overflow bug, networkd fixes, more completions are
+  properly installed), mixed with some new resolved features.
+- Rework file triggers so that they always run before daemons are restarted
+
 * Thu Nov 19 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 228-3
 - Enable rpm file triggers for daemon-reload
 
