@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        228
-Release:        4%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        5%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -460,30 +460,15 @@ if [ $1 -eq 1 ] ; then
                 >/dev/null 2>&1 || :
 fi
 
-# sed-fu to add myhostname to the hosts line of /etc/nsswitch.conf
+# sed-fu to remove mymachines from passwd and group lines of /etc/nsswitch.conf
+# https://bugzilla.redhat.com/show_bug.cgi?id=1284325
+# https://meetbot.fedoraproject.org/fedora-meeting/2015-11-25/fesco.2015-11-25-18.00.html
+# To avoid the removal, e.g. add a space at the end of the line.
 if [ -f /etc/nsswitch.conf ] ; then
-        sed -i.bak -e '
-                /^hosts:/ !b
-                /\<myhostname\>/ b
-                s/[[:blank:]]*$/ myhostname/
-                ' /etc/nsswitch.conf >/dev/null 2>&1 || :
-
-        sed -i.bak -e '
-                /^hosts:/ !b
-                /\<mymachines\>/ b
-                s/[[:blank:]]*$/ mymachines/
-                ' /etc/nsswitch.conf >/dev/null 2>&1 || :
-
-        sed -i.bak -e '
-                /^passwd:/ !b
-                /\<mymachines\>/ b
-                s/[[:blank:]]*$/ mymachines/
-                ' /etc/nsswitch.conf >/dev/null 2>&1 || :
-
-        sed -i.bak -e '
-                /^group:/ !b
-                /\<mymachines\>/ b
-                s/[[:blank:]]*$/ mymachines/
+        grep -E -q '^(passwd|group):.* mymachines$' /etc/nsswitch.conf &&
+        sed -i.bak -r -e '
+                s/^(passwd:.*) mymachines$/\1/;
+                s/^(group:.*) mymachines$/\1/;
                 ' /etc/nsswitch.conf >/dev/null 2>&1 || :
 fi
 
@@ -815,6 +800,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Thu Nov 26 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 228-5.gite35a787
+- Do not install nss modules by default
+
 * Tue Nov 24 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 228-4.gite35a787
 - Update to latest upstream git: there is a bunch of fixes
   (nss-mymachines overflow bug, networkd fixes, more completions are
