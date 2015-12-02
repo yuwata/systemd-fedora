@@ -68,6 +68,7 @@ BuildRequires:  pkgconfig
 BuildRequires:  intltool
 BuildRequires:  gperf
 BuildRequires:  gawk
+BuildRequires:  tree
 BuildRequires:  python3-devel
 BuildRequires:  python3-lxml
 BuildRequires:  firewalld-filesystem
