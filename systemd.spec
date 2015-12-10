@@ -34,6 +34,11 @@ Source7:        systemd-journal-remote.xml
 Source8:        systemd-journal-gatewayd.xml
 Source9:        20-yama-ptrace.conf
 
+Patch0001:      0001-tests-turn-check-if-manager-cannot-be-intialized-int.patch
+Patch0002:      0002-lz4-fix-size-check-which-had-no-chance-of-working-on.patch
+Patch0003:      0003-tests-fix-newlines-in-skip-message.patch
+Patch0004:      0004-core-Do-not-bind-a-mount-unit-to-a-device-if-it-was-.patch
+
 # kernel-install patch for grubby, drop if grubby is obsolete
 Patch1000:      kernel-install-grubby.patch
 
@@ -802,6 +807,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Thu Dec 10 2015 Jan Synáček <jsynacek@redhat.com> - 228-6.gite35a787
+- Fix rawhide build failures on ppc64 (#1286249)
+
 * Sun Nov 29 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 228-6.gite35a787
 - Create /etc/systemd/network (#1286397)
 
