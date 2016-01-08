@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        228
-Release:        6%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        7%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -115,7 +115,9 @@ Provides:       nss-myhostname = 0.4
 Obsoletes:      systemd-sysv < 206
 Provides:       systemd-sysv = 206
 Conflicts:      initscripts < 9.56.1
+%if 0%{?fedora}
 Conflicts:      fedora-release < 23-0.12
+%endif
 
 %description
 systemd is a system and service manager for Linux, compatible with
@@ -807,6 +809,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Fri Jan 08 2016 Dan Horák <dan[at]danny.cz> - 228-7.gite35a787
+- apply the conflict with fedora-release only in Fedora
+
 * Thu Dec 10 2015 Jan Synáček <jsynacek@redhat.com> - 228-6.gite35a787
 - Fix rawhide build failures on ppc64 (#1286249)
 
