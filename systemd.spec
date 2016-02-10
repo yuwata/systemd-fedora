@@ -550,7 +550,6 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 
 %files -f %{name}.lang
 %doc %{_pkgdocdir}
-%{_pkgdocdir}/20-yama-ptrace.conf
 %exclude %{_pkgdocdir}/LICENSE.*
 %license LICENSE.GPL2 LICENSE.LGPL2.1
 %dir %{_sysconfdir}/systemd
