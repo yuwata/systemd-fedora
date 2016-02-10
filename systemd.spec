@@ -39,6 +39,8 @@ Patch0002:      0002-lz4-fix-size-check-which-had-no-chance-of-working-on.patch
 Patch0003:      0003-tests-fix-newlines-in-skip-message.patch
 Patch0004:      0004-core-Do-not-bind-a-mount-unit-to-a-device-if-it-was-.patch
 
+Patch0999:      0999-Add-a-workaround-for-linux-net-if.h-conflict.patch
+
 # kernel-install patch for grubby, drop if grubby is obsolete
 Patch1000:      kernel-install-grubby.patch
 
