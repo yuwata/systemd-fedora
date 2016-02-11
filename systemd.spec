@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        228
-Release:        9%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        10%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -810,6 +810,10 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Thu Feb 11 2016 Harald Hoyer <harald@redhat.com> - 228-10.gite35a787
+- fixed kernel-install for copying files for grubby
+Resolves: rhbz#1299019
+
 * Fri Feb 05 2016 Fedora Release Engineering <releng@fedoraproject.org> - 228-9.gite35a787
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
 
