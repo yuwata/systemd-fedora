@@ -1,4 +1,4 @@
-%global gitcommit e35a7876b4ab1d53a7539a905613e31dc6ae50fd
+#global gitcommit e35a7876b4ab1d53a7539a905613e31dc6ae50fd
 %global gitcommitshort %(c=%{gitcommit}; echo ${c:0:7})
 %global _hardened_build 1
 
@@ -12,8 +12,8 @@
 
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        228
-Release:        10%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Version:        229
+Release:        1%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -33,11 +33,6 @@ Source6:        sysctl.conf.README
 Source7:        systemd-journal-remote.xml
 Source8:        systemd-journal-gatewayd.xml
 Source9:        20-yama-ptrace.conf
-
-Patch0001:      0001-tests-turn-check-if-manager-cannot-be-intialized-int.patch
-Patch0002:      0002-lz4-fix-size-check-which-had-no-chance-of-working-on.patch
-Patch0003:      0003-tests-fix-newlines-in-skip-message.patch
-Patch0004:      0004-core-Do-not-bind-a-mount-unit-to-a-device-if-it-was-.patch
 
 Patch0999:      0999-Add-a-workaround-for-linux-net-if.h-conflict.patch
 
@@ -655,6 +650,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_bindir}/systemd-detect-virt
 %{_bindir}/systemd-inhibit
 %{_bindir}/systemd-path
+%{_bindir}/systemd-resolve
 %{_bindir}/systemd-sysusers
 %{_bindir}/systemd-firstboot
 %{_bindir}/systemd-hwdb
@@ -810,6 +806,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Thu Feb 11 2016 Michal Sekletar <msekleta@redhat.com> - 229-1
+- New upstream release
+
 * Thu Feb 11 2016 Harald Hoyer <harald@redhat.com> - 228-10.gite35a787
 - fixed kernel-install for copying files for grubby
 Resolves: rhbz#1299019
