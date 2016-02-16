@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        229
-Release:        1%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        2%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -806,6 +806,12 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Tue Feb 16 2016 Dennis Gilmore <dennis@ausil.us> - 229-2
+- revert: fixed kernel-install for copying files for grubby
+Resolves: rhbz#1299019
+- this causes the dtb files to not get installed at all and the fdtdir
+- line in extlinux.conf to not get updated correctly
+
 * Thu Feb 11 2016 Michal Sekletar <msekleta@redhat.com> - 229-1
 - New upstream release
 
