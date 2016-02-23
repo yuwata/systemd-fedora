@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        229
-Release:        2%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        3%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -33,6 +33,8 @@ Source6:        sysctl.conf.README
 Source7:        systemd-journal-remote.xml
 Source8:        systemd-journal-gatewayd.xml
 Source9:        20-yama-ptrace.conf
+
+Patch0001:      0001-time-util-map-ALARM-clockids-to-non-ALARM-clockids-i.patch
 
 Patch0999:      0999-Add-a-workaround-for-linux-net-if.h-conflict.patch
 
@@ -806,6 +808,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Tue Feb 23 2016 Jan Synáček <jsynacek@redhat.com> - 229-3
+- Fix build failures on ppc64 (#1310800)
+
 * Tue Feb 16 2016 Dennis Gilmore <dennis@ausil.us> - 229-2
 - revert: fixed kernel-install for copying files for grubby
 Resolves: rhbz#1299019
