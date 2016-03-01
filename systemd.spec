@@ -211,8 +211,6 @@ systemd-journal-remote, and systemd-journal-upload.
         --exclude src/libudev/.gitignore \
         --exclude src/locale/.gitignore \
         --exclude src/login/.gitignore \
-        --exclude src/python-systemd/.gitignore \
-        --exclude src/python-systemd/docs/.gitignore \
         --exclude src/timedate/.gitignore \
         --exclude src/udev/.gitignore \
         --exclude src/udev/scsi_id/.gitignore \
@@ -253,7 +251,6 @@ CONFIGURE_OPTS=(
         "${CONFIGURE_OPTS[@]}" \
         --enable-compat-libs \
         --enable-xkbcommon \
-        --disable-python-devel \
         PYTHON=%{__python3}
 make %{?_smp_mflags} GCC_COLORS="" V=1
 
