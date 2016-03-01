@@ -76,12 +76,10 @@ BuildRequires:  tree
 BuildRequires:  python3-devel
 BuildRequires:  python3-lxml
 BuildRequires:  firewalld-filesystem
-%ifarch %{ix86} x86_64
+%ifarch %{ix86} x86_64 aarch64
 BuildRequires:  gnu-efi gnu-efi-devel
 %endif
-%ifarch %{arm} aarch64 %{ix86} x86_64
 BuildRequires:  libseccomp-devel
-%endif
 BuildRequires:  automake
 BuildRequires:  autoconf
 BuildRequires:  libtool
@@ -739,7 +737,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{pkgdir}/network/99-default.link
 %{pkgdir}/network/80-container-host0.network
 %{pkgdir}/network/80-container-ve.network
-%ifarch %{ix86} x86_64
+%ifarch %{ix86} x86_64 aarch64
 %dir %{pkgdir}/boot
 %dir %{pkgdir}/boot/efi
 %{pkgdir}/boot/efi/*.efi
@@ -808,6 +806,10 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Tue Mar  1 2016 Peter Robinson <pbrobinson@fedoraproject.org> 229-4
+- Power64 and s390(x) now have libseccomp support
+- aarch64 has gnu-efi
+
 * Tue Feb 23 2016 Jan Synáček <jsynacek@redhat.com> - 229-3
 - Fix build failures on ppc64 (#1310800)
 
