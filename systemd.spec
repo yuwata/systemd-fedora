@@ -35,6 +35,24 @@ Source8:        systemd-journal-gatewayd.xml
 Source9:        20-yama-ptrace.conf
 
 Patch0001:      0001-time-util-map-ALARM-clockids-to-non-ALARM-clockids-i.patch
+Patch0002:      0002-core-fix-indenting-in-dump-output.patch
+Patch0003:      0003-networkd-FIONREAD-is-not-reliable-on-some-sockets.patch
+Patch0004:      0004-networkd-rework-idle-detection-logic-of-networkd.patch
+Patch0005:      0005-core-fix-assertion-check.patch
+Patch0006:      0006-udev-fix-cg_unified-return-code-checking.patch
+Patch0007:      0007-core-revert-core-resolve-specifier-in-config_parse_e.patch
+Patch0008:      0008-activate-fix-E-option-parsing.patch
+Patch0009:      0009-basic-strbuf-do-not-call-bsearch-with-a-null-argumen.patch
+Patch0010:      0010-udev-path_id-correct-segmentation-fault-due-to-missi.patch
+Patch0011:      0011-networkd-make-sure-we-allocate-the-NTA-set-before-we.patch
+Patch0012:      0012-networkd-tunnel-fix-tunnel-address.patch
+Patch0013:      0013-calendarspec-fix-find_next-skipping-times.patch
+Patch0014:      0014-core-exclude-.slice-units-from-systemctl-isolate.patch
+Patch0015:      0015-shorten-hostname-before-checking-for-trailing-dot.patch
+Patch0016:      0016-hashmap-use-void-and-uint8_t-for-generic-pointers.patch
+Patch0017:      0017-resolved-fix-notification-iteration-logic-when-trans.patch
+Patch0018:      0018-selinux-always-try-to-load-the-full-selinux-db.patch
+Patch0019:      0019-selinux-use-raw-variants-of-security_compute_create-.patch
 
 Patch0999:      0999-Add-a-workaround-for-linux-net-if.h-conflict.patch
 
@@ -911,6 +929,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 * Fri Mar  4 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@bupkis> - 229-5
 - Split out systemd-container subpackage (#1163412)
 - Split out system-udev subpackage
+- Add various bugfix patches, incl. a tentative fix for #1308771
 
 * Tue Mar  1 2016 Peter Robinson <pbrobinson@fedoraproject.org> 229-4
 - Power64 and s390(x) now have libseccomp support

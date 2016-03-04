@@ -1,0 +1,30 @@
+From 28c6938992e05238fa077ff820015bb37e1ecae6 Mon Sep 17 00:00:00 2001
+From: Hendrik Brueckner <brueckner@linux.vnet.ibm.com>
+Date: Fri, 19 Feb 2016 15:21:18 +0100
+Subject: [PATCH] udev/path_id: correct segmentation fault due to missing NULL
+ check
+
+Running "udevadm test-builtin path_id /sys/devices/platform/" results
+in a segmentation fault.
+
+The problem is that udev_device_get_subsystem(dev) might return NULL
+in a streq() call.  Solve this problem by using streq_ptr() instead.
+
+(cherry picked from commit 5181ab917d6407cb57043e98955f0de1614366ea)
+---
+ src/udev/udev-builtin-path_id.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/udev/udev-builtin-path_id.c b/src/udev/udev-builtin-path_id.c
+index b6ed45d8ba..6e9adc6e96 100644
+--- a/src/udev/udev-builtin-path_id.c
++++ b/src/udev/udev-builtin-path_id.c
+@@ -712,7 +712,7 @@ static int builtin_path_id(struct udev_device *dev, int argc, char *argv[], bool
+          * devices do not expose their buses and do not provide a unique
+          * and predictable name that way.
+          */
+-        if (streq(udev_device_get_subsystem(dev), "block") && !supported_transport)
++        if (streq_ptr(udev_device_get_subsystem(dev), "block") && !supported_transport)
+                 path = mfree(path);
+ 
+         if (path != NULL) {

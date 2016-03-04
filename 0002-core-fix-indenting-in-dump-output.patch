@@ -1,0 +1,24 @@
+From 3e1d3577dd20a49d6eb5007c65b4efb7862df903 Mon Sep 17 00:00:00 2001
+From: Lennart Poettering <lennart@poettering.net>
+Date: Fri, 12 Feb 2016 21:33:39 +0100
+Subject: [PATCH] core: fix indenting in dump output
+
+Fixes: #2593
+(cherry picked from commit b895d15511526b7046c8c51e6689684144a63ae0)
+---
+ src/core/unit.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/core/unit.c b/src/core/unit.c
+index d39e3dcaeb..3c4f85e744 100644
+--- a/src/core/unit.c
++++ b/src/core/unit.c
+@@ -888,7 +888,7 @@ void unit_dump(Unit *u, FILE *f, const char *prefix) {
+                 "%s\tInstance: %s\n"
+                 "%s\tUnit Load State: %s\n"
+                 "%s\tUnit Active State: %s\n"
+-                "%s\nState Change Timestamp: %s\n"
++                "%s\tState Change Timestamp: %s\n"
+                 "%s\tInactive Exit Timestamp: %s\n"
+                 "%s\tActive Enter Timestamp: %s\n"
+                 "%s\tActive Exit Timestamp: %s\n"

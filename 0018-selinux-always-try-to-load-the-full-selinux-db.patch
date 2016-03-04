@@ -1,0 +1,249 @@
+From a4feb275ce859fb63e1153cb2eb16ed276f3a96f Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Tue, 1 Mar 2016 20:35:55 -0500
+Subject: [PATCH] selinux: always try to load the full selinux db
+
+https://github.com/systemd/systemd/pull/2508#issuecomment-190901170
+Maybe fixes https://bugzilla.redhat.com/show_bug.cgi?id=1308771.
+
+(cherry picked from commit c3dacc8bbf2dc2f5d498072418289c3ba79160ac)
+---
+ src/basic/selinux-util.c          | 16 ++++------------
+ src/basic/selinux-util.h          |  2 +-
+ src/core/main.c                   |  2 +-
+ src/hostname/hostnamed.c          |  2 +-
+ src/locale/localed.c              |  2 +-
+ src/login/logind.c                |  2 +-
+ src/resolve/resolved.c            |  2 +-
+ src/sysusers/sysusers.c           |  2 +-
+ src/test/test-udev.c              |  2 +-
+ src/timedate/timedated.c          |  2 +-
+ src/tmpfiles/tmpfiles.c           |  2 +-
+ src/udev/udevadm.c                |  2 +-
+ src/udev/udevd.c                  |  2 +-
+ src/update-done/update-done.c     |  2 +-
+ src/user-sessions/user-sessions.c |  2 +-
+ 15 files changed, 18 insertions(+), 26 deletions(-)
+
+diff --git a/src/basic/selinux-util.c b/src/basic/selinux-util.c
+index 6c63b9d652..71ceac1bcd 100644
+--- a/src/basic/selinux-util.c
++++ b/src/basic/selinux-util.c
+@@ -80,31 +80,23 @@ void mac_selinux_retest(void) {
+ #endif
+ }
+ 
+-int mac_selinux_init(const char *prefix) {
++int mac_selinux_init(void) {
+         int r = 0;
+ 
+ #ifdef HAVE_SELINUX
+         usec_t before_timestamp, after_timestamp;
+         struct mallinfo before_mallinfo, after_mallinfo;
+ 
+-        if (!mac_selinux_use())
++        if (label_hnd)
+                 return 0;
+ 
+-        if (label_hnd)
++        if (!mac_selinux_use())
+                 return 0;
+ 
+         before_mallinfo = mallinfo();
+         before_timestamp = now(CLOCK_MONOTONIC);
+ 
+-        if (prefix) {
+-                struct selinux_opt options[] = {
+-                        { .type = SELABEL_OPT_SUBSET, .value = prefix },
+-                };
+-
+-                label_hnd = selabel_open(SELABEL_CTX_FILE, options, ELEMENTSOF(options));
+-        } else
+-                label_hnd = selabel_open(SELABEL_CTX_FILE, NULL, 0);
+-
++        label_hnd = selabel_open(SELABEL_CTX_FILE, NULL, 0);
+         if (!label_hnd) {
+                 log_enforcing("Failed to initialize SELinux context: %m");
+                 r = security_getenforce() == 1 ? -errno : 0;
+diff --git a/src/basic/selinux-util.h b/src/basic/selinux-util.h
+index 27e8edb41b..ce6bc8e44c 100644
+--- a/src/basic/selinux-util.h
++++ b/src/basic/selinux-util.h
+@@ -29,7 +29,7 @@ bool mac_selinux_use(void);
+ bool mac_selinux_have(void);
+ void mac_selinux_retest(void);
+ 
+-int mac_selinux_init(const char *prefix);
++int mac_selinux_init(void);
+ void mac_selinux_finish(void);
+ 
+ int mac_selinux_fix(const char *path, bool ignore_enoent, bool ignore_erofs);
+diff --git a/src/core/main.c b/src/core/main.c
+index e2088574c0..d861960c6d 100644
+--- a/src/core/main.c
++++ b/src/core/main.c
+@@ -1382,7 +1382,7 @@ int main(int argc, char *argv[]) {
+                         dual_timestamp_get(&security_finish_timestamp);
+                 }
+ 
+-                if (mac_selinux_init(NULL) < 0) {
++                if (mac_selinux_init() < 0) {
+                         error_message = "Failed to initialize SELinux policy";
+                         goto finish;
+                 }
+diff --git a/src/hostname/hostnamed.c b/src/hostname/hostnamed.c
+index c37e32e96b..d11756e615 100644
+--- a/src/hostname/hostnamed.c
++++ b/src/hostname/hostnamed.c
+@@ -706,7 +706,7 @@ int main(int argc, char *argv[]) {
+         log_open();
+ 
+         umask(0022);
+-        mac_selinux_init("/etc");
++        mac_selinux_init();
+ 
+         if (argc != 1) {
+                 log_error("This program takes no arguments.");
+diff --git a/src/locale/localed.c b/src/locale/localed.c
+index f0fe59cc67..a2fc6af4c9 100644
+--- a/src/locale/localed.c
++++ b/src/locale/localed.c
+@@ -1296,7 +1296,7 @@ int main(int argc, char *argv[]) {
+         log_open();
+ 
+         umask(0022);
+-        mac_selinux_init("/etc");
++        mac_selinux_init();
+ 
+         if (argc != 1) {
+                 log_error("This program takes no arguments.");
+diff --git a/src/login/logind.c b/src/login/logind.c
+index 933602eb08..d5f6757bd3 100644
+--- a/src/login/logind.c
++++ b/src/login/logind.c
+@@ -1126,7 +1126,7 @@ int main(int argc, char *argv[]) {
+                 goto finish;
+         }
+ 
+-        r = mac_selinux_init("/run");
++        r = mac_selinux_init();
+         if (r < 0) {
+                 log_error_errno(r, "Could not initialize labelling: %m");
+                 goto finish;
+diff --git a/src/resolve/resolved.c b/src/resolve/resolved.c
+index c7e2ab14d6..161ea03412 100644
+--- a/src/resolve/resolved.c
++++ b/src/resolve/resolved.c
+@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
+ 
+         umask(0022);
+ 
+-        r = mac_selinux_init(NULL);
++        r = mac_selinux_init();
+         if (r < 0) {
+                 log_error_errno(r, "SELinux setup failed: %m");
+                 goto finish;
+diff --git a/src/sysusers/sysusers.c b/src/sysusers/sysusers.c
+index 863c628323..4377f1b910 100644
+--- a/src/sysusers/sysusers.c
++++ b/src/sysusers/sysusers.c
+@@ -1820,7 +1820,7 @@ int main(int argc, char *argv[]) {
+ 
+         umask(0022);
+ 
+-        r = mac_selinux_init(NULL);
++        r = mac_selinux_init();
+         if (r < 0) {
+                 log_error_errno(r, "SELinux setup failed: %m");
+                 goto finish;
+diff --git a/src/test/test-udev.c b/src/test/test-udev.c
+index 9cc64f7c68..d01789fe08 100644
+--- a/src/test/test-udev.c
++++ b/src/test/test-udev.c
+@@ -93,7 +93,7 @@ int main(int argc, char *argv[]) {
+                 return EXIT_FAILURE;
+ 
+         log_debug("version %s", VERSION);
+-        mac_selinux_init("/dev");
++        mac_selinux_init();
+ 
+         action = argv[1];
+         if (action == NULL) {
+diff --git a/src/timedate/timedated.c b/src/timedate/timedated.c
+index 2a10135fba..a522d0c5f9 100644
+--- a/src/timedate/timedated.c
++++ b/src/timedate/timedated.c
+@@ -159,7 +159,7 @@ static int context_write_data_local_rtc(Context *c) {
+                 }
+         }
+ 
+-        mac_selinux_init("/etc");
++        mac_selinux_init();
+         return write_string_file_atomic_label("/etc/adjtime", w);
+ }
+ 
+diff --git a/src/tmpfiles/tmpfiles.c b/src/tmpfiles/tmpfiles.c
+index 7b105a6bd4..f3487013cf 100644
+--- a/src/tmpfiles/tmpfiles.c
++++ b/src/tmpfiles/tmpfiles.c
+@@ -2288,7 +2288,7 @@ int main(int argc, char *argv[]) {
+ 
+         umask(0022);
+ 
+-        mac_selinux_init(NULL);
++        mac_selinux_init();
+ 
+         items = ordered_hashmap_new(&string_hash_ops);
+         globs = ordered_hashmap_new(&string_hash_ops);
+diff --git a/src/udev/udevadm.c b/src/udev/udevadm.c
+index 7bd2c1ea42..a6a873e5de 100644
+--- a/src/udev/udevadm.c
++++ b/src/udev/udevadm.c
+@@ -93,7 +93,7 @@ int main(int argc, char *argv[]) {
+ 
+         log_parse_environment();
+         log_open();
+-        mac_selinux_init("/dev");
++        mac_selinux_init();
+ 
+         while ((c = getopt_long(argc, argv, "+dhV", options, NULL)) >= 0)
+                 switch (c) {
+diff --git a/src/udev/udevd.c b/src/udev/udevd.c
+index bb92f16352..243df7386f 100644
+--- a/src/udev/udevd.c
++++ b/src/udev/udevd.c
+@@ -1695,7 +1695,7 @@ int main(int argc, char *argv[]) {
+ 
+         umask(022);
+ 
+-        r = mac_selinux_init("/dev");
++        r = mac_selinux_init();
+         if (r < 0) {
+                 log_error_errno(r, "could not initialize labelling: %m");
+                 goto exit;
+diff --git a/src/update-done/update-done.c b/src/update-done/update-done.c
+index 931e583785..da306a4444 100644
+--- a/src/update-done/update-done.c
++++ b/src/update-done/update-done.c
+@@ -101,7 +101,7 @@ int main(int argc, char *argv[]) {
+                 return EXIT_FAILURE;
+         }
+ 
+-        r = mac_selinux_init(NULL);
++        r = mac_selinux_init();
+         if (r < 0) {
+                 log_error_errno(r, "SELinux setup failed: %m");
+                 goto finish;
+diff --git a/src/user-sessions/user-sessions.c b/src/user-sessions/user-sessions.c
+index 8bf44e2100..9b29b5ba1d 100644
+--- a/src/user-sessions/user-sessions.c
++++ b/src/user-sessions/user-sessions.c
+@@ -40,7 +40,7 @@ int main(int argc, char*argv[]) {
+ 
+         umask(0022);
+ 
+-        mac_selinux_init(NULL);
++        mac_selinux_init();
+ 
+         if (streq(argv[1], "start")) {
+                 int r = 0;

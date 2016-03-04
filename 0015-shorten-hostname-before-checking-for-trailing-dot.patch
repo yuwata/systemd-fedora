@@ -1,0 +1,35 @@
+From 414c46af13efbb4b0eeb0c7d429e1941742f120e Mon Sep 17 00:00:00 2001
+From: Thomas Blume <Thomas.Blume@suse.com>
+Date: Mon, 29 Feb 2016 10:19:01 +0100
+Subject: [PATCH] shorten hostname before checking for trailing dot
+
+Shortening can lead to a hostname that has a trailing dot.
+Therefore it should be done before checking from trailing dots.
+
+(cherry picked from commit 46e1a2278116e2f5067c35127ccbd8589335f734)
+---
+ src/basic/hostname-util.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/basic/hostname-util.c b/src/basic/hostname-util.c
+index 7bb23448ed..123cee3125 100644
+--- a/src/basic/hostname-util.c
++++ b/src/basic/hostname-util.c
+@@ -122,6 +122,8 @@ char* hostname_cleanup(char *s) {
+ 
+         assert(s);
+ 
++        strshorten(s, HOST_NAME_MAX);
++
+         for (p = s, d = s, dot = true; *p; p++) {
+                 if (*p == '.') {
+                         if (dot)
+@@ -141,8 +143,6 @@ char* hostname_cleanup(char *s) {
+         else
+                 *d = 0;
+ 
+-        strshorten(s, HOST_NAME_MAX);
+-
+         return s;
+ }
+ 

@@ -1,0 +1,25 @@
+From 3ea302d20b1c60f469ed7315611d002a0d88f57d Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Thu, 18 Feb 2016 21:54:31 -0500
+Subject: [PATCH] activate: fix -E option parsing
+
+Fixes #2658.
+
+(cherry picked from commit b722348d050aa2754cd9f903e8c3ce810c616b06)
+---
+ src/activate/activate.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/activate/activate.c b/src/activate/activate.c
+index 0db4967edb..4b3d0e5371 100644
+--- a/src/activate/activate.c
++++ b/src/activate/activate.c
+@@ -379,7 +379,7 @@ static int parse_argv(int argc, char *argv[]) {
+         assert(argc >= 0);
+         assert(argv);
+ 
+-        while ((c = getopt_long(argc, argv, "+hl:aEd", options, NULL)) >= 0)
++        while ((c = getopt_long(argc, argv, "+hl:aE:d", options, NULL)) >= 0)
+                 switch(c) {
+                 case 'h':
+                         help();

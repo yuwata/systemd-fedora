@@ -1,19 +1,17 @@
-From 2ed3d130986501e1db27d57be424d5fd82755ca5 Mon Sep 17 00:00:00 2001
+From d15dd311752fcafa92d2e6a00c582020dc0f6ac3 Mon Sep 17 00:00:00 2001
 From: Lennart Poettering <lennart@poettering.net>
 Date: Fri, 12 Feb 2016 21:29:01 +0100
 Subject: [PATCH] time-util: map ALARM clockids to non-ALARM clockids in now()
 
 Fixes: #2597
 (cherry picked from commit 32c1f5a57998f2a9e1992af006b83e39e3155830)
-
-Resolves: #1310800
 ---
  src/basic/time-util.c              | 24 ++++++++++++++++++++++--
  src/libsystemd/sd-event/sd-event.c |  6 +++++-
  2 files changed, 27 insertions(+), 3 deletions(-)
 
 diff --git a/src/basic/time-util.c b/src/basic/time-util.c
-index 3973850..510f018 100644
+index 3973850b44..510f018d9b 100644
 --- a/src/basic/time-util.c
 +++ b/src/basic/time-util.c
 @@ -42,10 +42,30 @@
@@ -58,7 +56,7 @@ index 3973850..510f018 100644
          return timespec_load_nsec(&ts);
  }
 diff --git a/src/libsystemd/sd-event/sd-event.c b/src/libsystemd/sd-event/sd-event.c
-index deef6ba..2b46a1f 100644
+index deef6ba9d3..2b46a1ff06 100644
 --- a/src/libsystemd/sd-event/sd-event.c
 +++ b/src/libsystemd/sd-event/sd-event.c
 @@ -2780,9 +2780,13 @@ _public_ int sd_event_now(sd_event *e, clockid_t clock, uint64_t *usec) {
@@ -76,6 +74,3 @@ index deef6ba..2b46a1f 100644
          }
  
          return 0;
--- 
-2.5.0
-

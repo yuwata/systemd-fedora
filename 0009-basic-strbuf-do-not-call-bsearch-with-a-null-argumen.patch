@@ -1,0 +1,30 @@
+From 328e8daf82c4e82ebcd06ae87bb825d5060cb94b Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Thu, 18 Feb 2016 17:33:10 -0500
+Subject: [PATCH] basic/strbuf: do not call bsearch with a null argument
+
+Das ist verboten!
+
+src/basic/strbuf.c:162:23: runtime error: null pointer passed as argument 2,
+                           which is declared to never be null
+
+(cherry picked from commit 82501b3fc40dae2660a86ab07462f33fe26347ad)
+---
+ src/basic/strbuf.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/src/basic/strbuf.c b/src/basic/strbuf.c
+index 77220c0251..dac2881603 100644
+--- a/src/basic/strbuf.c
++++ b/src/basic/strbuf.c
+@@ -156,6 +156,10 @@ ssize_t strbuf_add_string(struct strbuf *str, const char *s, size_t len) {
+                         return off;
+                 }
+ 
++                /* bsearch is not allowed on a NULL sequence */
++                if (node->children_count == 0)
++                        break;
++
+                 /* lookup child node */
+                 c = s[len - 1 - depth];
+                 search.c = c;
