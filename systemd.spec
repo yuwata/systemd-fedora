@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        229
-Release:        5%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        6%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -53,6 +53,7 @@ Patch0016:      0016-hashmap-use-void-and-uint8_t-for-generic-pointers.patch
 Patch0017:      0017-resolved-fix-notification-iteration-logic-when-trans.patch
 Patch0018:      0018-selinux-always-try-to-load-the-full-selinux-db.patch
 Patch0019:      0019-selinux-use-raw-variants-of-security_compute_create-.patch
+Patch0020:      0020-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
 Patch0999:      0999-Add-a-workaround-for-linux-net-if.h-conflict.patch
 
@@ -926,6 +927,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Fri Mar 11 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@bupkis> - 229-6
+- Create /etc/resolv.conf symlink from systemd-resolved (#1313085)
+
 * Fri Mar  4 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@bupkis> - 229-5
 - Split out systemd-container subpackage (#1163412)
 - Split out system-udev subpackage
