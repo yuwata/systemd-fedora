@@ -54,6 +54,7 @@ Patch0017:      0017-resolved-fix-notification-iteration-logic-when-trans.patch
 Patch0018:      0018-selinux-always-try-to-load-the-full-selinux-db.patch
 Patch0019:      0019-selinux-use-raw-variants-of-security_compute_create-.patch
 Patch0020:      0020-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
+Patch0021:      0021-test-compress-benchmark-skip-loop-iteration-if-size-.patch
 
 Patch0999:      0999-Add-a-workaround-for-linux-net-if.h-conflict.patch
 
