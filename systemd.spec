@@ -115,7 +115,6 @@ Requires(pre):  /usr/bin/getent
 Requires(pre):  /usr/sbin/groupadd
 Requires:       dbus
 Requires:       %{name}-libs = %{version}-%{release}
-Requires:       kmod >= 18-4
 Recommends:     diffutils
 Requires:       util-linux
 Provides:       /bin/systemctl
@@ -185,6 +184,7 @@ Requires:       %{name}%{?_isa} = %{version}-%{release}
 Requires(post):   systemd
 Requires(preun):  systemd
 Requires(postun): systemd
+Requires:       kmod >= 18-4
 # obsolete parent package so that dnf will install new subpackage on upgrade (#1260394)
 Obsoletes:      %{name} < 229-5
 Provides:       udev = %{version}
@@ -717,6 +717,10 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %exclude %{system_unit_dir}/*/*hwdb*
 %exclude %{system_unit_dir}/systemd-vconsole-setup.service
 %exclude %{system_unit_dir}/*/systemd-vconsole-setup.service
+%exclude %{system_unit_dir}/kmod-static-nodes.service
+%exclude %{system_unit_dir}/*/kmod-static-nodes.service
+%exclude %{system_unit_dir}/systemd-tmpfiles-setup-dev.service
+%exclude %{system_unit_dir}/*/systemd-tmpfiles-setup-dev.service
 %exclude %{system_unit_dir}/*.machine1.*
 %exclude %{system_unit_dir}/*/*.machine1.*
 %exclude %{system_unit_dir}/*.import1.*
@@ -861,6 +865,10 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{system_unit_dir}/*/*hwdb*
 %{system_unit_dir}/systemd-vconsole-setup.service
 %{system_unit_dir}/*/systemd-vconsole-setup.service
+%{system_unit_dir}/kmod-static-nodes.service
+%{system_unit_dir}/*/kmod-static-nodes.service
+%{system_unit_dir}/systemd-tmpfiles-setup-dev.service
+%{system_unit_dir}/*/systemd-tmpfiles-setup-dev.service
 %{_bindir}/udevadm
 %{_sbindir}/udevadm
 %{_bindir}/systemd-hwdb
