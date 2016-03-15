@@ -673,7 +673,6 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_sysconfdir}/rc.d/init.d/README
 %ghost %config(noreplace) %{_sysconfdir}/hostname
 %ghost %config(noreplace) %{_sysconfdir}/localtime
-%ghost %config(noreplace) %{_sysconfdir}/vconsole.conf
 %ghost %config(noreplace) %{_sysconfdir}/locale.conf
 %ghost %config(noreplace) %{_sysconfdir}/machine-id
 %ghost %config(noreplace) %{_sysconfdir}/machine-info
@@ -716,6 +715,8 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %exclude %{system_unit_dir}/*/*udev*
 %exclude %{system_unit_dir}/*hwdb*
 %exclude %{system_unit_dir}/*/*hwdb*
+%exclude %{system_unit_dir}/systemd-vconsole-setup.service
+%exclude %{system_unit_dir}/*/systemd-vconsole-setup.service
 %exclude %{system_unit_dir}/*.machine1.*
 %exclude %{system_unit_dir}/*/*.machine1.*
 %exclude %{system_unit_dir}/*.import1.*
@@ -730,6 +731,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %exclude %{system_unit_dir}/systemd-journal-remote.*
 %exclude %{system_unit_dir}/systemd-journal-upload.*
 %exclude %{pkgdir}/systemd-udevd
+%exclude %{pkgdir}/systemd-vconsole-setup
 %exclude %{pkgdir}/systemd-machined
 %exclude %{pkgdir}/systemd-import
 %exclude %{pkgdir}/systemd-importd
@@ -766,15 +768,6 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_mandir}/man5/*
 %{_mandir}/man7/*
 %{_mandir}/man8/*
-%exclude %{_mandir}/man*/*udev*
-%exclude %{_mandir}/man*/*hwdb*
-%exclude %{_mandir}/man5/systemd.link.*
-%exclude %{_mandir}/man1/machinectl.*
-%exclude %{_mandir}/man8/systemd-machined.*
-%exclude %{_mandir}/man8/*mymachines.*
-%exclude %{_mandir}/man8/systemd-journal-gatewayd.*
-%exclude %{_mandir}/man8/systemd-journal-remote.*
-%exclude %{_mandir}/man8/systemd-journal-upload.*
 %{_datadir}/factory/etc/nsswitch.conf
 %{_datadir}/factory/etc/pam.d/other
 %{_datadir}/factory/etc/pam.d/system-auth
@@ -861,19 +854,20 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %dir %{_sysconfdir}/udev/hwdb.d
 %config(noreplace) %{_sysconfdir}/udev/udev.conf
 %ghost %{_sysconfdir}/udev/hwdb.bin
+%ghost %config(noreplace) %{_sysconfdir}/vconsole.conf
 %{system_unit_dir}/*udev*
 %{system_unit_dir}/*/*udev*
 %{system_unit_dir}/*hwdb*
 %{system_unit_dir}/*/*hwdb*
+%{system_unit_dir}/systemd-vconsole-setup.service
+%{system_unit_dir}/*/systemd-vconsole-setup.service
 %{_bindir}/udevadm
 %{_sbindir}/udevadm
 %{_bindir}/systemd-hwdb
 %{pkgdir}/systemd-udevd
+%{pkgdir}/systemd-vconsole-setup
 %{pkgdir}/network/99-default.link
 %{_prefix}/lib/udev
-%{_mandir}/man*/*udev*
-%{_mandir}/man*/*hwdb*
-%{_mandir}/man5/systemd.link.*
 %{_datadir}/bash-completion/completions/udevadm
 %{_datadir}/zsh/site-functions/_udevadm
 
@@ -921,9 +915,6 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_prefix}/lib/tmpfiles.d/systemd-remote.conf
 %{_prefix}/lib/sysusers.d/systemd-remote.conf
 %dir %attr(0644,systemd-journal-upload,systemd-journal-upload) %{_localstatedir}/lib/systemd/journal-upload
-%{_mandir}/man8/systemd-journal-gatewayd.*
-%{_mandir}/man8/systemd-journal-remote.*
-%{_mandir}/man8/systemd-journal-upload.*
 %{_datadir}/systemd/gatewayd
 /usr/lib/firewalld/services/*
 
