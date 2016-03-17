@@ -1,0 +1,38 @@
+From c411521802d5e89eeb5cdf39cdd7b9538a3a3a08 Mon Sep 17 00:00:00 2001
+From: Lubomir Rintel <lkundrak@v3.sk>
+Date: Tue, 15 Mar 2016 12:43:33 +0100
+Subject: [PATCH] time-util: fall back to CLOCK_MONOTONIC if CLOCK_BOOTTIME
+ unsupported
+
+It was added in 2.6.39, and causes an assertion to fail when running in mock
+hosted on 2.6.23-based RHEL-6:
+
+Assertion 'clock_gettime(map_clock_id(clock_id), &ts) == 0' failed at systemd/src/basic/time-util.c:70, function now(). Aborting.
+
+(cherry picked from commit 2abd5b5a49ae368b258ffc7257ab703bccda67dd)
+---
+ src/basic/time-util.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/src/basic/time-util.c b/src/basic/time-util.c
+index 510f018d9b..ec112e23e2 100644
+--- a/src/basic/time-util.c
++++ b/src/basic/time-util.c
+@@ -47,12 +47,15 @@ static clockid_t map_clock_id(clockid_t c) {
+         /* Some more exotic archs (s390, ppc, …) lack the "ALARM" flavour of the clocks. Thus, clock_gettime() will
+          * fail for them. Since they are essentially the same as their non-ALARM pendants (their only difference is
+          * when timers are set on them), let's just map them accordingly. This way, we can get the correct time even on
+-         * those archs. */
++         * those archs.
++         *
++         * Also, older kernels don't support CLOCK_BOOTTIME: fall back to CLOCK_MONOTONIC. */
+ 
+         switch (c) {
+ 
++        case CLOCK_BOOTTIME:
+         case CLOCK_BOOTTIME_ALARM:
+-                return CLOCK_BOOTTIME;
++                return clock_boottime_or_monotonic ();
+ 
+         case CLOCK_REALTIME_ALARM:
+                 return CLOCK_REALTIME;

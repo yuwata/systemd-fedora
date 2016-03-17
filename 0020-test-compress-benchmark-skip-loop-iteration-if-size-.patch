@@ -1,9 +1,11 @@
-From 15b947fb798cd131355ba9935802d58e92bdba6e Mon Sep 17 00:00:00 2001
+From f4bb8c3a9aed5ddefb66380c818d04aa0b663693 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
 Date: Fri, 4 Mar 2016 21:46:47 -0500
 Subject: [PATCH] test-compress-benchmark: skip loop iteration if size is 0
 
 Otherwise we would hit an assert in the compression code.
+
+(cherry picked from commit 15b947fb798cd131355ba9935802d58e92bdba6e)
 ---
  src/journal/test-compress-benchmark.c | 2 ++
  1 file changed, 2 insertions(+)

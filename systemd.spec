@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        229
-Release:        6%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        7%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -53,9 +53,13 @@ Patch0016:      0016-hashmap-use-void-and-uint8_t-for-generic-pointers.patch
 Patch0017:      0017-resolved-fix-notification-iteration-logic-when-trans.patch
 Patch0018:      0018-selinux-always-try-to-load-the-full-selinux-db.patch
 Patch0019:      0019-selinux-use-raw-variants-of-security_compute_create-.patch
-Patch0020:      0020-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
-Patch0021:      0021-test-compress-benchmark-skip-loop-iteration-if-size-.patch
+Patch0020:      0020-test-compress-benchmark-skip-loop-iteration-if-size-.patch
+Patch0021:      0021-time-util-fall-back-to-CLOCK_MONOTONIC-if-CLOCK_BOOT.patch
+Patch0022:      0022-headers-use-__inline__-instead-of-inline.patch
+Patch0023:      0023-dev-console-must-be-labeled-with-SELinux-label.patch
+Patch0024:      0024-fstab-generator-fix-automount-option-and-don-t-start.patch
 
+Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 Patch0999:      0999-Add-a-workaround-for-linux-net-if.h-conflict.patch
 
 # kernel-install patch for grubby, drop if grubby is obsolete
@@ -927,6 +931,11 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Thu Mar 17 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@bupkis> - 229-7
+- Moar patches (#1316964, #1317928)
+- Move vconsole-setup and tmpfiles-setup-dev bits to systmed-udev
+- Protect systemd-udev from deinstallation
+
 * Fri Mar 11 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@bupkis> - 229-6
 - Create /etc/resolv.conf symlink from systemd-resolved (#1313085)
 

@@ -1,0 +1,47 @@
+From b1ab67134c28ade32eab8fde37840efac789affc Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Fri, 11 Mar 2016 13:41:49 -0500
+Subject: [PATCH] headers: use __inline__ instead of inline
+
+https://gcc.gnu.org/onlinedocs/gcc-5.3.0/gcc/Alternate-Keywords.html#Alternate-Keywords
+recommends __inline__ over inline in ANSI C compatible headers.
+Tested with gcc-5.3 and clang-3.7.
+
+https://bugzilla.redhat.com/show_bug.cgi?id=1316964
+(cherry picked from commit 0cb27225e9c658d80538ace7a267ba0a2d2f44f2)
+---
+ src/systemd/_sd-common.h | 2 +-
+ src/systemd/sd-id128.h   | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/systemd/_sd-common.h b/src/systemd/_sd-common.h
+index 2d4e1f26e1..3bb886be75 100644
+--- a/src/systemd/_sd-common.h
++++ b/src/systemd/_sd-common.h
+@@ -74,7 +74,7 @@
+ #endif
+ 
+ #define _SD_DEFINE_POINTER_CLEANUP_FUNC(type, func)             \
+-        static inline void func##p(type **p) {                  \
++        static __inline__ void func##p(type **p) {              \
+                 if (*p)                                         \
+                         func(*p);                               \
+         }                                                       \
+diff --git a/src/systemd/sd-id128.h b/src/systemd/sd-id128.h
+index a3bf5897b8..4dff0b9b81 100644
+--- a/src/systemd/sd-id128.h
++++ b/src/systemd/sd-id128.h
+@@ -100,11 +100,11 @@ int sd_id128_get_boot(sd_id128_t *ret);
+                 ((x).bytes[15] & 15) >= 10 ? 'a' + ((x).bytes[15] & 15) - 10 : '0' + ((x).bytes[15] & 15), \
+                 0 })
+ 
+-_sd_pure_ static inline int sd_id128_equal(sd_id128_t a, sd_id128_t b) {
++_sd_pure_ static __inline__ int sd_id128_equal(sd_id128_t a, sd_id128_t b) {
+         return memcmp(&a, &b, 16) == 0;
+ }
+ 
+-_sd_pure_ static inline int sd_id128_is_null(sd_id128_t a) {
++_sd_pure_ static __inline__ int sd_id128_is_null(sd_id128_t a) {
+         return a.qwords[0] == 0 && a.qwords[1] == 0;
+ }
+ 
