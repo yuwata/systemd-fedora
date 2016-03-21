@@ -1,8 +1,13 @@
-commit 859a022f807bbab2d072c7299743b527156e7f7d
-Author: Harald Hoyer <harald@redhat.com>
-Date:   Tue Jan 14 17:48:08 2014 -0500
+From 859a022f807bbab2d072c7299743b527156e7f7d Mon Sep 17 00:00:00 2001
+From: Harald Hoyer <harald@redhat.com>
+Date: Tue, 14 Jan 2014 17:48:08 -0500
+Subject: [PATCH] kernel-install: add fedora specific callouts to
+ new-kernel-pkg
 
-    kernel-install: add fedora specific callouts to new-kernel-pkg
+---
+ src/kernel-install/kernel-install | 43 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 43 insertions(+)
+ mode change 100644 => 100755 src/kernel-install/kernel-install
 
 diff --git a/src/kernel-install/kernel-install b/src/kernel-install/kernel-install
 old mode 100644
@@ -60,3 +65,6 @@ index 3ae1d77..2b8fe1e
  if [[ -f /etc/machine-id ]]; then
      read MACHINE_ID < /etc/machine-id
  fi
+-- 
+2.7.2
+
