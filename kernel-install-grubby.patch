@@ -1,21 +1,16 @@
-From 019766177baf70d5a4f688adb768b07f28fd90a9 Mon Sep 17 00:00:00 2001
-From: Harald Hoyer <harald@redhat.com>
-Date: Tue, 14 Jan 2014 17:48:08 -0500
-Subject: [PATCH] kernel-install: add fedora specific callouts to
- new-kernel-pkg
+commit 859a022f807bbab2d072c7299743b527156e7f7d
+Author: Harald Hoyer <harald@redhat.com>
+Date:   Tue Jan 14 17:48:08 2014 -0500
 
----
- src/kernel-install/kernel-install | 47 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 47 insertions(+)
- mode change 100644 => 100755 src/kernel-install/kernel-install
+    kernel-install: add fedora specific callouts to new-kernel-pkg
 
 diff --git a/src/kernel-install/kernel-install b/src/kernel-install/kernel-install
 old mode 100644
 new mode 100755
-index 3ae1d77..041f526
+index 3ae1d77..2b8fe1e
 --- a/src/kernel-install/kernel-install
 +++ b/src/kernel-install/kernel-install
-@@ -71,6 +71,53 @@ fi
+@@ -71,6 +71,49 @@ fi
  KERNEL_VERSION="$1"
  KERNEL_IMAGE="$2"
  
@@ -33,11 +28,7 @@ index 3ae1d77..041f526
 +                        "$KERNEL_DIR"/dtb \
 +                    ; do
 +                    [[ -e "$i" ]] || continue
-+                    if [ -d "$i" ]; then
-+                        cp -a "$i" -t "/boot/${i##*/}-${KERNEL_VERSION}"
-+                    else
-+                        cp -a "$i" "/boot/${i##*/}-${KERNEL_VERSION}"
-+                    fi
++                    cp -aT "$i" "/boot/${i##*/}-${KERNEL_VERSION}"
 +                    command -v restorecon &>/dev/null && \
 +                        restorecon -R "/boot/${i##*/}-${KERNEL_VERSION}"
 +                done
@@ -69,6 +60,3 @@ index 3ae1d77..041f526
  if [[ -f /etc/machine-id ]]; then
      read MACHINE_ID < /etc/machine-id
  fi
--- 
-2.7.0
-
