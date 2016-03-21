@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        229
-Release:        7%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        8%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -931,6 +931,10 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Mon Mar 21 2016 Harald Hoyer <harald@redhat.com> - 229-8
+- fixed kernel-install for copying files for grubby
+Resolves: rhbz#1299019
+
 * Thu Mar 17 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@bupkis> - 229-7
 - Moar patches (#1316964, #1317928)
 - Move vconsole-setup and tmpfiles-setup-dev bits to systmed-udev
