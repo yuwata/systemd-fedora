@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        229
-Release:        8%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        9%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -519,11 +519,19 @@ if [ $1 -eq 1 ] ; then
                 >/dev/null 2>&1 || :
 fi
 
-# sed-fu to remove mymachines from passwd and group lines of /etc/nsswitch.conf
+# sed-fu to add myhostanme to hosts line and remove mymachines
+# from passwd and group lines of /etc/nsswitch.conf
 # https://bugzilla.redhat.com/show_bug.cgi?id=1284325
 # https://meetbot.fedoraproject.org/fedora-meeting/2015-11-25/fesco.2015-11-25-18.00.html
 # To avoid the removal, e.g. add a space at the end of the line.
 if [ -f /etc/nsswitch.conf ] ; then
+        grep -v -E -q '^hosts:.* myhostname' /etc/nsswitch.conf &&
+        sed -i.bak -e '
+                /^hosts:/ !b
+                /\<myhostname\>/ b
+                s/[[:blank:]]*$/ myhostname/
+                ' /etc/nsswitch.conf >/dev/null 2>&1 || :
+
         grep -E -q '^(passwd|group):.* mymachines$' /etc/nsswitch.conf &&
         sed -i.bak -r -e '
                 s/^(passwd:.*) mymachines$/\1/;
@@ -931,19 +939,22 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Tue Mar 22 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 229-9
+- Add myhostname to /etc/nsswitch.conf (#1318303)
+
 * Mon Mar 21 2016 Harald Hoyer <harald@redhat.com> - 229-8
 - fixed kernel-install for copying files for grubby
 Resolves: rhbz#1299019
 
-* Thu Mar 17 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@bupkis> - 229-7
+* Thu Mar 17 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 229-7
 - Moar patches (#1316964, #1317928)
 - Move vconsole-setup and tmpfiles-setup-dev bits to systmed-udev
 - Protect systemd-udev from deinstallation
 
-* Fri Mar 11 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@bupkis> - 229-6
+* Fri Mar 11 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 229-6
 - Create /etc/resolv.conf symlink from systemd-resolved (#1313085)
 
-* Fri Mar  4 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@bupkis> - 229-5
+* Fri Mar  4 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 229-5
 - Split out systemd-container subpackage (#1163412)
 - Split out system-udev subpackage
 - Add various bugfix patches, incl. a tentative fix for #1308771
