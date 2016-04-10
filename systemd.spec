@@ -379,6 +379,7 @@ mkdir -p %{buildroot}%{_localstatedir}/lib/systemd/catalog
 mkdir -p %{buildroot}%{_localstatedir}/lib/systemd/backlight
 mkdir -p %{buildroot}%{_localstatedir}/lib/systemd/rfkill
 mkdir -p %{buildroot}%{_localstatedir}/lib/systemd/journal-upload
+mkdir -p %{buildroot}%{_localstatedir}/lib/systemd/linger
 mkdir -p %{buildroot}%{_localstatedir}/log/journal
 touch %{buildroot}%{_localstatedir}/lib/systemd/catalog/database
 touch %{buildroot}%{_sysconfdir}/udev/hwdb.bin
@@ -656,6 +657,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %ghost %dir %{_localstatedir}/lib/systemd/coredump
 %ghost %dir %{_localstatedir}/lib/systemd/backlight
 %ghost %dir %{_localstatedir}/lib/systemd/rfkill
+%ghost %dir %{_localstatedir}/lib/systemd/linger
 %ghost %{_localstatedir}/lib/systemd/random-seed
 %ghost %{_localstatedir}/lib/systemd/clock
 %ghost %{_localstatedir}/lib/systemd/catalog/database
