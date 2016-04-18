@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        229
-Release:        12%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        13%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -113,6 +113,7 @@ BuildRequires:  libtool
 %if %{num_patches}
 BuildRequires:  git
 %endif
+
 Requires(post): coreutils
 Requires(post): sed
 Requires(post): acl
@@ -121,6 +122,7 @@ Requires(pre):  coreutils
 Requires(pre):  /usr/bin/getent
 Requires(pre):  /usr/sbin/groupadd
 Requires:       dbus
+Requires:       %{name}-pam = %{version}-%{release}
 Requires:       %{name}-libs = %{version}-%{release}
 Recommends:     diffutils
 Requires:       util-linux
@@ -159,7 +161,14 @@ Obsoletes:      systemd < 185-4
 Conflicts:      systemd < 185-4
 
 %description libs
-Libraries for systemd and udev, as well as the systemd PAM module.
+Libraries for systemd and udev.
+
+%package pam
+Summary:        systemd PAM module
+Requires:       %{name} = %{version}-%{release}
+
+%description pam
+Systemd PAM module registers the session with systemd-logind.
 
 %package compat-libs
 Summary:        systemd compatibility libraries
@@ -831,11 +840,13 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %ghost %dir %{_localstatedir}/lib/rpm-state/systemd
 
 %files libs
-%{_libdir}/security/pam_systemd.so
 %{_libdir}/libnss_myhostname.so.2
 %{_libdir}/libnss_resolve.so.2
 %{_libdir}/libudev.so.*
 %{_libdir}/libsystemd.so.*
+
+%files pam
+%{_libdir}/security/pam_systemd.so
 
 %files compat-libs
 %{_libdir}/libsystemd-daemon.so.*
@@ -1004,6 +1015,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_mandir}/man[1578]/systemd-nspawn.*
 
 %changelog
+* Mon Apr 18 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@bupkis> - 229-13
+- Split out systemd-pam subpackage (#1327402)
+
 * Mon Apr 18 2016 Harald Hoyer <harald@redhat.com> - 229-12
 - move more binaries and services from the main package to subpackages
 
