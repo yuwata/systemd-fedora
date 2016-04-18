@@ -586,6 +586,8 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %systemd_postun_with_restart systemd-journal-upload.service
 %firewalld_reload
 
+%global _docdir_fmt %{name}
+
 %files -f %{name}.lang
 %doc %{_pkgdocdir}
 %exclude %{_pkgdocdir}/LICENSE.*
@@ -844,6 +846,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_libdir}/libnss_resolve.so.2
 %{_libdir}/libudev.so.*
 %{_libdir}/libsystemd.so.*
+%license LICENSE.LGPL2.1
 
 %files pam
 %{_libdir}/security/pam_systemd.so
