@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        229
-Release:        11%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        12%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -759,6 +759,8 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %exclude %{system_unit_dir}/systemd-timesyncd.service
 %exclude %{system_unit_dir}/systemd-hibernate-resume@.service
 %exclude %{system_unit_dir}/systemd-hibernate.service
+%exclude %{system_unit_dir}/systemd-suspend.service
+%exclude %{system_unit_dir}/systemd-hybrid-sleep.service
 %exclude %{system_unit_dir}/systemd-nspawn@.service
 %exclude %{pkgdir}/systemd-udevd
 %exclude %{pkgdir}/systemd-vconsole-setup
@@ -817,6 +819,8 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %exclude %{_mandir}/man*/*modules-load.*
 %exclude %{_mandir}/man*/*timesyncd.*
 %exclude %{_mandir}/man*/systemd-hibernate*
+%exclude %{_mandir}/man*/systemd-hybrid-sleep*
+%exclude %{_mandir}/man*/systemd-suspend*
 %exclude %{_mandir}/man*/systemd-nspawn.*
 %exclude %{_mandir}/man*/systemd-vconsole-setup*
 %exclude %{_mandir}/man*/systemd-machined*
@@ -933,6 +937,8 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{system_unit_dir}/systemd-timesyncd.service
 %{system_unit_dir}/systemd-hibernate-resume@.service
 %{system_unit_dir}/systemd-hibernate.service
+%{system_unit_dir}/systemd-hybrid-sleep.service
+%{system_unit_dir}/systemd-suspend.service
 %{_bindir}/udevadm
 %{_sbindir}/udevadm
 %{_bindir}/systemd-hwdb
@@ -972,7 +978,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_mandir}/man[1578]/*modules-load.*
 %{_mandir}/man[1578]/*timesyncd.*
 %{_mandir}/man[1578]/systemd-hibernate*
-%{_mandir}/man[1578]/systemd-nspawn.*
+%{_mandir}/man[1578]/systemd-suspend*
 %{_mandir}/man[1578]/systemd-vconsole-setup*
 %{_mandir}/man[1578]/systemd-backlight*
 %{_mandir}/man[1578]/systemd-rfkill*
@@ -1034,8 +1040,12 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_mandir}/man[1578]/*journal-remote.*
 %{_mandir}/man[1578]/systemd-journal-upload*
 %{_mandir}/man[1578]/systemd-journal-gateway*
+%{_mandir}/man[1578]/systemd-nspawn.*
 
 %changelog
+* Mon Apr 18 2016 Harald Hoyer <harald@redhat.com> - 229-12
+- move more binaries and services from the main package to subpackages
+
 * Mon Apr 18 2016 Harald Hoyer <harald@redhat.com> - 229-11
 - move more binaries and services from the main package to subpackages
 
