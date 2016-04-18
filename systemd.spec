@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        229
-Release:        10%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        11%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -722,8 +722,6 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_bindir}/hostnamectl
 %{_bindir}/localectl
 %{_bindir}/timedatectl
-%{_bindir}/bootctl
-%{_bindir}/kernel-install
 %{pkgdir}/systemd
 %{system_unit_dir}
 %{pkgdir}/user
@@ -759,6 +757,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %exclude %{system_unit_dir}/*/systemd-modules-load.service
 %exclude %{system_unit_dir}/systemd-modules-load.service
 %exclude %{system_unit_dir}/systemd-timesyncd.service
+%exclude %{system_unit_dir}/systemd-hibernate-resume@.service
+%exclude %{system_unit_dir}/systemd-hibernate.service
+%exclude %{system_unit_dir}/systemd-nspawn@.service
 %exclude %{pkgdir}/systemd-udevd
 %exclude %{pkgdir}/systemd-vconsole-setup
 %exclude %{pkgdir}/systemd-machined
@@ -774,6 +775,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %exclude %{pkgdir}/systemd-quotacheck
 %exclude %{pkgdir}/systemd-modules-load
 %exclude %{pkgdir}/systemd-timesyncd
+%exclude %{pkgdir}/systemd-cryptsetup
+%exclude %{pkgdir}/systemd-hibernate-resume
+%exclude %{pkgdir}/systemd-sleep
 
 %{pkgdir}/systemd-*
 %{_prefix}/lib/tmpfiles.d/systemd.conf
@@ -804,6 +808,27 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_mandir}/man5/*
 %{_mandir}/man7/*
 %{_mandir}/man8/*
+
+%exclude %{_mandir}/man*/*udev*
+%exclude %{_mandir}/man*/*hwdb*
+%exclude %{_mandir}/man*/systemd-tmpfiles-setup-dev.service*
+%exclude %{_mandir}/man*/systemd-journal-gateway*
+%exclude %{_mandir}/man*/*journal-remote.*
+%exclude %{_mandir}/man*/*modules-load.*
+%exclude %{_mandir}/man*/*timesyncd.*
+%exclude %{_mandir}/man*/systemd-hibernate*
+%exclude %{_mandir}/man*/systemd-nspawn.*
+%exclude %{_mandir}/man*/systemd-vconsole-setup*
+%exclude %{_mandir}/man*/systemd-machined*
+%exclude %{_mandir}/man*/systemd-journal-remote*
+%exclude %{_mandir}/man*/systemd-journal-upload*
+%exclude %{_mandir}/man*/systemd-backlight*
+%exclude %{_mandir}/man*/systemd-rfkill*
+%exclude %{_mandir}/man*/systemd-random-seed*
+%exclude %{_mandir}/man*/systemd-quotacheck*
+%exclude %{_mandir}/man*/systemd-cryptsetup*
+%exclude %{_mandir}/man*/systemd-sleep*
+
 %{_datadir}/factory/etc/nsswitch.conf
 %{_datadir}/factory/etc/pam.d/other
 %{_datadir}/factory/etc/pam.d/system-auth
@@ -829,18 +854,14 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_datadir}/bash-completion/completions/*
 %exclude %{_datadir}/bash-completion/completions/udevadm
 %exclude %{_datadir}/bash-completion/completions/machinectl
+%exclude %{_datadir}/bash-completion/completions/systemd-nspawn
 %{_datadir}/zsh/site-functions/*
 %exclude %{_datadir}/zsh/site-functions/_udevadm
 %exclude %{_datadir}/zsh/site-functions/_machinectl
+%exclude %{_datadir}/zsh/site-functions/_systemd-nspawn
 %{pkgdir}/catalog/systemd.*.catalog
 %{pkgdir}/network/80-container-host0.network
 %{pkgdir}/network/80-container-ve.network
-%ifarch %{ix86} x86_64 aarch64
-%dir %{pkgdir}/boot
-%dir %{pkgdir}/boot/efi
-%{pkgdir}/boot/efi/*.efi
-%{pkgdir}/boot/efi/*.stub
-%endif
 
 %ghost %dir %{_localstatedir}/lib/rpm-state/systemd
 
@@ -910,9 +931,13 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{system_unit_dir}/*/systemd-modules-load.service
 %{system_unit_dir}/systemd-modules-load.service
 %{system_unit_dir}/systemd-timesyncd.service
+%{system_unit_dir}/systemd-hibernate-resume@.service
+%{system_unit_dir}/systemd-hibernate.service
 %{_bindir}/udevadm
 %{_sbindir}/udevadm
 %{_bindir}/systemd-hwdb
+%{_bindir}/bootctl
+%{_bindir}/kernel-install
 %{pkgdir}/systemd-udevd
 %{pkgdir}/systemd-vconsole-setup
 %{pkgdir}/systemd-backlight
@@ -921,6 +946,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{pkgdir}/systemd-quotacheck
 %{pkgdir}/systemd-modules-load
 %{pkgdir}/systemd-timesyncd
+%{pkgdir}/systemd-cryptsetup
+%{pkgdir}/systemd-hibernate-resume
+%{pkgdir}/systemd-sleep
 
 %{pkgdir}/network/99-default.link
 %{_prefix}/lib/udev
@@ -930,6 +958,28 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{pkgdir}/system-generators/systemd-gpt-auto-generator
 %{pkgdir}/system-generators/systemd-hibernate-resume-generator
 %config(noreplace) %{_sysconfdir}/systemd/timesyncd.conf
+
+%ifarch %{ix86} x86_64 aarch64
+%dir %{pkgdir}/boot
+%dir %{pkgdir}/boot/efi
+%{pkgdir}/boot/efi/*.efi
+%{pkgdir}/boot/efi/*.stub
+%endif
+
+%{_mandir}/man[1578]/*udev*
+%{_mandir}/man[1578]/*hwdb*
+%{_mandir}/man[1578]/systemd-tmpfiles-setup-dev.service*
+%{_mandir}/man[1578]/*modules-load.*
+%{_mandir}/man[1578]/*timesyncd.*
+%{_mandir}/man[1578]/systemd-hibernate*
+%{_mandir}/man[1578]/systemd-nspawn.*
+%{_mandir}/man[1578]/systemd-vconsole-setup*
+%{_mandir}/man[1578]/systemd-backlight*
+%{_mandir}/man[1578]/systemd-rfkill*
+%{_mandir}/man[1578]/systemd-random-seed*
+%{_mandir}/man[1578]/systemd-quotacheck*
+%{_mandir}/man[1578]/systemd-cryptsetup*
+%{_mandir}/man[1578]/systemd-sleep*
 
 %files container
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.machine1.conf
@@ -949,6 +999,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{system_unit_dir}/machines.target
 %{system_unit_dir}/var-lib-machines.mount
 %{system_unit_dir}/*/var-lib-machines.mount
+%{system_unit_dir}/systemd-nspawn@.service
 %{pkgdir}/systemd-journal-gatewayd
 %{pkgdir}/systemd-journal-remote
 %{pkgdir}/systemd-journal-upload
@@ -961,7 +1012,10 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_datadir}/polkit-1/actions/org.freedesktop.import1.policy
 %{_datadir}/polkit-1/actions/org.freedesktop.machine1.policy
 %{_datadir}/bash-completion/completions/machinectl
+%{_datadir}/bash-completion/completions/systemd-nspawn
 %{_datadir}/zsh/site-functions/_machinectl
+%{_datadir}/zsh/site-functions/_systemd-nspawn
+%{_mandir}/man[1578]/systemd-machined*
 
 %files journal-remote
 %config(noreplace) %{_sysconfdir}/systemd/journal-remote.conf
@@ -977,8 +1031,14 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %dir %attr(0644,systemd-journal-upload,systemd-journal-upload) %{_localstatedir}/lib/systemd/journal-upload
 %{_datadir}/systemd/gatewayd
 /usr/lib/firewalld/services/*
+%{_mandir}/man[1578]/*journal-remote.*
+%{_mandir}/man[1578]/systemd-journal-upload*
+%{_mandir}/man[1578]/systemd-journal-gateway*
 
 %changelog
+* Mon Apr 18 2016 Harald Hoyer <harald@redhat.com> - 229-11
+- move more binaries and services from the main package to subpackages
+
 * Mon Apr 18 2016 Harald Hoyer <harald@redhat.com> - 229-10
 - move device dependant stuff to the udev subpackage
 
