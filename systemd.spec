@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        229
-Release:        9%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        10%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -635,6 +635,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_sysconfdir}/sysctl.d/99-sysctl.conf
 %dir %{pkgdir}
 %{pkgdir}/system-generators
+%exclude %{pkgdir}/system-generators/systemd-cryptsetup-generator
+%exclude %{pkgdir}/system-generators/systemd-gpt-auto-generator
+%exclude %{pkgdir}/system-generators/systemd-hibernate-resume-generator
 %{pkgdir}/user-generators
 %dir %{pkgdir}/system-shutdown
 %dir %{pkgdir}/system-sleep
@@ -678,7 +681,6 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %config(noreplace) %{_sysconfdir}/systemd/journald.conf
 %config(noreplace) %{_sysconfdir}/systemd/bootchart.conf
 %config(noreplace) %{_sysconfdir}/systemd/resolved.conf
-%config(noreplace) %{_sysconfdir}/systemd/timesyncd.conf
 %config(noreplace) %{_sysconfdir}/systemd/coredump.conf
 %config(noreplace) %{_sysconfdir}/yum/protected.d/systemd.conf
 %config(noreplace) %{_sysconfdir}/pam.d/systemd-user
@@ -748,6 +750,15 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %exclude %{system_unit_dir}/systemd-journal-gatewayd.*
 %exclude %{system_unit_dir}/systemd-journal-remote.*
 %exclude %{system_unit_dir}/systemd-journal-upload.*
+%exclude %{system_unit_dir}/systemd-rfkill.*
+%exclude %{system_unit_dir}/systemd-backlight*
+%exclude %{system_unit_dir}/*/systemd-random-seed.service
+%exclude %{system_unit_dir}/systemd-random-seed.service
+%exclude %{system_unit_dir}/systemd-quotacheck.service
+%exclude %{system_unit_dir}/quotaon.service
+%exclude %{system_unit_dir}/*/systemd-modules-load.service
+%exclude %{system_unit_dir}/systemd-modules-load.service
+%exclude %{system_unit_dir}/systemd-timesyncd.service
 %exclude %{pkgdir}/systemd-udevd
 %exclude %{pkgdir}/systemd-vconsole-setup
 %exclude %{pkgdir}/systemd-machined
@@ -757,6 +768,13 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %exclude %{pkgdir}/systemd-journal-gatewayd
 %exclude %{pkgdir}/systemd-journal-remote
 %exclude %{pkgdir}/systemd-journal-upload
+%exclude %{pkgdir}/systemd-backlight
+%exclude %{pkgdir}/systemd-rfkill
+%exclude %{pkgdir}/systemd-random-seed
+%exclude %{pkgdir}/systemd-quotacheck
+%exclude %{pkgdir}/systemd-modules-load
+%exclude %{pkgdir}/systemd-timesyncd
+
 %{pkgdir}/systemd-*
 %{_prefix}/lib/tmpfiles.d/systemd.conf
 %{_prefix}/lib/tmpfiles.d/systemd-nologin.conf
@@ -883,15 +901,35 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{system_unit_dir}/*/kmod-static-nodes.service
 %{system_unit_dir}/systemd-tmpfiles-setup-dev.service
 %{system_unit_dir}/*/systemd-tmpfiles-setup-dev.service
+%{system_unit_dir}/systemd-rfkill.*
+%{system_unit_dir}/systemd-backlight*
+%{system_unit_dir}/*/systemd-random-seed.service
+%{system_unit_dir}/systemd-random-seed.service
+%{system_unit_dir}/systemd-quotacheck.service
+%{system_unit_dir}/quotaon.service
+%{system_unit_dir}/*/systemd-modules-load.service
+%{system_unit_dir}/systemd-modules-load.service
+%{system_unit_dir}/systemd-timesyncd.service
 %{_bindir}/udevadm
 %{_sbindir}/udevadm
 %{_bindir}/systemd-hwdb
 %{pkgdir}/systemd-udevd
 %{pkgdir}/systemd-vconsole-setup
+%{pkgdir}/systemd-backlight
+%{pkgdir}/systemd-rfkill
+%{pkgdir}/systemd-random-seed
+%{pkgdir}/systemd-quotacheck
+%{pkgdir}/systemd-modules-load
+%{pkgdir}/systemd-timesyncd
+
 %{pkgdir}/network/99-default.link
 %{_prefix}/lib/udev
 %{_datadir}/bash-completion/completions/udevadm
 %{_datadir}/zsh/site-functions/_udevadm
+%{pkgdir}/system-generators/systemd-cryptsetup-generator
+%{pkgdir}/system-generators/systemd-gpt-auto-generator
+%{pkgdir}/system-generators/systemd-hibernate-resume-generator
+%config(noreplace) %{_sysconfdir}/systemd/timesyncd.conf
 
 %files container
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.machine1.conf
@@ -941,6 +979,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 /usr/lib/firewalld/services/*
 
 %changelog
+* Mon Apr 18 2016 Harald Hoyer <harald@redhat.com> - 229-10
+- move device dependant stuff to the udev subpackage
+
 * Tue Mar 22 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 229-9
 - Add myhostname to /etc/nsswitch.conf (#1318303)
 
