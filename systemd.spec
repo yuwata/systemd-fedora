@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        229
-Release:        13%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        14%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -200,6 +200,7 @@ Requires:       %{name}%{?_isa} = %{version}-%{release}
 Requires(post):   systemd
 Requires(preun):  systemd
 Requires(postun): systemd
+Requires(post): grep
 Requires:       kmod >= 18-4
 # obsolete parent package so that dnf will install new subpackage on upgrade (#1260394)
 Obsoletes:      %{name} < 229-5
@@ -437,13 +438,9 @@ getent passwd systemd-resolve >/dev/null 2>&1 || useradd -r -l -g systemd-resolv
 getent group systemd-bus-proxy >/dev/null 2>&1 || groupadd -r systemd-bus-proxy 2>&1 || :
 getent passwd systemd-bus-proxy >/dev/null 2>&1 || useradd -r -l -g systemd-bus-proxy -d / -s /sbin/nologin -c "systemd Bus Proxy" systemd-bus-proxy >/dev/null 2>&1 || :
 
-systemctl stop systemd-udevd-control.socket systemd-udevd-kernel.socket systemd-udevd.service >/dev/null 2>&1 || :
-
 %post
 systemd-machine-id-setup >/dev/null 2>&1 || :
-/usr/lib/systemd/systemd-random-seed save >/dev/null 2>&1 || :
 systemctl daemon-reexec >/dev/null 2>&1 || :
-systemctl start systemd-udevd.service >/dev/null 2>&1 || :
 journalctl --update-catalog >/dev/null 2>&1 || :
 systemd-tmpfiles --create >/dev/null 2>&1 || :
 
@@ -453,10 +450,6 @@ chmod g+s /run/log/journal/ /run/log/journal/`cat /etc/machine-id 2> /dev/null` 
 
 # Apply ACL to the journal directory
 setfacl -Rnm g:wheel:rx,d:g:wheel:rx,g:adm:rx,d:g:adm:rx /var/log/journal/ >/dev/null 2>&1 || :
-
-# Move old stuff around in /var/lib
-mv %{_localstatedir}/lib/random-seed %{_localstatedir}/lib/systemd/random-seed >/dev/null 2>&1 || :
-mv %{_localstatedir}/lib/backlight %{_localstatedir}/lib/systemd/backlight >/dev/null 2>&1 || :
 
 # Stop-gap until rsyslog.rpm does this on its own. (This is supposed
 # to fail when the link already exists)
@@ -469,11 +462,6 @@ if [ -e /etc/fstab ]; then
          sed -i.rpm.bak -r '/^devpts\s+\/dev\/pts\s+devpts\s+defaults\s+/d; /^tmpfs\s+\/dev\/shm\s+tmpfs\s+defaults\s+/d; /^sysfs\s+\/sys\s+sysfs\s+defaults\s+/d; /^proc\s+\/proc\s+proc\s+defaults\s+/d' /etc/fstab || :
 fi
 
-# Replace obsolete keymaps
-# https://bugzilla.redhat.com/show_bug.cgi?id=1151958
-grep -q -E '^KEYMAP="?fi-latin[19]"?' /etc/vconsole.conf 2>/dev/null &&
-    sed -i.rpm.bak -r 's/^KEYMAP="?fi-latin[19]"?/KEYMAP="fi"/' /etc/vconsole.conf || :
-
 # Services we install by default, and which are controlled by presets.
 if [ $1 -eq 1 ] ; then
         systemctl preset \
@@ -483,7 +471,6 @@ if [ $1 -eq 1 ] ; then
                 console-getty.service \
                 console-shell.service \
                 debug-shell.service \
-                systemd-timesyncd.service \
                 systemd-networkd.service \
                 systemd-networkd-wait-online.service \
                 systemd-resolved.service \
@@ -524,7 +511,6 @@ if [ $1 -eq 0 ] ; then
                 debug-shell.service \
                 systemd-readahead-replay.service \
                 systemd-readahead-collect.service \
-                systemd-timesyncd.service \
                 systemd-networkd.service \
                 systemd-networkd-wait-online.service \
                 systemd-resolved.service \
@@ -551,15 +537,29 @@ fi
 %post compat-libs -p /sbin/ldconfig
 %postun compat-libs -p /sbin/ldconfig
 
+%global udev_services systemd-udev{d,-settle,-trigger}.service systemd-udevd-{control,kernel}.socket systemd-timesyncd.service
+
 %post udev
-udevadm hwdb --update >/dev/null 2>&1 || :
-%systemd_post systemd-udev-{settle,trigger}.service systemd-udevd-{control,kernel}.socket systemd-udevd.service
+# Move old stuff around in /var/lib
+mv %{_localstatedir}/lib/random-seed %{_localstatedir}/lib/systemd/random-seed &>/dev/null
+mv %{_localstatedir}/lib/backlight %{_localstatedir}/lib/systemd/backlight &>/dev/null
+
+udevadm hwdb --update >/dev/null 2>&1
+%systemd_post %udev_services
+/usr/lib/systemd/systemd-random-seed save 2>&1
+
+# Replace obsolete keymaps
+# https://bugzilla.redhat.com/show_bug.cgi?id=1151958
+grep -q -E '^KEYMAP="?fi-latin[19]"?' /etc/vconsole.conf 2>/dev/null &&
+    sed -i.rpm.bak -r 's/^KEYMAP="?fi-latin[19]"?/KEYMAP="fi"/' /etc/vconsole.conf
+
+exit 0
 
 %preun udev
-%systemd_preun systemd-udev-{settle,trigger}.service systemd-udevd-{control,kernel}.socket systemd-udevd.service
+%systemd_preun %udev_services
 
 %postun udev
-%systemd_postun_with_restart systemd-udev-{settle,trigger}.service systemd-udevd-{control,kernel}.socket systemd-udevd.service
+%systemd_postun_with_restart %udev_services
 
 %pre journal-remote
 getent group systemd-journal-gateway >/dev/null 2>&1 || groupadd -r -g 191 systemd-journal-gateway 2>&1 || :
@@ -1018,7 +1018,10 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_mandir}/man[1578]/systemd-nspawn.*
 
 %changelog
-* Mon Apr 18 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@bupkis> - 229-13
+* Fri Apr 22 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 229-14
+- Move installation of udev services to udev subpackage (#1329023)
+
+* Mon Apr 18 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 229-13
 - Split out systemd-pam subpackage (#1327402)
 
 * Mon Apr 18 2016 Harald Hoyer <harald@redhat.com> - 229-12
@@ -1039,7 +1042,7 @@ Resolves: rhbz#1299019
 
 * Thu Mar 17 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 229-7
 - Moar patches (#1316964, #1317928)
-- Move vconsole-setup and tmpfiles-setup-dev bits to systmed-udev
+- Move vconsole-setup and tmpfiles-setup-dev bits to systemd-udev
 - Protect systemd-udev from deinstallation
 
 * Fri Mar 11 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 229-6
