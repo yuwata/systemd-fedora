@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        229
-Release:        14%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        15%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -981,9 +981,6 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{system_unit_dir}/var-lib-machines.mount
 %{system_unit_dir}/*/var-lib-machines.mount
 %{system_unit_dir}/systemd-nspawn@.service
-%{pkgdir}/systemd-journal-gatewayd
-%{pkgdir}/systemd-journal-remote
-%{pkgdir}/systemd-journal-upload
 %{pkgdir}/systemd-machined
 %{pkgdir}/systemd-import
 %{pkgdir}/systemd-importd
@@ -1018,6 +1015,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_mandir}/man[1578]/systemd-nspawn.*
 
 %changelog
+* Tue Apr 26 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@bupkis> - 229-15
+- Remove duplicated entries in -container %%files (#1330395)
+
 * Fri Apr 22 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 229-14
 - Move installation of udev services to udev subpackage (#1329023)
 
