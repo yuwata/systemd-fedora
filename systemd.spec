@@ -12,8 +12,8 @@
 
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        229
-Release:        15%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Version:        230
+Release:        1%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -37,33 +37,7 @@ Source7:        systemd-journal-remote.xml
 Source8:        systemd-journal-gatewayd.xml
 Source9:        20-yama-ptrace.conf
 
-Patch0001:      0001-time-util-map-ALARM-clockids-to-non-ALARM-clockids-i.patch
-Patch0002:      0002-core-fix-indenting-in-dump-output.patch
-Patch0003:      0003-networkd-FIONREAD-is-not-reliable-on-some-sockets.patch
-Patch0004:      0004-networkd-rework-idle-detection-logic-of-networkd.patch
-Patch0005:      0005-core-fix-assertion-check.patch
-Patch0006:      0006-udev-fix-cg_unified-return-code-checking.patch
-Patch0007:      0007-core-revert-core-resolve-specifier-in-config_parse_e.patch
-Patch0008:      0008-activate-fix-E-option-parsing.patch
-Patch0009:      0009-basic-strbuf-do-not-call-bsearch-with-a-null-argumen.patch
-Patch0010:      0010-udev-path_id-correct-segmentation-fault-due-to-missi.patch
-Patch0011:      0011-networkd-make-sure-we-allocate-the-NTA-set-before-we.patch
-Patch0012:      0012-networkd-tunnel-fix-tunnel-address.patch
-Patch0013:      0013-calendarspec-fix-find_next-skipping-times.patch
-Patch0014:      0014-core-exclude-.slice-units-from-systemctl-isolate.patch
-Patch0015:      0015-shorten-hostname-before-checking-for-trailing-dot.patch
-Patch0016:      0016-hashmap-use-void-and-uint8_t-for-generic-pointers.patch
-Patch0017:      0017-resolved-fix-notification-iteration-logic-when-trans.patch
-Patch0018:      0018-selinux-always-try-to-load-the-full-selinux-db.patch
-Patch0019:      0019-selinux-use-raw-variants-of-security_compute_create-.patch
-Patch0020:      0020-test-compress-benchmark-skip-loop-iteration-if-size-.patch
-Patch0021:      0021-time-util-fall-back-to-CLOCK_MONOTONIC-if-CLOCK_BOOT.patch
-Patch0022:      0022-headers-use-__inline__-instead-of-inline.patch
-Patch0023:      0023-dev-console-must-be-labeled-with-SELinux-label.patch
-Patch0024:      0024-fstab-generator-fix-automount-option-and-don-t-start.patch
-
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
-Patch0999:      0999-Add-a-workaround-for-linux-net-if.h-conflict.patch
 
 # kernel-install patch for grubby, drop if grubby is obsolete
 Patch1000:      kernel-install-grubby.patch
@@ -126,6 +100,7 @@ Requires:       %{name}-pam = %{version}-%{release}
 Requires:       %{name}-libs = %{version}-%{release}
 Recommends:     diffutils
 Requires:       util-linux
+Recommends:     libxkbcommon%{_?isa}
 Provides:       /bin/systemctl
 Provides:       /sbin/shutdown
 Provides:       syslog
@@ -170,23 +145,11 @@ Requires:       %{name} = %{version}-%{release}
 %description pam
 Systemd PAM module registers the session with systemd-logind.
 
-%package compat-libs
-Summary:        systemd compatibility libraries
-License:        LGPLv2+ and MIT
-# To reduce confusion, this package can only be installed in parallel
-# with the normal systemd-libs, same version.
-Requires:       systemd-libs%{?_isa} = %{version}-%{release}
-
-%description compat-libs
-Compatibility libraries for systemd. If your package requires this
-package, you need to update your link options and build.
-
 %package devel
 Summary:        Development headers for systemd
 License:        LGPLv2+ and MIT
 # We need both libsystemd and libsystemd-<compat> libraries
 Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
-Requires:       %{name}-compat-libs%{?_isa} = %{version}-%{release}
 Provides:       libudev-devel = %{version}
 Obsoletes:      libudev-devel < 183
 
@@ -277,8 +240,6 @@ systemd-journal-remote, and systemd-journal-upload.
         --exclude src/core/.gitignore \
         --exclude src/hostname/.gitignore \
         --exclude src/journal/.gitignore \
-        --exclude src/libsystemd-daemon/.gitignore \
-        --exclude src/libsystemd-id128/.gitignore \
         --exclude src/libudev/.gitignore \
         --exclude src/locale/.gitignore \
         --exclude src/login/.gitignore \
@@ -320,7 +281,6 @@ CONFIGURE_OPTS=(
 
 %configure \
         "${CONFIGURE_OPTS[@]}" \
-        --enable-compat-libs \
         --enable-xkbcommon \
         PYTHON=%{__python3}
 make %{?_smp_mflags} GCC_COLORS="" V=1
@@ -534,9 +494,6 @@ fi
 %post libs -p /sbin/ldconfig
 %postun libs -p /sbin/ldconfig
 
-%post compat-libs -p /sbin/ldconfig
-%postun compat-libs -p /sbin/ldconfig
-
 %global udev_services systemd-udev{d,-settle,-trigger}.service systemd-udevd-{control,kernel}.socket systemd-timesyncd.service
 
 %post udev
@@ -651,7 +608,6 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %config(noreplace) %{_sysconfdir}/systemd/user.conf
 %config(noreplace) %{_sysconfdir}/systemd/logind.conf
 %config(noreplace) %{_sysconfdir}/systemd/journald.conf
-%config(noreplace) %{_sysconfdir}/systemd/bootchart.conf
 %config(noreplace) %{_sysconfdir}/systemd/resolved.conf
 %config(noreplace) %{_sysconfdir}/systemd/coredump.conf
 %config(noreplace) %{_sysconfdir}/yum/protected.d/systemd.conf
@@ -691,6 +647,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_bindir}/systemd-resolve
 %{_bindir}/systemd-sysusers
 %{_bindir}/systemd-firstboot
+%{_bindir}/systemd-socket-activate
 %{_bindir}/hostnamectl
 %{_bindir}/localectl
 %{_bindir}/timedatectl
@@ -837,7 +794,6 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %exclude %{_datadir}/zsh/site-functions/_systemd-nspawn
 %{pkgdir}/catalog/systemd.*.catalog
 %{pkgdir}/network/80-container-host0.network
-%{pkgdir}/network/80-container-ve.network
 
 %ghost %dir %{_localstatedir}/lib/rpm-state/systemd
 
@@ -851,20 +807,10 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %files pam
 %{_libdir}/security/pam_systemd.so
 
-%files compat-libs
-%{_libdir}/libsystemd-daemon.so.*
-%{_libdir}/libsystemd-login.so.*
-%{_libdir}/libsystemd-journal.so.*
-%{_libdir}/libsystemd-id128.so.*
-
 %files devel
 %dir %{_includedir}/systemd
 %{_libdir}/libudev.so
 %{_libdir}/libsystemd.so
-%{_libdir}/libsystemd-daemon.so
-%{_libdir}/libsystemd-login.so
-%{_libdir}/libsystemd-journal.so
-%{_libdir}/libsystemd-id128.so
 %{_includedir}/systemd/sd-daemon.h
 %{_includedir}/systemd/sd-login.h
 %{_includedir}/systemd/sd-journal.h
@@ -878,10 +824,6 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_includedir}/libudev.h
 %{_libdir}/pkgconfig/libudev.pc
 %{_libdir}/pkgconfig/libsystemd.pc
-%{_libdir}/pkgconfig/libsystemd-daemon.pc
-%{_libdir}/pkgconfig/libsystemd-login.pc
-%{_libdir}/pkgconfig/libsystemd-journal.pc
-%{_libdir}/pkgconfig/libsystemd-id128.pc
 %{_mandir}/man3/*
 
 %files udev
@@ -985,6 +927,8 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{pkgdir}/systemd-import
 %{pkgdir}/systemd-importd
 %{pkgdir}/systemd-pull
+%{pkgdir}/network/80-container-ve.network
+%{pkgdir}/network/80-container-vz.network
 %{_datadir}/dbus-1/system-services/org.freedesktop.machine1.service
 %{_datadir}/dbus-1/system-services/org.freedesktop.import1.service
 %{_datadir}/polkit-1/actions/org.freedesktop.import1.policy
@@ -1015,6 +959,12 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_mandir}/man[1578]/systemd-nspawn.*
 
 %changelog
+* Wed May 18 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@bupkis> - 230-1
+- New version
+- Drop compat-libs
+- Require libxkbcommon explictly, since the automatic dependency will
+  not be generated anymore
+
 * Tue Apr 26 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@bupkis> - 229-15
 - Remove duplicated entries in -container %%files (#1330395)
 
