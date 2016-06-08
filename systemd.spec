@@ -278,6 +278,7 @@ CONFIGURE_OPTS=(
         --with-ntp-servers='0.%{ntpvendor}.pool.ntp.org 1.%{ntpvendor}.pool.ntp.org 2.%{ntpvendor}.pool.ntp.org 3.%{ntpvendor}.pool.ntp.org'
         --disable-kdbus
         --disable-terminal
+        --without-kill-user-processes
 )
 
 %configure \
