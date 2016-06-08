@@ -1,4 +1,4 @@
-#global gitcommit e35a7876b4ab1d53a7539a905613e31dc6ae50fd
+%global gitcommit ea683512f9b82f2257770f0ed56d819eea230fc2
 %global gitcommitshort %(c=%{gitcommit}; echo ${c:0:7})
 %global _hardened_build 1
 
@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        230
-Release:        2%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        3%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -960,6 +960,15 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_mandir}/man[1578]/systemd-nspawn.*
 
 %changelog
+* Wed Jun  8 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 230-3
+- Update to latest git snapshot (fixes for systemctl set-default,
+  polkit lingering policy, reversal of the framebuffer rules,
+  unaligned access fixes, fix for StartupBlockIOWeight-over-dbus).
+  Those changes are interspersed with other changes and new features
+  (mostly in lldp, networkd, and nspawn). Some of those new features
+  might not work, but I think that existing functionality should not
+  be broken, so it seems worthwile to update to the snapshot.
+
 * Sat May 21 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@bupkis> - 230-2
 - Remove systemd-compat-libs on upgrade
 
