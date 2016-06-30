@@ -939,7 +939,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_datadir}/bash-completion/completions/systemd-nspawn
 %{_datadir}/zsh/site-functions/_machinectl
 %{_datadir}/zsh/site-functions/_systemd-nspawn
-%{_mandir}/man[1578]/systemd-machined*
+%{_mandir}/man1/machinectl.*
+%{_mandir}/man8/systemd-machined.*
+%{_mandir}/man8/*mymachines.*
 
 %files journal-remote
 %config(noreplace) %{_sysconfdir}/systemd/journal-remote.conf
