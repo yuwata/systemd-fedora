@@ -1,6 +1,5 @@
 %global gitcommit ea683512f9b82f2257770f0ed56d819eea230fc2
 %global gitcommitshort %(c=%{gitcommit}; echo ${c:0:7})
-%global _hardened_build 1
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
 # strip the automatically generated dep here and instead co-own the
@@ -225,43 +224,7 @@ systemd-journal-remote, and systemd-journal-upload.
     git commit -a -q -m "%{version} baseline."
 
     # Apply all the patches.
-    git am \
-        --exclude .gitignore \
-        --exclude docs/.gitignore \
-        --exclude docs/libudev/.gitignore \
-        --exclude docs/sysvinit/.gitignore \
-        --exclude docs/var-log/.gitignore \
-        --exclude hwdb/.gitignore \
-        --exclude m4/.gitignore \
-        --exclude man/.gitignore \
-        --exclude po/.gitignore \
-        --exclude rules/.gitignore \
-        --exclude src/.gitignore \
-        --exclude src/analyze/.gitignore \
-        --exclude src/core/.gitignore \
-        --exclude src/hostname/.gitignore \
-        --exclude src/journal/.gitignore \
-        --exclude src/libudev/.gitignore \
-        --exclude src/locale/.gitignore \
-        --exclude src/login/.gitignore \
-        --exclude src/timedate/.gitignore \
-        --exclude src/udev/.gitignore \
-        --exclude src/udev/scsi_id/.gitignore \
-        --exclude sysctl.d/.gitignore \
-        --exclude test/.gitignore \
-        --exclude units/.gitignore \
-        --exclude units/user/.gitignore \
-        --exclude src/libsystemd/sd-bus/PORTING-DBUS1 \
-        --exclude CODING_STYLE \
-        --exclude src/readahead/Makefile \
-        --exclude src/libsystemd-terminal/unifont-def.h \
-        --exclude hwdb/sdio.ids \
-        %{patches}
-%endif
-
-%ifarch ppc ppc64 ppc64le
-# Disable link warnings, somehow they cause the link to fail.
-sed -r -i 's/\blibsystemd-(login|journal|id128|daemon).c \\/\\/' Makefile.am
+    git am %{patches}
 %endif
 
 %build
