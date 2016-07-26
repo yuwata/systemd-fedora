@@ -1,5 +1,5 @@
-%global gitcommit ea683512f9b82f2257770f0ed56d819eea230fc2
-%global gitcommitshort %(c=%{gitcommit}; echo ${c:0:7})
+#global gitcommit ea683512f9b82f2257770f0ed56d819eea230fc2
+#global gitcommitshort %(c=%{gitcommit}; echo ${c:0:7})
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
 # strip the automatically generated dep here and instead co-own the
@@ -11,8 +11,8 @@
 
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        230
-Release:        3%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Version:        231
+Release:        1%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -239,8 +239,6 @@ CONFIGURE_OPTS=(
         --with-sysvinit-path=/etc/rc.d/init.d
         --with-rc-local-script-path-start=/etc/rc.d/rc.local
         --with-ntp-servers='0.%{ntpvendor}.pool.ntp.org 1.%{ntpvendor}.pool.ntp.org 2.%{ntpvendor}.pool.ntp.org 3.%{ntpvendor}.pool.ntp.org'
-        --disable-kdbus
-        --disable-terminal
         --without-kill-user-processes
 )
 
@@ -254,6 +252,9 @@ make %{?_smp_mflags} GCC_COLORS="" V=1
 %make_install
 
 find %{buildroot} \( -name '*.a' -o -name '*.la' \) -delete
+
+# remove .so file for the shared library, it's not supposed to be used
+rm %{buildroot}%{pkgdir}/libsystemd-shared.so
 
 # udev links
 mkdir -p %{buildroot}/%{_sbindir}
@@ -617,8 +618,10 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_bindir}/localectl
 %{_bindir}/timedatectl
 %{pkgdir}/systemd
+%{pkgdir}/libsystemd-shared-%{version}.so
 %{system_unit_dir}
 %{pkgdir}/user
+%{pkgdir}/resolv.conf
 %exclude %{system_unit_dir}/*udev*
 %exclude %{system_unit_dir}/*/*udev*
 %exclude %{system_unit_dir}/*hwdb*
@@ -926,6 +929,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_mandir}/man[1578]/systemd-nspawn.*
 
 %changelog
+* Tue Jul 26 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@bupkis> - 231-1
+- Update to latest version
+
 * Wed Jun  8 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 230-3
 - Update to latest git snapshot (fixes for systemctl set-default,
   polkit lingering policy, reversal of the framebuffer rules,
