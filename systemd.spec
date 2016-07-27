@@ -123,8 +123,7 @@ systemd is a system and service manager for Linux, compatible with
 SysV and LSB init scripts. systemd provides aggressive parallelization
 capabilities, uses socket and D-Bus activation for starting services,
 offers on-demand starting of daemons, keeps track of processes using
-Linux cgroups, supports snapshotting and restoring of the system
-state, maintains mount and automount points and implements an
+Linux cgroups, maintains mount and automount points, and implements an
 elaborate transactional dependency-based service control logic.
 
 %package libs
@@ -388,19 +387,10 @@ if [ -e /etc/fstab ]; then
          sed -i.rpm.bak -r '/^devpts\s+\/dev\/pts\s+devpts\s+defaults\s+/d; /^tmpfs\s+\/dev\/shm\s+tmpfs\s+defaults\s+/d; /^sysfs\s+\/sys\s+sysfs\s+defaults\s+/d; /^proc\s+\/proc\s+proc\s+defaults\s+/d' /etc/fstab || :
 fi
 
-# Services we install by default, and which are controlled by presets.
+# We reset the enablement of all services upon initial installation
+# https://bugzilla.redhat.com/show_bug.cgi?id=1118740#c23
 if [ $1 -eq 1 ] ; then
-        systemctl preset \
-                remote-fs.target \
-                getty@.service \
-                serial-getty@.service \
-                console-getty.service \
-                console-shell.service \
-                debug-shell.service \
-                systemd-networkd.service \
-                systemd-networkd-wait-online.service \
-                systemd-resolved.service \
-                >/dev/null 2>&1 || :
+        systemctl preset-all &>/dev/null || :
 fi
 
 # sed-fu to add myhostanme to hosts line and remove mymachines
