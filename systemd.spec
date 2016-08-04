@@ -1,5 +1,5 @@
 #global gitcommit ea683512f9b82f2257770f0ed56d819eea230fc2
-#global gitcommitshort %(c=%{gitcommit}; echo ${c:0:7})
+%{?gitcommit:%global gitcommitshort %(c=%{gitcommit}; echo ${c:0:7})}
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
 # strip the automatically generated dep here and instead co-own the
@@ -23,7 +23,7 @@ Source0:        https://github.com/systemd/systemd/archive/%{?gitcommit}.tar.gz#
 %else
 Source0:        https://github.com/systemd/systemd/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 %endif
-# This file must be available before %prep.
+# This file must be available before %%prep.
 # It is generated during systemd build and can be found in src/core/.
 Source1:        triggers.systemd
 
