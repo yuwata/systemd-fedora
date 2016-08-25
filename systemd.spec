@@ -12,7 +12,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        231
-Release:        3%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        4%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -35,6 +35,22 @@ Source6:        sysctl.conf.README
 Source7:        systemd-journal-remote.xml
 Source8:        systemd-journal-gatewayd.xml
 Source9:        20-yama-ptrace.conf
+
+Patch0001: 0001-systemctl-be-sure-to-be-quiet-with-systemctl-is-enab.patch
+Patch0002: 0002-logind-0-and-100-should-be-valid-for-UserTasksMax-38.patch
+Patch0003: 0003-systemd-ask-password-make-sure-directory-watch-is-st.patch
+Patch0004: 0004-Revert-logind-really-handle-KeyIgnoreInhibited-optio.patch
+Patch0005: 0005-man-explain-that-KeyIgnoreInhibited-only-apply-to-a-.patch
+Patch0006: 0006-systemctl-fix-preset-all-with-missing-etc-systemd-sy.patch
+Patch0007: 0007-shared-install-remove-unused-paramater-and-add-more-.patch
+Patch0008: 0008-shared-install-ignore-unit-symlinks-when-doing-prese.patch
+Patch0009: 0009-man-describe-what-symlinks-to-unit-do-and-specify-th.patch
+Patch0010: 0010-shared-install-move-root-skipping-into-create_symlin.patch
+Patch0011: 0011-shared-install-when-creating-symlinks-keep-existing-.patch
+Patch0012: 0012-shared-install-properly-report-masked-units-listed-i.patch
+Patch0013: 0013-Revert-pid1-reconnect-to-the-console-before-being-re.patch
+Patch0014: 0014-systemd-ignore-lack-of-tty-when-checking-whether-col.patch
+Patch0015: 0015-shared-install-do-not-enable-masked-instances-4005.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
@@ -927,6 +943,11 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_mandir}/man[1578]/systemd-nspawn.*
 
 %changelog
+* Thu Aug 25 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 231-4
+- Fix preset-all (#1363858)
+- Fix issue with daemon-reload messing up graphics (#1367766)
+- A few other bugfixes
+
 * Wed Aug 03 2016 Adam Williamson <awilliam@redhat.com> - 231-3
 - Revert preset-all change, it broke stuff (#1363858)
 
