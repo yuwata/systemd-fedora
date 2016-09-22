@@ -126,8 +126,9 @@ Obsoletes:      nss-myhostname < 0.4
 Provides:       nss-myhostname = 0.4
 # systemd-sysv-convert was removed in f20: https://fedorahosted.org/fpc/ticket/308
 Obsoletes:      systemd-sysv < 206
-# self-obsoletes so that dnf will install new subpackages on upgrade (#1260394)
-Obsoletes:      %{name} < 229-5
+# self-obsoletes so that dnf will install new subpackages on upgrade
+# (#1260394, #1377733)
+Obsoletes:      systemd < 231
 Provides:       systemd-sysv = 206
 Conflicts:      initscripts < 9.56.1
 %if 0%{?fedora}
