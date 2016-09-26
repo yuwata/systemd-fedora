@@ -186,6 +186,8 @@ Requires:       kmod >= 18-4
 Obsoletes:      %{name} < 229-5
 Provides:       udev = %{version}
 Obsoletes:      udev < 183
+# https://bugzilla.redhat.com/show_bug.cgi?id=1377733#c9
+Recommends:     systemd-bootchart
 License:        LGPLv2+
 
 %description udev
