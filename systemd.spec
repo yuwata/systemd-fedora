@@ -12,7 +12,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        231
-Release:        7%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        8%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -502,7 +502,9 @@ exit 0
 %systemd_preun %udev_services
 
 %postun udev
-%systemd_postun_with_restart %udev_services
+# Only restart systemd-udev, to run the upgraded dameon.
+# Others are either oneshot services, or sockets, and restarting them causes issues (#1378974)
+%systemd_postun_with_restart systemd-udevd.service
 
 %pre journal-remote
 getent group systemd-journal-gateway >/dev/null 2>&1 || groupadd -r -g 191 systemd-journal-gateway 2>&1 || :
@@ -949,6 +951,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_mandir}/man[1578]/systemd-nspawn.*
 
 %changelog
+* Tue Oct  4 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 231-8
+- Apply fix for #1378974
+
 * Mon Oct  3 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 231-7
 - Apply patches properly
 
