@@ -296,7 +296,7 @@ ln -s ../bin/systemctl %{buildroot}%{_sbindir}/runlevel
 touch %{buildroot}/etc/crypttab
 chmod 600 %{buildroot}/etc/crypttab
 
-install -Dm0644 %{SOURCE5} %{buildroot}/etc/
+install -Dm0644 -t %{buildroot}/etc/ %{SOURCE5}
 
 install -Dm0644 %{SOURCE6} %{buildroot}/etc/sysctl.conf
 ln -s ../sysctl.conf %{buildroot}/etc/sysctl.d/99-sysctl.conf
@@ -350,13 +350,11 @@ touch %{buildroot}%{_localstatedir}/lib/systemd/clock
 # Install yum protection fragment
 install -Dm0644 %{SOURCE4} %{buildroot}%{_sysconfdir}/yum/protected.d/systemd.conf
 
-mkdir -vp %{buildroot}/usr/lib/firewalld/services/
-install -Dm0644 %{SOURCE7} %{buildroot}/usr/lib/firewalld/services/
-install -Dm0644 %{SOURCE8} %{buildroot}/usr/lib/firewalld/services/
+install -Dm0644 -t %{buildroot}/usr/lib/firewalld/services/ %{SOURCE7} %{SOURCE8}
 
 # Install additional docs
 # https://bugzilla.redhat.com/show_bug.cgi?id=1234951
-install -Dm0644 %{SOURCE9} %{buildroot}%{_pkgdocdir}/
+install -Dm0644 -t %{buildroot}%{_pkgdocdir}/ %{SOURCE9}
 
 %find_lang %{name}
 
