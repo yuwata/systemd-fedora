@@ -35,6 +35,7 @@ Source6:        sysctl.conf.README
 Source7:        systemd-journal-remote.xml
 Source8:        systemd-journal-gatewayd.xml
 Source9:        20-yama-ptrace.conf
+Source10:       systemd-udev-trigger-no-reload.conf
 
 Patch0001: 0001-systemctl-be-sure-to-be-quiet-with-systemctl-is-enab.patch
 Patch0002: 0002-logind-0-and-100-should-be-valid-for-UserTasksMax-38.patch
@@ -355,6 +356,9 @@ install -Dm0644 -t %{buildroot}/usr/lib/firewalld/services/ %{SOURCE7} %{SOURCE8
 # Install additional docs
 # https://bugzilla.redhat.com/show_bug.cgi?id=1234951
 install -Dm0644 -t %{buildroot}%{_pkgdocdir}/ %{SOURCE9}
+
+# https://bugzilla.redhat.com/show_bug.cgi?id=1378974
+install -Dm0644 -t %{buildroot}%{system_unit_dir}/systemd-udev-trigger.service.d/ %{SOURCE10}
 
 %find_lang %{name}
 
@@ -951,6 +955,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %changelog
 * Fri Oct  7 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 231-9
 - Fix systemctl set-default (#1374371)
+- Prevent systemd-udev-trigger.service from restarting (follow-up for #1378974)
 
 * Tue Oct  4 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 231-8
 - Apply fix for #1378974
