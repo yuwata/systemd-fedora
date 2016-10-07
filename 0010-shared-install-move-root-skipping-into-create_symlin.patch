@@ -142,6 +142,3 @@ index ef5a56391c..8c45725f5a 100644
  }
  
  int unit_file_get_default(
--- 
-2.9.0
-

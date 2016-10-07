@@ -60,6 +60,3 @@ index df56d85317..47d31ad4d7 100644
                  else
                          enabled = !terminal_is_dumb();
          }
--- 
-2.9.0
-

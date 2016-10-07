@@ -12,7 +12,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        231
-Release:        8%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        9%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        A System and Service Manager
@@ -54,7 +54,7 @@ Patch0015: 0015-shared-install-do-not-enable-masked-instances-4005.patch
 Patch0016: 0016-If-the-notification-message-length-is-0-ignore-the-m.patch
 Patch0017: 0017-pid1-don-t-return-any-error-in-manager_dispatch_noti.patch
 Patch0018: 0018-pid1-process-zero-length-notification-messages-again.patch
-
+Patch0019: 0019-shared-install-fix-set-default-with-empty-root-4118.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
@@ -951,6 +951,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_mandir}/man[1578]/systemd-nspawn.*
 
 %changelog
+* Fri Oct  7 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 231-9
+- Fix systemctl set-default (#1374371)
+
 * Tue Oct  4 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 231-8
 - Apply fix for #1378974
 

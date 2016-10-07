@@ -92,6 +92,3 @@ index 85a7b12d76..f818e772a9 100644
  
      <para>Along with a unit file <filename>foo.service</filename>, the
      directory <filename>foo.service.wants/</filename> may exist. All
--- 
-2.9.0
-

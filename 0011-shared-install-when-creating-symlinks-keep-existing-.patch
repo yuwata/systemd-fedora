@@ -95,6 +95,3 @@ index 8c45725f5a..9ce8e4d390 100644
                  return 1;
  
          if (!force) {
--- 
-2.9.0
-

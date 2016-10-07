@@ -107,6 +107,3 @@ index 5733e42cd1..f0bdb1c756 100644
      <citerefentry><refentrytitle>pam_systemd</refentrytitle><manvolnum>8</manvolnum></citerefentry>
      PAM module.</para>
  
--- 
-2.9.0
-

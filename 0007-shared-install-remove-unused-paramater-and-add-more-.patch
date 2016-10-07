@@ -72,6 +72,3 @@ index 2d9306058d..5e0f9c5d0c 100644
                          if (r == -ERFKILL)
                                  r = unit_file_changes_add(changes, n_changes,
                                                            UNIT_FILE_IS_MASKED, de->d_name, NULL);
--- 
-2.9.0
-

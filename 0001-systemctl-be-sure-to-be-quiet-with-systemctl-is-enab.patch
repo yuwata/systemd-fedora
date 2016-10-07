@@ -31,6 +31,3 @@ index 6a0ed79a53..6e61eeadef 100644
  
                  if (!isempty(arg_root))
                          argv[c++] = q = strappend("--root=", arg_root);
--- 
-2.9.0
-

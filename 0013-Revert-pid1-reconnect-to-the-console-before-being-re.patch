@@ -43,6 +43,3 @@ index f2adca7d2b..f59a55f166 100644
                  for (j = 1, i = 1; j < (unsigned) argc; j++)
                          args[i++] = argv[j];
                  args[i++] = NULL;
--- 
-2.9.0
-

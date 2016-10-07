@@ -81,6 +81,3 @@ index 5e0f9c5d0c..ef5a56391c 100644
          r = query_presets(name, presets);
          if (r < 0)
                  return r;
--- 
-2.9.0
-

@@ -27,6 +27,3 @@ index 4d84a0b37e..a085ed899a 100644
  
          CMSG_FOREACH(cmsg, &msghdr) {
                  if (cmsg->cmsg_level == SOL_SOCKET && cmsg->cmsg_type == SCM_RIGHTS) {
--- 
-2.9.0
-

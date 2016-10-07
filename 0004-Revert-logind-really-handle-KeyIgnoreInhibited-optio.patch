@@ -32,6 +32,3 @@ index 8ef48dbaa1..a950409254 100644
                  if (manager_is_inhibited(m, inhibit_key, INHIBIT_BLOCK, NULL, true, false, 0, NULL)) {
                          log_debug("Refusing operation, %s is inhibited.", inhibit_what_to_string(inhibit_key));
                          return 0;
--- 
-2.9.0
-

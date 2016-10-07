@@ -73,6 +73,3 @@ index 9ce8e4d390..9d9f4dff4f 100644
                  if (i->type != UNIT_FILE_TYPE_REGULAR)
                          continue;
  
--- 
-2.9.0
-

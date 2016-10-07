@@ -1,0 +1,30 @@
+From eadc5d94950a04f9fb64cb3906644af04de81970 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Sat, 10 Sep 2016 12:07:51 +0100
+Subject: [PATCH] shared/install: fix set-default with empty root (#4118)
+
+https://bugzilla.redhat.com/show_bug.cgi?id=1374371
+
+When root was empty or equal to "/", chroot_symlinks_same was called with
+root==NULL, and strjoina returned "", so the code thought both paths are equal
+even if they were not. Fix that by always providing a non-null first argument
+to strjoina.
+(cherry picked from commit ae9efab711e7478b4f035edd00824d518bcf0d3c)
+---
+ src/shared/install.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/shared/install.c b/src/shared/install.c
+index cb2a2e7e0d..cf1e8349d7 100644
+--- a/src/shared/install.c
++++ b/src/shared/install.c
+@@ -403,6 +403,9 @@ static bool chroot_symlinks_same(const char *root, const char *wd, const char *a
+         /* This will give incorrect results if the paths are relative and go outside
+          * of the chroot. False negatives are possible. */
+ 
++        if (!root)
++                root = "/";
++
+         a = strjoina(path_is_absolute(a) ? root : wd, "/", a);
+         b = strjoina(path_is_absolute(b) ? root : wd, "/", b);
+         return path_equal_or_files_same(a, b);
