@@ -127,8 +127,6 @@ Provides:       syslog
 Provides:       systemd-units = %{version}-%{release}
 Obsoletes:      system-setup-keyboard < 0.9
 Provides:       system-setup-keyboard = 0.9
-Obsoletes:      nss-myhostname < 0.4
-Provides:       nss-myhostname = 0.4
 # systemd-sysv-convert was removed in f20: https://fedorahosted.org/fpc/ticket/308
 Obsoletes:      systemd-sysv < 206
 # self-obsoletes so that dnf will install new subpackages on upgrade (#1260394)
@@ -155,6 +153,8 @@ Obsoletes:      libudev < 183
 Obsoletes:      systemd < 185-4
 Conflicts:      systemd < 185-4
 Obsoletes:      systemd-compat-libs < 230
+Obsoletes:      nss-myhostname < 0.4
+Provides:       nss-myhostname = 0.4
 
 %description libs
 Libraries for systemd and udev.
@@ -430,26 +430,6 @@ if [ $1 -eq 1 ] ; then
                 >/dev/null 2>&1 || :
 fi
 
-# sed-fu to add myhostanme to hosts line and remove mymachines
-# from passwd and group lines of /etc/nsswitch.conf
-# https://bugzilla.redhat.com/show_bug.cgi?id=1284325
-# https://meetbot.fedoraproject.org/fedora-meeting/2015-11-25/fesco.2015-11-25-18.00.html
-# To avoid the removal, e.g. add a space at the end of the line.
-if [ -f /etc/nsswitch.conf ] ; then
-        grep -v -E -q '^hosts:.* myhostname' /etc/nsswitch.conf &&
-        sed -i.bak -e '
-                /^hosts:/ !b
-                /\<myhostname\>/ b
-                s/[[:blank:]]*$/ myhostname/
-                ' /etc/nsswitch.conf >/dev/null 2>&1 || :
-
-        grep -E -q '^(passwd|group):.* mymachines$' /etc/nsswitch.conf &&
-        sed -i.bak -r -e '
-                s/^(passwd:.*) mymachines$/\1/;
-                s/^(group:.*) mymachines$/\1/;
-                ' /etc/nsswitch.conf >/dev/null 2>&1 || :
-fi
-
 # remove obsolete systemd-readahead file
 rm -f /.readahead > /dev/null 2>&1 || :
 
@@ -470,21 +450,31 @@ if [ $1 -eq 0 ] ; then
                 >/dev/null 2>&1 || :
 
         rm -f /etc/systemd/system/default.target >/dev/null 2>&1 || :
-
-        if [ -f /etc/nsswitch.conf ] ; then
-                sed -i.bak -e '
-                        /^hosts:/ !b
-                        s/[[:blank:]]\+myhostname\>//
-                        ' /etc/nsswitch.conf >/dev/null 2>&1 || :
-
-                sed -i.bak -e '
-                        /^hosts:/ !b
-                        s/[[:blank:]]\+mymachines\>//
-                        ' /etc/nsswitch.conf >/dev/null 2>&1 || :
-        fi
 fi
 
-%post libs -p /sbin/ldconfig
+%post libs
+/sbin/ldconfig
+
+# sed-fu to add myhostanme to hosts line and remove mymachines
+# from passwd and group lines of /etc/nsswitch.conf
+# https://bugzilla.redhat.com/show_bug.cgi?id=1284325
+# https://meetbot.fedoraproject.org/fedora-meeting/2015-11-25/fesco.2015-11-25-18.00.html
+# To avoid the removal, e.g. add a space at the end of the line.
+if [ -f /etc/nsswitch.conf ] ; then
+        grep -v -E -q '^hosts:.* myhostname' /etc/nsswitch.conf &&
+        sed -i.bak -e '
+                /^hosts:/ !b
+                /\<myhostname\>/ b
+                s/[[:blank:]]*$/ myhostname/
+                ' /etc/nsswitch.conf >/dev/null 2>&1 || :
+
+        grep -E -q '^(passwd|group):.* mymachines$' /etc/nsswitch.conf &&
+        sed -i.bak -r -e '
+                s/^(passwd:.*) mymachines$/\1/;
+                s/^(group:.*) mymachines$/\1/;
+                ' /etc/nsswitch.conf >/dev/null 2>&1 || :
+fi
+
 %postun libs -p /sbin/ldconfig
 
 %global udev_services systemd-udev{d,-settle,-trigger}.service systemd-udevd-{control,kernel}.socket systemd-timesyncd.service
@@ -960,6 +950,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %changelog
 * Sun Oct  9 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 231-10
 - Do not recreate /var/log/journal on upgrades (#1383066)
+- Move nss-myhostname provides to systemd-libs (#1383271)
 
 * Fri Oct  7 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 231-9
 - Fix systemctl set-default (#1374371)
