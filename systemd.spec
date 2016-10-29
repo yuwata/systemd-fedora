@@ -135,6 +135,7 @@ Conflicts:      systemd < 185-4
 Obsoletes:      systemd-compat-libs < 230
 Obsoletes:      nss-myhostname < 0.4
 Provides:       nss-myhostname = 0.4
+Provides:       nss-myhostname%{_isa} = 0.4
 
 %description libs
 Libraries for systemd and udev.
@@ -152,6 +153,7 @@ License:        LGPLv2+ and MIT
 # We need both libsystemd and libsystemd-<compat> libraries
 Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
 Provides:       libudev-devel = %{version}
+Provides:       libudev-devel%{_isa} = %{version}
 Obsoletes:      libudev-devel < 183
 
 %description devel
@@ -169,6 +171,7 @@ Requires:       kmod >= 18-4
 # obsolete parent package so that dnf will install new subpackage on upgrade (#1260394)
 Obsoletes:      %{name} < 229-5
 Provides:       udev = %{version}
+Provides:       udev%{_isa} = %{version}
 Obsoletes:      udev < 183
 # https://bugzilla.redhat.com/show_bug.cgi?id=1377733#c9
 Recommends:     systemd-bootchart
@@ -207,6 +210,7 @@ Requires(preun):  systemd
 Requires(postun): systemd
 Requires:       firewalld-filesystem
 Provides:       %{name}-journal-gateway = %{version}-%{release}
+Provides:       %{name}-journal-gateway%{_isa} = %{version}-%{release}
 Obsoletes:      %{name}-journal-gateway < 227-7
 
 %description journal-remote
@@ -930,6 +934,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %changelog
 * Thu Nov  3 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 232-1
 - Update to latest version
+- Add %%{_isa} to Provides on arch-full packages (#1387912)
 
 * Tue Oct 18 2016 Jan Synáček <jsynacek@redhat.com> - 231-11
 - SPC - Cannot restart host operating from container (#1384523)
