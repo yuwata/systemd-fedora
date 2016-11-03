@@ -11,11 +11,11 @@
 
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        231
-Release:        11%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Version:        232
+Release:        1%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
-Summary:        A System and Service Manager
+Summary:        System and Service Manager
 
 # download tarballs with "spectool -g systemd.spec"
 %if %{defined gitcommit}
@@ -36,27 +36,6 @@ Source7:        systemd-journal-remote.xml
 Source8:        systemd-journal-gatewayd.xml
 Source9:        20-yama-ptrace.conf
 Source10:       systemd-udev-trigger-no-reload.conf
-
-Patch0001: 0001-systemctl-be-sure-to-be-quiet-with-systemctl-is-enab.patch
-Patch0002: 0002-logind-0-and-100-should-be-valid-for-UserTasksMax-38.patch
-Patch0003: 0003-systemd-ask-password-make-sure-directory-watch-is-st.patch
-Patch0004: 0004-Revert-logind-really-handle-KeyIgnoreInhibited-optio.patch
-Patch0005: 0005-man-explain-that-KeyIgnoreInhibited-only-apply-to-a-.patch
-Patch0006: 0006-systemctl-fix-preset-all-with-missing-etc-systemd-sy.patch
-Patch0007: 0007-shared-install-remove-unused-paramater-and-add-more-.patch
-Patch0008: 0008-shared-install-ignore-unit-symlinks-when-doing-prese.patch
-Patch0009: 0009-man-describe-what-symlinks-to-unit-do-and-specify-th.patch
-Patch0010: 0010-shared-install-move-root-skipping-into-create_symlin.patch
-Patch0011: 0011-shared-install-when-creating-symlinks-keep-existing-.patch
-Patch0012: 0012-shared-install-properly-report-masked-units-listed-i.patch
-Patch0013: 0013-Revert-pid1-reconnect-to-the-console-before-being-re.patch
-Patch0014: 0014-systemd-ignore-lack-of-tty-when-checking-whether-col.patch
-Patch0015: 0015-shared-install-do-not-enable-masked-instances-4005.patch
-Patch0016: 0016-If-the-notification-message-length-is-0-ignore-the-m.patch
-Patch0017: 0017-pid1-don-t-return-any-error-in-manager_dispatch_noti.patch
-Patch0018: 0018-pid1-process-zero-length-notification-messages-again.patch
-Patch0019: 0019-shared-install-fix-set-default-with-empty-root-4118.patch
-Patch0020: 0020-virt-add-possibility-to-skip-the-check-for-chroot-43.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
@@ -537,6 +516,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %license LICENSE.GPL2 LICENSE.LGPL2.1
 %dir %{_sysconfdir}/systemd
 %dir %{_sysconfdir}/systemd/system
+%{_sysconfdir}/systemd/system/ctrl-alt-del.target
 %dir %{_sysconfdir}/systemd/user
 %dir %{_sysconfdir}/systemd/network
 %dir %{_sysconfdir}/tmpfiles.d
@@ -608,34 +588,35 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %ghost %config(noreplace) %{_sysconfdir}/machine-info
 %dir %{_sysconfdir}/X11/xorg.conf.d
 %ghost %config(noreplace) %{_sysconfdir}/X11/xorg.conf.d/00-keyboard.conf
-%{_bindir}/systemctl
-%{_bindir}/systemd-notify
-%{_bindir}/systemd-analyze
-%{_bindir}/systemd-escape
-%{_bindir}/systemd-ask-password
-%{_bindir}/systemd-tty-ask-password-agent
-%{_bindir}/systemd-machine-id-setup
-%{_bindir}/loginctl
-%{_bindir}/journalctl
 %{_bindir}/busctl
-%{_bindir}/networkctl
 %{_bindir}/coredumpctl
-%{_bindir}/systemd-tmpfiles
-%{_bindir}/systemd-stdio-bridge
+%{_bindir}/hostnamectl
+%{_bindir}/journalctl
+%{_bindir}/localectl
+%{_bindir}/loginctl
+%{_bindir}/networkctl
+%{_bindir}/systemctl
+%{_bindir}/systemd-analyze
+%{_bindir}/systemd-ask-password
 %{_bindir}/systemd-cat
 %{_bindir}/systemd-cgls
 %{_bindir}/systemd-cgtop
 %{_bindir}/systemd-delta
-%{_bindir}/systemd-run
 %{_bindir}/systemd-detect-virt
+%{_bindir}/systemd-escape
+%{_bindir}/systemd-firstboot
 %{_bindir}/systemd-inhibit
+%{_bindir}/systemd-machine-id-setup
+%{_bindir}/systemd-mount
+%{_bindir}/systemd-notify
 %{_bindir}/systemd-path
 %{_bindir}/systemd-resolve
-%{_bindir}/systemd-sysusers
-%{_bindir}/systemd-firstboot
+%{_bindir}/systemd-run
 %{_bindir}/systemd-socket-activate
-%{_bindir}/hostnamectl
-%{_bindir}/localectl
+%{_bindir}/systemd-stdio-bridge
+%{_bindir}/systemd-sysusers
+%{_bindir}/systemd-tmpfiles
+%{_bindir}/systemd-tty-ask-password-agent
 %{_bindir}/timedatectl
 %{pkgdir}/systemd
 %{pkgdir}/libsystemd-shared-%{version}.so
@@ -647,7 +628,6 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %exclude %{system_unit_dir}/*hwdb*
 %exclude %{system_unit_dir}/*/*hwdb*
 %exclude %{system_unit_dir}/systemd-vconsole-setup.service
-%exclude %{system_unit_dir}/*/systemd-vconsole-setup.service
 %exclude %{system_unit_dir}/kmod-static-nodes.service
 %exclude %{system_unit_dir}/*/kmod-static-nodes.service
 %exclude %{system_unit_dir}/systemd-tmpfiles-setup-dev.service
@@ -826,7 +806,6 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{system_unit_dir}/*hwdb*
 %{system_unit_dir}/*/*hwdb*
 %{system_unit_dir}/systemd-vconsole-setup.service
-%{system_unit_dir}/*/systemd-vconsole-setup.service
 %{system_unit_dir}/kmod-static-nodes.service
 %{system_unit_dir}/*/kmod-static-nodes.service
 %{system_unit_dir}/systemd-tmpfiles-setup-dev.service
@@ -949,6 +928,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_mandir}/man[1578]/systemd-nspawn.*
 
 %changelog
+* Thu Nov  3 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 232-1
+- Update to latest version
+
 * Tue Oct 18 2016 Jan Synáček <jsynacek@redhat.com> - 231-11
 - SPC - Cannot restart host operating from container (#1384523)
 
