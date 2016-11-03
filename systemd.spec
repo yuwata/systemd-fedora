@@ -445,24 +445,36 @@ fi
 %post libs
 /sbin/ldconfig
 
-# sed-fu to add myhostanme to hosts line and remove mymachines
-# from passwd and group lines of /etc/nsswitch.conf
-# https://bugzilla.redhat.com/show_bug.cgi?id=1284325
-# https://meetbot.fedoraproject.org/fedora-meeting/2015-11-25/fesco.2015-11-25-18.00.html
-# To avoid the removal, e.g. add a space at the end of the line.
 if [ -f /etc/nsswitch.conf ] ; then
+        # sed-fu to add myhostanme to hosts line
         grep -v -E -q '^hosts:.* myhostname' /etc/nsswitch.conf &&
         sed -i.bak -e '
                 /^hosts:/ !b
                 /\<myhostname\>/ b
                 s/[[:blank:]]*$/ myhostname/
-                ' /etc/nsswitch.conf >/dev/null 2>&1 || :
+                ' /etc/nsswitch.conf &>/dev/null
 
+        # remove mymachines from passwd and group lines of /etc/nsswitch.conf
+        # https://bugzilla.redhat.com/show_bug.cgi?id=1284325
+        # https://meetbot.fedoraproject.org/fedora-meeting/2015-11-25/fesco.2015-11-25-18.00.html
+        # To avoid the removal, e.g. add a space at the end of the line.
         grep -E -q '^(passwd|group):.* mymachines$' /etc/nsswitch.conf &&
         sed -i.bak -r -e '
                 s/^(passwd:.*) mymachines$/\1/;
                 s/^(group:.*) mymachines$/\1/;
-                ' /etc/nsswitch.conf >/dev/null 2>&1 || :
+                ' /etc/nsswitch.conf &>/dev/null
+
+        # Add [!UNAVAIL=return] after resolve
+        grep -E -q '^hosts:.*resolve[[:space:]]*($|[[:alpha:]])' /etc/nsswitch.conf &&
+        sed -i.bak -e '
+                /^hosts:/ { s/resolve/& [!UNAVAIL=return]/}
+                ' /etc/nsswitch.conf &>/dev/null
+
+        # Add nss-systemd to passwd and group
+        grep -E -q '^(passwd|group):.* systemd' /etc/nsswitch.conf ||
+        sed -i.bak -r -e '
+                s/^(passwd|group):(.*)/\1: \2 systemd/
+                ' /etc/nsswitch.conf &>/dev/null
 fi
 
 %postun libs -p /sbin/ldconfig
@@ -776,6 +788,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %files libs
 %{_libdir}/libnss_myhostname.so.2
 %{_libdir}/libnss_resolve.so.2
+%{_libdir}/libnss_systemd.so.2
 %{_libdir}/libudev.so.*
 %{_libdir}/libsystemd.so.*
 %license LICENSE.LGPL2.1
@@ -937,10 +950,12 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 
 %changelog
 * Thu Nov  3 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 232-1
-- Update to latest version
+- Update to latest version (#998615, #1181922)
 - Add %%{_isa} to Provides on arch-full packages (#1387912)
 - Create systemd-coredump user in %%pre (#1348891)
 - Replace grubby patch with a short-circuiting install.d "plugin"
+- Enable nss-systemd in the passwd, group lines in nsswith.conf
+- Add [!UNAVAIL=return] fallback after nss-resolve in hosts line in nsswith.conf
 
 * Tue Oct 18 2016 Jan Synáček <jsynacek@redhat.com> - 231-11
 - SPC - Cannot restart host operating from container (#1384523)
