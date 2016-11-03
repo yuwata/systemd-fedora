@@ -36,11 +36,9 @@ Source7:        systemd-journal-remote.xml
 Source8:        systemd-journal-gatewayd.xml
 Source9:        20-yama-ptrace.conf
 Source10:       systemd-udev-trigger-no-reload.conf
+Source11:       20-grubby.install
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
-
-# kernel-install patch for grubby, drop if grubby is obsolete
-Patch1000:      kernel-install-grubby.patch
 
 %global num_patches %{lua: c=0; for i,p in ipairs(patches) do c=c+1; end; print(c);}
 
@@ -344,6 +342,8 @@ install -Dm0644 -t %{buildroot}%{_pkgdocdir}/ %{SOURCE9}
 # https://bugzilla.redhat.com/show_bug.cgi?id=1378974
 install -Dm0644 -t %{buildroot}%{system_unit_dir}/systemd-udev-trigger.service.d/ %{SOURCE10}
 
+install -Dm0755 -t %{buildroot}%{_prefix}/lib/kernel/install.d/ %{SOURCE11}
+
 %find_lang %{name}
 
 %check
@@ -554,7 +554,6 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %dir %{_prefix}/lib/modules-load.d
 %dir %{_prefix}/lib/binfmt.d
 %dir %{_prefix}/lib/kernel
-%dir %{_prefix}/lib/kernel/install.d
 %dir %{_datadir}/systemd
 %dir %{_datadir}/pkgconfig
 %dir %{_datadir}/zsh
@@ -704,8 +703,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_prefix}/lib/sysusers.d/systemd.conf
 %{pkgdir}/system-preset/90-systemd.preset
 %{pkgdir}/catalog/systemd.catalog
-%{_prefix}/lib/kernel/install.d/50-depmod.install
-%{_prefix}/lib/kernel/install.d/90-loaderentry.install
+%{_prefix}/lib/kernel/install.d/
 %{_sbindir}/init
 %{_sbindir}/reboot
 %{_sbindir}/halt
@@ -942,6 +940,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 - Update to latest version
 - Add %%{_isa} to Provides on arch-full packages (#1387912)
 - Create systemd-coredump user in %%pre (#1348891)
+- Replace grubby patch with a short-circuiting install.d "plugin"
 
 * Tue Oct 18 2016 Jan Synáček <jsynacek@redhat.com> - 231-11
 - SPC - Cannot restart host operating from container (#1384523)
