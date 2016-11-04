@@ -591,6 +591,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %ghost %attr(0664,root,utmp) %{_localstatedir}/run/utmp
 %ghost %attr(0664,root,utmp) %{_localstatedir}/log/wtmp
 %ghost %attr(0600,root,utmp) %{_localstatedir}/log/btmp
+%ghost %dir %{_sysconfdir}/dbus-1/system.d
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.systemd1.conf
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.hostname1.conf
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.login1.conf
@@ -757,9 +758,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %exclude %{_mandir}/man*/systemd-cryptsetup*
 %exclude %{_mandir}/man*/systemd-sleep*
 
-%{_datadir}/factory/etc/nsswitch.conf
-%{_datadir}/factory/etc/pam.d/other
-%{_datadir}/factory/etc/pam.d/system-auth
+%{_datadir}/factory/
 %{_datadir}/systemd/kbd-model-map
 %{_datadir}/systemd/language-fallback-map
 %{_datadir}/dbus-1/services/org.freedesktop.systemd1.service
