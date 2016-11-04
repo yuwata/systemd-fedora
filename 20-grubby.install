@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ ! -x /sbin/new-kernel-pkg ]]; then
-    return 0
+    exit 0
 fi
 
 COMMAND="$1"

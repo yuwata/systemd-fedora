@@ -1,0 +1,35 @@
+From a9facbdf54ed3397365f1f4203afa4f606ce7234 Mon Sep 17 00:00:00 2001
+From: Yu Watanabe <watanabe.yu+github@gmail.com>
+Date: Fri, 4 Nov 2016 21:58:41 +0900
+Subject: [PATCH] kernel-install: use exit instead of return (#4565)
+
+/bin/kernel-install: line 143: return: can only `return' from a function or sourced script
+
+https://bugzilla.redhat.com/show_bug.cgi?id=1391829
+(cherry picked from commit 9156493171cf2d78e1ac1a3746c385b0e281acf1)
+---
+ src/kernel-install/kernel-install | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/kernel-install/kernel-install b/src/kernel-install/kernel-install
+index 0c0ee718ac..a95b9717f0 100644
+--- a/src/kernel-install/kernel-install
++++ b/src/kernel-install/kernel-install
+@@ -127,7 +127,7 @@ case $COMMAND in
+                 "$f" add "$KERNEL_VERSION" "$BOOT_DIR_ABS" "$KERNEL_IMAGE"
+                 x=$?
+                 if [[ $x == $SKIP_REMAINING ]]; then
+-                    return 0
++                    exit 0
+                 fi
+                 ((ret+=$x))
+             fi
+@@ -140,7 +140,7 @@ case $COMMAND in
+                 "$f" remove "$KERNEL_VERSION" "$BOOT_DIR_ABS"
+                 x=$?
+                 if [[ $x == $SKIP_REMAINING ]]; then
+-                    return 0
++                    exit 0
+                 fi
+                 ((ret+=$x))
+             fi
