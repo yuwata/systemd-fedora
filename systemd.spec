@@ -928,6 +928,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_mandir}/man1/machinectl.*
 %{_mandir}/man8/systemd-machined.*
 %{_mandir}/man8/*mymachines.*
+%{_mandir}/man[1578]/systemd-nspawn.*
 
 %files journal-remote
 %config(noreplace) %{_sysconfdir}/systemd/journal-remote.conf
@@ -946,16 +947,16 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_mandir}/man[1578]/*journal-remote.*
 %{_mandir}/man[1578]/systemd-journal-upload*
 %{_mandir}/man[1578]/systemd-journal-gateway*
-%{_mandir}/man[1578]/systemd-nspawn.*
 
 %changelog
 * Thu Nov  3 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 232-1
-- Update to latest version (#998615, #1181922)
+- Update to latest version (#998615, #1181922, #1374371, #1390704, #1384150, #1287161)
 - Add %%{_isa} to Provides on arch-full packages (#1387912)
-- Create systemd-coredump user in %%pre (#1348891)
+- Create systemd-coredump user in %%pre (#1309574)
 - Replace grubby patch with a short-circuiting install.d "plugin"
 - Enable nss-systemd in the passwd, group lines in nsswith.conf
 - Add [!UNAVAIL=return] fallback after nss-resolve in hosts line in nsswith.conf
+- Move systemd-nspawn man pages to the right subpackage (#1391703)
 
 * Tue Oct 18 2016 Jan Synáček <jsynacek@redhat.com> - 231-11
 - SPC - Cannot restart host operating from container (#1384523)
