@@ -12,7 +12,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        232
-Release:        2%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        3%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -591,7 +591,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %ghost %attr(0664,root,utmp) %{_localstatedir}/run/utmp
 %ghost %attr(0664,root,utmp) %{_localstatedir}/log/wtmp
 %ghost %attr(0600,root,utmp) %{_localstatedir}/log/btmp
-%ghost %dir %{_sysconfdir}/dbus-1/system.d
+%dir %{_sysconfdir}/dbus-1/system.d
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.systemd1.conf
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.hostname1.conf
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.login1.conf
@@ -955,6 +955,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_mandir}/man[1578]/systemd-journal-gateway*
 
 %changelog
+* Fri Nov  4 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 232-3
+- Make /etc/dbus-1/system.d directory non-%%ghost
+
 * Fri Nov  4 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 232-2
 - Fix kernel-install (#1391829)
 - Restore previous systemd-user PAM config (#1391836)
