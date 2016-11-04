@@ -37,6 +37,7 @@ Source8:        systemd-journal-gatewayd.xml
 Source9:        20-yama-ptrace.conf
 Source10:       systemd-udev-trigger-no-reload.conf
 Source11:       20-grubby.install
+Source12:       https://raw.githubusercontent.com/systemd/systemd/1000522a60ceade446773c67031b47a566d4a70d/src/login/systemd-user.m4
 
 Patch0001:      0001-build-sys-link-test-seccomp-against-seccomp-libs-456.patch
 Patch0002:      0002-kernel-install-use-exit-instead-of-return-4565.patch
@@ -234,6 +235,9 @@ systemd-journal-remote, and systemd-journal-upload.
     # Apply all the patches.
     git am %{patches}
 %endif
+
+# Restore systemd-user pam config from before "removal of Fedora-specific bits"
+cp -p %{SOURCE12} src/login/
 
 %build
 ./autogen.sh
@@ -668,7 +672,7 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %exclude %{system_unit_dir}/*/var-lib-machines.mount
 %exclude %{system_unit_dir}/systemd-journal-gatewayd.*
 %exclude %{system_unit_dir}/systemd-journal-remote.*
-%exclude %{system_unit_dir}/systemd-journal-upload.*
+%exclude %{system_unit_dir}/*upload.*
 %exclude %{system_unit_dir}/systemd-rfkill.*
 %exclude %{system_unit_dir}/systemd-backlight*
 %exclude %{system_unit_dir}/*/systemd-random-seed.service
@@ -938,13 +942,13 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %config(noreplace) %{_sysconfdir}/systemd/journal-upload.conf
 %{system_unit_dir}/systemd-journal-gatewayd.*
 %{system_unit_dir}/systemd-journal-remote.*
-%{system_unit_dir}/systemd-journal-upload.*
+%{system_unit_dir}/*upload.*
 %{pkgdir}/systemd-journal-gatewayd
 %{pkgdir}/systemd-journal-remote
 %{pkgdir}/systemd-journal-upload
 %{_prefix}/lib/tmpfiles.d/systemd-remote.conf
 %{_prefix}/lib/sysusers.d/systemd-remote.conf
-%dir %attr(0644,systemd-journal-upload,systemd-journal-upload) %{_localstatedir}/lib/systemd/journal-upload
+%dir %attr(0755,systemd-journal-upload,systemd-journal-upload) %{_localstatedir}/lib/systemd/journal-upload
 %{_datadir}/systemd/gatewayd
 /usr/lib/firewalld/services/*
 %{_mandir}/man[1578]/*journal-remote.*
@@ -954,6 +958,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %changelog
 * Fri Nov  4 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 232-2
 - Fix kernel-install (#1391829)
+- Restore previous systemd-user PAM config (#1391836)
+- Move journal-upload.conf.5 from systemd main to journal-remote subpackage (#1391833)
+- Fix permissions on /var/lib/systemd/journal-upload (#1262665)
 
 * Thu Nov  3 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 232-1
 - Update to latest version (#998615, #1181922, #1374371, #1390704, #1384150, #1287161)
