@@ -347,7 +347,7 @@ install -Dm0755 -t %{buildroot}%{_prefix}/lib/kernel/install.d/ %{SOURCE11}
 %find_lang %{name}
 
 %check
-make check VERBOSE=1 || { cat test-suite.log; exit 1; }
+make check %{?_smp_mflags} VERBOSE=1 || { cat test-suite.log; exit 1; }
 
 # Check for botched translations (https://bugzilla.redhat.com/show_bug.cgi?id=1226566)
 test -z "$(grep -L xml:lang %{buildroot}%{_datadir}/polkit-1/actions/org.freedesktop.*.policy)"
