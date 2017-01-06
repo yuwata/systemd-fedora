@@ -1,0 +1,54 @@
+From 83a5e5d1f889744bedac8c9e813bf5d3d002a700 Mon Sep 17 00:00:00 2001
+From: Michal Schmidt <mschmidt@redhat.com>
+Date: Fri, 16 Dec 2016 18:14:47 +0100
+Subject: [PATCH] kernel-install: avoid process substitution
+
+bash implements process substitution using /dev/fd/N (this is documented
+in man bash). We'd like kernel-install to work in chrooted RPM
+scriptlets without /dev.
+
+We can use here-strings instead. bash uses temporary files to implement
+those.
+---
+ src/kernel-install/kernel-install | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/src/kernel-install/kernel-install b/src/kernel-install/kernel-install
+index a95b9717f0..c7d9f4eea9 100644
+--- a/src/kernel-install/kernel-install
++++ b/src/kernel-install/kernel-install
+@@ -34,7 +34,7 @@ dropindirs_sort()
+     local -a files
+     local f d i
+ 
+-    readarray -t files < <(
++    readarray -t files <<<"$(
+         for d in "$@"; do
+             for i in "$d/"*"$suffix"; do
+                 if [[ -e "$i" ]]; then
+@@ -42,7 +42,7 @@ dropindirs_sort()
+                 fi
+             done
+         done | sort -Vu
+-    )
++    )"
+ 
+     for f in "${files[@]}"; do
+         for d in "$@"; do
+@@ -104,11 +104,11 @@ fi
+ 
+ ret=0
+ 
+-readarray -t PLUGINS < <(
++readarray -t PLUGINS <<<"$(
+     dropindirs_sort ".install" \
+         "/etc/kernel/install.d" \
+         "/usr/lib/kernel/install.d"
+-)
++)"
+ 
+ case $COMMAND in
+     add)
+-- 
+2.9.3
+

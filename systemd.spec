@@ -12,7 +12,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        232
-Release:        4%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        5%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -41,6 +41,7 @@ Source12:       https://raw.githubusercontent.com/systemd/systemd/1000522a60cead
 
 Patch0001:      0001-build-sys-link-test-seccomp-against-seccomp-libs-456.patch
 Patch0002:      0002-kernel-install-use-exit-instead-of-return-4565.patch
+Patch0003:      0003-kernel-install-avoid-process-substitution.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
@@ -955,6 +956,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_mandir}/man[1578]/systemd-journal-gateway*
 
 %changelog
+* Fri Jan 06 2017 Kevin Fenzi <kevin@scrye.com> - 232-5
+- Add patch from Michal Schmidt to avoid process substitution. (#1392236)
+
 * Sun Nov  6 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 232-4
 - Rebuild (#1392236)
 
