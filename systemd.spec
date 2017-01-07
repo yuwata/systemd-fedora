@@ -12,7 +12,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        232
-Release:        5%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        6%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -460,7 +460,7 @@ if [ -f /etc/nsswitch.conf ] ; then
                 /^hosts:/ !b
                 /\<myhostname\>/ b
                 s/[[:blank:]]*$/ myhostname/
-                ' /etc/nsswitch.conf &>/dev/null
+                ' /etc/nsswitch.conf >/dev/null 2>&1 || :
 
         # remove mymachines from passwd and group lines of /etc/nsswitch.conf
         # https://bugzilla.redhat.com/show_bug.cgi?id=1284325
@@ -470,19 +470,19 @@ if [ -f /etc/nsswitch.conf ] ; then
         sed -i.bak -r -e '
                 s/^(passwd:.*) mymachines$/\1/;
                 s/^(group:.*) mymachines$/\1/;
-                ' /etc/nsswitch.conf &>/dev/null
+                ' /etc/nsswitch.conf >/dev/null 2>&1 || :
 
         # Add [!UNAVAIL=return] after resolve
         grep -E -q '^hosts:.*resolve[[:space:]]*($|[[:alpha:]])' /etc/nsswitch.conf &&
         sed -i.bak -e '
                 /^hosts:/ { s/resolve/& [!UNAVAIL=return]/}
-                ' /etc/nsswitch.conf &>/dev/null
+                ' /etc/nsswitch.conf >/dev/null 2>&1 || :
 
         # Add nss-systemd to passwd and group
         grep -E -q '^(passwd|group):.* systemd' /etc/nsswitch.conf ||
         sed -i.bak -r -e '
                 s/^(passwd|group):(.*)/\1: \2 systemd/
-                ' /etc/nsswitch.conf &>/dev/null
+                ' /etc/nsswitch.conf >/dev/null 2>&1 || :
 fi
 
 %postun libs -p /sbin/ldconfig
@@ -956,6 +956,9 @@ getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd
 %{_mandir}/man[1578]/systemd-journal-gateway*
 
 %changelog
+* Sat Jan 07 2017 Kevin Fenzi <kevin@scrye.com> - 232-6
+- Fix scriptlets to never fail in libs post. 
+
 * Fri Jan 06 2017 Kevin Fenzi <kevin@scrye.com> - 232-5
 - Add patch from Michal Schmidt to avoid process substitution. (#1392236)
 
