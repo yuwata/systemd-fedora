@@ -418,7 +418,7 @@ fi
 
 # Services we install by default, and which are controlled by presets.
 if [ $1 -eq 1 ] ; then
-        systemctl preset \
+        systemctl preset --quiet \
                 remote-fs.target \
                 getty@.service \
                 serial-getty@.service \
@@ -427,7 +427,7 @@ if [ $1 -eq 1 ] ; then
                 systemd-networkd.service \
                 systemd-networkd-wait-online.service \
                 systemd-resolved.service \
-                >/dev/null 2>&1 || :
+                >/dev/null || :
 fi
 
 # remove obsolete systemd-readahead file
@@ -435,7 +435,7 @@ rm -f /.readahead > /dev/null 2>&1 || :
 
 %preun
 if [ $1 -eq 0 ] ; then
-        systemctl disable \
+        systemctl disable --quiet \
                 remote-fs.target \
                 getty@.service \
                 serial-getty@.service \
@@ -446,7 +446,7 @@ if [ $1 -eq 0 ] ; then
                 systemd-networkd.service \
                 systemd-networkd-wait-online.service \
                 systemd-resolved.service \
-                >/dev/null 2>&1 || :
+                >/dev/null || :
 
         rm -f /etc/systemd/system/default.target >/dev/null 2>&1 || :
 fi
