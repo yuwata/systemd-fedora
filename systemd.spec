@@ -370,30 +370,30 @@ test -z "$(grep -L xml:lang %{buildroot}%{_datadir}/polkit-1/actions/org.freedes
 %include %{SOURCE1}
 
 %pre
-getent group cdrom >/dev/null 2>&1 || groupadd -r -g 11 cdrom >/dev/null 2>&1 || :
-getent group utmp >/dev/null 2>&1 || groupadd -r -g 22 utmp >/dev/null 2>&1 || :
-getent group tape >/dev/null 2>&1 || groupadd -r -g 33 tape >/dev/null 2>&1 || :
-getent group dialout >/dev/null 2>&1 || groupadd -r -g 18 dialout >/dev/null 2>&1 || :
-getent group input >/dev/null 2>&1 || groupadd -r input >/dev/null 2>&1 || :
-getent group systemd-journal >/dev/null 2>&1 || groupadd -r -g 190 systemd-journal 2>&1 || :
+getent group cdrom &>/dev/null || groupadd -r -g 11 cdrom &>/dev/null || :
+getent group utmp &>/dev/null || groupadd -r -g 22 utmp &>/dev/null || :
+getent group tape &>/dev/null || groupadd -r -g 33 tape &>/dev/null || :
+getent group dialout &>/dev/null || groupadd -r -g 18 dialout &>/dev/null || :
+getent group input &>/dev/null || groupadd -r input &>/dev/null || :
+getent group systemd-journal &>/dev/null || groupadd -r -g 190 systemd-journal 2>&1 || :
 
-getent group systemd-coredump >/dev/null 2>&1 || groupadd -r systemd-coredump 2>&1 || :
-getent passwd systemd-coredump >/dev/null 2>&1 || useradd -r -l -g systemd-coredump -d / -s /sbin/nologin -c "systemd Core Dumper" systemd-coredump >/dev/null 2>&1 || :
+getent group systemd-coredump &>/dev/null || groupadd -r systemd-coredump 2>&1 || :
+getent passwd systemd-coredump &>/dev/null || useradd -r -l -g systemd-coredump -d / -s /sbin/nologin -c "systemd Core Dumper" systemd-coredump &>/dev/null || :
 
-getent group systemd-timesync >/dev/null 2>&1 || groupadd -r systemd-timesync 2>&1 || :
-getent passwd systemd-timesync >/dev/null 2>&1 || useradd -r -l -g systemd-timesync -d / -s /sbin/nologin -c "systemd Time Synchronization" systemd-timesync >/dev/null 2>&1 || :
+getent group systemd-timesync &>/dev/null || groupadd -r systemd-timesync 2>&1 || :
+getent passwd systemd-timesync &>/dev/null || useradd -r -l -g systemd-timesync -d / -s /sbin/nologin -c "systemd Time Synchronization" systemd-timesync &>/dev/null || :
 
-getent group systemd-network >/dev/null 2>&1 || groupadd -r -g 192 systemd-network 2>&1 || :
-getent passwd systemd-network >/dev/null 2>&1 || useradd -r -u 192 -l -g systemd-network -d / -s /sbin/nologin -c "systemd Network Management" systemd-network >/dev/null 2>&1 || :
+getent group systemd-network &>/dev/null || groupadd -r -g 192 systemd-network 2>&1 || :
+getent passwd systemd-network &>/dev/null || useradd -r -u 192 -l -g systemd-network -d / -s /sbin/nologin -c "systemd Network Management" systemd-network &>/dev/null || :
 
-getent group systemd-resolve >/dev/null 2>&1 || groupadd -r -g 193 systemd-resolve 2>&1 || :
-getent passwd systemd-resolve >/dev/null 2>&1 || useradd -r -u 193 -l -g systemd-resolve -d / -s /sbin/nologin -c "systemd Resolver" systemd-resolve >/dev/null 2>&1 || :
+getent group systemd-resolve &>/dev/null || groupadd -r -g 193 systemd-resolve 2>&1 || :
+getent passwd systemd-resolve &>/dev/null || useradd -r -u 193 -l -g systemd-resolve -d / -s /sbin/nologin -c "systemd Resolver" systemd-resolve &>/dev/null || :
 
 %post
-systemd-machine-id-setup >/dev/null 2>&1 || :
-systemctl daemon-reexec >/dev/null 2>&1 || :
-journalctl --update-catalog >/dev/null 2>&1 || :
-systemd-tmpfiles --create >/dev/null 2>&1 || :
+systemd-machine-id-setup &>/dev/null || :
+systemctl daemon-reexec &>/dev/null || :
+journalctl --update-catalog &>/dev/null || :
+systemd-tmpfiles --create &>/dev/null || :
 
 if [ $1 -eq 1 ] ; then
      # create /var/log/journal only on initial installation
@@ -401,15 +401,15 @@ if [ $1 -eq 1 ] ; then
 fi
 
 # Make sure new journal files will be owned by the "systemd-journal" group
-chgrp systemd-journal /run/log/journal/ /run/log/journal/`cat /etc/machine-id 2> /dev/null` /var/log/journal/ /var/log/journal/`cat /etc/machine-id 2> /dev/null` >/dev/null 2>&1 || :
-chmod g+s /run/log/journal/ /run/log/journal/`cat /etc/machine-id 2> /dev/null` /var/log/journal/ /var/log/journal/`cat /etc/machine-id 2> /dev/null` >/dev/null 2>&1 || :
+chgrp systemd-journal /run/log/journal/ /run/log/journal/`cat /etc/machine-id 2>/dev/null` /var/log/journal/ /var/log/journal/`cat /etc/machine-id 2>/dev/null` &>/dev/null || :
+chmod g+s /run/log/journal/ /run/log/journal/`cat /etc/machine-id 2>/dev/null` /var/log/journal/ /var/log/journal/`cat /etc/machine-id 2>/dev/null` &>/dev/null || :
 
 # Apply ACL to the journal directory
-setfacl -Rnm g:wheel:rx,d:g:wheel:rx,g:adm:rx,d:g:adm:rx /var/log/journal/ >/dev/null 2>&1 || :
+setfacl -Rnm g:wheel:rx,d:g:wheel:rx,g:adm:rx,d:g:adm:rx /var/log/journal/ &>/dev/null || :
 
 # Stop-gap until rsyslog.rpm does this on its own. (This is supposed
 # to fail when the link already exists)
-ln -s /usr/lib/systemd/system/rsyslog.service /etc/systemd/system/syslog.service >/dev/null 2>&1 || :
+ln -s /usr/lib/systemd/system/rsyslog.service /etc/systemd/system/syslog.service &>/dev/null || :
 
 # Remove spurious /etc/fstab entries from very old installations
 # https://bugzilla.redhat.com/show_bug.cgi?id=1009023
@@ -433,7 +433,7 @@ if [ $1 -eq 1 ] ; then
 fi
 
 # remove obsolete systemd-readahead file
-rm -f /.readahead > /dev/null 2>&1 || :
+rm -f /.readahead &>/dev/null || :
 
 %preun
 if [ $1 -eq 0 ] ; then
@@ -450,7 +450,7 @@ if [ $1 -eq 0 ] ; then
                 systemd-resolved.service \
                 >/dev/null || :
 
-        rm -f /etc/systemd/system/default.target >/dev/null 2>&1 || :
+        rm -f /etc/systemd/system/default.target &>/dev/null || :
 fi
 
 %post libs
@@ -463,7 +463,7 @@ if [ -f /etc/nsswitch.conf ] ; then
                 /^hosts:/ !b
                 /\<myhostname\>/ b
                 s/[[:blank:]]*$/ myhostname/
-                ' /etc/nsswitch.conf >/dev/null 2>&1 || :
+                ' /etc/nsswitch.conf &>/dev/null || :
 
         # remove mymachines from passwd and group lines of /etc/nsswitch.conf
         # https://bugzilla.redhat.com/show_bug.cgi?id=1284325
@@ -473,19 +473,19 @@ if [ -f /etc/nsswitch.conf ] ; then
         sed -i.bak -r -e '
                 s/^(passwd:.*) mymachines$/\1/;
                 s/^(group:.*) mymachines$/\1/;
-                ' /etc/nsswitch.conf >/dev/null 2>&1 || :
+                ' /etc/nsswitch.conf &>/dev/null || :
 
         # Add [!UNAVAIL=return] after resolve
         grep -E -q '^hosts:.*resolve[[:space:]]*($|[[:alpha:]])' /etc/nsswitch.conf &&
         sed -i.bak -e '
                 /^hosts:/ { s/resolve/& [!UNAVAIL=return]/}
-                ' /etc/nsswitch.conf >/dev/null 2>&1 || :
+                ' /etc/nsswitch.conf &>/dev/null || :
 
         # Add nss-systemd to passwd and group
         grep -E -q '^(passwd|group):.* systemd' /etc/nsswitch.conf ||
         sed -i.bak -r -e '
                 s/^(passwd|group):(.*)/\1: \2 systemd/
-                ' /etc/nsswitch.conf >/dev/null 2>&1 || :
+                ' /etc/nsswitch.conf &>/dev/null || :
 fi
 
 %postun libs -p /sbin/ldconfig
@@ -497,7 +497,7 @@ fi
 mv %{_localstatedir}/lib/random-seed %{_localstatedir}/lib/systemd/random-seed &>/dev/null
 mv %{_localstatedir}/lib/backlight %{_localstatedir}/lib/systemd/backlight &>/dev/null
 
-udevadm hwdb --update >/dev/null 2>&1
+udevadm hwdb --update &>/dev/null
 %systemd_post %udev_services
 /usr/lib/systemd/systemd-random-seed save 2>&1
 
@@ -517,12 +517,12 @@ exit 0
 %systemd_postun_with_restart systemd-udevd.service
 
 %pre journal-remote
-getent group systemd-journal-gateway >/dev/null 2>&1 || groupadd -r -g 191 systemd-journal-gateway 2>&1 || :
-getent passwd systemd-journal-gateway >/dev/null 2>&1 || useradd -r -l -u 191 -g systemd-journal-gateway -d %{_localstatedir}/log/journal -s /sbin/nologin -c "Journal Gateway" systemd-journal-gateway >/dev/null 2>&1 || :
-getent group systemd-journal-remote >/dev/null 2>&1 || groupadd -r systemd-journal-remote 2>&1 || :
-getent passwd systemd-journal-remote >/dev/null 2>&1 || useradd -r -l -g systemd-journal-remote -d %{_localstatedir}/log/journal/remote -s /sbin/nologin -c "Journal Remote" systemd-journal-remote >/dev/null 2>&1 || :
-getent group systemd-journal-upload >/dev/null 2>&1 || groupadd -r systemd-journal-upload 2>&1 || :
-getent passwd systemd-journal-upload >/dev/null 2>&1 || useradd -r -l -g systemd-journal-upload -G systemd-journal -d %{_localstatedir}/log/journal/upload -s /sbin/nologin -c "Journal Upload" systemd-journal-upload >/dev/null 2>&1 || :
+getent group systemd-journal-gateway &>/dev/null || groupadd -r -g 191 systemd-journal-gateway 2>&1 || :
+getent passwd systemd-journal-gateway &>/dev/null || useradd -r -l -u 191 -g systemd-journal-gateway -d %{_localstatedir}/log/journal -s /sbin/nologin -c "Journal Gateway" systemd-journal-gateway &>/dev/null || :
+getent group systemd-journal-remote &>/dev/null || groupadd -r systemd-journal-remote 2>&1 || :
+getent passwd systemd-journal-remote &>/dev/null || useradd -r -l -g systemd-journal-remote -d %{_localstatedir}/log/journal/remote -s /sbin/nologin -c "Journal Remote" systemd-journal-remote &>/dev/null || :
+getent group systemd-journal-upload &>/dev/null || groupadd -r systemd-journal-upload 2>&1 || :
+getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-journal-upload -G systemd-journal -d %{_localstatedir}/log/journal/upload -s /sbin/nologin -c "Journal Upload" systemd-journal-upload &>/dev/null || :
 
 %post journal-remote
 %systemd_post systemd-journal-gatewayd.socket systemd-journal-gatewayd.service
