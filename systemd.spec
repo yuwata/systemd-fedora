@@ -142,6 +142,8 @@ Obsoletes:      systemd-compat-libs < 230
 Obsoletes:      nss-myhostname < 0.4
 Provides:       nss-myhostname = 0.4
 Provides:       nss-myhostname%{_isa} = 0.4
+Requires(post): sed
+Requires(post): grep
 
 %description libs
 Libraries for systemd and udev.
