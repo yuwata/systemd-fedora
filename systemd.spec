@@ -423,7 +423,6 @@ if [ $1 -eq 1 ] ; then
                 getty@.service \
                 serial-getty@.service \
                 console-getty.service \
-                console-shell.service \
                 debug-shell.service \
                 systemd-networkd.service \
                 systemd-networkd-wait-online.service \
@@ -441,7 +440,6 @@ if [ $1 -eq 0 ] ; then
                 getty@.service \
                 serial-getty@.service \
                 console-getty.service \
-                console-shell.service \
                 debug-shell.service \
                 systemd-readahead-replay.service \
                 systemd-readahead-collect.service \
