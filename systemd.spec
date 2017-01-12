@@ -44,9 +44,6 @@ Patch0002:      0002-kernel-install-use-exit-instead-of-return-4565.patch
 Patch0003:      0003-kernel-install-avoid-process-substitution.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
-# git format-patch-ab -R -1 baed1fedba161d7db89636a417751891831c432a src/login/systemd-user.m4
-# https://bugzilla.redhat.com/show_bug.cgi?id=1391836
-Patch0999:      0999-login-drop-fedora-specific-PAM-config-add-note-to-DI.patch
 
 %global num_patches %{lua: c=0; for i,p in ipairs(patches) do c=c+1; end; print(c);}
 
@@ -960,13 +957,13 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 
 %changelog
 * Wed Jan 11 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 232-7
-- Add patch to restore Fedora-specific systemd-user PAM config (#1391836)
+- Various small tweaks to scriplets
 
 * Sat Jan 07 2017 Kevin Fenzi <kevin@scrye.com> - 232-6
-- Fix scriptlets to never fail in libs post. 
+- Fix scriptlets to never fail in libs post
 
 * Fri Jan 06 2017 Kevin Fenzi <kevin@scrye.com> - 232-5
-- Add patch from Michal Schmidt to avoid process substitution. (#1392236)
+- Add patch from Michal Schmidt to avoid process substitution (#1392236)
 
 * Sun Nov  6 2016 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 232-4
 - Rebuild (#1392236)
