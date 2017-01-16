@@ -12,7 +12,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        232
-Release:        7%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        8%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -42,6 +42,7 @@ Source12:       https://raw.githubusercontent.com/systemd/systemd/1000522a60cead
 Patch0001:      0001-build-sys-link-test-seccomp-against-seccomp-libs-456.patch
 Patch0002:      0002-kernel-install-use-exit-instead-of-return-4565.patch
 Patch0003:      0003-kernel-install-avoid-process-substitution.patch
+Patch0004:      0004-build-sys-check-for-lz4-in-the-old-and-new-numbering.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
@@ -956,6 +957,9 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %{_mandir}/man[1578]/systemd-journal-gateway*
 
 %changelog
+* Tue Jan 17 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 232-8
+- Fix buildsystem to check for lz4 correctly (#1404406)
+
 * Wed Jan 11 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 232-7
 - Various small tweaks to scriplets
 
