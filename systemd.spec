@@ -256,6 +256,10 @@ CONFIGURE_OPTS=(
         --with-rc-local-script-path-start=/etc/rc.d/rc.local
         --with-ntp-servers='0.%{ntpvendor}.pool.ntp.org 1.%{ntpvendor}.pool.ntp.org 2.%{ntpvendor}.pool.ntp.org 3.%{ntpvendor}.pool.ntp.org'
         --without-kill-user-processes
+        --enable-lz4
+        --enable-xz
+        --enable-zlib
+        --enable-bzip2
 )
 
 %configure \
