@@ -12,7 +12,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        232
-Release:        8%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        9%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -156,11 +156,12 @@ Systemd PAM module registers the session with systemd-logind.
 %package devel
 Summary:        Development headers for systemd
 License:        LGPLv2+ and MIT
-# We need both libsystemd and libsystemd-<compat> libraries
 Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
 Provides:       libudev-devel = %{version}
 Provides:       libudev-devel%{_isa} = %{version}
 Obsoletes:      libudev-devel < 183
+# Fake dependency to make sure systemd-pam is pulled into multilib (#1414153)
+Requires:       %{name}-pam = %{version}-%{release}
 
 %description devel
 Development headers and auxiliary files for developing applications linking
@@ -961,6 +962,10 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %{_mandir}/man[1578]/systemd-journal-gateway*
 
 %changelog
+* Wed Jan 18 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 232-9
+- Add fake dependency on systemd-pam to systemd-devel to ensure systemd-pam
+  is available as multilib (#1414153)
+
 * Tue Jan 17 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 232-8
 - Fix buildsystem to check for lz4 correctly (#1404406)
 
