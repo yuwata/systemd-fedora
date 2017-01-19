@@ -12,7 +12,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        232
-Release:        9%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        10%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -43,6 +43,10 @@ Patch0001:      0001-build-sys-link-test-seccomp-against-seccomp-libs-456.patch
 Patch0002:      0002-kernel-install-use-exit-instead-of-return-4565.patch
 Patch0003:      0003-kernel-install-avoid-process-substitution.patch
 Patch0004:      0004-build-sys-check-for-lz4-in-the-old-and-new-numbering.patch
+# Fix periodic boot fail in initrd-switch-root.service
+# https://github.com/systemd/systemd/commit/acc28e2e3037d689d6481e4664925cf31d4d087b
+# re-diffed on v232
+Patch0005:      0005-core-make-sure-initrd-switch-root-command-survives-P.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
@@ -962,6 +966,9 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %{_mandir}/man[1578]/systemd-journal-gateway*
 
 %changelog
+* Thu Jan 19 2017 Adam Williamson <awilliam@redhat.com> - 232-10
+- Backport fix for boot failure in initrd-switch-root (#1414904)
+
 * Wed Jan 18 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 232-9
 - Add fake dependency on systemd-pam to systemd-devel to ensure systemd-pam
   is available as multilib (#1414153)
