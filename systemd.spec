@@ -95,6 +95,7 @@ Patch0050:      0050-journald-don-t-flush-to-var-log-journal-before-we-ge.patch
 Patch0051:      0051-tree-wide-drop-NULL-sentinel-from-strjoin.patch
 Patch0052:      0052-core-add-new-RestrictNamespaces-unit-file-setting.patch
 Patch0053:      0053-seccomp-rework-seccomp-code-to-improve-compat-with-s.patch
+Patch0054:      0054-build-sys-add-check-for-gperf-lookup-function-signat.patch
 
 # GIT_DIR=../../src/systemd/.git git diffab -M v232..master@{2017-01-30} hwdb/[67]* > hwdb.patch
 Patch0997:      hwdb.patch
