@@ -1,0 +1,28 @@
+From f8b6aec183d393c6932c0ac75c106646cd33d3af Mon Sep 17 00:00:00 2001
+From: Graeme Lawes <graemelawes@gmail.com>
+Date: Sun, 25 Dec 2016 06:14:41 -0500
+Subject: [PATCH] machinectl: handle EOPNOTSUPP from print_addresses (#4979)
+
+Print addresses returns EOPNOTSUPP, not ENOSYS, when trying to print
+addresses for non-container machines.
+(cherry picked from commit 3a0a40d1667e53b623e891527871e9f3ee6cb7b4)
+---
+ src/machine/machinectl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/machine/machinectl.c b/src/machine/machinectl.c
+index d54caecf46..f84226f58f 100644
+--- a/src/machine/machinectl.c
++++ b/src/machine/machinectl.c
+@@ -326,7 +326,7 @@ static int list_machines(int argc, char *argv[], void *userdata) {
+                        (int) max_version_id, strdash_if_empty(machines[j].version_id));
+ 
+                 r = print_addresses(bus, machines[j].name, 0, "", prefix, arg_addrs);
+-                if (r == -ENOSYS)
++                if (r == -EOPNOTSUPP)
+                         printf("-\n");
+         }
+ 
+-- 
+2.9.3
+

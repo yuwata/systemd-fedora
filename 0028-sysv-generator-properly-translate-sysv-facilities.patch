@@ -1,0 +1,57 @@
+From 827c431cad554cd4d5c477b0f6e608e36edb1301 Mon Sep 17 00:00:00 2001
+From: Lennart Poettering <lennart@poettering.net>
+Date: Tue, 6 Dec 2016 19:36:30 +0100
+Subject: [PATCH] sysv-generator: properly translate sysv facilities
+
+We used the wrong return value in one case, so that our translations were
+thrown away.
+
+While we are at it, make sure to always initialize *ret on successful function
+exits.
+
+Fixes: #4762
+(cherry picked from commit e932f5407ef5ad05d25d7dfefa4cda0fe81cc346)
+---
+ src/sysv-generator/sysv-generator.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/src/sysv-generator/sysv-generator.c b/src/sysv-generator/sysv-generator.c
+index c2c80175a2..212cf7a988 100644
+--- a/src/sysv-generator/sysv-generator.c
++++ b/src/sysv-generator/sysv-generator.c
+@@ -292,8 +292,10 @@ static int sysv_translate_facility(SysvStub *s, unsigned line, const char *name,
+                 if (!streq(table[i], n))
+                         continue;
+ 
+-                if (!table[i+1])
++                if (!table[i+1]) {
++                        *ret = NULL;
+                         return 0;
++                }
+ 
+                 m = strdup(table[i+1]);
+                 if (!m)
+@@ -312,7 +314,7 @@ static int sysv_translate_facility(SysvStub *s, unsigned line, const char *name,
+                 if (r < 0)
+                         return log_error_errno(r, "[%s:%u] Could not build name for facility %s: %m", s->path, line, name);
+ 
+-                return r;
++                return 1;
+         }
+ 
+         /* Strip ".sh" suffix from file name for comparison */
+@@ -324,8 +326,10 @@ static int sysv_translate_facility(SysvStub *s, unsigned line, const char *name,
+         }
+ 
+         /* Names equaling the file name of the services are redundant */
+-        if (streq_ptr(n, filename))
++        if (streq_ptr(n, filename)) {
++                *ret = NULL;
+                 return 0;
++        }
+ 
+         /* Everything else we assume to be normal service names */
+         m = sysv_translate_name(n);
+-- 
+2.9.3
+

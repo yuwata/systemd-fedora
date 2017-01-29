@@ -1,0 +1,31 @@
+From 05db1e6a7adc1ce6e95bbee1751f1f5b124f3d20 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Sun, 15 Jan 2017 13:27:37 -0500
+Subject: [PATCH] systemctl: uninitalized variable
+
+CID #1368270.
+
+Easily reproduced with COLUMNS=50 ./systemctl --no-pager.
+
+(cherry picked from commit 43479f8d21a770cdb4870087fcec446b3d845cbc)
+---
+ src/systemctl/systemctl.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/systemctl/systemctl.c b/src/systemctl/systemctl.c
+index 4edc690f5c..1a4a201740 100644
+--- a/src/systemctl/systemctl.c
++++ b/src/systemctl/systemctl.c
+@@ -467,7 +467,8 @@ static int output_units_list(const UnitInfo *unit_infos, unsigned c) {
+                                 id_len += incr;
+                                 desc_len += MIN(extra_len - incr, max_desc_len - desc_len);
+                         }
+-                }
++                } else
++                        desc_len = 0;
+         } else {
+                 id_len = max_id_len;
+                 desc_len = max_desc_len;
+-- 
+2.9.3
+

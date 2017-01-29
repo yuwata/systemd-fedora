@@ -1,4 +1,4 @@
-From 83a5e5d1f889744bedac8c9e813bf5d3d002a700 Mon Sep 17 00:00:00 2001
+From 5d98b45dac05bfde38c68d86e286bb8ce34bf932 Mon Sep 17 00:00:00 2001
 From: Michal Schmidt <mschmidt@redhat.com>
 Date: Fri, 16 Dec 2016 18:14:47 +0100
 Subject: [PATCH] kernel-install: avoid process substitution
@@ -9,6 +9,8 @@ scriptlets without /dev.
 
 We can use here-strings instead. bash uses temporary files to implement
 those.
+
+(cherry picked from commit db1e2bfc4f049261ae2d407568ff39569b36d98c)
 ---
  src/kernel-install/kernel-install | 8 ++++----
  1 file changed, 4 insertions(+), 4 deletions(-)

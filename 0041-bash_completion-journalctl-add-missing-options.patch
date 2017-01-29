@@ -1,0 +1,32 @@
+From c11e97561716e1378f7812e880269638b4130d26 Mon Sep 17 00:00:00 2001
+From: Namhyung Kim <namhyung@gmail.com>
+Date: Sat, 21 Jan 2017 16:36:20 +0900
+Subject: [PATCH] bash_completion: journalctl: add missing options
+
+The --no-hostname and --vacuum-files were missing, add them.
+
+(cherry picked from commit ed52c971bfa546bfe1f8b329a41ac06077464fb6)
+---
+ shell-completion/bash/journalctl | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/shell-completion/bash/journalctl b/shell-completion/bash/journalctl
+index a999a10df1..ded92cb73a 100644
+--- a/shell-completion/bash/journalctl
++++ b/shell-completion/bash/journalctl
+@@ -42,10 +42,10 @@ _journalctl() {
+                               --version --list-catalog --update-catalog --list-boots
+                               --show-cursor --dmesg -k --pager-end -e -r --reverse
+                               --utc -x --catalog --no-full --force --dump-catalog
+-                              --flush --rotate --sync'
++                              --flush --rotate --sync --no-hostname'
+                        [ARG]='-b --boot --this-boot -D --directory --file -F --field
+                               -M --machine -o --output -u --unit --user-unit -p --priority
+-                              --vacuum-size --vacuum-time'
++                              --vacuum-size --vacuum-time --vacuum-files'
+                 [ARGUNKNOWN]='-c --cursor --interval -n --lines -S --since -U --until
+                               --after-cursor --verify-key -t --identifier
+                               --root'
+-- 
+2.9.3
+

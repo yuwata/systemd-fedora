@@ -12,7 +12,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        232
-Release:        10%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        11%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -39,14 +39,62 @@ Source10:       systemd-udev-trigger-no-reload.conf
 Source11:       20-grubby.install
 Source12:       https://raw.githubusercontent.com/systemd/systemd/1000522a60ceade446773c67031b47a566d4a70d/src/login/systemd-user.m4
 
+# GIT_DIR=../../src/systemd/.git git format-patch-ab -M -N v232..v232-stable
+# i=1; for j in 00*patch; do printf "Patch%04d:      %s\n" $i $j; i=$((i+1));done|xclip
+
 Patch0001:      0001-build-sys-link-test-seccomp-against-seccomp-libs-456.patch
 Patch0002:      0002-kernel-install-use-exit-instead-of-return-4565.patch
-Patch0003:      0003-kernel-install-avoid-process-substitution.patch
-Patch0004:      0004-build-sys-check-for-lz4-in-the-old-and-new-numbering.patch
-# Fix periodic boot fail in initrd-switch-root.service
-# https://github.com/systemd/systemd/commit/acc28e2e3037d689d6481e4664925cf31d4d087b
-# re-diffed on v232
-Patch0005:      0005-core-make-sure-initrd-switch-root-command-survives-P.patch
+Patch0003:      0003-nspawn-fix-exit-code-for-help-and-version-4609.patch
+Patch0004:      0004-core-don-t-use-the-unified-hierarchy-for-the-systemd.patch
+Patch0005:      0005-core-make-RootDirectory-and-ProtectKernelModules-wor.patch
+Patch0006:      0006-nspawn-avoid-one-strdup-by-using-free_and_replace.patch
+Patch0007:      0007-nspawn-slight-simplification.patch
+Patch0008:      0008-core-namespace-count-and-free-failed-paths-inside-ch.patch
+Patch0009:      0009-basic-virt-fix-userns-check-on-CONFIG_USER_NS-n-kern.patch
+Patch0010:      0010-timesyncd-clear-ADJ_MAXERROR-to-keep-STA_UNSYNC-clea.patch
+Patch0011:      0011-link-fix-offload-features-initialization-4639.patch
+Patch0012:      0012-sd-event-fix-sd_event_source_get_priority-4712.patch
+Patch0013:      0013-build-sys-check-for-lz4-in-the-old-and-new-numbering.patch
+Patch0014:      0014-networkd-fix-size-of-MTUBytes-so-that-it-does-not-ov.patch
+Patch0015:      0015-core-consider-SIGTERM-as-a-clean-exit-status-for-ini.patch
+Patch0016:      0016-core-make-sure-initrd-switch-root-command-survives-P.patch
+Patch0017:      0017-fix-journald-startup-problem-when-code-is-compiled-w.patch
+Patch0018:      0018-device-Avoid-calling-unit_free-NULL-in-device-setup-.patch
+Patch0019:      0019-udevd-check-correct-return-value-of-fcntl-4758.patch
+Patch0020:      0020-systemctl-fix-is-enabled-exit-status-on-failure-when.patch
+Patch0021:      0021-journal-make-sure-to-initially-populate-the-space-in.patch
+Patch0022:      0022-networkd-link_enter_configured-remove-assert-4800.patch
+Patch0023:      0023-rules-consider-MMC-device-partitions-with-partition-.patch
+Patch0024:      0024-nspawn-add-missing-E-to-getopt_long-4860.patch
+Patch0025:      0025-build-sys-define-arm-as-secondary-architecture-for-a.patch
+Patch0026:      0026-nspawn-when-getting-SIGCHLD-make-sure-it-s-from-the-.patch
+Patch0027:      0027-machinectl-make-machinectl-E-shell-work.patch
+Patch0028:      0028-sysv-generator-properly-translate-sysv-facilities.patch
+Patch0029:      0029-core-downgrade-Time-has-been-changed-to-debug-4906.patch
+Patch0030:      0030-machinectl-handle-EOPNOTSUPP-from-print_addresses-49.patch
+Patch0031:      0031-units-fix-condition-for-systemd-journal-catalog-upda.patch
+Patch0032:      0032-core-fix-sockaddr-length-calculation-for-sockaddr_pr.patch
+Patch0033:      0033-shared-fix-double-free-in-unmask-5005.patch
+Patch0034:      0034-shared-fix-double-free-in-link.patch
+Patch0035:      0035-shared-check-strdup-NULL.patch
+Patch0036:      0036-rpm-triggers-do-nothing-if-systemd-is-not-running-50.patch
+Patch0037:      0037-kernel-install-avoid-process-substitution.patch
+Patch0038:      0038-shell-completion-redirect-all-errors-from-systemctl-.patch
+Patch0039:      0039-cryptsetup-fix-unitialized-variable.patch
+Patch0040:      0040-systemctl-uninitalized-variable.patch
+Patch0041:      0041-bash_completion-journalctl-add-missing-options.patch
+Patch0042:      0042-bash_completion-journalctl-Complete-t-option-values.patch
+Patch0043:      0043-Fixi-caching-in-zsh-completion-5122.patch
+Patch0044:      0044-bash-completion-add-support-for-now-5155.patch
+Patch0045:      0045-core-dbus-fix-two-strv-memleaks.patch
+Patch0046:      0046-core-execute-fix-strv-memleak.patch
+Patch0047:      0047-resolve-fix-strv-memleak.patch
+Patch0048:      0048-nspawn-fix-clobbering-of-selinux-context-arg.patch
+Patch0049:      0049-parse_hwdb-fix-to-work-with-pyparsing-2.1.10.patch
+Patch0050:      0050-journald-don-t-flush-to-var-log-journal-before-we-ge.patch
+Patch0051:      0051-tree-wide-drop-NULL-sentinel-from-strjoin.patch
+Patch0052:      0052-core-add-new-RestrictNamespaces-unit-file-setting.patch
+Patch0053:      0053-seccomp-rework-seccomp-code-to-improve-compat-with-s.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
@@ -966,6 +1014,12 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %{_mandir}/man[1578]/systemd-journal-gateway*
 
 %changelog
+* Sun Jan 29 2017 zbyszek <zbyszek@in.waw.pl> - 232-11
+- Backport a number of patches (#1411299, #1413075, #1415745,
+                                ##1415358, #1416588, #1408884)
+- Fix various memleaks and unitialized variable access
+- Shell completion enhancements
+
 * Thu Jan 19 2017 Adam Williamson <awilliam@redhat.com> - 232-10
 - Backport fix for boot failure in initrd-switch-root (#1414904)
 

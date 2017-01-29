@@ -1,0 +1,26 @@
+From a0a44b26b5438fc45c28b6918542ebd84810fbd2 Mon Sep 17 00:00:00 2001
+From: Jan Synacek <jan.synacek@gmail.com>
+Date: Wed, 25 Jan 2017 13:44:04 +0100
+Subject: [PATCH] bash-completion: add support for --now (#5155)
+
+(cherry picked from commit 0067c7b29ab996bf99cf1bafe63c118b9b6d5b56)
+---
+ shell-completion/bash/systemctl.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/shell-completion/bash/systemctl.in b/shell-completion/bash/systemctl.in
+index 34589e2888..7765010869 100644
+--- a/shell-completion/bash/systemctl.in
++++ b/shell-completion/bash/systemctl.in
+@@ -124,7 +124,7 @@ _systemctl () {
+ 
+         local -A OPTS=(
+                [STANDALONE]='--all -a --reverse --after --before --defaults --force -f --full -l --global
+-                             --help -h --no-ask-password --no-block --no-legend --no-pager --no-reload --no-wall
++                             --help -h --no-ask-password --no-block --no-legend --no-pager --no-reload --no-wall --now
+                              --quiet -q --privileged -P --system --user --version --runtime --recursive -r --firmware-setup
+                              --show-types -i --ignore-inhibitors --plain'
+                       [ARG]='--host -H --kill-who --property -p --signal -s --type -t --state --job-mode --root
+-- 
+2.9.3
+

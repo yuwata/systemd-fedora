@@ -1,4 +1,4 @@
-From acc28e2e3037d689d6481e4664925cf31d4d087b Mon Sep 17 00:00:00 2001
+From 6fbbf006adc4830f0ed956042e54e747168fa879 Mon Sep 17 00:00:00 2001
 From: Franck Bui <fbui@suse.com>
 Date: Thu, 24 Nov 2016 18:52:04 +0100
 Subject: [PATCH] core: make sure initrd-switch-root command survives PID1's
@@ -14,12 +14,14 @@ See: https://www.freedesktop.org/wiki/Software/systemd/RootStorageDaemons/ for
 more details.
 
 We had to backup argv[0] because argv is modified by dispatch_verb().
+(cherry picked from commit acc28e2e3037d689d6481e4664925cf31d4d087b)
 ---
  src/systemctl/systemctl.c           | 10 ++++++++++
- 1 files changed, 10 insertions(+), 0 deletions(-)
+ units/initrd-switch-root.service.in |  8 +-------
+ 2 files changed, 11 insertions(+), 7 deletions(-)
 
 diff --git a/src/systemctl/systemctl.c b/src/systemctl/systemctl.c
-index 4fd8d7ba2..ed1c7178b 100644
+index dd3b931cd6..a2b667481d 100644
 --- a/src/systemctl/systemctl.c
 +++ b/src/systemctl/systemctl.c
 @@ -142,6 +142,7 @@ static const char *arg_kill_who = NULL;
@@ -30,7 +32,7 @@ index 4fd8d7ba2..ed1c7178b 100644
  static enum action {
          _ACTION_INVALID,
          ACTION_SYSTEMCTL,
-@@ -5638,6 +5639,13 @@ static int switch_root(int argc, char *argv[], void *userdata) {
+@@ -5584,6 +5585,13 @@ static int switch_root(int argc, char *argv[], void *userdata) {
                          init = NULL;
          }
  
@@ -44,7 +46,7 @@ index 4fd8d7ba2..ed1c7178b 100644
          r = acquire_bus(BUS_MANAGER, &bus);
          if (r < 0)
                  return r;
-@@ -8373,6 +8381,8 @@ static int logind_cancel_shutdown(void) {
+@@ -8324,6 +8332,8 @@ static int logind_cancel_shutdown(void) {
  int main(int argc, char*argv[]) {
          int r;
  
@@ -53,6 +55,22 @@ index 4fd8d7ba2..ed1c7178b 100644
          setlocale(LC_ALL, "");
          log_parse_environment();
          log_open();
+diff --git a/units/initrd-switch-root.service.in b/units/initrd-switch-root.service.in
+index b89f2348c7..82893dafb1 100644
+--- a/units/initrd-switch-root.service.in
++++ b/units/initrd-switch-root.service.in
+@@ -17,10 +17,4 @@ AllowIsolate=yes
+ Type=oneshot
+ # we have to use "--force" here, otherwise systemd would umount /run
+ ExecStart=@rootbindir@/systemctl --no-block --force switch-root /sysroot
+-
+-# Just before switching to the new rootfs, systemd might send us a TERM signal
+-# depending on how fast we are to execute the main command and exit. If we get
+-# the SIGTERM signal that simply means that we succeed but haven't got enough
+-# time to exit properly. Since systemd considers SIGTERM as a failure for
+-# short-running process (aka Type=oneshot), instruct it to ignore this case.
+-SuccessExitStatus=SIGTERM
++KillMode=none
 -- 
-2.11.0
+2.9.3
 

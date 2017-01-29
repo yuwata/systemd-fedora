@@ -1,0 +1,78 @@
+From 7046c0424a0c521169f258ab02d90739dade6269 Mon Sep 17 00:00:00 2001
+From: Andrey Ulanov <aulanov@gmail.com>
+Date: Mon, 12 Dec 2016 17:38:18 -0800
+Subject: [PATCH] nspawn: when getting SIGCHLD make sure it's from the first
+ child (#4855)
+
+When getting SIGCHLD we should not assume that it was the first
+child forked from system-nspawn that has died as it may also be coming
+from an orphan process. This change adds a signal handler that ignores
+SIGCHLD unless it came from the first containerized child - the real
+child.
+
+Before this change the problem can be reproduced as follows:
+
+$ sudo systemd-nspawn --directory=/container-root --share-system
+Press ^] three times within 1s to kill container.
+[root@andreyu-coreos ~]# { true & } &
+[1] 22201
+[root@andreyu-coreos ~]#
+Container root-fedora-latest terminated by signal KILL
+(cherry picked from commit 6916b164642d8bb4938878f4284f8ee5ccf3efd6)
+---
+ src/nspawn/nspawn.c | 25 +++++++++++++++++++++++--
+ 1 file changed, 23 insertions(+), 2 deletions(-)
+
+diff --git a/src/nspawn/nspawn.c b/src/nspawn/nspawn.c
+index 81573be95a..503265545b 100644
+--- a/src/nspawn/nspawn.c
++++ b/src/nspawn/nspawn.c
+@@ -38,6 +38,7 @@
+ #include <sys/personality.h>
+ #include <sys/prctl.h>
+ #include <sys/types.h>
++#include <sys/wait.h>
+ #include <unistd.h>
+ 
+ #include "sd-daemon.h"
+@@ -2538,6 +2539,26 @@ static int on_orderly_shutdown(sd_event_source *s, const struct signalfd_siginfo
+         return 0;
+ }
+ 
++static int on_sigchld(sd_event_source *s, const struct signalfd_siginfo *ssi, void *userdata) {
++        for (;;) {
++                siginfo_t si = {};
++                if (waitid(P_ALL, 0, &si, WNOHANG|WNOWAIT|WEXITED) < 0)
++                        return log_error_errno(errno, "Failed to waitid(): %m");
++                if (si.si_pid == 0) /* No pending children. */
++                        break;
++                if (si.si_pid == PTR_TO_PID(userdata)) {
++                        /* The main process we care for has exited. Return from
++                         * signal handler but leave the zombie. */
++                        sd_event_exit(sd_event_source_get_event(s), 0);
++                        break;
++                }
++                /* Reap all other children. */
++                (void) waitid(P_PID, si.si_pid, &si, WNOHANG|WEXITED);
++        }
++
++        return 0;
++}
++
+ static int determine_names(void) {
+         int r;
+ 
+@@ -3952,8 +3973,8 @@ static int run(int master,
+                 sd_event_add_signal(event, NULL, SIGTERM, NULL, NULL);
+         }
+ 
+-        /* simply exit on sigchld */
+-        sd_event_add_signal(event, NULL, SIGCHLD, NULL, NULL);
++        /* Exit when the child exits */
++        sd_event_add_signal(event, NULL, SIGCHLD, on_sigchld, PID_TO_PTR(*pid));
+ 
+         if (arg_expose_ports) {
+                 r = expose_port_watch_rtnl(event, rtnl_socket_pair[0], on_address_change, exposed, &rtnl);
+-- 
+2.9.3
+

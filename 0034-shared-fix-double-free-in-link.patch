@@ -1,0 +1,120 @@
+From 588e4827d274279941533a9708101835b2d2e986 Mon Sep 17 00:00:00 2001
+From: Evgeny Vereshchagin <evvers@ya.ru>
+Date: Mon, 9 Jan 2017 04:46:11 +0000
+Subject: [PATCH] shared: fix double free in link
+
+Fixes:
+```
+touch hola.service
+systemctl link $(pwd)/hola.service $(pwd)/hola.service
+```
+
+```
+==1==ERROR: AddressSanitizer: attempting double-free on 0x60300002c560 in thread T0 (systemd):
+    #0 0x7fc8c961cb00 in free (/lib64/libasan.so.3+0xc6b00)
+    #1 0x7fc8c90ebd3b in strv_clear src/basic/strv.c:83
+    #2 0x7fc8c90ebdb6 in strv_free src/basic/strv.c:89
+    #3 0x55637c758c77 in strv_freep src/basic/strv.h:37
+    #4 0x55637c763ba9 in method_enable_unit_files_generic src/core/dbus-manager.c:1960
+    #5 0x55637c763d16 in method_link_unit_files src/core/dbus-manager.c:2001
+    #6 0x7fc8c92537ec in method_callbacks_run src/libsystemd/sd-bus/bus-objects.c:418
+    #7 0x7fc8c9258830 in object_find_and_run src/libsystemd/sd-bus/bus-objects.c:1255
+    #8 0x7fc8c92594d7 in bus_process_object src/libsystemd/sd-bus/bus-objects.c:1371
+    #9 0x7fc8c91e7553 in process_message src/libsystemd/sd-bus/sd-bus.c:2563
+    #10 0x7fc8c91e78ce in process_running src/libsystemd/sd-bus/sd-bus.c:2605
+    #11 0x7fc8c91e8f61 in bus_process_internal src/libsystemd/sd-bus/sd-bus.c:2837
+    #12 0x7fc8c91e90d2 in sd_bus_process src/libsystemd/sd-bus/sd-bus.c:2856
+    #13 0x7fc8c91ea8f9 in io_callback src/libsystemd/sd-bus/sd-bus.c:3126
+    #14 0x7fc8c928333b in source_dispatch src/libsystemd/sd-event/sd-event.c:2268
+    #15 0x7fc8c9285cf7 in sd_event_dispatch src/libsystemd/sd-event/sd-event.c:2627
+    #16 0x7fc8c92865fa in sd_event_run src/libsystemd/sd-event/sd-event.c:2686
+    #17 0x55637c6b5257 in manager_loop src/core/manager.c:2274
+    #18 0x55637c6a2194 in main src/core/main.c:1920
+    #19 0x7fc8c7ac7400 in __libc_start_main (/lib64/libc.so.6+0x20400)
+    #20 0x55637c697339 in _start (/usr/lib/systemd/systemd+0xcd339)
+
+0x60300002c560 is located 0 bytes inside of 19-byte region [0x60300002c560,0x60300002c573)
+freed by thread T0 (systemd) here:
+    #0 0x7fc8c961cb00 in free (/lib64/libasan.so.3+0xc6b00)
+    #1 0x7fc8c90ee320 in strv_remove src/basic/strv.c:630
+    #2 0x7fc8c90ee190 in strv_uniq src/basic/strv.c:602
+    #3 0x7fc8c9180533 in unit_file_link src/shared/install.c:1996
+    #4 0x55637c763b25 in method_enable_unit_files_generic src/core/dbus-manager.c:1985
+    #5 0x55637c763d16 in method_link_unit_files src/core/dbus-manager.c:2001
+    #6 0x7fc8c92537ec in method_callbacks_run src/libsystemd/sd-bus/bus-objects.c:418
+    #7 0x7fc8c9258830 in object_find_and_run src/libsystemd/sd-bus/bus-objects.c:1255
+    #8 0x7fc8c92594d7 in bus_process_object src/libsystemd/sd-bus/bus-objects.c:1371
+    #9 0x7fc8c91e7553 in process_message src/libsystemd/sd-bus/sd-bus.c:2563
+    #10 0x7fc8c91e78ce in process_running src/libsystemd/sd-bus/sd-bus.c:2605
+    #11 0x7fc8c91e8f61 in bus_process_internal src/libsystemd/sd-bus/sd-bus.c:2837
+    #12 0x7fc8c91e90d2 in sd_bus_process src/libsystemd/sd-bus/sd-bus.c:2856
+    #13 0x7fc8c91ea8f9 in io_callback src/libsystemd/sd-bus/sd-bus.c:3126
+    #14 0x7fc8c928333b in source_dispatch src/libsystemd/sd-event/sd-event.c:2268
+    #15 0x7fc8c9285cf7 in sd_event_dispatch src/libsystemd/sd-event/sd-event.c:2627
+    #16 0x7fc8c92865fa in sd_event_run src/libsystemd/sd-event/sd-event.c:2686
+    #17 0x55637c6b5257 in manager_loop src/core/manager.c:2274
+    #18 0x55637c6a2194 in main src/core/main.c:1920
+        #19 0x7fc8c7ac7400 in __libc_start_main (/lib64/libc.so.6+0x20400)
+
+previously allocated by thread T0 (systemd) here:
+    #0 0x7fc8c95b0160 in strdup (/lib64/libasan.so.3+0x5a160)
+    #1 0x7fc8c90edf32 in strv_extend src/basic/strv.c:552
+    #2 0x7fc8c923ae41 in bus_message_read_strv_extend src/libsystemd/sd-bus/bus-message.c:5578
+    #3 0x7fc8c923b0de in sd_bus_message_read_strv src/libsystemd/sd-bus/bus-message.c:5600
+    #4 0x55637c7639d1 in method_enable_unit_files_generic src/core/dbus-manager.c:1969
+    #5 0x55637c763d16 in method_link_unit_files src/core/dbus-manager.c:2001
+    #6 0x7fc8c92537ec in method_callbacks_run src/libsystemd/sd-bus/bus-objects.c:418
+    #7 0x7fc8c9258830 in object_find_and_run src/libsystemd/sd-bus/bus-objects.c:1255
+    #8 0x7fc8c92594d7 in bus_process_object src/libsystemd/sd-bus/bus-objects.c:1371
+    #9 0x7fc8c91e7553 in process_message src/libsystemd/sd-bus/sd-bus.c:2563
+    #10 0x7fc8c91e78ce in process_running src/libsystemd/sd-bus/sd-bus.c:2605
+    #11 0x7fc8c91e8f61 in bus_process_internal src/libsystemd/sd-bus/sd-bus.c:2837
+    #12 0x7fc8c91e90d2 in sd_bus_process src/libsystemd/sd-bus/sd-bus.c:2856
+    #13 0x7fc8c91ea8f9 in io_callback src/libsystemd/sd-bus/sd-bus.c:3126
+    #14 0x7fc8c928333b in source_dispatch src/libsystemd/sd-event/sd-event.c:2268
+    #15 0x7fc8c9285cf7 in sd_event_dispatch src/libsystemd/sd-event/sd-event.c:2627
+    #16 0x7fc8c92865fa in sd_event_run src/libsystemd/sd-event/sd-event.c:2686
+    #17 0x55637c6b5257 in manager_loop src/core/manager.c:2274
+    #18 0x55637c6a2194 in main src/core/main.c:1920
+    #19 0x7fc8c7ac7400 in __libc_start_main (/lib64/libc.so.6+0x20400)
+
+SUMMARY: AddressSanitizer: double-free (/lib64/libasan.so.3+0xc6b00) in free
+==1==ABORTING
+```
+
+Closes #5015
+
+(cherry picked from commit 8af35ba681116eb79a46e3dbd65b166c1efd6164)
+---
+ src/shared/install.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/src/shared/install.c b/src/shared/install.c
+index 5f0eec3ccb..64fe522ebb 100644
+--- a/src/shared/install.c
++++ b/src/shared/install.c
+@@ -1947,7 +1947,7 @@ int unit_file_link(
+                 unsigned *n_changes) {
+ 
+         _cleanup_lookup_paths_free_ LookupPaths paths = {};
+-        _cleanup_free_ char **todo = NULL;
++        _cleanup_strv_free_ char **todo = NULL;
+         size_t n_todo = 0, n_allocated = 0;
+         const char *config_path;
+         char **i;
+@@ -1996,7 +1996,11 @@ int unit_file_link(
+                 if (!GREEDY_REALLOC0(todo, n_allocated, n_todo + 2))
+                         return -ENOMEM;
+ 
+-                todo[n_todo++] = *i;
++                todo[n_todo] = strdup(*i);
++                if (!todo[n_todo])
++                        return -ENOMEM;
++
++                n_todo++;
+         }
+ 
+         strv_uniq(todo);
+-- 
+2.9.3
+

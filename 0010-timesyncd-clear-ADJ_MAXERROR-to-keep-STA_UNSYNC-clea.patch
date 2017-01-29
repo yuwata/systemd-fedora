@@ -1,0 +1,44 @@
+From 7c120409dcb6ad0658f06aef660913450e538f6d Mon Sep 17 00:00:00 2001
+From: akochetkov <al.kochet@gmail.com>
+Date: Fri, 11 Nov 2016 20:50:46 +0300
+Subject: [PATCH] timesyncd: clear ADJ_MAXERROR to keep STA_UNSYNC cleared
+ after jump adjust (#4626)
+
+NTP use jump adjust if system has incorrect time read from RTC during boot.
+It is desireble to update RTC time as soon as NTP set correct system time.
+Sometimes kernel failed to update RTC due to STA_UNSYNC get set before RTC
+update finised. In that case RTC time wouldn't be updated within long time.
+The commit makes RTC updates stable.
+
+When NTP do jump time adjust using ADJ_SETOFFSET it clears STA_UNSYNC flag.
+If don't clear ADJ_MAXERROR, STA_UNSYNC will be set again by kernel within
+1 second (by second_overflow() function). STA_UNSYNC flag prevent RTC updates
+in kernel. Sometimes the kernel is able to update RTC withing 1 second,
+but sometimes it falied.
+(cherry picked from commit 5f36e3d30375cf04292bbc1bf3f4d7512cf80139)
+---
+ src/timesync/timesyncd-manager.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/timesync/timesyncd-manager.c b/src/timesync/timesyncd-manager.c
+index d5e16db3a0..419f0fa279 100644
+--- a/src/timesync/timesyncd-manager.c
++++ b/src/timesync/timesyncd-manager.c
+@@ -330,11 +330,13 @@ static int manager_adjust_clock(Manager *m, double offset, int leap_sec) {
+                 tmx.esterror = 0;
+                 log_debug("  adjust (slew): %+.3f sec", offset);
+         } else {
+-                tmx.modes = ADJ_STATUS | ADJ_NANO | ADJ_SETOFFSET;
++                tmx.modes = ADJ_STATUS | ADJ_NANO | ADJ_SETOFFSET | ADJ_MAXERROR | ADJ_ESTERROR;
+ 
+                 /* ADJ_NANO uses nanoseconds in the microseconds field */
+                 tmx.time.tv_sec = (long)offset;
+                 tmx.time.tv_usec = (offset - tmx.time.tv_sec) * NSEC_PER_SEC;
++                tmx.maxerror = 0;
++                tmx.esterror = 0;
+ 
+                 /* the kernel expects -0.3s as {-1, 7000.000.000} */
+                 if (tmx.time.tv_usec < 0) {
+-- 
+2.9.3
+
