@@ -313,6 +313,7 @@ CONFIGURE_OPTS=(
         --enable-xz
         --enable-zlib
         --enable-bzip2
+        --enable-tpm
 )
 
 %configure \
@@ -1019,6 +1020,7 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
                                 ##1415358, #1416588, #1408884)
 - Fix various memleaks and unitialized variable access
 - Shell completion enhancements
+- Enable TPM logging by default (#1411156)
 
 * Thu Jan 19 2017 Adam Williamson <awilliam@redhat.com> - 232-10
 - Backport fix for boot failure in initrd-switch-root (#1414904)
