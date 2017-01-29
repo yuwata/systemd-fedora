@@ -1,0 +1,443 @@
+From 108c060c5521309b9448e3a7905b50dd505f36a8 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Fri, 11 Mar 2016 17:06:17 -0500
+Subject: [PATCH] update hwdb
+
+---
+
+diff --git a/hwdb/60-evdev.hwdb b/hwdb/60-evdev.hwdb
+index 0b692a1b5d..fd9078393b 100644
+--- a/hwdb/60-evdev.hwdb
++++ b/hwdb/60-evdev.hwdb
+@@ -15,7 +15,7 @@
+ # To add local entries, create a new file
+ #   /etc/udev/hwdb.d/61-evdev-local.hwdb
+ # and add your rules there. To load the new rules execute (as root):
+-#   udevadm hwdb --update
++#   systemd-hwdb update
+ #   udevadm trigger /dev/input/eventXX
+ # where /dev/input/eventXX is the device in question. If in
+ # doubt, simply use /dev/input/event* to reload all input rules.
+@@ -93,6 +93,14 @@ evdev:input:b0003v05ACp025B*
+ #########################################
+ # ASUS
+ #########################################
++
++# Asus VivoBook E402SA
++evdev:name:Elan Touchpad:dmi:*svnASUSTeKCOMPUTERINC.:pnE402SA*
++ EVDEV_ABS_00=::29
++ EVDEV_ABS_01=::29
++ EVDEV_ABS_35=::29
++ EVDEV_ABS_36=::29
++
+ # Asus K52JT
+ evdev:name:ETPS/2 Elantech Touchpad:dmi:bvn*:bvr*:bd*:svnASUSTeKComputerInc.:pnK52JT:*
+  EVDEV_ABS_00=::18
+@@ -100,7 +108,8 @@ evdev:name:ETPS/2 Elantech Touchpad:dmi:bvn*:bvr*:bd*:svnASUSTeKComputerInc.:pnK
+  EVDEV_ABS_35=::18
+  EVDEV_ABS_36=::16
+ 
+-evdev:name:ETPS/2 Elantech Touchpad:dmi:*:svnASUSTeKCOMPUTERINC.:pnX550CC:*
++# Asus X550CC and S550CB
++evdev:name:ETPS/2 Elantech Touchpad:dmi:*:svnASUSTeKCOMPUTERINC.:pn?550C?:*
+  EVDEV_ABS_00=::31
+  EVDEV_ABS_01=::30
+  EVDEV_ABS_35=::31
+@@ -136,6 +145,13 @@ evdev:name:AlpsPS/2 ALPS DualPoint TouchPad:dmi:bvn*:bvr*:bd*:svnDellInc.:pnLati
+  EVDEV_ABS_35=76:1815:22
+  EVDEV_ABS_36=131:1330:30
+ 
++# Dell Latitude E6320
++evdev:name:AlpsPS/2 ALPS DualPoint TouchPad:dmi:bvn*:bvr*:bd*:svnDellInc.:pnLatitudeE6320*
++ EVDEV_ABS_00=79:1841:22
++ EVDEV_ABS_01=140:1325:29
++ EVDEV_ABS_35=79:1841:22
++ EVDEV_ABS_36=140:1325:29
++
+ # Dell Precision 5510
+ evdev:name:SynPS/2 Synaptics TouchPad:dmi:bvn*:bvr*:bd*:svnDellInc.:pnPrecision5510*
+  EVDEV_ABS_00=::42
+@@ -184,10 +200,31 @@ evdev:name:SynPS/2 Synaptics TouchPad*:dmi:*svnHewlett-Packard:pnHPPaviliondm4*
+  EVDEV_ABS_35=1360:5563:47
+  EVDEV_ABS_36=1269:4618:61
+ 
++# HP Pavilion dv7
++evdev:name:SynPS/2 Synaptics TouchPad*:dmi:*svnHewlett-Packard:pnHPPaviliondv7*
++ EVDEV_ABS_00=1068:5805:44
++ EVDEV_ABS_01=1197:4890:57
++ EVDEV_ABS_35=1068:5805:44
++ EVDEV_ABS_36=1197:4890:57
++
++# HP Spectre
++evdev:name:SynPS/2 Synaptics TouchPad:dmi:i*svnHP:pnHPSpectreNotebook*
++ EVDEV_ABS_00=1205:5691:47
++ EVDEV_ABS_01=1083:4808:65
++ EVDEV_ABS_35=1205:5691:47
++ EVDEV_ABS_36=1083:4808:65
++
+ #########################################
+ # Lenovo
+ #########################################
+ 
++# Lenovo B590
++evdev:name:SynPS/2 Synaptics TouchPad:dmi:*svnLENOVO*:pvrLenovoB590*
++ EVDEV_ABS_00=1243:5759:48
++ EVDEV_ABS_01=1130:4832:65
++ EVDEV_ABS_35=1243:5759:48
++ EVDEV_ABS_36=1130:4832:65
++
+ # Lenovo E530
+ evdev:name:SynPS/2 Synaptics TouchPad:dmi:*svnLENOVO:pn*ThinkPadEdgeE530*
+  EVDEV_ABS_00=1241:5703:49
+@@ -217,6 +254,20 @@ evdev:name:SynPS/2 Synaptics TouchPad:dmi:*svnLENOVO*:pvrThinkPad??40?:*
+  EVDEV_ABS_35=::41
+  EVDEV_ABS_36=::37
+ 
++# Lenovo ThinkPad T430
++evdev:name:SynPS/2 Synaptics TouchPad:dmi:*svnLENOVO*:pvrThinkPadT430*
++ EVDEV_ABS_00=1250:5631:58
++ EVDEV_ABS_01=1309:4826:78
++ EVDEV_ABS_35=1250:5631:58
++ EVDEV_ABS_36=1309:4826:78
++
++# Lenovo Thinkpad Carbon X1 4th gen. and X1 Yoga 1st gen.
++evdev:name:SynPS/2 Synaptics TouchPad:dmi:*svnLENOVO*:pvrThinkPadX1Carbon4th*
++ EVDEV_ABS_00=1262:5679:44
++ EVDEV_ABS_01=1101:4824:65
++ EVDEV_ABS_35=1262:5679:44
++ EVDEV_ABS_36=1101:4824:65
++
+ # Lenovo T460
+ evdev:name:SynPS/2 Synaptics TouchPad:dmi:*svnLENOVO*:pn*ThinkPad*T460*
+  EVDEV_ABS_00=1266:5677:44
+@@ -236,6 +287,13 @@ evdev:name:SynPS/2 Synaptics TouchPad:dmi:*svnLENOVO:*pvrLenovoV360*
+  EVDEV_ABS_00=1243:5927:60
+  EVDEV_ABS_01=902:5330:108
+ 
++# Lenovo W530
++evdev:name:SynPS/2 Synaptics TouchPad:dmi:*svnLENOVO:*pvrThinkPadW530*
++ EVDEV_ABS_00=1250:5631:59
++ EVDEV_ABS_01=1205:4834:81
++ EVDEV_ABS_35=1250:5631:59
++ EVDEV_ABS_36=1205:4834:81
++
+ # Lenovo X220 series
+ evdev:name:SynPS/2 Synaptics TouchPad:dmi:*svnLENOVO:*pvrThinkPadX220*
+  EVDEV_ABS_00=1316:5627:58
+@@ -279,3 +337,12 @@ evdev:name:ETPS/2 Elantech Touchpad:dmi:*svnSAMSUNGELECTRONICSCO.,LTD.:pn305V4A/
+  EVDEV_ABS_01=0:1116:24
+  EVDEV_ABS_35=0:2480:28
+  EVDEV_ABS_36=0:1116:24
++
++#########################################
++# Toshiba
++#########################################
++
++# Toshiba Tecra M11
++evdev:name:AlpsPS/2 ALPS DualPoint TouchPad:dmi:*svnTOSHIBA:pnTECRAM11*
++ EVDEV_ABS_00=90:962:11
++ EVDEV_ABS_01=51:681:14
+diff --git a/hwdb/60-keyboard.hwdb b/hwdb/60-keyboard.hwdb
+index 9c87aecd30..c8452f47d0 100644
+--- a/hwdb/60-keyboard.hwdb
++++ b/hwdb/60-keyboard.hwdb
+@@ -4,7 +4,7 @@
+ # scan codes to add to the AT keyboard's 'force-release' list.
+ #
+ # The lookup keys are composed in:
+-#   60-keyboard.rules
++#   60-evdev.rules
+ #
+ # Note: The format of the "evdev:" prefix match key is a
+ # contract between the rules file and the hardware data, it might
+@@ -18,17 +18,19 @@
+ #    ZZZZ is the bus-id (see /usr/include/linux/input.h BUS_*), YYYY, XXXX and
+ #    WWW are the 4-digit hex uppercase vendor, product and version ID and VVVV
+ #    is an arbitrary length input-modalias describing the device capabilities.
++#    The vendor, product and version ID for a device node "eventX" is listed
++#    in /sys/class/input/eventX/device/id.
+ #
+ #  - AT keyboard DMI data matches:
+ #      evdev:atkbd:dmi:bvn*:bvr*:bd*:svn<vendor>:pn<product>:pvr*
+ #    <vendor> and <product> are the firmware-provided strings
+-#    exported by the kernel DMI modalias.
++#    exported by the kernel DMI modalias, see /sys/class/dmi/id/modalias
+ #
+ #  - Input driver device name and DMI data match:
+ #      evdev:name:<input device name>:dmi:bvn*:bvr*:bd*:svn<vendor>:pn*
+ #    <input device name> is the name device specified by the
+ #    driver, <vendor> is the firmware-provided string exported
+-#    by the kernel DMI modalias.
++#    by the kernel DMI modalias, see /sys/class/dmi/id/modalias
+ #
+ # Scan codes are specified as:
+ #   KEYBOARD_KEY_<hex scan code>=<key code identifier>
+@@ -42,11 +44,18 @@
+ #
+ # To debug key presses and access scan code mapping data of
+ # an input device use the commonly available tool: evtest(1).
++
++# A device with a fixed keyboard layout that must not be changed by
++# the desktop environment may specify that layout as:
++#   XKB_FIXED_LAYOUT="us"
++#   XKB_FIXED_VARIANT=""
++# Examples of such devices: the Yubikey or other key-code generating
++# devices.
+ #
+ # To update this file, create a new file
+ #   /etc/udev/hwdb.d/70-keyboard.hwdb
+ # and add your rules there. To load the new rules execute (as root):
+-#   udevadm hwdb --update
++#   systemd-hwdb update
+ #   udevadm trigger /dev/input/eventXX
+ # where /dev/input/eventXX is the keyboard in question. If in
+ # doubt, simply use /dev/input/event* to reload all input rules.
+@@ -275,7 +284,7 @@ evdev:atkbd:dmi:bvn*:bvr*:bd*:svnDell*:pnXPS12-9Q33*:pvr*
+ evdev:name:Dell WMI hotkeys:dmi:bvn*:bvr*:bd*:svnDell*:pnLatitude*
+ # Dell Precision microphone mute
+ evdev:name:Dell WMI hotkeys:dmi:bvn*:bvr*:bd*:svnDell*:pnPrecision*
+- KEYBOARD_KEY_150=f20                                   # Mic mute toggle, should be micmute
++ KEYBOARD_KEY_100150=f20                                   # Mic mute toggle, should be micmute
+ 
+ ###########################################################
+ # Everex
+@@ -415,6 +424,10 @@ evdev:atkbd:dmi:bvn*:bvr*:bd*:svnHewlett-Packard*:pnHP*Pavilion*dv7*Notebook*PC:
+  KEYBOARD_KEY_c6=break
+  KEYBOARD_KEY_94=reserved
+ 
++# Pavilion x360 13 (Prevents random airplane mode activation)
++evdev:atkbd:dmi:bvn*:bvr*:bd*:svnHewlett-Packard*:pn*[pP][aA][vV][iI][lL][iI][oO][nN]*13*x360*:pvr*
++ KEYBOARD_KEY_d7=unknown
++
+ # Elitebook
+ evdev:atkbd:dmi:bvn*:bvr*:bd*:svnHewlett-Packard*:pn*Compaq*:pvr*
+ evdev:atkbd:dmi:bvn*:bvr*:bd*:svnHewlett-Packard*:pn*EliteBook*:pvr*
+@@ -858,6 +871,7 @@ evdev:atkbd:dmi:bvn*:bvr*:bd*:svnMicro-Star*:pn*:pvr*
+ evdev:atkbd:dmi:bvn*:bvr*:bd*:svnMICRO-STAR*:pn*U-100*:pvr*
+ evdev:atkbd:dmi:bvn*:bvr*:bd*:svnMICRO-STAR*:pn*U100*:pvr*
+ evdev:atkbd:dmi:bvn*:bvr*:bd*:svnMICRO-STAR*:pn*N033:*
++evdev:atkbd:dmi:bvn*:bvr*:bd*:svnMicro-Star*:pn*VR420*:pvr*
+  KEYBOARD_KEY_f7=reserved
+  KEYBOARD_KEY_f8=reserved
+ 
+@@ -1239,3 +1253,18 @@ evdev:atkbd:dmi:bvn*:bvr*:bd*:svnDIXONSP:pnDIXON*:pvr*
+  KEYBOARD_KEY_a0=!                                      # mute
+  KEYBOARD_KEY_ae=!                                      # volume down
+  KEYBOARD_KEY_b0=!                                      # volume up
++
++###########################################################
++# Fixed layout devices
++###########################################################
++
++# Yubico Yubico Yubikey II"
++evdev:input:b0003v1050p0010*
++# Yubico Yubikey NEO OTP+CCID
++evdev:input:b0003v1050p0111*
++# Yubico Yubikey NEO OTP+U2F+CCID
++evdev:input:b0003v1050p0116*
++# OKE Electron Company USB barcode reader
++evdev:input:b0003v05FEp1010*
++ XKB_FIXED_LAYOUT="us"
++ XKB_FIXED_VARIANT=""
+diff --git a/hwdb/60-sensor.hwdb b/hwdb/60-sensor.hwdb
+new file mode 100644
+index 0000000000..3160cf77e8
+--- /dev/null
++++ b/hwdb/60-sensor.hwdb
+@@ -0,0 +1,45 @@
++# This file is part of systemd.
++#
++# The lookup keys are composed in:
++#   60-sensor.rules
++#
++# Note: The format of the "sensor:" prefix match key is a
++# contract between the rules file and the hardware data, it might
++# change in later revisions to support more or better matches, it
++# is not necessarily expected to be a stable ABI.
++#
++# Match string formats:
++# sensor:modalias:<parent device modalias>:dmi:<dmi string>
++#
++# To add local entries, create a new file
++#   /etc/udev/hwdb.d/61-sensor-local.hwdb
++# and add your rules there. To load the new rules execute (as root):
++#   systemd-hwdb update
++#   udevadm trigger `dirname $(udevadm info -n "/dev/iio:deviceXXX" -q path)`
++# where /dev/iio:deviceXXX is the device in question.
++#
++# If your changes are generally applicable, preferably send them as a pull
++# request to
++#   https://github.com/systemd/systemd
++# or create a bug report on https://github.com/systemd/systemd/issues and
++# include your new rules, a description of the device, and the output of
++#   udevadm info --export-db
++#
++# Allowed properties are:
++#    ACCEL_MOUNT_MATRIX=<matrix>
++#
++# where <matrix> is a mount-matrix in the format specified in the IIO
++# subsystem[1]. The default, when unset, is equivalent to:
++#   ACCEL_MOUNT_MATRIX=1, 0, 0; 0, 1, 0; 0, 0, 1
++# eg. the identity matrix.
++#
++# [1]: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=dfc57732ad38f93ae6232a3b4e64fd077383a0f1
++
++#
++# Sort by brand, model
++
++#########################################
++# Winbook
++#########################################
++sensor:modalias:acpi:BMA250*:dmi:*svn*WinBook*:*pn*TW100*
++ ACCEL_MOUNT_MATRIX=0, -1, 0; -1, 0, 0; 0, 0, 0
+diff --git a/hwdb/70-mouse.hwdb b/hwdb/70-mouse.hwdb
+index bf3d134c46..772534f495 100644
+--- a/hwdb/70-mouse.hwdb
++++ b/hwdb/70-mouse.hwdb
+@@ -31,7 +31,7 @@
+ # To add local entries, create a new file
+ #   /etc/udev/hwdb.d/71-mouse-local.hwdb
+ # and add your rules there. To load the new rules execute (as root):
+-#   udevadm hwdb --update
++#   systemd-hwdb update
+ #   udevadm trigger /dev/input/eventXX
+ # where /dev/input/eventXX is the mouse in question. If in
+ # doubt, simply use /dev/input/event* to reload all input rules.
+@@ -50,6 +50,8 @@
+ #    MOUSE_WHEEL_CLICK_ANGLE_HORIZONTAL
+ #    MOUSE_WHEEL_CLICK_COUNT
+ #    MOUSE_WHEEL_CLICK_COUNT_HORIZONTAL
++#    MOUSE_WHEEL_TILT_HORIZONTAL
++#    MOUSE_WHEEL_TILT_VERTICAL
+ #
+ #########################################
+ #         ID_INPUT_TRACKBALL            #
+@@ -134,6 +136,26 @@
+ # MOUSE_WHEEL_CLICK_COUNT_HORIZONTAL works the same way but also follows the
+ # rules of MOUSE_WHEEL_CLICK_ANGLE_HORIZONTAL.
+ 
++#########################################
++#    MOUSE_WHEEL_TILT_HORIZONTAL        #
++#    MOUSE_WHEEL_TILT_VERTICAL          #
++#########################################
++#
++# Indicates that the respective axis is not a mouse wheel rotation but a
++# tilt along that axis. Wheel tilt is most commonly used for horizontal
++# scroll wheel emulation on mice with only a single vertical wheel.
++#
++# The vertical and horizontal Axes are independently marked as tilt axes,
++# for example it is permitted to have a MOUSE_WHEEL_CLICK_COUNT or
++# MOUSE_WHEEL_CLICK_ANGLE for the vertical axis and mark the horizontal axis
++# marked as as MOUSE_WHEEL_TILT_HORIZONTAL.
++#
++# It is a bug to have either CLICK_COUNT or CLICK_ANGLE set on the same axis
++# as WHEEL_TILT. Applications should give priority to WHEEL_TILT and ignore
++# other settings.
++#
++# This is a flag only, permitted values: 0 or 1
++
+ #
+ # Sort by brand, type (usb, bluetooth), DPI, frequency.
+ # For mice with switchable resolution, sort by the starred entry.
+@@ -346,6 +368,10 @@ mouse:usb:v046dpc24c:name:Logitech G400s Optical Gaming Mouse:
+ mouse:usb:v046dpc07e:name:Logitech Gaming Mouse G402:
+  MOUSE_DPI=400@1000 *800@1000 1600@1000 3200@1000
+ 
++# Logitech G502 Proteus Spectrum
++mouse:usb:v046dpc332:name:Logitech Gaming Mouse G502:
++ MOUSE_DPI=1200@1000 *2400@1000 3200@1000 6400@1000
++
+ # Logitech B605 Wireless Mouse (also M505)
+ mouse:usb:v046dp101d:name:Logitech B605:
+ mouse:usb:v046dp101d:name:Logitech M505:
+@@ -416,6 +442,10 @@ mouse:usb:v046dpc52b:name:Logitech Unifying Device. Wireless PID:4026:
+ mouse:usb:v046dpc068:name:Logitech G500:
+  MOUSE_DPI=*1600@500 2600@500 3600@500
+ 
++# Logitech TrackMan Wheel (USB)
++mouse:usb:v046dpc404:name:Logitech Trackball:
++ MOUSE_DPI=300@125
++
+ # Logitech MX1000 Laser Cordless Mouse
+ mouse:bluetooth:v046dpb003:name:Logitech MX1000 mouse:
+  MOUSE_DPI=800@80
+@@ -464,6 +494,10 @@ mouse:bluetooth:v045ep0702:name:Microsoft  Wireless Laser Mouse 8000:
+ mouse:bluetooth:v045ep07f3:name:Arc Touch Mouse SE:
+  MOUSE_DPI=1000@2000
+ 
++# Microsoft Surface Mouse
++mouse:bluetooth:v0000p0000:name:Surface Mouse:
++ MOUSE_DPI=2000@2000
++
+ ##########################################
+ # Mionix
+ ##########################################
+@@ -497,6 +531,10 @@ mouse:bluetooth:v056ep0061:name:Laser  BTmouse:
+ mouse:usb:v1532p0042:name:Razer Razer Abyssus:
+  MOUSE_DPI=3500@1000
+ 
++# Razer DeathAdder Black Edition
++mouse:usb:v1532p0029:name:Razer Razer DeathAdder:
++ MOUSE_DPI=3500@1000
++
+ ##########################################
+ # Roccat
+ ##########################################
+diff --git a/hwdb/70-pointingstick.hwdb b/hwdb/70-pointingstick.hwdb
+index e18ef28290..cfdfef567a 100644
+--- a/hwdb/70-pointingstick.hwdb
++++ b/hwdb/70-pointingstick.hwdb
+@@ -18,16 +18,19 @@
+ #    ZZZZ is the bus-id (see /usr/include/linux/input.h BUS_*), YYYY, XXXX and
+ #    WWW are the 4-digit hex uppercase vendor, product and version ID and VVVV
+ #    is an arbitrary length input-modalias describing the device capabilities.
++#    The vendor, product and version ID for a device node "eventX" is listed
++#    in /sys/class/input/eventX/device/id.
+ #
+ #  - Input driver device name and DMI data match:
+ #      evdev:name:<input device name>:dmi:bvn*:bvr*:bd*:svn<vendor>:pn*
+ #    <input device name> is the name device specified by the driver,
+-#    <vendor> is the firmware-provided string from the kernel DMI modalias.
++#    <vendor> is the firmware-provided string from the kernel DMI modalias,
++#    see /sys/class/dmi/id/modalias
+ #
+ # To add local entries, create a new file
+ #   /etc/udev/hwdb.d/71-pointingstick-local.hwdb
+ # and add your rules there. To load the new rules execute (as root):
+-#   udevadm hwdb --update
++#   systemd-hwdb update
+ #   udevadm trigger /dev/input/eventXX
+ # where /dev/input/eventXX is the pointingstick in question. If in
+ # doubt, simply use /dev/input/event* to reload all input rules.
+@@ -95,6 +98,8 @@ evdev:name:*DualPoint Stick:dmi:bvn*:bvr*:bd*:svnDellInc.:pnLatitudeE7470*:pvr*
+ # Lenovo
+ #########################################
+ 
++# Lenovo Thinkpad X220
++evdev:name:TPPS/2 IBM TrackPoint:dmi:bvn*:bvr*:bd*:svnLENOVO:pn*:pvrThinkPadX220:*
+ # Lenovo Thinkpad X230
+ evdev:name:TPPS/2 IBM TrackPoint:dmi:bvn*:bvr*:bd*:svnLENOVO:pn*:pvrThinkPadX230:*
+ # Lenovo Thinkpad X230 tablet
+diff --git a/hwdb/70-touchpad.hwdb b/hwdb/70-touchpad.hwdb
+index 11f3f96f04..82a4b7a575 100644
+--- a/hwdb/70-touchpad.hwdb
++++ b/hwdb/70-touchpad.hwdb
+@@ -18,7 +18,7 @@
+ # To add local entries, create a new file
+ #   /etc/udev/hwdb.d/71-touchpad-local.hwdb
+ # and add your rules there. To load the new rules execute (as root):
+-#   udevadm hwdb --update
++#   systemd-hwdb update
+ #   udevadm trigger /dev/input/eventXX
+ # where /dev/input/eventXX is the touchpad in question. If in
+ # doubt, simply use /dev/input/event* to reload all input rules.
+@@ -47,3 +47,9 @@ touchpad:usb:*
+ ###########################################################
+ touchpad:usb:v05ac*
+  ID_INPUT_TOUCHPAD_INTEGRATION=internal
++
++###########################################################
++# Wacom
++###########################################################
++touchpad:usb:v056a*
++ ID_INPUT_TOUCHPAD_INTEGRATION=external

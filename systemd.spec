@@ -96,6 +96,8 @@ Patch0051:      0051-tree-wide-drop-NULL-sentinel-from-strjoin.patch
 Patch0052:      0052-core-add-new-RestrictNamespaces-unit-file-setting.patch
 Patch0053:      0053-seccomp-rework-seccomp-code-to-improve-compat-with-s.patch
 
+# GIT_DIR=../../src/systemd/.git git diffab -M v232..master@{2017-01-30} hwdb/[67]* > hwdb.patch
+Patch0997:      hwdb.patch
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
 %global num_patches %{lua: c=0; for i,p in ipairs(patches) do c=c+1; end; print(c);}
@@ -1021,6 +1023,7 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 - Fix various memleaks and unitialized variable access
 - Shell completion enhancements
 - Enable TPM logging by default (#1411156)
+- Update hwdb (#1270124)
 
 * Thu Jan 19 2017 Adam Williamson <awilliam@redhat.com> - 232-10
 - Backport fix for boot failure in initrd-switch-root (#1414904)
