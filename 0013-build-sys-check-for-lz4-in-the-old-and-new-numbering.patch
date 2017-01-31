@@ -1,4 +1,4 @@
-From b6c1a9e4cdea2d3e614125707389bf69c00769b0 Mon Sep 17 00:00:00 2001
+From 25cd9391929a46f1f38daf6aa4421de6a1afc47e Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
 Date: Wed, 23 Nov 2016 10:18:30 -0500
 Subject: [PATCH] build-sys: check for lz4 in the old and new numbering scheme
@@ -40,6 +40,3 @@ index 0b10fc7de7..1928e65bde 100644
          AS_IF([test "x$have_lz4" = xno -a "x$enable_lz4" = xyes],
                [AC_MSG_ERROR([*** LZ4 support requested but libraries not found])])
  ])
--- 
-2.9.3
-

@@ -1,4 +1,4 @@
-From 05db1e6a7adc1ce6e95bbee1751f1f5b124f3d20 Mon Sep 17 00:00:00 2001
+From 3a087e730c2be5d6abe8f9775a707af925e2520b Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
 Date: Sun, 15 Jan 2017 13:27:37 -0500
 Subject: [PATCH] systemctl: uninitalized variable
@@ -26,6 +26,3 @@ index 4edc690f5c..1a4a201740 100644
          } else {
                  id_len = max_id_len;
                  desc_len = max_desc_len;
--- 
-2.9.3
-

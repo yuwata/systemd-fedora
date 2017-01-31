@@ -1,4 +1,4 @@
-From a0a44b26b5438fc45c28b6918542ebd84810fbd2 Mon Sep 17 00:00:00 2001
+From 59ce906fbeabbf3c519ee22fb4b653b2acb8fff1 Mon Sep 17 00:00:00 2001
 From: Jan Synacek <jan.synacek@gmail.com>
 Date: Wed, 25 Jan 2017 13:44:04 +0100
 Subject: [PATCH] bash-completion: add support for --now (#5155)
@@ -21,6 +21,3 @@ index 34589e2888..7765010869 100644
                               --quiet -q --privileged -P --system --user --version --runtime --recursive -r --firmware-setup
                               --show-types -i --ignore-inhibitors --plain'
                        [ARG]='--host -H --kill-who --property -p --signal -s --type -t --state --job-mode --root
--- 
-2.9.3
-

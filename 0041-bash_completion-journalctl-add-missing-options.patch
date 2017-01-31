@@ -1,4 +1,4 @@
-From c11e97561716e1378f7812e880269638b4130d26 Mon Sep 17 00:00:00 2001
+From 176e36e83f44d5486945afa9beffc1e32799d546 Mon Sep 17 00:00:00 2001
 From: Namhyung Kim <namhyung@gmail.com>
 Date: Sat, 21 Jan 2017 16:36:20 +0900
 Subject: [PATCH] bash_completion: journalctl: add missing options
@@ -27,6 +27,3 @@ index a999a10df1..ded92cb73a 100644
                  [ARGUNKNOWN]='-c --cursor --interval -n --lines -S --since -U --until
                                --after-cursor --verify-key -t --identifier
                                --root'
--- 
-2.9.3
-

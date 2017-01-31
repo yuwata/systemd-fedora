@@ -1,4 +1,4 @@
-From 6e6a4e9b53c8a9a4efd3a22c8496f5b1d840c969 Mon Sep 17 00:00:00 2001
+From 783168312d5b7b29535488d785fdd4a849436368 Mon Sep 17 00:00:00 2001
 From: Susant Sahani <ssahani@users.noreply.github.com>
 Date: Mon, 5 Dec 2016 20:01:48 +0530
 Subject: [PATCH] networkd: link_enter_configured remove assert (#4800)
@@ -45,6 +45,3 @@ index aefe7335b9..4dfbe0bf7e 100644
  }
  
  void link_check_ready(Link *link) {
--- 
-2.9.3
-

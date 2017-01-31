@@ -1,0 +1,32 @@
+From 228523c0b9f077d60a4744776a73ff29b4c18dd2 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Sat, 28 Jan 2017 21:18:31 -0500
+Subject: [PATCH] systemctl: always avoid being killed when doing switch-root
+
+The same logic as described in acc28e2e3037d689d6481e applies to any time we are
+switching root, to just set the flag unconditionally.
+
+(cherry picked from commit b3ad0ff48c154ed056a6bded2adac609395a9439)
+---
+ src/systemctl/systemctl.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/src/systemctl/systemctl.c b/src/systemctl/systemctl.c
+index b598a2a19d..4f528f6079 100644
+--- a/src/systemctl/systemctl.c
++++ b/src/systemctl/systemctl.c
+@@ -5587,11 +5587,9 @@ static int switch_root(int argc, char *argv[], void *userdata) {
+         }
+ 
+         /* Instruct PID1 to exclude us from its killing spree applied during
+-         * the transition from the initrd to the main system otherwise we would
+-         * exit with a failure status even though the switch to the new root
+-         * has succeed. */
+-        if (in_initrd())
+-                argv_cmdline[0] = '@';
++         * the transition. Otherwise we would exit with a failure status even
++         * though the switch to the new root has succeed. */
++        argv_cmdline[0] = '@';
+ 
+         r = acquire_bus(BUS_MANAGER, &bus);
+         if (r < 0)

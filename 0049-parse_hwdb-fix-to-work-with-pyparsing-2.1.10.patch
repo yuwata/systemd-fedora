@@ -1,4 +1,4 @@
-From bcb9684d0cdb56e4924da6a7dc36d74bd8ef5faf Mon Sep 17 00:00:00 2001
+From d30213c50db935f63987447d44d637bc9a00bf71 Mon Sep 17 00:00:00 2001
 From: Martin Pitt <martin.pitt@ubuntu.com>
 Date: Wed, 30 Nov 2016 09:20:15 +0100
 Subject: [PATCH] parse_hwdb: fix to work with pyparsing 2.1.10
@@ -27,6 +27,3 @@ index 5d4c5ea64d..5856d12af7 100755
  COMMENTLINE = pythonStyleComment + EOL
  INTEGER = Word(nums)
  REAL = Combine((INTEGER + Optional('.' + Optional(INTEGER))) ^ ('.' + INTEGER))
--- 
-2.9.3
-

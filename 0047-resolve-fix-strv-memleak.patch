@@ -1,4 +1,4 @@
-From 31d6f68def2f824a21190013e17445094f106e2b Mon Sep 17 00:00:00 2001
+From f0dc398e4862dffc768be3a8fc59c5c5a012a5e6 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
 Date: Tue, 24 Jan 2017 22:27:21 -0500
 Subject: [PATCH] resolve: fix strv memleak
@@ -23,6 +23,3 @@ index 364812250f..59cd6cf1cb 100644
          Link *l = userdata;
          int r;
          char **i;
--- 
-2.9.3
-

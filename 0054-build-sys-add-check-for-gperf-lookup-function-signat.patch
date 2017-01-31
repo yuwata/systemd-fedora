@@ -1,4 +1,4 @@
-From a6bb2c249be58469888cf3b1502f1a01de06bd33 Mon Sep 17 00:00:00 2001
+From 79a5d862a7abe903f456a75d6d1ca3c11adfa379 Mon Sep 17 00:00:00 2001
 From: Mike Gilbert <floppymaster@gmail.com>
 Date: Tue, 10 Jan 2017 02:39:05 -0500
 Subject: [PATCH] build-sys: add check for gperf lookup function signature
@@ -298,6 +298,3 @@ index aa10beafb0..09024116f2 100644
  #include "keyboard-keys-from-name.h"
  
  static int install_force_release(struct udev_device *dev, const unsigned *release, unsigned release_count) {
--- 
-2.9.3
-

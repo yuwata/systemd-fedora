@@ -1,4 +1,4 @@
-From 8296437564980199342f4fd9f2c85312570ba060 Mon Sep 17 00:00:00 2001
+From 71357f8a2ac8b1435e81b11e123c7223340a94c8 Mon Sep 17 00:00:00 2001
 From: Lennart Poettering <lennart@poettering.net>
 Date: Tue, 27 Dec 2016 15:28:25 +0100
 Subject: [PATCH] seccomp: rework seccomp code, to improve compat with some
@@ -2016,6 +2016,3 @@ index beb6a7f422..6f15879c45 100644
  
          return 0;
  }
--- 
-2.9.3
-

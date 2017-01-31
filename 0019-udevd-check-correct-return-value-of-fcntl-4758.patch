@@ -1,4 +1,4 @@
-From f20e908529c7005fdc31c9e4e694b8c39291d10d Mon Sep 17 00:00:00 2001
+From 9b01faa700c80007d2a25f92dc704b3e1aaf365d Mon Sep 17 00:00:00 2001
 From: Daniel Wagner <wagi@monom.org>
 Date: Mon, 28 Nov 2016 18:24:26 +0100
 Subject: [PATCH] udevd: check correct return value of fcntl() (#4758)
@@ -22,6 +22,3 @@ index badbab6205..c97c52e962 100644
                          return log_error_errno(errno, "could not dup netlink fd: %m");
          }
  
--- 
-2.9.3
-

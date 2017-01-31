@@ -1,4 +1,4 @@
-From 9f4c52f375beeea987d4ca19920a8bb9d18e69ca Mon Sep 17 00:00:00 2001
+From eac04c9feff868c79f7d8438ef66aeb6f2a8a6c9 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
 Date: Sun, 18 Dec 2016 07:21:19 -0500
 Subject: [PATCH] core: downgrade "Time has been changed" to debug (#4906)
@@ -38,6 +38,3 @@ index ffccfdcd5e..322e69a69c 100644
                     LOG_MESSAGE_ID(SD_MESSAGE_TIME_CHANGE),
                     LOG_MESSAGE("Time has been changed"),
                     NULL);
--- 
-2.9.3
-

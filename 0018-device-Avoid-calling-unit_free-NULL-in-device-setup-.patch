@@ -1,4 +1,4 @@
-From 23c99602bc227de3a4104cb01b655ae6d034e853 Mon Sep 17 00:00:00 2001
+From 9dd94c0ac4b29250e0c06f2bbd8e73cc2072da7d Mon Sep 17 00:00:00 2001
 From: Dave Reisner <d@falconindy.com>
 Date: Sun, 27 Nov 2016 17:05:39 -0500
 Subject: [PATCH] device: Avoid calling unit_free(NULL) in device setup logic
@@ -31,6 +31,3 @@ index bd87a447cd..4b9e84aeb6 100644
                  unit_free(u);
  
          return r;
--- 
-2.9.3
-

@@ -12,7 +12,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        232
-Release:        11%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        12%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -39,7 +39,7 @@ Source10:       systemd-udev-trigger-no-reload.conf
 Source11:       20-grubby.install
 Source12:       https://raw.githubusercontent.com/systemd/systemd/1000522a60ceade446773c67031b47a566d4a70d/src/login/systemd-user.m4
 
-# GIT_DIR=../../src/systemd/.git git format-patch-ab -M -N v232..v232-stable
+# GIT_DIR=../../src/systemd/.git git format-patch-ab --no-signature -M -N v232..v232-stable
 # i=1; for j in 00*patch; do printf "Patch%04d:      %s\n" $i $j; i=$((i+1));done|xclip
 
 Patch0001:      0001-build-sys-link-test-seccomp-against-seccomp-libs-456.patch
@@ -96,6 +96,12 @@ Patch0051:      0051-tree-wide-drop-NULL-sentinel-from-strjoin.patch
 Patch0052:      0052-core-add-new-RestrictNamespaces-unit-file-setting.patch
 Patch0053:      0053-seccomp-rework-seccomp-code-to-improve-compat-with-s.patch
 Patch0054:      0054-build-sys-add-check-for-gperf-lookup-function-signat.patch
+Patch0055:      0055-journal-gatewayd-actually-recognize-D-as-a-synonym-f.patch
+Patch0056:      0056-journal-gatewayd-return-EINVAL-if-ARG_TRUST-and-HAVE.patch
+Patch0057:      0057-systemctl-always-avoid-being-killed-when-doing-switc.patch
+Patch0058:      0058-systemctl-ignore-SIGTERM-after-switch-root.patch
+Patch0059:      0059-units-restore-Before-dependencies-for-systemd-vconso.patch
+Patch0060:      0060-coredump-really-extract-container-cmdline-5167.patch
 
 # GIT_DIR=../../src/systemd/.git git diffab -M v232..master@{2017-01-30} hwdb/[67]* > hwdb.patch
 Patch0997:      hwdb.patch
@@ -1018,6 +1024,11 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %{_mandir}/man[1578]/systemd-journal-gateway*
 
 %changelog
+* Tue Jan 31 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 232-12
+- Backport patch for initrd-switch-root.service getting killed (#1414904)
+- Fix sd-journal-gatewayd -D, --trust, and COREDUMP_CONTAINER_CMDLINE
+  extraction by sd-coredump.
+
 * Sun Jan 29 2017 zbyszek <zbyszek@in.waw.pl> - 232-11
 - Backport a number of patches (#1411299, #1413075, #1415745,
                                 ##1415358, #1416588, #1408884)

@@ -1,4 +1,4 @@
-From 6c179c1c15b7a0289bd77681353475fd40d3f877 Mon Sep 17 00:00:00 2001
+From 0cb96989634afde3f1b7b86420e003a34dcf5551 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
 Date: Tue, 24 Jan 2017 22:21:16 -0500
 Subject: [PATCH] core/dbus: fix two strv memleaks
@@ -33,6 +33,3 @@ index 070974fe66..c6fcd01138 100644
          Manager *m = userdata;
          unsigned k = 0;
          Iterator i;
--- 
-2.9.3
-

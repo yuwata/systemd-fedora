@@ -1,4 +1,4 @@
-From f8b6aec183d393c6932c0ac75c106646cd33d3af Mon Sep 17 00:00:00 2001
+From d3d04283c458c1313ed87a12af538d8e0540e88d Mon Sep 17 00:00:00 2001
 From: Graeme Lawes <graemelawes@gmail.com>
 Date: Sun, 25 Dec 2016 06:14:41 -0500
 Subject: [PATCH] machinectl: handle EOPNOTSUPP from print_addresses (#4979)
@@ -23,6 +23,3 @@ index d54caecf46..f84226f58f 100644
                          printf("-\n");
          }
  
--- 
-2.9.3
-

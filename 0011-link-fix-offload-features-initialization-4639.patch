@@ -1,4 +1,4 @@
-From 6c19e0abceb3c22100edc0ce8be2680a5abd6945 Mon Sep 17 00:00:00 2001
+From 8f8eacd358dcac603173d66525b4741616c76997 Mon Sep 17 00:00:00 2001
 From: Maks Naumov <maksqwe1@ukr.net>
 Date: Mon, 14 Nov 2016 12:33:43 +0200
 Subject: [PATCH] link: fix offload features initialization (#4639)
@@ -21,6 +21,3 @@ index ece9248c2a..fa8fe1fb9a 100644
  
          r = config_parse(NULL, filename, file,
                           "Match\0Link\0Ethernet\0",
--- 
-2.9.3
-

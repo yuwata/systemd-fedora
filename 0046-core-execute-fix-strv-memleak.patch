@@ -1,4 +1,4 @@
-From 9fa10892653f7a23939356d018c62beb2044349f Mon Sep 17 00:00:00 2001
+From f2f5c4de715e65db93d57d7bcafe9caef3f7a79e Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
 Date: Tue, 24 Jan 2017 22:24:07 -0500
 Subject: [PATCH] core/execute: fix strv memleak
@@ -35,6 +35,3 @@ index f13ca30395..38cd486d82 100644
          char *tmp = NULL, *var = NULL;
          const char *root_dir = NULL;
          NameSpaceInfo ns_info = {
--- 
-2.9.3
-

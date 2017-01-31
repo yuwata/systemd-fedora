@@ -1,4 +1,4 @@
-From 18eb87fdddbcb03940b2009e6cb43852e8735e9a Mon Sep 17 00:00:00 2001
+From 409612865dd716752da4785b5d8cb75a24cebab4 Mon Sep 17 00:00:00 2001
 From: Franck Bui <fbui@suse.com>
 Date: Wed, 23 Nov 2016 16:31:24 +0100
 Subject: [PATCH] core: consider SIGTERM as a clean exit status for
@@ -45,6 +45,3 @@ index 82893dafb1..b89f2348c7 100644
 +# time to exit properly. Since systemd considers SIGTERM as a failure for
 +# short-running process (aka Type=oneshot), instruct it to ignore this case.
 +SuccessExitStatus=SIGTERM
--- 
-2.9.3
-

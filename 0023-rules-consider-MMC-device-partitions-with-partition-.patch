@@ -1,4 +1,4 @@
-From d51c2d12dc965fbde394e56a1a3484793c72ef1f Mon Sep 17 00:00:00 2001
+From 09dc7999c275723f7e364386cd85e8f698e744c9 Mon Sep 17 00:00:00 2001
 From: Kieran Colford <kieran@kcolford.com>
 Date: Tue, 6 Dec 2016 04:46:13 -0500
 Subject: [PATCH] rules: consider MMC device partitions with partition number >
@@ -23,6 +23,3 @@ index c13d05cdb1..bbd52e825e 100644
  
  # Memstick
  KERNEL=="msblk[0-9]|mspblk[0-9]", SUBSYSTEMS=="memstick", ATTRS{name}=="?*", ATTRS{serial}=="?*", \
--- 
-2.9.3
-

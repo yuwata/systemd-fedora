@@ -1,4 +1,4 @@
-From abe63bfc21e0737b23b5c8f6eeb088c4030cc631 Mon Sep 17 00:00:00 2001
+From 23c3ed8b2c0875c9f2a3e3b4e4d69af8cd49d9a2 Mon Sep 17 00:00:00 2001
 From: Susant Sahani <ssahani@users.noreply.github.com>
 Date: Wed, 23 Nov 2016 21:03:01 +0530
 Subject: [PATCH] networkd: fix size of MTUBytes so that it does not overwrites
@@ -26,6 +26,3 @@ index 42fc82d392..11ff34b5b5 100644
          int arp;
          uint32_t iaid;
          DUID duid;
--- 
-2.9.3
-

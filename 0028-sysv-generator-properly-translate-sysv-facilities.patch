@@ -1,4 +1,4 @@
-From 827c431cad554cd4d5c477b0f6e608e36edb1301 Mon Sep 17 00:00:00 2001
+From 59ebe5b42ccd7cacbf5975f8ddc1aa42c78e45db Mon Sep 17 00:00:00 2001
 From: Lennart Poettering <lennart@poettering.net>
 Date: Tue, 6 Dec 2016 19:36:30 +0100
 Subject: [PATCH] sysv-generator: properly translate sysv facilities
@@ -52,6 +52,3 @@ index c2c80175a2..212cf7a988 100644
  
          /* Everything else we assume to be normal service names */
          m = sysv_translate_name(n);
--- 
-2.9.3
-

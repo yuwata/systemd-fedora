@@ -1,0 +1,24 @@
+From ce4f32f42dcb91120445d2858baa9fd81abd5292 Mon Sep 17 00:00:00 2001
+From: Ivan Shapovalov <intelfx@intelfx.name>
+Date: Sun, 29 Jan 2017 23:33:37 +0400
+Subject: [PATCH] journal-gatewayd: actually recognize -D as a synonym for
+ --directory (#5180)
+
+(cherry picked from commit 554597a1b27ad0a81f4ad0884b348d475e89cb9e)
+---
+ src/journal-remote/journal-gatewayd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/journal-remote/journal-gatewayd.c b/src/journal-remote/journal-gatewayd.c
+index f75a6f06d2..be6d41c31b 100644
+--- a/src/journal-remote/journal-gatewayd.c
++++ b/src/journal-remote/journal-gatewayd.c
+@@ -912,7 +912,7 @@ static int parse_argv(int argc, char *argv[]) {
+         assert(argc >= 0);
+         assert(argv);
+ 
+-        while ((c = getopt_long(argc, argv, "h", options, NULL)) >= 0)
++        while ((c = getopt_long(argc, argv, "hD:", options, NULL)) >= 0)
+ 
+                 switch(c) {
+ 

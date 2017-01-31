@@ -1,4 +1,4 @@
-From b3ac083a877c6cd1153f7e99e7304e6eccfd6c8b Mon Sep 17 00:00:00 2001
+From fba761f0bc86d37119bd18f7bc231e2d9f5d94a7 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
 Date: Thu, 12 Jan 2017 04:16:20 -0500
 Subject: [PATCH] rpm triggers: do nothing if systemd is not running (#5065)
@@ -55,6 +55,3 @@ index 0d8c303136..f8c8cbc5f9 100644
  
  %filetriggerpostun -P 1000100 -p <lua> -- @systemunitdir@ /etc/systemd/system
  if posix.access("%{_localstatedir}/lib/rpm-state/systemd/needs-reload") then
--- 
-2.9.3
-

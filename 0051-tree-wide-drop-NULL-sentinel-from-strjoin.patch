@@ -1,4 +1,4 @@
-From dc5813c259a23678a6521c5d52af50f2825ceacd Mon Sep 17 00:00:00 2001
+From 3fe7a210f1277a61b1281c91684103c730234429 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
 Date: Sun, 23 Oct 2016 11:43:27 -0400
 Subject: [PATCH] tree-wide: drop NULL sentinel from strjoin
@@ -2116,6 +2116,3 @@ index 1bffe8e8ab..70a5fa4d7a 100644
                  if (!hwdb_bin) {
                          rc = EXIT_FAILURE;
                          goto out;
--- 
-2.9.3
-

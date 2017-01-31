@@ -1,4 +1,4 @@
-From 588e4827d274279941533a9708101835b2d2e986 Mon Sep 17 00:00:00 2001
+From a4ead9514b411945f9525ac33901db2b557ce9d0 Mon Sep 17 00:00:00 2001
 From: Evgeny Vereshchagin <evvers@ya.ru>
 Date: Mon, 9 Jan 2017 04:46:11 +0000
 Subject: [PATCH] shared: fix double free in link
@@ -115,6 +115,3 @@ index 5f0eec3ccb..64fe522ebb 100644
          }
  
          strv_uniq(todo);
--- 
-2.9.3
-

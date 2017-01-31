@@ -1,4 +1,4 @@
-From 9a9a2deb4b5c7dcd07ba64e1d01a21d00fbe08f3 Mon Sep 17 00:00:00 2001
+From 53ae6296386a754ed74a1d3fbd88f39ab7a89f0d Mon Sep 17 00:00:00 2001
 From: Lennart Poettering <lennart@poettering.net>
 Date: Mon, 12 Dec 2016 20:54:45 +0100
 Subject: [PATCH] journald: don't flush to /var/log/journal before we get asked
@@ -131,6 +131,3 @@ index 7f47ca22dd..9ac21457f6 100644
          server_flush_dev_kmsg(&server);
  
          log_debug("systemd-journald running as pid "PID_FMT, getpid());
--- 
-2.9.3
-

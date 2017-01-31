@@ -1,4 +1,4 @@
-From 95bb77653fe45f8865bae23c46bd1b25f14a35dc Mon Sep 17 00:00:00 2001
+From 4392ebaa516ef068809bb7f3d8a58b68f2face4f Mon Sep 17 00:00:00 2001
 From: Waldemar Brodkorb <wbx-github@users.noreply.github.com>
 Date: Fri, 25 Nov 2016 11:24:58 +0100
 Subject: [PATCH] fix journald startup problem when code is compiled with
@@ -28,6 +28,3 @@ index 908c7b8eeb..c0987625cd 100644
  
          r = sd_event_add_signal(s->event, &s->sigusr1_event_source, SIGUSR1, dispatch_sigusr1, s);
          if (r < 0)
--- 
-2.9.3
-

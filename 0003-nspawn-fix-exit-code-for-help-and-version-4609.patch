@@ -1,4 +1,4 @@
-From 5e8f1f054d332ed955414d16c57dfd406381b3e2 Mon Sep 17 00:00:00 2001
+From 045473ceb4999997f44fd1e4e1a3e5530b6fb828 Mon Sep 17 00:00:00 2001
 From: Martin Pitt <martin.pitt@ubuntu.com>
 Date: Tue, 8 Nov 2016 05:31:55 +0100
 Subject: [PATCH] nspawn: fix exit code for --help and --version (#4609)
@@ -28,6 +28,3 @@ index c56af6e6f4..c8fc011907 100644
          char veth_name[IFNAMSIZ] = "";
          bool secondary = false, remove_subvol = false;
          pid_t pid = 0;
--- 
-2.9.3
-

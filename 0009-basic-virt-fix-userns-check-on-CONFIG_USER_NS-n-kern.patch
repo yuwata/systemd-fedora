@@ -1,4 +1,4 @@
-From 99a1035c5243535f8ca01aec3b28c09405d09184 Mon Sep 17 00:00:00 2001
+From 7d7017a583a014c239cf8f68d484f22f67ca80ac Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
 Date: Fri, 11 Nov 2016 10:54:54 -0500
 Subject: [PATCH] basic/virt: fix userns check on CONFIG_USER_NS=n kernel
@@ -27,6 +27,3 @@ index 69b0f96183..d8d57381ad 100644
          }
  
          n = getline(&buf, &n_allocated, f);
--- 
-2.9.3
-

@@ -1,4 +1,4 @@
-From 6075c25fa4c1411b072955445f0f4a2418f54b0c Mon Sep 17 00:00:00 2001
+From f28e754a5b0400d439cb3a9a3d288191f5a742ed Mon Sep 17 00:00:00 2001
 From: Djalal Harouni <tixxdz@opendz.org>
 Date: Thu, 10 Nov 2016 18:11:37 +0100
 Subject: [PATCH] core:namespace: count and free failed paths inside
@@ -117,6 +117,3 @@ index b18fcf3e29..49a50c7b61 100644
  }
  
  static unsigned namespace_calculate_mounts(
--- 
-2.9.3
-

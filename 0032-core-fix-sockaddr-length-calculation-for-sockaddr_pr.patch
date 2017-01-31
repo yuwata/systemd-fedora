@@ -1,4 +1,4 @@
-From 93836ed31bf91d10667b67f445af374c2e513bae Mon Sep 17 00:00:00 2001
+From 6eda08fbff4f911c5884876a33708cf17fa28a8b Mon Sep 17 00:00:00 2001
 From: Lennart Poettering <lennart@poettering.net>
 Date: Thu, 29 Dec 2016 11:21:37 +0100
 Subject: [PATCH] core: fix sockaddr length calculation for sockaddr_pretty()
@@ -55,6 +55,3 @@ index 0b1c4acfec..fe2020008f 100644
  
                                  log_unit_warning(UNIT(s),
                                                   "Too many incoming connections (%u) from source %s, dropping connection.",
--- 
-2.9.3
-

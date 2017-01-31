@@ -1,4 +1,4 @@
-From 9b51665a3d2cd2678c78e2dc42ec6b40e83232f7 Mon Sep 17 00:00:00 2001
+From d262fb5809de27d51e9d6b97c6b114804c2b95c5 Mon Sep 17 00:00:00 2001
 From: Lennart Poettering <lennart@poettering.net>
 Date: Tue, 1 Nov 2016 20:25:19 -0600
 Subject: [PATCH] core: add new RestrictNamespaces= unit file setting
@@ -867,6 +867,3 @@ index 43d1567288..beb6a7f422 100644
  
          return 0;
  }
--- 
-2.9.3
-

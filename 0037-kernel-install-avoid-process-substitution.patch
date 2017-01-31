@@ -1,4 +1,4 @@
-From 5d98b45dac05bfde38c68d86e286bb8ce34bf932 Mon Sep 17 00:00:00 2001
+From f1e5bbe0ef234b5e6c8a2cd7f601a75a7678cd27 Mon Sep 17 00:00:00 2001
 From: Michal Schmidt <mschmidt@redhat.com>
 Date: Fri, 16 Dec 2016 18:14:47 +0100
 Subject: [PATCH] kernel-install: avoid process substitution
@@ -51,6 +51,3 @@ index a95b9717f0..c7d9f4eea9 100644
  
  case $COMMAND in
      add)
--- 
-2.9.3
-

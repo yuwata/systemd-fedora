@@ -1,4 +1,4 @@
-From 6fbbf006adc4830f0ed956042e54e747168fa879 Mon Sep 17 00:00:00 2001
+From 0e2e7e8269dacd5845150170d3d47c2d677474ab Mon Sep 17 00:00:00 2001
 From: Franck Bui <fbui@suse.com>
 Date: Thu, 24 Nov 2016 18:52:04 +0100
 Subject: [PATCH] core: make sure initrd-switch-root command survives PID1's
@@ -71,6 +71,3 @@ index b89f2348c7..82893dafb1 100644
 -# short-running process (aka Type=oneshot), instruct it to ignore this case.
 -SuccessExitStatus=SIGTERM
 +KillMode=none
--- 
-2.9.3
-

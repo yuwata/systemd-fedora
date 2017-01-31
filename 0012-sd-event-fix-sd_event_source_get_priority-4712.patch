@@ -1,4 +1,4 @@
-From fd2aab7bff3842df53a93e7ab8239a279bb3ad8f Mon Sep 17 00:00:00 2001
+From b291d260e0ebc7a7528f37e97e8b404968f34e18 Mon Sep 17 00:00:00 2001
 From: Martin Ejdestig <marejde@gmail.com>
 Date: Tue, 22 Nov 2016 01:21:00 +0100
 Subject: [PATCH] sd-event: fix sd_event_source_get_priority() (#4712)
@@ -46,6 +46,3 @@ index 289114490c..c0e5e06a18 100644
          assert_se(sd_event_source_set_enabled(y, SD_EVENT_ONESHOT) >= 0);
          assert_se(sd_event_source_set_prepare(x, prepare_handler) >= 0);
          assert_se(sd_event_source_set_priority(z, 50) >= 0);
--- 
-2.9.3
-

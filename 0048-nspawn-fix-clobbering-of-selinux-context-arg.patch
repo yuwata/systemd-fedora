@@ -1,4 +1,4 @@
-From f9b89affee12bf7383cf2210798489c7197c5765 Mon Sep 17 00:00:00 2001
+From b6700f38b414fa8e97a29fae221d8f02af4b3375 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
 Date: Fri, 27 Jan 2017 00:45:38 -0500
 Subject: [PATCH] nspawn: fix clobbering of selinux context arg
@@ -25,6 +25,3 @@ index 503265545b..0e2f4d59a5 100644
  
                  case 'Z':
                          arg_selinux_context = optarg;
--- 
-2.9.3
-

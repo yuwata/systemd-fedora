@@ -1,4 +1,4 @@
-From 5ad2a68bfc8541599aa61420a8507a497d87ac3c Mon Sep 17 00:00:00 2001
+From d14d851c73c1fecbf361db94c48156e02d61c4e8 Mon Sep 17 00:00:00 2001
 From: Djalal Harouni <tixxdz@opendz.org>
 Date: Sun, 6 Nov 2016 22:51:49 +0100
 Subject: [PATCH] core: make RootDirectory= and ProtectKernelModules= work
@@ -330,6 +330,3 @@ index 1195e9a854..c45c120193 100644
  
          return r;
  }
--- 
-2.9.3
-

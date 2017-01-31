@@ -1,4 +1,4 @@
-From da44d79b06cdfbcf77fb2e1c9ce8b826c2826748 Mon Sep 17 00:00:00 2001
+From 3f40c958104c4a83a32ad303cd7153f79cb7a6a8 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
 Date: Wed, 11 Jan 2017 14:45:19 -0500
 Subject: [PATCH] shell-completion: redirect all errors from systemctl to
@@ -39,6 +39,3 @@ index 03a1c930b0..d77a2df74e 100644
  }
  
  
--- 
-2.9.3
-

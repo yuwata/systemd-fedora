@@ -1,4 +1,4 @@
-From 9dcc80915fc571f926aeeb5afae47aa2a03cb7d1 Mon Sep 17 00:00:00 2001
+From f04a5c9d6a733f44d8f88dcea4ec340ec2d1d2c4 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
 Date: Sat, 10 Dec 2016 13:01:22 -0500
 Subject: [PATCH] build-sys: define arm as secondary architecture for arm64
@@ -22,6 +22,3 @@ index 5a77c31932..b329df2f6d 100644
  #  endif
  #elif defined(__arm__)
  #  if __BYTE_ORDER == __BIG_ENDIAN
--- 
-2.9.3
-

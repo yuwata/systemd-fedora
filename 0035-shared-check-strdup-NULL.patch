@@ -1,4 +1,4 @@
-From a60dee7506c9f8895f3cdeea9dbf48f134072470 Mon Sep 17 00:00:00 2001
+From acfeb54e985d6f4d589c574ba5d467fbe4d556b7 Mon Sep 17 00:00:00 2001
 From: Evgeny Vereshchagin <evvers@ya.ru>
 Date: Mon, 9 Jan 2017 22:45:41 +0000
 Subject: [PATCH] shared: check strdup != NULL
@@ -27,6 +27,3 @@ index 64fe522ebb..0bb47ac527 100644
          }
  
          strv_uniq(todo);
--- 
-2.9.3
-

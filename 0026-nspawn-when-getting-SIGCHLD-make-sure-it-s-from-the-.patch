@@ -1,4 +1,4 @@
-From 7046c0424a0c521169f258ab02d90739dade6269 Mon Sep 17 00:00:00 2001
+From 92f6078aeadec4dfd0e4e9e2ef14b0f7794141cc Mon Sep 17 00:00:00 2001
 From: Andrey Ulanov <aulanov@gmail.com>
 Date: Mon, 12 Dec 2016 17:38:18 -0800
 Subject: [PATCH] nspawn: when getting SIGCHLD make sure it's from the first
@@ -73,6 +73,3 @@ index 81573be95a..503265545b 100644
  
          if (arg_expose_ports) {
                  r = expose_port_watch_rtnl(event, rtnl_socket_pair[0], on_address_change, exposed, &rtnl);
--- 
-2.9.3
-

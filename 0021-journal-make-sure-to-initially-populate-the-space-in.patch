@@ -1,4 +1,4 @@
-From 7ad53973a94ab6699e52305501362e26af159fd2 Mon Sep 17 00:00:00 2001
+From dc28516400f7f56a4a6fbc8ab6740d2dc98f99ea Mon Sep 17 00:00:00 2001
 From: Franck Bui <fbui@suse.com>
 Date: Fri, 2 Dec 2016 18:40:10 +0100
 Subject: [PATCH] journal: make sure to initially populate the space info cache
@@ -28,6 +28,3 @@ index c0987625cd..1d2fce8dc7 100644
                  return 0;
  
          r = determine_path_usage(s, storage->path, &vfs_used, &vfs_avail);
--- 
-2.9.3
-

@@ -1,4 +1,4 @@
-From ff9411f6d3f63e765bf29853b920605965a16794 Mon Sep 17 00:00:00 2001
+From 83d9a6e89af9caebe109c5f309c7bc2d82bd8fc4 Mon Sep 17 00:00:00 2001
 From: Jan Synacek <jan.synacek@gmail.com>
 Date: Tue, 3 Jan 2017 21:34:36 +0100
 Subject: [PATCH] shared: fix double free in unmask (#5005)
@@ -38,6 +38,3 @@ index 96fba6e25b..5f0eec3ccb 100644
          }
  
          strv_uniq(todo);
--- 
-2.9.3
-

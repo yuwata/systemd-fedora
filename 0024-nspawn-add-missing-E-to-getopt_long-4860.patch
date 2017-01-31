@@ -1,4 +1,4 @@
-From de52d82792835bb4f81802dc4cab6dc9c031f154 Mon Sep 17 00:00:00 2001
+From 331ea131a5d1b942603c01225758c29f9ca98feb Mon Sep 17 00:00:00 2001
 From: Wim de With <register@wimdewith.com>
 Date: Sat, 10 Dec 2016 05:33:58 +0100
 Subject: [PATCH] nspawn: add missing -E to getopt_long (#4860)
@@ -21,6 +21,3 @@ index c8fc011907..81573be95a 100644
  
                  switch (c) {
  
--- 
-2.9.3
-

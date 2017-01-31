@@ -1,4 +1,4 @@
-From 14788b363be244f3dce87ccd5447b2d6bb7ce930 Mon Sep 17 00:00:00 2001
+From d7270c1642fa81b34b266d33412a842edc42c64c Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
 Date: Mon, 7 Nov 2016 08:54:47 -0500
 Subject: [PATCH] nspawn: avoid one strdup by using free_and_replace
@@ -32,6 +32,3 @@ index c45c120193..524416ecbd 100644
                          if (r < 0)
                                  return r;
                  }
--- 
-2.9.3
-

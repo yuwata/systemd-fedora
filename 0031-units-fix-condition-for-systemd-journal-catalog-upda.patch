@@ -1,4 +1,4 @@
-From b089ddffd2eef138a80849f6cdb35c330747ad27 Mon Sep 17 00:00:00 2001
+From 511b40e49641a8f59014472ce8e96a7ef61f3cad Mon Sep 17 00:00:00 2001
 From: Lennart Poettering <lennart@poettering.net>
 Date: Thu, 29 Dec 2016 10:38:52 +0100
 Subject: [PATCH] units: fix condition for
@@ -25,6 +25,3 @@ index 6370dd478f..276f052b1a 100644
  
  [Service]
  Type=oneshot
--- 
-2.9.3
-

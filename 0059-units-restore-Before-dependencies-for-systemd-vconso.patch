@@ -1,0 +1,34 @@
+From 007cdfc4cd2ce5ffe0a1b5eb6a5481d1b06c5184 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Tue, 31 Jan 2017 00:34:33 -0500
+Subject: [PATCH] units: restore Before dependencies for
+ systemd-vconsole-setup.service
+
+When the service is run in the initramfs, it is possible for it to get started
+and not be fast enough to exit before the root switch happens. It is started
+multiple times (depending on the consoles being detected), and runs
+asynchronously, so this is quite likely. It'll then get killed by killall(),
+and systemd will consider the service failed. To avoid all this, just wait
+for the service to terminate on it's own.
+
+Before=initrd-switch-root.target should be good for the initramfs, and
+Before=shutdown.tuarget should be good for the real system, although it's
+unlikely to make any difference there.
+
+(cherry picked from commit 750e550eba362096d56a35104c6a32631aa67b8e)
+---
+ units/systemd-vconsole-setup.service.in | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/units/systemd-vconsole-setup.service.in b/units/systemd-vconsole-setup.service.in
+index 2bd1fd1a5d..8bb75c6a4f 100644
+--- a/units/systemd-vconsole-setup.service.in
++++ b/units/systemd-vconsole-setup.service.in
+@@ -9,6 +9,7 @@
+ Description=Setup Virtual Console
+ Documentation=man:systemd-vconsole-setup.service(8) man:vconsole.conf(5)
+ DefaultDependencies=no
++Before=initrd-switch-root.target shutdown.target
+ ConditionPathExists=/dev/tty0
+ 
+ [Service]

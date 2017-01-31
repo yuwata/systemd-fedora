@@ -1,4 +1,4 @@
-From a5f0ac8737df6f00cd1827bc2ed78bf6ab1cef48 Mon Sep 17 00:00:00 2001
+From ff699dcd6f4e665119afa7ac0a9446907d02c966 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
 Date: Mon, 7 Nov 2016 08:57:30 -0500
 Subject: [PATCH] nspawn: slight simplification
@@ -58,6 +58,3 @@ index 524416ecbd..b18fcf3e29 100644
          }
  
          return 0;
--- 
-2.9.3
-
