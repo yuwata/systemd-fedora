@@ -12,7 +12,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        232
-Release:        12%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        13%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -1024,6 +1024,9 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %{_mandir}/man[1578]/systemd-journal-gateway*
 
 %changelog
+* Sat Feb 11 2017 Fedora Release Engineering <releng@fedoraproject.org>
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
+
 * Tue Jan 31 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 232-12
 - Backport patch for initrd-switch-root.service getting killed (#1414904)
 - Fix sd-journal-gatewayd -D, --trust, and COREDUMP_CONTAINER_CMDLINE
