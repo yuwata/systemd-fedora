@@ -425,6 +425,7 @@ install -Dm0755 -t %{buildroot}%{_prefix}/lib/kernel/install.d/ %{SOURCE11}
 %find_lang %{name}
 
 %check
+export LC_CTYPE=en_US.utf8
 make check %{?_smp_mflags} VERBOSE=1 || { cat test-suite.log; exit 1; }
 
 # Check for botched translations (https://bugzilla.redhat.com/show_bug.cgi?id=1226566)
