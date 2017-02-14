@@ -322,12 +322,35 @@ CONFIGURE_OPTS=(
         --with-sysvinit-path=/etc/rc.d/init.d
         --with-rc-local-script-path-start=/etc/rc.d/rc.local
         --with-ntp-servers='0.%{ntpvendor}.pool.ntp.org 1.%{ntpvendor}.pool.ntp.org 2.%{ntpvendor}.pool.ntp.org 3.%{ntpvendor}.pool.ntp.org'
-        --without-kill-user-processes
-        --enable-lz4
+        --enable-kmod
+        --enable-xkbcommon
+        --enable-blkid
+        --enable-seccomp
+        --enable-ima
+        --enable-selinux
+        --disable-apparmor
         --enable-xz
         --enable-zlib
         --enable-bzip2
+        --enable-lz4
+        --enable-pam
+        --enable-acl
+        --enable-smack
+        --enable-gcrypt
+        --enable-audit
+        --enable-elfutils
+        --enable-libcryptsetup
+        --enable-qrencode
+        --enable-gnutls
+        --enable-microhttpd
+        --enable-libcurl
+        --enable-libidn
+        --enable-libiptc
+        --enable-polkit
+        --enable-gnuefi
         --enable-tpm
+        --without-kill-user-processes
+        --enable-tests=unsafe
 )
 
 %configure \
