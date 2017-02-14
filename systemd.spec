@@ -307,7 +307,7 @@ systemd-journal-remote, and systemd-journal-upload.
 cp -p %{SOURCE12} src/login/
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1422256
-sed s/libidn2,// %_libdir/pkgconfig/gnutls.pc >gnutls.pc
+sed /Requires.private/d %_libdir/pkgconfig/gnutls.pc >gnutls.pc
 
 %build
 export PKG_CONFIG_PATH=.
