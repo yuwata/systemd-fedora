@@ -112,6 +112,10 @@ Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
 %global num_patches %{lua: c=0; for i,p in ipairs(patches) do c=c+1; end; print(c);}
 
+%ifarch %{ix86} x86_64 aarch64
+%global have_gnu_efi 1
+%endif
+
 BuildRequires:  libcap-devel
 BuildRequires:  libmount-devel
 BuildRequires:  pam-devel
@@ -145,7 +149,7 @@ BuildRequires:  tree
 BuildRequires:  python3-devel
 BuildRequires:  python3-lxml
 BuildRequires:  firewalld-filesystem
-%ifarch %{ix86} x86_64 aarch64
+%if 0%{?have_gnu_efi}
 BuildRequires:  gnu-efi gnu-efi-devel
 %endif
 BuildRequires:  libseccomp-devel
@@ -349,7 +353,9 @@ CONFIGURE_OPTS=(
         --enable-libidn
         --enable-libiptc
         --enable-polkit
+%if 0%{?have_gnu_efi}
         --enable-gnuefi
+%endif
         --enable-tpm
         --without-kill-user-processes
         --enable-tests=unsafe
