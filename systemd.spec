@@ -104,6 +104,8 @@ Patch0059:      0059-units-restore-Before-dependencies-for-systemd-vconso.patch
 Patch0060:      0060-coredump-really-extract-container-cmdline-5167.patch
 Patch0061:      0061-machinectl-make-sure-that-inability-to-get-OS-versio.patch
 
+Patch0068:      0068-test-ipcrm-use-configured-nobody-user-name.patch
+
 # GIT_DIR=../../src/systemd/.git git diffab -M v232..master@{2017-01-30} hwdb/[67]* > hwdb.patch
 Patch0997:      hwdb.patch
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
