@@ -12,7 +12,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        232
-Release:        13%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        14%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -102,6 +102,7 @@ Patch0057:      0057-systemctl-always-avoid-being-killed-when-doing-switc.patch
 Patch0058:      0058-systemctl-ignore-SIGTERM-after-switch-root.patch
 Patch0059:      0059-units-restore-Before-dependencies-for-systemd-vconso.patch
 Patch0060:      0060-coredump-really-extract-container-cmdline-5167.patch
+Patch0061:      0061-machinectl-make-sure-that-inability-to-get-OS-versio.patch
 
 # GIT_DIR=../../src/systemd/.git git diffab -M v232..master@{2017-01-30} hwdb/[67]* > hwdb.patch
 Patch0997:      hwdb.patch
@@ -1025,7 +1026,10 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %{_mandir}/man[1578]/systemd-journal-gateway*
 
 %changelog
-* Sat Feb 11 2017 Fedora Release Engineering <releng@fedoraproject.org>
+* Tue Feb 14 2017 Jan Synáček <jsynacek@redhat.com> - 232-14
+- machinectl fails when virtual machine is running (#1419501)
+
+* Sat Feb 11 2017 Fedora Release Engineering <releng@fedoraproject.org> - 232-13
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
 
 * Tue Jan 31 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 232-12
