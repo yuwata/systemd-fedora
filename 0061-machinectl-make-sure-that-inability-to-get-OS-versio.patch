@@ -1,17 +1,20 @@
-From bd99ada53a580dd28bc2c6bfcd2c974e0696ed94 Mon Sep 17 00:00:00 2001
+From 758503b1c24a43de5e0ad40c3e0299a4c5df0238 Mon Sep 17 00:00:00 2001
 From: Jan Synacek <jsynacek@redhat.com>
 Date: Tue, 14 Feb 2017 10:21:53 +0100
 Subject: [PATCH] machinectl: make sure that inability to get OS version isn't
- consider fatal for machine list
+ consider fatal for machine list (#4972)
 
-Backported from: 4b2419165ce409ee55ce96a926302f89685f2293
-Resolves: #1419501
+Fixes: #4918
+
+(cherry picked from commit 4b2419165ce409ee55ce96a926302f89685f2293)
+
+Resolves: https://bugzilla.redhat.com/1419501
 ---
  src/machine/machinectl.c | 16 ++++++----------
  1 file changed, 6 insertions(+), 10 deletions(-)
 
 diff --git a/src/machine/machinectl.c b/src/machine/machinectl.c
-index 7b9be3b..7fe1da1 100644
+index f84226f58f..2aab754406 100644
 --- a/src/machine/machinectl.c
 +++ b/src/machine/machinectl.c
 @@ -242,24 +242,20 @@ static int list_machines(int argc, char *argv[], void *userdata) {
@@ -45,6 +48,3 @@ index 7b9be3b..7fe1da1 100644
                  l = strlen(name);
                  if (l > max_name)
                          max_name = l;
--- 
-2.9.3
-
