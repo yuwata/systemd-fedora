@@ -12,7 +12,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        232
-Release:        14%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        15%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -656,6 +656,21 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %dir %{_sysconfdir}/systemd
 %dir %{_sysconfdir}/systemd/system
 %{_sysconfdir}/systemd/system/ctrl-alt-del.target
+%ghost %dir %{_sysconfdir}/systemd/system/basic.target.wants
+%ghost %dir %{_sysconfdir}/systemd/system/bluetooth.target.wants
+%ghost %dir %{_sysconfdir}/systemd/system/default.target.wants
+%ghost %dir %{_sysconfdir}/systemd/system/getty.target.wants
+%ghost %dir %{_sysconfdir}/systemd/system/graphical.target.wants
+%ghost %dir %{_sysconfdir}/systemd/system/local-fs.target.wants
+%ghost %dir %{_sysconfdir}/systemd/system/machines.target.wants
+%ghost %dir %{_sysconfdir}/systemd/system/multi-user.target.wants
+%ghost %dir %{_sysconfdir}/systemd/system/network-online.target.wants
+%ghost %dir %{_sysconfdir}/systemd/system/printer.target.wants
+%ghost %dir %{_sysconfdir}/systemd/system/remote-fs.target.wants
+%ghost %dir %{_sysconfdir}/systemd/system/sockets.target.wants
+%ghost %dir %{_sysconfdir}/systemd/system/sysinit.target.wants
+%ghost %dir %{_sysconfdir}/systemd/system/system-update.target.wants
+%ghost %dir %{_sysconfdir}/systemd/system/timers.target.wants
 %dir %{_sysconfdir}/systemd/user
 %dir %{_sysconfdir}/systemd/network
 %dir %{_sysconfdir}/tmpfiles.d
@@ -1065,6 +1080,9 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %{_mandir}/man[1578]/systemd-journal-gateway*
 
 %changelog
+* Thu Feb 16 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 232-15
+- Add %%ghost %%dir entries for .wants dirs of our targets (#1422894)
+
 * Tue Feb 14 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 232-14
 - Ignore the hwdb parser test
 
