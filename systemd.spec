@@ -8,11 +8,12 @@
 
 %global pkgdir %{_prefix}/lib/systemd
 %global system_unit_dir %{pkgdir}/system
+%global user_unit_dir %{pkgdir}/user
 
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        232
-Release:        15%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Version:        233
+Release:        1%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -39,75 +40,11 @@ Source10:       systemd-udev-trigger-no-reload.conf
 Source11:       20-grubby.install
 Source12:       https://raw.githubusercontent.com/systemd/systemd/1000522a60ceade446773c67031b47a566d4a70d/src/login/systemd-user.m4
 
-# GIT_DIR=../../src/systemd/.git git format-patch-ab --no-signature -M -N v232..v232-stable
+# GIT_DIR=../../src/systemd/.git git format-patch-ab --no-signature -M -N v233..v233-stable
 # i=1; for j in 00*patch; do printf "Patch%04d:      %s\n" $i $j; i=$((i+1));done|xclip
 
-Patch0001:      0001-build-sys-link-test-seccomp-against-seccomp-libs-456.patch
-Patch0002:      0002-kernel-install-use-exit-instead-of-return-4565.patch
-Patch0003:      0003-nspawn-fix-exit-code-for-help-and-version-4609.patch
-Patch0004:      0004-core-don-t-use-the-unified-hierarchy-for-the-systemd.patch
-Patch0005:      0005-core-make-RootDirectory-and-ProtectKernelModules-wor.patch
-Patch0006:      0006-nspawn-avoid-one-strdup-by-using-free_and_replace.patch
-Patch0007:      0007-nspawn-slight-simplification.patch
-Patch0008:      0008-core-namespace-count-and-free-failed-paths-inside-ch.patch
-Patch0009:      0009-basic-virt-fix-userns-check-on-CONFIG_USER_NS-n-kern.patch
-Patch0010:      0010-timesyncd-clear-ADJ_MAXERROR-to-keep-STA_UNSYNC-clea.patch
-Patch0011:      0011-link-fix-offload-features-initialization-4639.patch
-Patch0012:      0012-sd-event-fix-sd_event_source_get_priority-4712.patch
-Patch0013:      0013-build-sys-check-for-lz4-in-the-old-and-new-numbering.patch
-Patch0014:      0014-networkd-fix-size-of-MTUBytes-so-that-it-does-not-ov.patch
-Patch0015:      0015-core-consider-SIGTERM-as-a-clean-exit-status-for-ini.patch
-Patch0016:      0016-core-make-sure-initrd-switch-root-command-survives-P.patch
-Patch0017:      0017-fix-journald-startup-problem-when-code-is-compiled-w.patch
-Patch0018:      0018-device-Avoid-calling-unit_free-NULL-in-device-setup-.patch
-Patch0019:      0019-udevd-check-correct-return-value-of-fcntl-4758.patch
-Patch0020:      0020-systemctl-fix-is-enabled-exit-status-on-failure-when.patch
-Patch0021:      0021-journal-make-sure-to-initially-populate-the-space-in.patch
-Patch0022:      0022-networkd-link_enter_configured-remove-assert-4800.patch
-Patch0023:      0023-rules-consider-MMC-device-partitions-with-partition-.patch
-Patch0024:      0024-nspawn-add-missing-E-to-getopt_long-4860.patch
-Patch0025:      0025-build-sys-define-arm-as-secondary-architecture-for-a.patch
-Patch0026:      0026-nspawn-when-getting-SIGCHLD-make-sure-it-s-from-the-.patch
-Patch0027:      0027-machinectl-make-machinectl-E-shell-work.patch
-Patch0028:      0028-sysv-generator-properly-translate-sysv-facilities.patch
-Patch0029:      0029-core-downgrade-Time-has-been-changed-to-debug-4906.patch
-Patch0030:      0030-machinectl-handle-EOPNOTSUPP-from-print_addresses-49.patch
-Patch0031:      0031-units-fix-condition-for-systemd-journal-catalog-upda.patch
-Patch0032:      0032-core-fix-sockaddr-length-calculation-for-sockaddr_pr.patch
-Patch0033:      0033-shared-fix-double-free-in-unmask-5005.patch
-Patch0034:      0034-shared-fix-double-free-in-link.patch
-Patch0035:      0035-shared-check-strdup-NULL.patch
-Patch0036:      0036-rpm-triggers-do-nothing-if-systemd-is-not-running-50.patch
-Patch0037:      0037-kernel-install-avoid-process-substitution.patch
-Patch0038:      0038-shell-completion-redirect-all-errors-from-systemctl-.patch
-Patch0039:      0039-cryptsetup-fix-unitialized-variable.patch
-Patch0040:      0040-systemctl-uninitalized-variable.patch
-Patch0041:      0041-bash_completion-journalctl-add-missing-options.patch
-Patch0042:      0042-bash_completion-journalctl-Complete-t-option-values.patch
-Patch0043:      0043-Fixi-caching-in-zsh-completion-5122.patch
-Patch0044:      0044-bash-completion-add-support-for-now-5155.patch
-Patch0045:      0045-core-dbus-fix-two-strv-memleaks.patch
-Patch0046:      0046-core-execute-fix-strv-memleak.patch
-Patch0047:      0047-resolve-fix-strv-memleak.patch
-Patch0048:      0048-nspawn-fix-clobbering-of-selinux-context-arg.patch
-Patch0049:      0049-parse_hwdb-fix-to-work-with-pyparsing-2.1.10.patch
-Patch0050:      0050-journald-don-t-flush-to-var-log-journal-before-we-ge.patch
-Patch0051:      0051-tree-wide-drop-NULL-sentinel-from-strjoin.patch
-Patch0052:      0052-core-add-new-RestrictNamespaces-unit-file-setting.patch
-Patch0053:      0053-seccomp-rework-seccomp-code-to-improve-compat-with-s.patch
-Patch0054:      0054-build-sys-add-check-for-gperf-lookup-function-signat.patch
-Patch0055:      0055-journal-gatewayd-actually-recognize-D-as-a-synonym-f.patch
-Patch0056:      0056-journal-gatewayd-return-EINVAL-if-ARG_TRUST-and-HAVE.patch
-Patch0057:      0057-systemctl-always-avoid-being-killed-when-doing-switc.patch
-Patch0058:      0058-systemctl-ignore-SIGTERM-after-switch-root.patch
-Patch0059:      0059-units-restore-Before-dependencies-for-systemd-vconso.patch
-Patch0060:      0060-coredump-really-extract-container-cmdline-5167.patch
-Patch0061:      0061-machinectl-make-sure-that-inability-to-get-OS-versio.patch
+# GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-01-30} hwdb/[67]* > hwdb.patch
 
-Patch0068:      0068-test-ipcrm-use-configured-nobody-user-name.patch
-
-# GIT_DIR=../../src/systemd/.git git diffab -M v232..master@{2017-01-30} hwdb/[67]* > hwdb.patch
-Patch0997:      hwdb.patch
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
 %global num_patches %{lua: c=0; for i,p in ipairs(patches) do c=c+1; end; print(c);}
@@ -301,6 +238,15 @@ and to write journal files from serialized journal contents.
 This package contains systemd-journal-gatewayd,
 systemd-journal-remote, and systemd-journal-upload.
 
+%package tests
+Summary:       Internal unit tests for systemd
+Requires:      %{name}%{?_isa} = %{version}-%{release}
+License:       LGPLv2+
+
+%description tests
+"Installed tests" that are usually run as part of the build system.
+They can be useful to test systemd internals.
+
 %prep
 %setup -q %{?gitcommit:-n %{name}-%{gitcommit}}
 
@@ -370,7 +316,7 @@ CONFIGURE_OPTS=(
 make %{?_smp_mflags} GCC_COLORS="" V=1
 
 %install
-%make_install
+%make_install install-tests
 
 find %{buildroot} \( -name '*.a' -o -name '*.la' \) -delete
 
@@ -460,12 +406,13 @@ install -Dm0644 -t %{buildroot}%{system_unit_dir}/systemd-udev-trigger.service.d
 
 install -Dm0755 -t %{buildroot}%{_prefix}/lib/kernel/install.d/ %{SOURCE11}
 
+mkdir -p %{buildroot}/etc/polkit-1/localauthority/10-vendor.d
+mv %{buildroot}/var/lib/polkit-1/localauthority/10-vendor.d/systemd-networkd.pkla \
+   %{buildroot}/etc/polkit-1/localauthority/10-vendor.d/
+
 %find_lang %{name}
 
 %check
-sed -i '33i \
-sys.exit(77)' hwdb/parse_hwdb.py
-
 make check %{?_smp_mflags} VERBOSE=1 || { cat test-suite.log; exit 1; }
 
 # Check for botched translations (https://bugzilla.redhat.com/show_bug.cgi?id=1226566)
@@ -655,7 +602,6 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %license LICENSE.GPL2 LICENSE.LGPL2.1
 %dir %{_sysconfdir}/systemd
 %dir %{_sysconfdir}/systemd/system
-%{_sysconfdir}/systemd/system/ctrl-alt-del.target
 %ghost %dir %{_sysconfdir}/systemd/system/basic.target.wants
 %ghost %dir %{_sysconfdir}/systemd/system/bluetooth.target.wants
 %ghost %dir %{_sysconfdir}/systemd/system/default.target.wants
@@ -688,6 +634,7 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %exclude %{pkgdir}/system-generators/systemd-gpt-auto-generator
 %exclude %{pkgdir}/system-generators/systemd-hibernate-resume-generator
 %{pkgdir}/user-generators
+%{pkgdir}/user-environment-generators
 %dir %{pkgdir}/system-shutdown
 %dir %{pkgdir}/system-sleep
 %dir %{pkgdir}/catalog
@@ -697,8 +644,18 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %dir %{_prefix}/lib/sysctl.d
 %dir %{_prefix}/lib/modules-load.d
 %dir %{_prefix}/lib/binfmt.d
+%dir %{_prefix}/lib/environment.d
+%{_prefix}/lib/environment.d/99-environment.conf
 %dir %{_prefix}/lib/kernel
 %dir %{_datadir}/systemd
+%dir %{_datadir}/dbus-1/system.d
+%{_datadir}/dbus-1/system.d/org.freedesktop.systemd1.conf
+%{_datadir}/dbus-1/system.d/org.freedesktop.hostname1.conf
+%{_datadir}/dbus-1/system.d/org.freedesktop.login1.conf
+%{_datadir}/dbus-1/system.d/org.freedesktop.locale1.conf
+%{_datadir}/dbus-1/system.d/org.freedesktop.timedate1.conf
+%{_datadir}/dbus-1/system.d/org.freedesktop.resolve1.conf
+%{_datadir}/dbus-1/system.d/org.freedesktop.network1.conf
 %dir %{_datadir}/pkgconfig
 %dir %{_datadir}/zsh
 %dir %{_datadir}/zsh/site-functions
@@ -716,20 +673,13 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %ghost %attr(0664,root,utmp) %{_localstatedir}/run/utmp
 %ghost %attr(0664,root,utmp) %{_localstatedir}/log/wtmp
 %ghost %attr(0600,root,utmp) %{_localstatedir}/log/btmp
-%dir %{_sysconfdir}/dbus-1/system.d
-%config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.systemd1.conf
-%config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.hostname1.conf
-%config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.login1.conf
-%config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.locale1.conf
-%config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.timedate1.conf
-%config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.resolve1.conf
-%config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.network1.conf
 %config(noreplace) %{_sysconfdir}/systemd/system.conf
 %config(noreplace) %{_sysconfdir}/systemd/user.conf
 %config(noreplace) %{_sysconfdir}/systemd/logind.conf
 %config(noreplace) %{_sysconfdir}/systemd/journald.conf
 %config(noreplace) %{_sysconfdir}/systemd/resolved.conf
 %config(noreplace) %{_sysconfdir}/systemd/coredump.conf
+%config(noreplace) %{_sysconfdir}/systemd/system/dbus-org.freedesktop.resolve1.service
 %config(noreplace) %{_sysconfdir}/yum/protected.d/systemd.conf
 %config(noreplace) %{_sysconfdir}/pam.d/systemd-user
 %{_rpmconfigdir}/macros.d/macros.systemd
@@ -762,6 +712,7 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %{_bindir}/systemd-inhibit
 %{_bindir}/systemd-machine-id-setup
 %{_bindir}/systemd-mount
+%{_bindir}/systemd-umount
 %{_bindir}/systemd-notify
 %{_bindir}/systemd-path
 %{_bindir}/systemd-resolve
@@ -775,7 +726,7 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %{pkgdir}/systemd
 %{pkgdir}/libsystemd-shared-%{version}.so
 %{system_unit_dir}
-%{pkgdir}/user
+%{user_unit_dir}
 %{pkgdir}/resolv.conf
 %exclude %{system_unit_dir}/*udev*
 %exclude %{system_unit_dir}/*/*udev*
@@ -896,11 +847,14 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %{_datadir}/dbus-1/system-services/org.freedesktop.network1.service
 %dir %{_datadir}/polkit-1
 %dir %{_datadir}/polkit-1/actions
+%dir %{_datadir}/polkit-1/rules.d
 %{_datadir}/polkit-1/actions/org.freedesktop.systemd1.policy
 %{_datadir}/polkit-1/actions/org.freedesktop.hostname1.policy
 %{_datadir}/polkit-1/actions/org.freedesktop.login1.policy
 %{_datadir}/polkit-1/actions/org.freedesktop.locale1.policy
 %{_datadir}/polkit-1/actions/org.freedesktop.timedate1.policy
+%{_datadir}/polkit-1/rules.d/systemd-networkd.rules
+/etc/polkit-1/localauthority/10-vendor.d/systemd-networkd.pkla
 %{_datadir}/pkgconfig/systemd.pc
 %{_datadir}/pkgconfig/udev.pc
 %{_datadir}/bash-completion/completions/*
@@ -1024,8 +978,6 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %{_mandir}/man[1578]/systemd-sleep*
 
 %files container
-%config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.machine1.conf
-%config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.import1.conf
 %{_libdir}/libnss_mymachines.so.2
 %{_bindir}/machinectl
 %{_bindir}/systemd-nspawn
@@ -1048,6 +1000,9 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %{pkgdir}/systemd-pull
 %{pkgdir}/network/80-container-ve.network
 %{pkgdir}/network/80-container-vz.network
+%{_datadir}/dbus-1/system.d/org.freedesktop.import1.conf
+%{_datadir}/dbus-1/system.d/org.freedesktop.machine1.conf
+%{_datadir}/dbus-1/system-services/org.freedesktop.import1.service
 %{_datadir}/dbus-1/system-services/org.freedesktop.machine1.service
 %{_datadir}/dbus-1/system-services/org.freedesktop.import1.service
 %{_datadir}/polkit-1/actions/org.freedesktop.import1.policy
@@ -1079,7 +1034,14 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %{_mandir}/man[1578]/systemd-journal-upload*
 %{_mandir}/man[1578]/systemd-journal-gateway*
 
+%files tests
+%{pkgdir}/tests
+
 %changelog
+* Thu Mar  2 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 233-1
+- New upstream release (#1416201, #1405439, #1420753, many others)
+- New systemd-tests subpackage with "installed tests"
+
 * Thu Feb 16 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 232-15
 - Add %%ghost %%dir entries for .wants dirs of our targets (#1422894)
 
