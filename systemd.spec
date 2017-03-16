@@ -109,6 +109,7 @@ BuildRequires:  libtool
 %if %{num_patches}
 BuildRequires:  git
 %endif
+BuildRequires:  lz4
 
 Requires(post): coreutils
 Requires(post): sed
