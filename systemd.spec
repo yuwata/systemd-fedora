@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        233
-Release:        2%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        3%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -44,6 +44,19 @@ Source12:       https://raw.githubusercontent.com/systemd/systemd/1000522a60cead
 # i=1; for j in 00*patch; do printf "Patch%04d:      %s\n" $i $j; i=$((i+1));done|xclip
 
 # GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-01-30} hwdb/[67]* > hwdb.patch
+
+Patch0001:      0001-dhcp-server-add-two-missing-OOM-checks.patch
+Patch0002:      0002-import-bump-image-size-safety-limit-for-machinectl-p.patch
+Patch0003:      0003-coredump-fix-handling-of-premature-eof-data-for-back.patch
+Patch0004:      0004-cgtop-use-PRIu64-to-print-uint64_t-5544.patch
+Patch0005:      0005-man-fix-typo-5556.patch
+Patch0006:      0006-Fix-typo-in-function-name-5565.patch
+Patch0007:      0007-resolve-add-missing-space-in-output-message-5574.patch
+Patch0008:      0008-headers-check-that-__INCLUDE_LEVEL__-is-defined-befo.patch
+Patch0009:      0009-journal-prevent-integer-overflow-while-validating-he.patch
+Patch0010:      0010-machinectl-don-t-return-1-in-case-we-couldn-t-figure.patch
+Patch0011:      0011-man-Document-when-pam_systemd-sets-XDG_RUNTIME_DIR-5.patch
+Patch0012:      0012-man-Fix-a-simple-grammar-error-in-systemd.service.xm.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
@@ -1037,6 +1050,10 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %{pkgdir}/tests
 
 %changelog
+* Thu Mar 16 2017 Michal Sekletar <msekleta@redhat.com> - 233-3
+- Backport bugfixes from upstream
+- Don't return error when machinectl couldn't figure out container IP addresses (#1419501)
+
 * Thu Mar  2 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 233-2
 - Fix installation conflict with polkit
 
