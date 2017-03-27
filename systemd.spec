@@ -584,8 +584,8 @@ exit 0
 %systemd_postun_with_restart systemd-udevd.service
 
 %pre journal-remote
-getent group systemd-journal-gateway &>/dev/null || groupadd -r -g 191 systemd-journal-gateway 2>&1 || :
-getent passwd systemd-journal-gateway &>/dev/null || useradd -r -l -u 191 -g systemd-journal-gateway -d %{_localstatedir}/log/journal -s /sbin/nologin -c "Journal Gateway" systemd-journal-gateway &>/dev/null || :
+getent group systemd-journal-gateway &>/dev/null || groupadd -r systemd-journal-gateway 2>&1 || :
+getent passwd systemd-journal-gateway &>/dev/null || useradd -r -l -g systemd-journal-gateway -d %{_localstatedir}/log/journal -s /sbin/nologin -c "Journal Gateway" systemd-journal-gateway &>/dev/null || :
 getent group systemd-journal-remote &>/dev/null || groupadd -r systemd-journal-remote 2>&1 || :
 getent passwd systemd-journal-remote &>/dev/null || useradd -r -l -g systemd-journal-remote -d %{_localstatedir}/log/journal/remote -s /sbin/nologin -c "Journal Remote" systemd-journal-remote &>/dev/null || :
 getent group systemd-journal-upload &>/dev/null || groupadd -r systemd-journal-upload 2>&1 || :
