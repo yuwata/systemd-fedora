@@ -281,8 +281,7 @@ cp -p %{SOURCE12} src/login/
 %build
 ./autogen.sh
 
-%{?fedora: %global ntpvendor fedora}
-%{?rhel:   %global ntpvendor rhel}
+%define ntpvendor %(source /etc/os-release; echo ${ID})
 %{!?ntpvendor: echo 'NTP vendor zone is not set!'; exit 1}
 
 CONFIGURE_OPTS=(
