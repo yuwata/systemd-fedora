@@ -77,7 +77,9 @@ BuildRequires:  libacl-devel
 BuildRequires:  gobject-introspection-devel
 BuildRequires:  libblkid-devel
 BuildRequires:  xz-devel
+BuildRequires:  xz
 BuildRequires:  lz4-devel
+BuildRequires:  lz4
 BuildRequires:  bzip2-devel
 BuildRequires:  libidn-devel
 BuildRequires:  libcurl-devel
