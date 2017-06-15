@@ -1,0 +1,25 @@
+From dd8fe7cf46d372a012d01192949b8ba62887c996 Mon Sep 17 00:00:00 2001
+From: Josef Gajdusek <atx@atx.name>
+Date: Tue, 6 Jun 2017 17:18:22 +0200
+Subject: [PATCH] systemd-nspawn@.service: start after /var/lib/machines is
+ mounted (#6079)
+
+This fixes a race condition during boot, where an nspawn container would start
+before /var/lib/machines got mounted resulting in a failure.
+(cherry picked from commit be5bd2ec62dd7cedd56da82296b9296918806b48)
+---
+ units/systemd-nspawn@.service.in | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/units/systemd-nspawn@.service.in b/units/systemd-nspawn@.service.in
+index 8c0685aef5..5e80054a57 100644
+--- a/units/systemd-nspawn@.service.in
++++ b/units/systemd-nspawn@.service.in
+@@ -11,6 +11,7 @@ Documentation=man:systemd-nspawn(1)
+ PartOf=machines.target
+ Before=machines.target
+ After=network.target systemd-resolved.service
++RequiresMountsFor=/var/lib/machines
+ 
+ [Service]
+ ExecStart=@bindir@/systemd-nspawn --quiet --keep-unit --boot --link-journal=try-guest --network-veth -U --settings=override --machine=%i

@@ -1,4 +1,4 @@
-From fd46fb0d1606468232c6c74aa6a02c77c8d5934c Mon Sep 17 00:00:00 2001
+From 90eee306291a39b888ec13b3bd2f418f1f5aba0d Mon Sep 17 00:00:00 2001
 From: Yu Watanabe <watanabe.yu+github@gmail.com>
 Date: Mon, 13 Mar 2017 09:12:03 +0900
 Subject: [PATCH] resolve: add missing space in output message (#5574)
@@ -9,7 +9,7 @@ Subject: [PATCH] resolve: add missing space in output message (#5574)
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/src/resolve/resolve-tool.c b/src/resolve/resolve-tool.c
-index 32537ce..c620589 100644
+index 32537ce6e8..c62058917f 100644
 --- a/src/resolve/resolve-tool.c
 +++ b/src/resolve/resolve-tool.c
 @@ -114,8 +114,8 @@ static void print_source(uint64_t flags, usec_t rtt) {
@@ -23,6 +23,3 @@ index 32537ce..c620589 100644
  
          assert_se(format_timespan(rtt_str, sizeof(rtt_str), rtt, 100));
  
--- 
-2.9.3
-

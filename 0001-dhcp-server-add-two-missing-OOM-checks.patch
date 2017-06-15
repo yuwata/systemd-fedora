@@ -1,4 +1,4 @@
-From 0c65886b122a26636ad049cf12b560865ffc62a6 Mon Sep 17 00:00:00 2001
+From a75dde1983510900243f247b41a8cb935590ac7b Mon Sep 17 00:00:00 2001
 From: Lennart Poettering <lennart@poettering.net>
 Date: Thu, 9 Feb 2017 10:16:52 +0100
 Subject: [PATCH] dhcp-server: add two missing OOM checks
@@ -9,7 +9,7 @@ Subject: [PATCH] dhcp-server: add two missing OOM checks
  1 file changed, 6 insertions(+)
 
 diff --git a/src/libsystemd-network/sd-dhcp-server.c b/src/libsystemd-network/sd-dhcp-server.c
-index 2890681..315cbf1 100644
+index 2890681561..315cbf1ac5 100644
 --- a/src/libsystemd-network/sd-dhcp-server.c
 +++ b/src/libsystemd-network/sd-dhcp-server.c
 @@ -197,7 +197,11 @@ int sd_dhcp_server_new(sd_dhcp_server **ret, int ifindex) {
@@ -33,6 +33,3 @@ index 2890681..315cbf1 100644
                                  lease->address = address;
                                  lease->client_id.data = memdup(req->client_id.data,
                                                                 req->client_id.length);
--- 
-2.9.3
-

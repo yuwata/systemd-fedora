@@ -1,4 +1,4 @@
-From 51ad3c9829dfee2051fc97bd904d9ac6b191970c Mon Sep 17 00:00:00 2001
+From fb724063b60139468caceec06b946b82235578bc Mon Sep 17 00:00:00 2001
 From: Michal Sekletar <msekletar@users.noreply.github.com>
 Date: Tue, 14 Mar 2017 22:38:19 +0100
 Subject: [PATCH] machinectl: don't return 1 in case we couldn't figure out
@@ -14,7 +14,7 @@ Fixes: #5581
  1 file changed, 1 insertion(+)
 
 diff --git a/src/machine/machinectl.c b/src/machine/machinectl.c
-index 2838428..3031ed5 100644
+index 28384286fb..3031ed5def 100644
 --- a/src/machine/machinectl.c
 +++ b/src/machine/machinectl.c
 @@ -340,6 +340,7 @@ static int list_machines(int argc, char *argv[], void *userdata) {
@@ -25,6 +25,3 @@ index 2838428..3031ed5 100644
  out:
          clean_machine_info(machines, n_machines);
          return r;
--- 
-2.9.3
-

@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        233
-Release:        3%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        4%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -43,7 +43,7 @@ Source12:       https://raw.githubusercontent.com/systemd/systemd/1000522a60cead
 # GIT_DIR=../../src/systemd/.git git format-patch-ab --no-signature -M -N v233..v233-stable
 # i=1; for j in 00*patch; do printf "Patch%04d:      %s\n" $i $j; i=$((i+1));done|xclip
 
-# GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-01-30} hwdb/[67]* > hwdb.patch
+# GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} hwdb/[67]* > hwdb.patch
 
 Patch0001:      0001-dhcp-server-add-two-missing-OOM-checks.patch
 Patch0002:      0002-import-bump-image-size-safety-limit-for-machinectl-p.patch
@@ -57,6 +57,71 @@ Patch0009:      0009-journal-prevent-integer-overflow-while-validating-he.patch
 Patch0010:      0010-machinectl-don-t-return-1-in-case-we-couldn-t-figure.patch
 Patch0011:      0011-man-Document-when-pam_systemd-sets-XDG_RUNTIME_DIR-5.patch
 Patch0012:      0012-man-Fix-a-simple-grammar-error-in-systemd.service.xm.patch
+Patch0013:      0013-systemctl-fix-broken-vertical-lines-in-list-dependen.patch
+Patch0014:      0014-basic-journal-importer-Fix-unaligned-access-in-get_d.patch
+Patch0015:      0015-basic-don-t-link-libm.so-into-libbasic.so-5628.patch
+Patch0016:      0016-units-make-enablement-of-s-n-wait-online.service-fol.patch
+Patch0017:      0017-basic-forbid-rm_rf-to-remove-paths-ending-with-.-565.patch
+Patch0018:      0018-journal-fix-up-syslog-facility-when-forwarding-nativ.patch
+Patch0019:      0019-networkd-fix-route_new_static-assert-when-IPv4LLRout.patch
+Patch0020:      0020-logind-Stopped-inhibitions-should-be-considered-inac.patch
+Patch0021:      0021-core-downgrade-legit-error-logs-5705.patch
+Patch0022:      0022-core-fix-values-of-BindPaths-and-BindReadOnlyPaths-p.patch
+Patch0023:      0023-tmpfiles-downgrade-error-message-when-operation-is-n.patch
+Patch0024:      0024-loginctl-fix-typo-causing-ignoring-multiple-session-.patch
+Patch0025:      0025-man-Fix-reference-to-timer-sync.target-instead-of-ti.patch
+Patch0026:      0026-units-systemd-resolved-should-start-before-network-o.patch
+Patch0027:      0027-sd-journal-return-SD_JOURNAL_INVALIDATE-only-if-jour.patch
+Patch0028:      0028-fstab-generator-do-not-skip-Before-ordering-for-noau.patch
+Patch0029:      0029-journald-fix-assertion-failure-on-journal_file_link_.patch
+Patch0030:      0030-networkd-Add-check-to-ensure-link-is-down-before-att.patch
+Patch0031:      0031-execute-Properly-log-errors-considering-socket-fds-5.patch
+Patch0032:      0032-pid1-improve-logging-when-failing-to-remount-ro-5940.patch
+Patch0033:      0033-sd-bus-fix-c-compatibility-5941.patch
+Patch0034:      0034-man-fix-typo-network-zones-network-zone.patch
+Patch0035:      0035-env-util-fix-memory-leak-5962.patch
+Patch0036:      0036-conf-parser-fix-wrong-argument-given-to-log_syntax_i.patch
+Patch0037:      0037-test-conf-parser-add-valid-and-invalid-utf8-test-for.patch
+Patch0038:      0038-man-fix-typo-m86k-m68k-5993.patch
+Patch0039:      0039-journal-journald-console-fix-format-specifier-issue.patch
+Patch0040:      0040-udev-udevadm-monitor-fix-format-specifier-issue.patch
+Patch0041:      0041-timesync-timesyncd-manager-fix-format-specifier-issu.patch
+Patch0042:      0042-timesync-timesyncd-manager-fix-format-specifier-issu.patch
+Patch0043:      0043-DHCP-when-adding-static-routes-set-scopes-properly-5.patch
+Patch0044:      0044-journald-use-unaligned_read-instead-of-memcpy.patch
+Patch0045:      0045-journal-remote-fix-memleak-of-the-name-of-the-remote.patch
+Patch0046:      0046-shared-logs-show-avoid-printing-null-when-timestamp-.patch
+Patch0047:      0047-journald-properly-process-multiple-entries-in-the-sa.patch
+Patch0048:      0048-journald-process-binary-fields-the-same-as-text-fiel.patch
+Patch0049:      0049-journald-fix-trivial-memleak.patch
+Patch0050:      0050-core-load-droping-avoid-oom-warning-when-the-unit-sy.patch
+Patch0051:      0051-sd-login-read-list-of-uids-of-sessions-from-UIDS-not.patch
+Patch0052:      0052-Allow-bad-MTU-values-with-warning-to-be-able-to-conn.patch
+Patch0053:      0053-tree-wide-fix-incorrect-uses-of-m.patch
+Patch0054:      0054-sd-dhcp-library-code-shouldn-t-log-above-LOG_DEBUG-6.patch
+Patch0055:      0055-networkd-link-Receive-LLDP-on-Bridge-slaves-not-mast.patch
+Patch0056:      0056-nspawn-add-nosuid-and-nodev-to-tmp-mount-6004.patch
+Patch0057:      0057-Allow-TimeoutSec-0-to-work-as-documented-in-mount-un.patch
+Patch0058:      0058-resolved-bugfix-of-null-pointer-p-question-dereferen.patch
+Patch0059:      0059-DHCP-Fail-link_dhcp_set_routes-promotely-if-no-addre.patch
+Patch0060:      0060-timesyncd-don-t-use-compiled-in-list-if-FallbackNTP-.patch
+Patch0061:      0061-timesyncd-properly-handle-OOM-errors-when-parsing-fa.patch
+Patch0062:      0062-rules-Handle-MMC-boot-partitions-by-path-correctly-6.patch
+Patch0063:      0063-vconsole-setup-add-more-log-messages.patch
+Patch0064:      0064-vconsole-setup-skip-setting-fonts-when-setfont-retur.patch
+Patch0065:      0065-shell-completion-add-systemctl-revert-6042.patch
+Patch0066:      0066-rules-watch-metadata-changes-in-mmcblk-devices-6050.patch
+Patch0067:      0067-systemctl-avoid-spurious-warning-about-missing-reboo.patch
+Patch0068:      0068-man-don-t-say-that-ExecStart-syntax-is-very-shell.patch
+Patch0069:      0069-man-update-MemoryDenyWriteExecute-description-for-ex.patch
+Patch0070:      0070-hwdb-use-path_join-to-generate-the-hwdb_bin-path-606.patch
+Patch0071:      0071-systemd-nspawn-.service-start-after-var-lib-machines.patch
+Patch0072:      0072-zsh-add-completion-for-add-wants-and-add-requires-60.patch
+Patch0073:      0073-udev-stop-freeing-value-after-using-it-for-setting-s.patch
+Patch0074:      0074-core-mount-pass-c-flag-to-bin-umount-6093.patch
+Patch0075:      0075-man-systemd-timesyncd.service-8-6109.patch
+
+Source0990:      hwdb.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
@@ -276,6 +341,8 @@ They can be useful to test systemd internals.
     # Apply all the patches.
     git am %{patches}
 %endif
+
+git apply %{SOURCE990}
 
 # Restore systemd-user pam config from before "removal of Fedora-specific bits"
 cp -p %{SOURCE12} src/login/
@@ -1052,6 +1119,12 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %{pkgdir}/tests
 
 %changelog
+* Thu Jun 15 2017 zbyszek <zbyszek@in.waw.pl> - 233-4
+- Backport a bunch of small fixes (memleaks, wrong format strings,
+  man page clarifications, shell completion)
+- Fix systemd-resolved crash on crafted DNS packet (CVE-2017-9217, #1455493)
+- Fix systemd-vconsole-setup.service error on systems with no VGA console (#1272686)
+
 * Thu Mar 16 2017 Michal Sekletar <msekleta@redhat.com> - 233-3
 - Backport bugfixes from upstream
 - Don't return error when machinectl couldn't figure out container IP addresses (#1419501)

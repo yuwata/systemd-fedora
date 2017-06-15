@@ -1,0 +1,36 @@
+From 678199bb6dbc8ee15ccffe6dc9d62b42e5ac6da8 Mon Sep 17 00:00:00 2001
+From: umuttl <umut@tezduyar.com>
+Date: Mon, 10 Apr 2017 13:12:25 +0200
+Subject: [PATCH] core: downgrade legit error logs (#5705)
+
+manager_sync_bus_names() function retrieves the dbus names
+and compares it with unit bus names. It could be right
+after the list is retrieved, the dbus peer is disconnected.
+In this case it is really not an ERROR print if
+sd_bus_get_name_creds() or sd_bus_creds_get_unique_name()
+fail.
+(cherry picked from commit ddbf0d4b92733a54de50724c756fd48237ad70c9)
+---
+ src/core/dbus.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/core/dbus.c b/src/core/dbus.c
+index 065f2d81d6..cfc045d282 100644
+--- a/src/core/dbus.c
++++ b/src/core/dbus.c
+@@ -753,13 +753,13 @@ int manager_sync_bus_names(Manager *m, sd_bus *bus) {
+                         /* If it is, determine its current owner */
+                         r = sd_bus_get_name_creds(bus, name, SD_BUS_CREDS_UNIQUE_NAME, &creds);
+                         if (r < 0) {
+-                                log_error_errno(r, "Failed to get bus name owner %s: %m", name);
++                                log_full_errno(r == -ENXIO ? LOG_DEBUG : LOG_ERR, r, "Failed to get bus name owner %s: %m", name);
+                                 continue;
+                         }
+ 
+                         r = sd_bus_creds_get_unique_name(creds, &unique);
+                         if (r < 0) {
+-                                log_error_errno(r, "Failed to get unique name for %s: %m", name);
++                                log_full_errno(r == -ENXIO ? LOG_DEBUG : LOG_ERR, r, "Failed to get unique name for %s: %m", name);
+                                 continue;
+                         }
+ 

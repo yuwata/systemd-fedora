@@ -1,0 +1,24 @@
+From 817b7724521ad886045fd89097c64c468fa9f87a Mon Sep 17 00:00:00 2001
+From: Susant Sahani <ssahani@users.noreply.github.com>
+Date: Fri, 31 Mar 2017 11:59:20 +0530
+Subject: [PATCH] networkd: fix route_new_static assert when IPv4LLRoute=true
+ (#5676)
+
+fixes: #5664(cherry picked from commit 0b180d754cd9b171f38e39554495841f666060f7)
+---
+ src/network/networkd-network.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/network/networkd-network.c b/src/network/networkd-network.c
+index ab372568de..fac42d8478 100644
+--- a/src/network/networkd-network.c
++++ b/src/network/networkd-network.c
+@@ -428,7 +428,7 @@ int network_apply(Network *network, Link *link) {
+         if (network->ipv4ll_route) {
+                 Route *route;
+ 
+-                r = route_new_static(network, "Network", 0, &route);
++                r = route_new_static(network, NULL, 0, &route);
+                 if (r < 0)
+                         return r;
+ 

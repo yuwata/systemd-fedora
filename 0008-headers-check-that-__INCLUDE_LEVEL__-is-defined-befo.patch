@@ -1,4 +1,4 @@
-From c1e4a9e5f7839fa35661069e2aaf600a915f0c6b Mon Sep 17 00:00:00 2001
+From cc60212ef3acc982eb0da5f2e6839af84a3a2f10 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
 Date: Mon, 13 Mar 2017 03:11:24 -0400
 Subject: [PATCH] headers: check that __INCLUDE_LEVEL__ is defined before using
@@ -12,7 +12,7 @@ In particular the coverity scanner is having trouble with it.
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/src/systemd/_sd-common.h b/src/systemd/_sd-common.h
-index 3bb886b..97c3943 100644
+index 3bb886be75..97c3943861 100644
 --- a/src/systemd/_sd-common.h
 +++ b/src/systemd/_sd-common.h
 @@ -22,8 +22,8 @@
@@ -26,6 +26,3 @@ index 3bb886b..97c3943 100644
  #endif
  
  #ifndef _sd_printf_
--- 
-2.9.3
-

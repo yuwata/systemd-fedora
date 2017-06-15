@@ -1,4 +1,4 @@
-From bd9bb2324adf9e16cdf4e6c3588ddc7778530fd8 Mon Sep 17 00:00:00 2001
+From eea54ddfeac9e4c19dff45a5cd9f1389646de114 Mon Sep 17 00:00:00 2001
 From: Dax Kelson <dkelson@gurulabs.com>
 Date: Sun, 5 Mar 2017 05:03:53 -0700
 Subject: [PATCH] import: bump image size safety limit for machinectl pull
@@ -11,7 +11,7 @@ We currenly use 40GB images in our environment
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/import/pull-job.c b/src/import/pull-job.c
-index e550df2..70aaa5c 100644
+index e550df2c57..70aaa5c291 100644
 --- a/src/import/pull-job.c
 +++ b/src/import/pull-job.c
 @@ -527,7 +527,7 @@ int pull_job_new(PullJob **ret, const char *url, CurlGlue *glue, void *userdata)
@@ -23,6 +23,3 @@ index e550df2..70aaa5c 100644
  
          j->url = strdup(url);
          if (!j->url)
--- 
-2.9.3
-

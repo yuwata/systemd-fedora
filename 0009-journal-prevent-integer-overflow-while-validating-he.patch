@@ -1,4 +1,4 @@
-From 112d963a0542b1280667e2eb2727a8946d9bcf8d Mon Sep 17 00:00:00 2001
+From bdd5ae00e8cf4f45183a20e5bc89efd3dcc02266 Mon Sep 17 00:00:00 2001
 From: Tobias Stoeckmann <stoeckmann@users.noreply.github.com>
 Date: Mon, 13 Mar 2017 08:14:42 +0100
 Subject: [PATCH] journal: prevent integer overflow while validating header
@@ -16,7 +16,7 @@ hold the converted values during validation.
  1 file changed, 9 insertions(+), 3 deletions(-)
 
 diff --git a/src/journal/journal-file.c b/src/journal/journal-file.c
-index a6ccb67..14cb01a 100644
+index a6ccb679a8..14cb01a600 100644
 --- a/src/journal/journal-file.c
 +++ b/src/journal/journal-file.c
 @@ -546,6 +546,8 @@ static bool warn_wrong_flags(const JournalFile *f, bool compatible) {
@@ -53,6 +53,3 @@ index a6ccb67..14cb01a 100644
                  return -ENODATA;
  
          if (!VALID64(le64toh(f->header->data_hash_table_offset)) ||
--- 
-2.9.3
-

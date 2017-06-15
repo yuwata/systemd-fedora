@@ -1,0 +1,31 @@
+From adc6a92ae92647c9b098ffb5ff257c8ab685411e Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Tue, 30 May 2017 16:43:48 -0400
+Subject: [PATCH] man: update MemoryDenyWriteExecute description for executable
+ stacks
+
+Without going into details, mention that libraries are also covered by the
+filters, and that executable stacks are a no no.
+
+Closes #5970.
+
+(cherry picked from commit 03c3c520402db803cffd5abc7ea0c55fba95fbb3)
+---
+ man/systemd.exec.xml | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/man/systemd.exec.xml b/man/systemd.exec.xml
+index fb64cd6d8e..9a9387b798 100644
+--- a/man/systemd.exec.xml
++++ b/man/systemd.exec.xml
+@@ -1655,8 +1655,8 @@
+         <citerefentry><refentrytitle>mprotect</refentrytitle><manvolnum>2</manvolnum></citerefentry> system calls with
+         <constant>PROT_EXEC</constant> set and
+         <citerefentry><refentrytitle>shmat</refentrytitle><manvolnum>2</manvolnum></citerefentry> system calls with
+-        <constant>SHM_EXEC</constant> set. Note that this option is incompatible with programs that generate program
+-        code dynamically at runtime, such as JIT execution engines, or programs compiled making use of the code
++        <constant>SHM_EXEC</constant> set. Note that this option is incompatible with programs and libraries that
++        generate program code dynamically at runtime, including JIT execution engines, executable stacks, and code
+         "trampoline" feature of various C compilers. This option improves service security, as it makes harder for
+         software exploits to change running code dynamically. Note that this feature is fully available on x86-64, and
+         partially on x86. Specifically, the <function>shmat()</function> protection is not available on x86. Note that

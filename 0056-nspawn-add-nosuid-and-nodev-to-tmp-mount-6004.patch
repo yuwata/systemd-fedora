@@ -1,0 +1,30 @@
+From 2d148f574c5c1e8bf7bf7da964e0f063395d42c8 Mon Sep 17 00:00:00 2001
+From: tomty89 <tom.ty89@gmail.com>
+Date: Tue, 23 May 2017 15:41:36 +0800
+Subject: [PATCH] nspawn: add nosuid and nodev to /tmp mount (#6004)
+
+When automatic /tmp mount was introduced to nspawn in v219, it was done without having the nosuid and nodev mount options, which was the same case as systemd's default tmp.mount unit back then.
+
+nosuid and nodev was added to tmp.mount(.m4) in v231 for security reasons. matching the nspawn /tmp mount entry against that.
+
+Ref.:
+https://github.com/systemd/systemd/commit/2f9df7c96a25adb42093ee3ee201577f3e01da42
+https://github.com/systemd/systemd/commit/bbb99c30d01a8bcdc27fb151cc6376a7877a6b07
+(cherry picked from commit e8a94ce83ebc5e5fa0dd312d8340d589506528f9)
+---
+ src/nspawn/nspawn-mount.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/nspawn/nspawn-mount.c b/src/nspawn/nspawn-mount.c
+index d276994120..ac7290732e 100644
+--- a/src/nspawn/nspawn-mount.c
++++ b/src/nspawn/nspawn-mount.c
+@@ -552,7 +552,7 @@ int mount_all(const char *dest,
+                 { NULL,                  "/proc/sysrq-trigger", NULL,    NULL,        MS_BIND|MS_RDONLY|MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_REMOUNT,             MOUNT_IN_USERNS|MOUNT_APPLY_APIVFS_RO },                          /* ... then, make it r/o */
+ 
+                 /* outer child mounts */
+-                { "tmpfs",               "/tmp",                "tmpfs", "mode=1777", MS_STRICTATIME,                                            MOUNT_FATAL },
++                { "tmpfs",               "/tmp",                "tmpfs", "mode=1777", MS_NOSUID|MS_NODEV|MS_STRICTATIME,                                            MOUNT_FATAL },
+                 { "tmpfs",               "/sys",                "tmpfs", "mode=755",  MS_NOSUID|MS_NOEXEC|MS_NODEV,                              MOUNT_FATAL|MOUNT_APPLY_APIVFS_NETNS },
+                 { "sysfs",               "/sys",                "sysfs", NULL,        MS_RDONLY|MS_NOSUID|MS_NOEXEC|MS_NODEV,                    MOUNT_FATAL|MOUNT_APPLY_APIVFS_RO },    /* skipped if above was mounted */
+                 { "sysfs",               "/sys",                "sysfs", NULL,                  MS_NOSUID|MS_NOEXEC|MS_NODEV,                    MOUNT_FATAL },                          /* skipped if above was mounted */

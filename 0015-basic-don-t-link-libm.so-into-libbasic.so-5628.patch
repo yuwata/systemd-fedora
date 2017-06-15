@@ -1,0 +1,29 @@
+From b4e76a669bedc420f9616c4a7d8b3e15b43fca78 Mon Sep 17 00:00:00 2001
+From: Thomas Haller <thaller@redhat.com>
+Date: Fri, 24 Mar 2017 15:36:06 +0100
+Subject: [PATCH] basic: don't link "libm.so" into "libbasic.so" (#5628)
+
+Very few parts of the systemd source require <math.h> or "libm.so".
+Linking libbasic with -lm drags the mathematical library in for all
+systemd components, and in turn for all users of systemd libraries.
+
+It's just unneeded.
+(cherry picked from commit 1539a651a9d31c18273df917bbfe175ab3606025)
+---
+ Makefile.am | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/Makefile.am b/Makefile.am
+index 2a5610740e..a767a5aa0d 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -1005,8 +1005,7 @@ libbasic_la_CFLAGS = \
+ libbasic_la_LIBADD = \
+ 	$(SELINUX_LIBS) \
+ 	$(CAP_LIBS) \
+-	-lrt \
+-	-lm
++	-lrt
+ 
+ # -----------------------------------------------------------------------------
+ noinst_LTLIBRARIES += \

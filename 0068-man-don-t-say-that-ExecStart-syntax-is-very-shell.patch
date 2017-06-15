@@ -1,0 +1,30 @@
+From d657efda431dc0bdac8a421336a6735daf6fc776 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Tue, 30 May 2017 16:31:51 -0400
+Subject: [PATCH] man: don't say that ExecStart syntax is "very shell"
+
+Fixes #6035.
+
+(cherry picked from commit 0e3f51cf8d1004375e72d080f2aceddb9432b430)
+---
+ man/systemd.service.xml | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/man/systemd.service.xml b/man/systemd.service.xml
+index a452e3a672..555719186e 100644
+--- a/man/systemd.service.xml
++++ b/man/systemd.service.xml
+@@ -926,10 +926,9 @@
+     result in a warning. In particular, any backslashes should be doubled. Finally, a trailing
+     backslash (<literal>\</literal>) may be used to merge lines.</para>
+ 
+-    <para>This syntax is intended to be very similar to shell syntax,
+-    but only the meta-characters and expansions described in the
+-    following paragraphs are understood. Specifically, redirection
+-    using
++    <para>This syntax is inspired by shell syntax, but only the meta-characters and expansions
++    described in the following paragraphs are understood, and the expansion of variables is
++    different. Specifically, redirection using
+     <literal>&lt;</literal>,
+     <literal>&lt;&lt;</literal>,
+     <literal>&gt;</literal>, and

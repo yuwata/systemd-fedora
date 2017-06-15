@@ -1,0 +1,40 @@
+From 432c3bd7c14c83306b66b3d3fdd7f834acd1856c Mon Sep 17 00:00:00 2001
+From: Philip Withnall <philip@tecnocode.co.uk>
+Date: Thu, 20 Apr 2017 11:34:26 +0100
+Subject: [PATCH] man: Fix reference to timer-sync.target instead of
+ time-sync.target (#5764)
+
+Also fix an erroneous reference to it in the NEWS file, for posterity.
+
+Signed-off-by: Philip Withnall <withnall@endlessm.com>(cherry picked from commit 46ae28d8c3b3c438dd1796b78bbff8f9dc188b31)
+---
+ NEWS                  | 2 +-
+ man/systemd.timer.xml | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/NEWS b/NEWS
+index da9e203832..05822a2cdc 100644
+--- a/NEWS
++++ b/NEWS
+@@ -3315,7 +3315,7 @@ CHANGES WITH 216:
+           like Cockpit which register web clients as PAM sessions.
+ 
+         * timer units with at least one OnCalendar= setting will now
+-          be started only after timer-sync.target has been
++          be started only after time-sync.target has been
+           reached. This way they will not elapse before the system
+           clock has been corrected by a local NTP client or
+           similar. This is particular useful on RTC-less embedded
+diff --git a/man/systemd.timer.xml b/man/systemd.timer.xml
+index 4fe140e4bc..7102d626e1 100644
+--- a/man/systemd.timer.xml
++++ b/man/systemd.timer.xml
+@@ -93,7 +93,7 @@
+     on <filename>timers.target</filename>, as well as <varname>Conflicts=</varname> and <varname>Before=</varname> on
+     <filename>shutdown.target</filename> to ensure that they are stopped cleanly prior to system shutdown.  Timer units
+     with at least one <varname>OnCalendar=</varname> directive will have an additional <varname>After=</varname>
+-    dependency on <filename>timer-sync.target</filename> to avoid being started before the system clock has been
++    dependency on <filename>time-sync.target</filename> to avoid being started before the system clock has been
+     correctly set. Only timer units involved with early boot or late system shutdown should disable the
+     <varname>DefaultDependencies=</varname> option.</para>
+   </refsect1>

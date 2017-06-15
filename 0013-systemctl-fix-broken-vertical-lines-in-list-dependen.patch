@@ -1,0 +1,23 @@
+From 47ae16f221555779be1d1781f4a9f5cbb2b56680 Mon Sep 17 00:00:00 2001
+From: Felix Zhang <fezhang@suse.com>
+Date: Mon, 20 Mar 2017 18:27:39 +0800
+Subject: [PATCH] systemctl: fix broken vertical lines in list-dependencies
+ --all (#5608)
+
+(cherry picked from commit 60705040152c9953a200eea16fffb5fef894c613)
+---
+ src/systemctl/systemctl.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/systemctl/systemctl.c b/src/systemctl/systemctl.c
+index d78e56d777..cb9ca9ae1e 100644
+--- a/src/systemctl/systemctl.c
++++ b/src/systemctl/systemctl.c
+@@ -1780,6 +1780,7 @@ static int list_dependencies_one(
+         STRV_FOREACH(c, deps) {
+                 if (strv_contains(*units, *c)) {
+                         if (!arg_plain) {
++                                printf("  ");
+                                 r = list_dependencies_print("...", level + 1, (branches << 1) | (c[1] == NULL ? 0 : 1), 1);
+                                 if (r < 0)
+                                         return r;

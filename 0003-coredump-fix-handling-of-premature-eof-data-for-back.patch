@@ -1,4 +1,4 @@
-From 5b21af2bf21f57e9b7ae30217ed01545029256e8 Mon Sep 17 00:00:00 2001
+From 26bffa023b572b25ec8ef6be70b4ed114492a592 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
 Date: Sun, 5 Mar 2017 10:35:44 -0500
 Subject: [PATCH] coredump: fix handling of premature-eof data for --backtrace
@@ -13,7 +13,7 @@ because that function requires the caller to handle EOF themselves.
  2 files changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/src/basic/journal-importer.c b/src/basic/journal-importer.c
-index 4c13e46..d25fd35 100644
+index 4c13e46a49..d25fd358e8 100644
 --- a/src/basic/journal-importer.c
 +++ b/src/basic/journal-importer.c
 @@ -314,7 +314,7 @@ int journal_importer_process_data(JournalImporter *imp) {
@@ -26,7 +26,7 @@ index 4c13e46..d25fd35 100644
                  assert(n > 0);
                  assert(line[n-1] == '\n');
 diff --git a/src/coredump/coredump.c b/src/coredump/coredump.c
-index 4c4f36a..5828e94 100644
+index 4c4f36aea0..5828e949e3 100644
 --- a/src/coredump/coredump.c
 +++ b/src/coredump/coredump.c
 @@ -1326,7 +1326,8 @@ static int process_backtrace(int argc, char *argv[]) {
@@ -39,6 +39,3 @@ index 4c4f36a..5828e94 100644
                          break;
          }
  
--- 
-2.9.3
-

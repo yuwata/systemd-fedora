@@ -1,0 +1,40 @@
+From 32fb431ebca202f885257c50574bf1c13939e5e9 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Sat, 13 May 2017 22:42:08 -0400
+Subject: [PATCH] journald: use unaligned_read instead of memcpy
+
+(cherry picked from commit 731e10f3c588a31936454d3207155c497219d99a)
+---
+ src/journal/journald-native.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/src/journal/journald-native.c b/src/journal/journald-native.c
+index c9bf3832c7..d839e04488 100644
+--- a/src/journal/journald-native.c
++++ b/src/journal/journald-native.c
+@@ -40,6 +40,7 @@
+ #include "selinux-util.h"
+ #include "socket-util.h"
+ #include "string-util.h"
++#include "unaligned.h"
+ 
+ bool valid_user_field(const char *p, size_t l, bool allow_protected) {
+         const char *a;
+@@ -218,7 +219,6 @@ void server_process_native_message(
+                         p = e + 1;
+                         continue;
+                 } else {
+-                        le64_t l_le;
+                         uint64_t l;
+                         char *k;
+ 
+@@ -227,8 +227,7 @@ void server_process_native_message(
+                                 break;
+                         }
+ 
+-                        memcpy(&l_le, e + 1, sizeof(uint64_t));
+-                        l = le64toh(l_le);
++                        l = unaligned_read_le64(e + 1);
+ 
+                         if (l > DATA_SIZE_MAX) {
+                                 log_debug("Received binary data block of %"PRIu64" bytes is too large, ignoring.", l);
