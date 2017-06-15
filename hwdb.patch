@@ -277,3 +277,22 @@ index 82a4b7a575..12d97de69b 100644
 +touchpad:usb:v045ep07*
 + ID_INPUT_TOUCHPAD_INTEGRATION=internal
 + 
+diff --git a/hwdb/parse_hwdb.py b/hwdb/parse_hwdb.py
+index b57e6f75aa..adf8a1963e 100755
+--- a/hwdb/parse_hwdb.py
++++ b/hwdb/parse_hwdb.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python3
++#!/usr/bin/env python3
+ # -*- Mode: python; coding: utf-8; indent-tabs-mode: nil -*- */
+ #
+ # This file is part of systemd. It is distrubuted under the MIT license, see
+@@ -112,6 +112,8 @@ def property_grammar():
+              ('ID_INPUT_TOUCHPAD_INTEGRATION', Or(('internal', 'external'))),
+              ('XKB_FIXED_LAYOUT', STRING),
+              ('XKB_FIXED_VARIANT', STRING),
++             ('KEYBOARD_LED_NUMLOCK', Literal('0')),
++             ('KEYBOARD_LED_CAPSLOCK', Literal('0')),
+              ('ACCEL_MOUNT_MATRIX', mount_matrix),
+             )
+     fixed_props = [Literal(name)('NAME') - Suppress('=') - val('VALUE')

@@ -40,10 +40,11 @@ Source10:       systemd-udev-trigger-no-reload.conf
 Source11:       20-grubby.install
 Source12:       https://raw.githubusercontent.com/systemd/systemd/1000522a60ceade446773c67031b47a566d4a70d/src/login/systemd-user.m4
 
-# GIT_DIR=../../src/systemd/.git git format-patch-ab --no-signature -M -N v233..v233-stable
-# i=1; for j in 00*patch; do printf "Patch%04d:      %s\n" $i $j; i=$((i+1));done|xclip
-
-# GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} hwdb/[67]* > hwdb.patch
+%if 0
+GIT_DIR=../../src/systemd/.git git format-patch-ab --no-signature -M -N v233..v233-stable
+i=1; for j in 00*patch; do printf "Patch%04d:      %s\n" $i $j; i=$((i+1));done|xclip
+GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[67]* hwdb/parse_hwdb.py > hwdb.patch
+%endif
 
 Patch0001:      0001-dhcp-server-add-two-missing-OOM-checks.patch
 Patch0002:      0002-import-bump-image-size-safety-limit-for-machinectl-p.patch
