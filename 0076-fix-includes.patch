@@ -1,4 +1,4 @@
-From 284d1cd0a12cad96a5ea61d1afb0dd677dbd147e Mon Sep 17 00:00:00 2001
+From 93dc6dbed1ee66619f5005f6209920ea051474a8 Mon Sep 17 00:00:00 2001
 From: Matija Skala <mskala@gmx.com>
 Date: Wed, 15 Mar 2017 13:21:10 +0100
 Subject: [PATCH] fix includes
@@ -7,6 +7,8 @@ linux/sockios.h is needed for the SIOCGSTAMPNS macro
 
 xlocale.h is included indirectly in glibc and doesn't even exist in
 other libcs
+
+(cherry picked from commit 284d1cd0a12cad96a5ea61d1afb0dd677dbd147e)
 ---
  src/basic/parse-util.c           | 1 -
  src/libsystemd-network/sd-lldp.c | 1 +

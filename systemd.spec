@@ -121,10 +121,11 @@ Patch0072:      0072-zsh-add-completion-for-add-wants-and-add-requires-60.patch
 Patch0073:      0073-udev-stop-freeing-value-after-using-it-for-setting-s.patch
 Patch0074:      0074-core-mount-pass-c-flag-to-bin-umount-6093.patch
 Patch0075:      0075-man-systemd-timesyncd.service-8-6109.patch
-Patch0076:      0076-test-resolved-packet-add-a-simple-test-for-our-alloc.patch
-Patch0077:      0077-resolved-simplify-alloc-size-calculation.patch
-Patch0078:      0078-resolved-do-not-allocate-packets-with-minimum-size.patch
-Patch0079:      0079-fix-includes.patch
+Patch0076:      0076-fix-includes.patch
+Patch0077:      0077-test-resolved-packet-add-a-simple-test-for-our-alloc.patch
+Patch0078:      0078-resolved-simplify-alloc-size-calculation.patch
+Patch0079:      0079-resolved-do-not-allocate-packets-with-minimum-size.patch
+Patch0080:      0080-resolved-define-various-packet-sizes-as-unsigned.patch
 
 
 Source0990:      hwdb.patch

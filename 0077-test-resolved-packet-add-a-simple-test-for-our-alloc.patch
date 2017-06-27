@@ -1,9 +1,10 @@
-From cc3e26e6de62c793ac869d219dd8aa7757249893 Mon Sep 17 00:00:00 2001
+From 7586bc7e5006fd7df55199283de4766b2775f60f Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
 Date: Sun, 18 Jun 2017 15:53:15 -0400
-Subject: [PATCH 1/2] test-resolved-packet: add a simple test for our
- allocation functions
+Subject: [PATCH] test-resolved-packet: add a simple test for our allocation
+ functions
 
+(cherry picked from commit 751ca3f1de316ca79b60001334dbdf54077e1d01)
 ---
  .gitignore                         |  1 +
  Makefile.am                        | 14 ++++++++++++

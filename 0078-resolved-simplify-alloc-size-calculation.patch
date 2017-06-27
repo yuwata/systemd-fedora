@@ -1,7 +1,7 @@
-From d2a286714f136404d05c8981a2e0820c1dd6e0a9 Mon Sep 17 00:00:00 2001
+From fa30043f5a3e4eaff50a72bad95601d582ac045d Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
 Date: Sun, 18 Jun 2017 16:07:57 -0400
-Subject: [PATCH 2/2] resolved: simplify alloc size calculation
+Subject: [PATCH] resolved: simplify alloc size calculation
 
 The allocation size was calculated in a complicated way, and for values
 close to the page size we would actually allocate less than requested.
@@ -9,6 +9,8 @@ close to the page size we would actually allocate less than requested.
 Reported by Chris Coulson <chris.coulson@canonical.com>.
 
 CVE-2017-9445
+
+(cherry picked from commit db848813bae4d28c524b3b6a7dad135e426659ce)
 ---
  src/resolve/resolved-dns-packet.c | 8 +-------
  src/resolve/resolved-dns-packet.h | 2 --
