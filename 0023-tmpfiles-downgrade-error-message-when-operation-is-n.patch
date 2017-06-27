@@ -1,0 +1,25 @@
+From 4dfc537efdff7b6297ff809a5c3f1a445f707c44 Mon Sep 17 00:00:00 2001
+From: Yu Watanabe <watanabe.yu+github@gmail.com>
+Date: Mon, 10 Apr 2017 20:22:18 +0900
+Subject: [PATCH] tmpfiles: downgrade error message when operation is not
+ supported (#5692)
+
+Fixes #5607
+(cherry picked from commit c258349f1a56b987fd91a5c136fd15536eec3890)
+---
+ src/tmpfiles/tmpfiles.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/tmpfiles/tmpfiles.c b/src/tmpfiles/tmpfiles.c
+index 7326597b8c..ed6a9adaa6 100644
+--- a/src/tmpfiles/tmpfiles.c
++++ b/src/tmpfiles/tmpfiles.c
+@@ -973,7 +973,7 @@ static int path_set_attribute(Item *item, const char *path) {
+ 
+         r = chattr_fd(fd, f, item->attribute_mask);
+         if (r < 0)
+-                log_full_errno(r == -ENOTTY ? LOG_DEBUG : LOG_WARNING,
++                log_full_errno(r == -ENOTTY || r == -EOPNOTSUPP ? LOG_DEBUG : LOG_WARNING,
+                                r,
+                                "Cannot set file attribute for '%s', value=0x%08x, mask=0x%08x: %m",
+                                path, item->attribute_value, item->attribute_mask);

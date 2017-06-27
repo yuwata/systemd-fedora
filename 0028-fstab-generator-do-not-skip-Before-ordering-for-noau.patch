@@ -1,0 +1,24 @@
+From fd22bede6e06da50ca072cdfdd7b9acbb5f1fc06 Mon Sep 17 00:00:00 2001
+From: Ivan Shapovalov <intelfx@intelfx.name>
+Date: Mon, 24 Apr 2017 20:38:53 +0400
+Subject: [PATCH] fstab-generator: do not skip Before= ordering for noauto
+ mountpoints (#5547)
+
+(cherry picked from commit bd6bcce4d7fd9f34f84588888fa9d0e664e0500b)
+---
+ src/fstab-generator/fstab-generator.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/fstab-generator/fstab-generator.c b/src/fstab-generator/fstab-generator.c
+index 2677a3fb32..50d350fce8 100644
+--- a/src/fstab-generator/fstab-generator.c
++++ b/src/fstab-generator/fstab-generator.c
+@@ -358,7 +358,7 @@ static int add_mount(
+                 "Documentation=man:fstab(5) man:systemd-fstab-generator(8)\n",
+                 source);
+ 
+-        if (!noauto && !nofail && !automount)
++        if (!nofail && !automount)
+                 fprintf(f, "Before=%s\n", post);
+ 
+         if (!automount && opts) {

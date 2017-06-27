@@ -1,0 +1,27 @@
+From 6a9a1a31feb8b7144e9d02046bfdc8404409e513 Mon Sep 17 00:00:00 2001
+From: Elias Probst <mail@eliasprobst.eu>
+Date: Sat, 13 May 2017 20:55:03 +0200
+Subject: [PATCH] =?UTF-8?q?man:=20fix=20typo=20(`--network-zones`=20?=
+ =?UTF-8?q?=E2=86=92=20`--network-zone`)?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+(cherry picked from commit cf917c27b654d4f1ee719ea27f49c6db93a3ec9c)
+---
+ man/systemd-nspawn.xml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/man/systemd-nspawn.xml b/man/systemd-nspawn.xml
+index a7af8c25db..ae7082776d 100644
+--- a/man/systemd-nspawn.xml
++++ b/man/systemd-nspawn.xml
+@@ -636,7 +636,7 @@
+         broadcast domain, here called a "zone". Each container may only be part of one zone, but each zone may contain
+         any number of containers. Each zone is referenced by its name. Names may be chosen freely (as long as they form
+         valid network interface names when prefixed with <literal>vz-</literal>), and it is sufficient to pass the same
+-        name to the <option>--network-zones=</option> switch of the various concurrently running containers to join
++        name to the <option>--network-zone=</option> switch of the various concurrently running containers to join
+         them in one zone.</para>
+ 
+         <para>Note that

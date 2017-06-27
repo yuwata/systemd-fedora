@@ -1,0 +1,39 @@
+From 68a923966fcbce01bb867108a877e9c2fa783dc9 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Fri, 19 May 2017 12:52:05 -0400
+Subject: [PATCH] journald: fix trivial memleak
+
+Fixes #5516.
+
+(cherry picked from commit c6e9e16f7702188127bf8dfbac45a87f8d1a3512)
+---
+ src/journal/journald-server.c | 2 ++
+ src/journal/journald-server.h | 2 +-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/journal/journald-server.c b/src/journal/journald-server.c
+index 6466e46ccc..da85260ccd 100644
+--- a/src/journal/journald-server.c
++++ b/src/journal/journald-server.c
+@@ -2177,6 +2177,8 @@ void server_done(Server *s) {
+         free(s->tty_path);
+         free(s->cgroup_root);
+         free(s->hostname_field);
++        free(s->runtime_storage.path);
++        free(s->system_storage.path);
+ 
+         if (s->mmap)
+                 mmap_cache_unref(s->mmap);
+diff --git a/src/journal/journald-server.h b/src/journal/journald-server.h
+index 75ac114d24..203460c50a 100644
+--- a/src/journal/journald-server.h
++++ b/src/journal/journald-server.h
+@@ -61,7 +61,7 @@ typedef struct JournalStorageSpace {
+ 
+ typedef struct JournalStorage {
+         const char *name;
+-        const char *path;
++        char *path;
+ 
+         JournalMetrics metrics;
+         JournalStorageSpace space;

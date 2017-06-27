@@ -1,0 +1,42 @@
+From e0a8e194a2e3ca0a405dadfcbc9b5347e46fe8c0 Mon Sep 17 00:00:00 2001
+From: NeilBrown <neil@brown.name>
+Date: Wed, 7 Jun 2017 22:28:23 +1000
+Subject: [PATCH] core/mount: pass "-c" flag to /bin/umount (#6093)
+
+"-c", which is short for "--no-canonicalize", tells /bin/umount
+that the path name is canonical (no .. or symlinks etc).
+
+systemd always uses a canonical name, so this flag is appropriate
+for systemd to use.
+Knowing that the path is canonical allows umount to avoid
+some calls to lstat() on the path.
+
+From v2.30 "-c" goes further and causes umount to avoid all
+attempts to 'lstat()' (or similar) the path.  This is important
+when automatically unmounting a filesystem, as lstat() can
+hang indefinitely in some cases such as when an NFS server
+is not accessible.
+
+"-c" has been supported since util-linux 2.17 which is before the
+earliest version supported by systemd.
+So "-c" is safe to use now, and once util-linux v2.30 is in use,
+it will allow mounts from non-responsive NFS servers to be
+unmounted.
+(cherry picked from commit 83897d5470190a9818df50026cf38cd97114f77d)
+---
+ src/core/mount.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/core/mount.c b/src/core/mount.c
+index ca0c4b0d5e..214364d87d 100644
+--- a/src/core/mount.c
++++ b/src/core/mount.c
+@@ -886,7 +886,7 @@ static void mount_enter_unmounting(Mount *m) {
+         m->control_command_id = MOUNT_EXEC_UNMOUNT;
+         m->control_command = m->exec_command + MOUNT_EXEC_UNMOUNT;
+ 
+-        r = exec_command_set(m->control_command, UMOUNT_PATH, m->where, NULL);
++        r = exec_command_set(m->control_command, UMOUNT_PATH, m->where, "-c", NULL);
+         if (r >= 0 && m->lazy_unmount)
+                 r = exec_command_append(m->control_command, "-l", NULL);
+         if (r >= 0 && m->force_unmount)

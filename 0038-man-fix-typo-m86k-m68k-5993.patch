@@ -1,0 +1,27 @@
+From 7785a2b82fcc11171699ccb9839a147ad6bf258d Mon Sep 17 00:00:00 2001
+From: Lennart Poettering <lennart@poettering.net>
+Date: Fri, 19 May 2017 11:37:30 +0200
+Subject: [PATCH] =?UTF-8?q?man:=20fix=20typo=20m86k=20=E2=86=92=20m68k=20(?=
+ =?UTF-8?q?#5993)?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+(cherry picked from commit 215a2db41972230e1df7733d29727247685d58dc)
+---
+ man/systemd.unit.xml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/man/systemd.unit.xml b/man/systemd.unit.xml
+index 44841ac7dd..c963a93531 100644
+--- a/man/systemd.unit.xml
++++ b/man/systemd.unit.xml
+@@ -859,7 +859,7 @@
+         <varname>arm64-be</varname>,
+         <varname>sh</varname>,
+         <varname>sh64</varname>,
+-        <varname>m86k</varname>,
++        <varname>m68k</varname>,
+         <varname>tilegx</varname>,
+         <varname>cris</varname> to test
+         against a specific architecture. The architecture is

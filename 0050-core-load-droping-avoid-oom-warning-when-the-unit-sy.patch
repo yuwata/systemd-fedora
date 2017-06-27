@@ -1,0 +1,38 @@
+From 90c0dc446632c7b5b2ed6251e0ce94c714b5a180 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Sat, 20 May 2017 19:34:50 -0400
+Subject: [PATCH] core/load-droping: avoid oom warning when the unit symlink is
+ not a template
+
+unit_name_template returns -EINVAL if the unit name is not a template, but
+the code assumed that OOM is the only failure mode. Fix that to emit the warning
+if a non-template unit is encountered (because in this case we expect the name
+to match exactly), and just skip the warning on other errors (presumably oom).
+
+Fixes #5543.
+
+(cherry picked from commit e450032f0990067c0076068774162265db99d22c)
+---
+ src/core/load-dropin.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/src/core/load-dropin.c b/src/core/load-dropin.c
+index ff3636149a..3180f911bb 100644
+--- a/src/core/load-dropin.c
++++ b/src/core/load-dropin.c
+@@ -38,10 +38,12 @@ static bool unit_name_compatible(const char *a, const char *b) {
+                 return true;
+ 
+         r = unit_name_template(a, &prefix);
+-        if (r < 0) {
+-                log_oom();
++        if (r == -EINVAL)
++                /* not a template */
++                return false;
++        if (r < 0)
++                /* oom, or some other failure. Just skip the warning. */
+                 return true;
+-        }
+ 
+         /* an instance name points to a target that is just the template name */
+         if (streq(prefix, b))

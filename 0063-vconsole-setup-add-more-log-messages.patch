@@ -1,0 +1,63 @@
+From 3d3190669482604d552250259654573c6fb01deb Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Wed, 24 May 2017 23:25:10 -0400
+Subject: [PATCH] vconsole-setup: add more log messages
+
+This makes it quite a bit easier to see what failed.
+
+strv_join is called inline in log_debug so that it is under the conditional
+that kills the whole thing if debugging is disabled.
+
+(cherry picked from commit 3d62378088593a7868d58b840ef5ca25dd357339)
+---
+ src/vconsole/vconsole-setup.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/src/vconsole/vconsole-setup.c b/src/vconsole/vconsole-setup.c
+index a0ab5990fc..2401077be5 100644
+--- a/src/vconsole/vconsole-setup.c
++++ b/src/vconsole/vconsole-setup.c
+@@ -41,6 +41,7 @@
+ #include "signal-util.h"
+ #include "stdio-util.h"
+ #include "string-util.h"
++#include "strv.h"
+ #include "terminal-util.h"
+ #include "util.h"
+ #include "virt.h"
+@@ -124,6 +125,7 @@ static int toggle_utf8_sysfs(bool utf8) {
+ }
+ 
+ static int keyboard_load_and_wait(const char *vc, const char *map, const char *map_toggle, bool utf8) {
++        _cleanup_free_ char *cmd = NULL;
+         const char *args[8];
+         int i = 0;
+         pid_t pid;
+@@ -143,6 +145,9 @@ static int keyboard_load_and_wait(const char *vc, const char *map, const char *m
+                 args[i++] = map_toggle;
+         args[i++] = NULL;
+ 
++        log_debug("Executing \"%s\"...",
++                  strnull((cmd = strv_join((char**) args, " "))));
++
+         pid = fork();
+         if (pid < 0)
+                 return log_error_errno(errno, "Failed to fork: %m");
+@@ -159,6 +164,7 @@ static int keyboard_load_and_wait(const char *vc, const char *map, const char *m
+ }
+ 
+ static int font_load_and_wait(const char *vc, const char *font, const char *map, const char *unimap) {
++        _cleanup_free_ char *cmd = NULL;
+         const char *args[9];
+         int i = 0;
+         pid_t pid;
+@@ -182,6 +188,9 @@ static int font_load_and_wait(const char *vc, const char *font, const char *map,
+                 args[i++] = font;
+         args[i++] = NULL;
+ 
++        log_debug("Executing \"%s\"...",
++                  strnull((cmd = strv_join((char**) args, " "))));
++
+         pid = fork();
+         if (pid < 0)
+                 return log_error_errno(errno, "Failed to fork: %m");

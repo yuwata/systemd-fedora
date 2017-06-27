@@ -1,0 +1,52 @@
+From 589fa9087a49e4250099bb6a4cf00358379fa3a4 Mon Sep 17 00:00:00 2001
+From: Matija Skala <mskala@gmx.com>
+Date: Fri, 19 May 2017 14:36:12 +0200
+Subject: [PATCH] timesync/timesyncd-manager: fix format-specifier issues
+
+timex::time::tv_usec and timex::freq can have different sizes
+depending on the host architecture. On x32 in particular,
+it is 8 bytes long while the long int type is only 4 bytes
+long. Hence, using li as a format specifier will trigger
+a format error. Thus, introduce a new format specifier
+PRI_TIMEX which is defined as PRIi64 on x32 and li
+everywhere else.
+
+(cherry picked from commit 3bd7ef833caae7431a9c50450ce7b303234d45eb)
+---
+ src/basic/format-util.h          | 6 ++++++
+ src/timesync/timesyncd-manager.c | 4 ++--
+ 2 files changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/src/basic/format-util.h b/src/basic/format-util.h
+index 39a185f59b..ae42a8f89e 100644
+--- a/src/basic/format-util.h
++++ b/src/basic/format-util.h
+@@ -54,6 +54,12 @@
+ #  error Unknown time_t size
+ #endif
+ 
++#if defined __x86_64__ && defined __ILP32__
++#  define PRI_TIMEX PRIi64
++#else
++#  define PRI_TIMEX "li"
++#endif
++
+ #if SIZEOF_RLIM_T == 8
+ #  define RLIM_FMT "%" PRIu64
+ #elif SIZEOF_RLIM_T == 4
+diff --git a/src/timesync/timesyncd-manager.c b/src/timesync/timesyncd-manager.c
+index 6a6c1577c6..11c495e291 100644
+--- a/src/timesync/timesyncd-manager.c
++++ b/src/timesync/timesyncd-manager.c
+@@ -379,9 +379,9 @@ static int manager_adjust_clock(Manager *m, double offset, int leap_sec) {
+ 
+         log_debug("  status       : %04i %s\n"
+                   "  time now     : %li.%03"PRI_USEC"\n"
+-                  "  constant     : %li\n"
++                  "  constant     : %"PRI_TIMEX"\n"
+                   "  offset       : %+.3f sec\n"
+-                  "  freq offset  : %+li (%i ppm)\n",
++                  "  freq offset  : %+"PRI_TIMEX" (%i ppm)\n",
+                   tmx.status, tmx.status & STA_UNSYNC ? "unsync" : "sync",
+                   tmx.time.tv_sec, tmx.time.tv_usec / NSEC_PER_MSEC,
+                   tmx.constant,

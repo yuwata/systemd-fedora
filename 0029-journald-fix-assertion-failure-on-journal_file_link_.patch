@@ -1,0 +1,32 @@
+From f88105d528645b5c99dbe5dcbd0300948a01c9c9 Mon Sep 17 00:00:00 2001
+From: Yusuke Nojima <nojima718@gmail.com>
+Date: Sun, 30 Apr 2017 02:37:53 +0900
+Subject: [PATCH] journald: fix assertion failure on journal_file_link_data.
+ (#5843)
+
+When some error occurs during the initialization of JournalFile,
+the JournalFile can be left without hash tables created.  When later
+trying to append an entry to that file, the assertion in
+journal_file_link_data() fails, and journald crashes.
+
+This patch fix this issue by checking *_hash_table_size in
+journal_file_verify_header().
+(cherry picked from commit 5b3cc0c86aeddd4615e7e28e79aa89e5b77a6507)
+---
+ src/journal/journal-file.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/journal/journal-file.c b/src/journal/journal-file.c
+index 14cb01a600..243d5198d9 100644
+--- a/src/journal/journal-file.c
++++ b/src/journal/journal-file.c
+@@ -613,6 +613,9 @@ static int journal_file_verify_header(JournalFile *f) {
+                         return -EBUSY;
+                 }
+ 
++                if (f->header->field_hash_table_size == 0 || f->header->data_hash_table_size == 0)
++                        return -EBADMSG;
++
+                 /* Don't permit appending to files from the future. Because otherwise the realtime timestamps wouldn't
+                  * be strictly ordered in the entries in the file anymore, and we can't have that since it breaks
+                  * bisection. */

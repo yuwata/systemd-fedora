@@ -1,0 +1,81 @@
+From a28e8d4e77d1bbca7f0b13c6a2eebc4883ba1123 Mon Sep 17 00:00:00 2001
+From: NeilBrown <neil@brown.name>
+Date: Tue, 23 May 2017 17:42:26 +1000
+Subject: [PATCH] Allow TimeoutSec=0 to work as documented in mount units and
+ elsewhere (#6013)
+
+Since commit 36c16a7cdd6c ("core: rework unit timeout handling, and add
+new setting RuntimeMaxSec=") TimeoutSec=0 in mount units has
+cause the mount to timeout immediately instead of never as documented.
+
+There is a similar problem with Socket.TimeoutSec and Swap.TimeoutSec.
+
+These are easily fixed using config_parse_sec_fix_0().
+
+Automount.TimeoutIdleSec looks like it could have the same problem,
+but doesn't because the kernel treats '0' as 'no timeout'.
+It handle USEC_INFINITY correctly only because that constant has
+the value '-1', and when round up, it becomes zero.
+To avoid possible confusion, use config_parse_sec_fix_0() as well, and
+explicitly handle USEC_INFINITY.
+(cherry picked from commit 2d79a0bbb9f651656384a0a86ed814e6306fb5dd)
+---
+ src/core/automount.c                  | 7 +++++--
+ src/core/load-fragment-gperf.gperf.m4 | 8 ++++----
+ 2 files changed, 9 insertions(+), 6 deletions(-)
+
+diff --git a/src/core/automount.c b/src/core/automount.c
+index 99e8047620..ccc113b598 100644
+--- a/src/core/automount.c
++++ b/src/core/automount.c
+@@ -415,8 +415,11 @@ static int autofs_set_timeout(int dev_autofs_fd, int ioctl_fd, usec_t usec) {
+         init_autofs_dev_ioctl(&param);
+         param.ioctlfd = ioctl_fd;
+ 
+-        /* Convert to seconds, rounding up. */
+-        param.timeout.timeout = (usec + USEC_PER_SEC - 1) / USEC_PER_SEC;
++        if (usec == USEC_INFINITY)
++                param.timeout.timeout = 0;
++        else
++                /* Convert to seconds, rounding up. */
++                param.timeout.timeout = (usec + USEC_PER_SEC - 1) / USEC_PER_SEC;
+ 
+         if (ioctl(dev_autofs_fd, AUTOFS_DEV_IOCTL_TIMEOUT, &param) < 0)
+                 return -errno;
+diff --git a/src/core/load-fragment-gperf.gperf.m4 b/src/core/load-fragment-gperf.gperf.m4
+index cb9e6fea27..3f7cbaa0d0 100644
+--- a/src/core/load-fragment-gperf.gperf.m4
++++ b/src/core/load-fragment-gperf.gperf.m4
+@@ -298,7 +298,7 @@ Socket.ExecStartPre,             config_parse_exec,                  SOCKET_EXEC
+ Socket.ExecStartPost,            config_parse_exec,                  SOCKET_EXEC_START_POST,        offsetof(Socket, exec_command)
+ Socket.ExecStopPre,              config_parse_exec,                  SOCKET_EXEC_STOP_PRE,          offsetof(Socket, exec_command)
+ Socket.ExecStopPost,             config_parse_exec,                  SOCKET_EXEC_STOP_POST,         offsetof(Socket, exec_command)
+-Socket.TimeoutSec,               config_parse_sec,                   0,                             offsetof(Socket, timeout_usec)
++Socket.TimeoutSec,               config_parse_sec_fix_0,             0,                             offsetof(Socket, timeout_usec)
+ Socket.SocketUser,               config_parse_user_group,            0,                             offsetof(Socket, user)
+ Socket.SocketGroup,              config_parse_user_group,            0,                             offsetof(Socket, group)
+ Socket.SocketMode,               config_parse_mode,                  0,                             offsetof(Socket, socket_mode)
+@@ -362,7 +362,7 @@ Mount.What,                      config_parse_unit_string_printf,    0,
+ Mount.Where,                     config_parse_path,                  0,                             offsetof(Mount, where)
+ Mount.Options,                   config_parse_unit_string_printf,    0,                             offsetof(Mount, parameters_fragment.options)
+ Mount.Type,                      config_parse_string,                0,                             offsetof(Mount, parameters_fragment.fstype)
+-Mount.TimeoutSec,                config_parse_sec,                   0,                             offsetof(Mount, timeout_usec)
++Mount.TimeoutSec,                config_parse_sec_fix_0,             0,                             offsetof(Mount, timeout_usec)
+ Mount.DirectoryMode,             config_parse_mode,                  0,                             offsetof(Mount, directory_mode)
+ Mount.SloppyOptions,             config_parse_bool,                  0,                             offsetof(Mount, sloppy_options)
+ Mount.LazyUnmount,               config_parse_bool,                  0,                             offsetof(Mount, lazy_unmount)
+@@ -373,12 +373,12 @@ KILL_CONTEXT_CONFIG_ITEMS(Mount)m4_dnl
+ m4_dnl
+ Automount.Where,                 config_parse_path,                  0,                             offsetof(Automount, where)
+ Automount.DirectoryMode,         config_parse_mode,                  0,                             offsetof(Automount, directory_mode)
+-Automount.TimeoutIdleSec,        config_parse_sec,                   0,                             offsetof(Automount, timeout_idle_usec)
++Automount.TimeoutIdleSec,        config_parse_sec_fix_0,             0,                             offsetof(Automount, timeout_idle_usec)
+ m4_dnl
+ Swap.What,                       config_parse_path,                  0,                             offsetof(Swap, parameters_fragment.what)
+ Swap.Priority,                   config_parse_int,                   0,                             offsetof(Swap, parameters_fragment.priority)
+ Swap.Options,                    config_parse_unit_string_printf,    0,                             offsetof(Swap, parameters_fragment.options)
+-Swap.TimeoutSec,                 config_parse_sec,                   0,                             offsetof(Swap, timeout_usec)
++Swap.TimeoutSec,                 config_parse_sec_fix_0,             0,                             offsetof(Swap, timeout_usec)
+ EXEC_CONTEXT_CONFIG_ITEMS(Swap)m4_dnl
+ CGROUP_CONTEXT_CONFIG_ITEMS(Swap)m4_dnl
+ KILL_CONTEXT_CONFIG_ITEMS(Swap)m4_dnl

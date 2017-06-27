@@ -1,0 +1,85 @@
+From e6715ab647230fae7b489a5cc3edcb2d59c98e2f Mon Sep 17 00:00:00 2001
+From: Roelf Wichertjes <roelf@roelf.org>
+Date: Sun, 30 Apr 2017 13:12:32 +0200
+Subject: [PATCH] networkd: Add check to ensure link is down before attempting
+ to enslave (#5853)
+
+netdev to bond.
+
+There are situations where a link can be in an "UP" state when
+ systemd-networkd attempts to add the link to a bond device.
+This is a problem because the bonding driver will refuse to
+ enslave a link if it is in the "UP" state.
+This check ensures systemd-networkd sets the link to "DOWN"
+ before attempting to add the link to the bond.
+
+Fixes #5838.
+(cherry picked from commit 14b6bb776287e72887071dafae3d4c2c65ee926d)
+---
+ src/network/netdev/netdev.c | 8 ++++++++
+ src/network/networkd-link.c | 4 ++--
+ src/network/networkd-link.h | 3 +++
+ 3 files changed, 13 insertions(+), 2 deletions(-)
+
+diff --git a/src/network/netdev/netdev.c b/src/network/netdev/netdev.c
+index 9b9e83d9db..f70117e6f9 100644
+--- a/src/network/netdev/netdev.c
++++ b/src/network/netdev/netdev.c
+@@ -28,6 +28,7 @@
+ #include "network-internal.h"
+ #include "netdev/netdev.h"
+ #include "networkd-manager.h"
++#include "networkd-link.h"
+ #include "siphash24.h"
+ #include "stat-util.h"
+ #include "string-table.h"
+@@ -218,6 +219,13 @@ static int netdev_enslave_ready(NetDev *netdev, Link* link, sd_netlink_message_h
+         assert(link);
+         assert(callback);
+ 
++        if (link->flags & IFF_UP) {
++                log_netdev_debug(netdev, "Link '%s' was up when attempting to enslave it. Bringing link down.", link->ifname);
++                r = link_down(link);
++                if (r < 0)
++                        return log_netdev_error_errno(netdev, r, "Could not bring link down: %m");
++        }
++
+         r = sd_rtnl_message_new_link(netdev->manager->rtnl, &req, RTM_SETLINK, link->ifindex);
+         if (r < 0)
+                 return log_netdev_error_errno(netdev, r, "Could not allocate RTM_SETLINK message: %m");
+diff --git a/src/network/networkd-link.c b/src/network/networkd-link.c
+index 0c1229336b..c37bc7f602 100644
+--- a/src/network/networkd-link.c
++++ b/src/network/networkd-link.c
+@@ -1598,7 +1598,7 @@ static int link_up_handler(sd_netlink *rtnl, sd_netlink_message *m, void *userda
+         return 1;
+ }
+ 
+-static int link_up(Link *link) {
++int link_up(Link *link) {
+         _cleanup_(sd_netlink_message_unrefp) sd_netlink_message *req = NULL;
+         uint8_t ipv6ll_mode;
+         int r;
+@@ -1719,7 +1719,7 @@ static int link_down_handler(sd_netlink *rtnl, sd_netlink_message *m, void *user
+         return 1;
+ }
+ 
+-static int link_down(Link *link) {
++int link_down(Link *link) {
+         _cleanup_(sd_netlink_message_unrefp) sd_netlink_message *req = NULL;
+         int r;
+ 
+diff --git a/src/network/networkd-link.h b/src/network/networkd-link.h
+index e6190fbe57..be5c4f3284 100644
+--- a/src/network/networkd-link.h
++++ b/src/network/networkd-link.h
+@@ -138,6 +138,9 @@ int link_get(Manager *m, int ifindex, Link **ret);
+ int link_add(Manager *manager, sd_netlink_message *message, Link **ret);
+ void link_drop(Link *link);
+ 
++int link_up(Link *link);
++int link_down(Link *link);
++
+ int link_address_remove_handler(sd_netlink *rtnl, sd_netlink_message *m, void *userdata);
+ int link_route_remove_handler(sd_netlink *rtnl, sd_netlink_message *m, void *userdata);
+ 

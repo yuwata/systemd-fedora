@@ -1,0 +1,57 @@
+From c5af9aa2ccab078cf6f5bf68b88a3defa2f768f8 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Sat, 13 May 2017 16:40:09 -0400
+Subject: [PATCH] shared/logs-show: avoid printing "(null)" when timestamp is
+ not specified
+
+$ perl -e 'print("MESSAGE\n", pack("q<", 1), "A\n\nMESSAGE=test2\n")' > message.bin
+$ systemd-journal-remote -o /tmp/out.journal message.bin
+$ journalctl -o export --file /tmp/out.journal
+__CURSOR=s=b16c464c2db44384b29e75a564d8388e;i=1;b=6b0be47627bd4932913dc126012c21c0;m=0;t=0;x=b04263a253e357a
+__REALTIME_TIMESTAMP=0
+__MONOTONIC_TIMESTAMP=0
+_BOOT_ID=6b0be47627bd4932913dc126012c21c0
+MESSAGE=A
+
+$ journalctl -o verbose --file /tmp/out.journal
+(null) [s=b16c464c2db44384b29e75a564d8388e;i=1;b=6b0be47627bd4932913dc126012c21c0;m=0;t=0;x=b04263a253e357a]
+    MESSAGE=A
+
+This is changed to
+$ build/journalctl -o verbose --file /tmp/out.journal
+(no timestamp) [s=b16c464c2db44384b29e75a564d8388e;i=1;b=6b0be47627bd4932913dc126012c21c0;m=0;t=0;x=b04263a253e357a]
+    MESSAGE=A
+
+We should deal gracefully with unexpected input.
+
+(cherry picked from commit 8924973ae2e1f0a0c131dcec0578669dc26e5e26)
+---
+ src/shared/logs-show.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/src/shared/logs-show.c b/src/shared/logs-show.c
+index 72c43e80cb..b4c72215c4 100644
+--- a/src/shared/logs-show.c
++++ b/src/shared/logs-show.c
+@@ -473,6 +473,7 @@ static int output_verbose(
+         _cleanup_free_ char *cursor = NULL;
+         uint64_t realtime = 0;
+         char ts[FORMAT_TIMESTAMP_MAX + 7];
++        const char *timestamp;
+         int r;
+ 
+         assert(f);
+@@ -508,10 +509,10 @@ static int output_verbose(
+         if (r < 0)
+                 return log_error_errno(r, "Failed to get cursor: %m");
+ 
++        timestamp = flags & OUTPUT_UTC ? format_timestamp_us_utc(ts, sizeof ts, realtime)
++                                       : format_timestamp_us(ts, sizeof ts, realtime);
+         fprintf(f, "%s [%s]\n",
+-                flags & OUTPUT_UTC ?
+-                format_timestamp_us_utc(ts, sizeof(ts), realtime) :
+-                format_timestamp_us(ts, sizeof(ts), realtime),
++                timestamp ?: "(no timestamp)",
+                 cursor);
+ 
+         JOURNAL_FOREACH_DATA_RETVAL(j, data, length, r) {

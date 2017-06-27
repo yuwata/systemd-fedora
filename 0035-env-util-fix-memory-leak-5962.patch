@@ -1,0 +1,56 @@
+From 429a69d0dd273a431f396fe8f5846a8e8a1a0ac7 Mon Sep 17 00:00:00 2001
+From: Ronny Chevalier <chevalier.ronny@gmail.com>
+Date: Sun, 14 May 2017 16:30:40 +0200
+Subject: [PATCH] env-util: fix memory leak (#5962)
+
+If cunescape succeeds, but the assignment is not valid, uce is not freed.
+(cherry picked from commit 16eefcafedeecf0e282add6c1eadeebcb3ad0609)
+---
+ src/basic/env-util.c     |  4 +++-
+ src/test/test-env-util.c | 10 ++++++++++
+ 2 files changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/src/basic/env-util.c b/src/basic/env-util.c
+index 1ec574e8a0..e79b441ab6 100644
+--- a/src/basic/env-util.c
++++ b/src/basic/env-util.c
+@@ -799,8 +799,10 @@ int deserialize_environment(char ***environment, const char *line) {
+         if (r < 0)
+                 return r;
+ 
+-        if (!env_assignment_is_valid(uce))
++        if (!env_assignment_is_valid(uce)) {
++                free(uce);
+                 return -EINVAL;
++        }
+ 
+         return strv_env_replace(environment, uce);
+ }
+diff --git a/src/test/test-env-util.c b/src/test/test-env-util.c
+index e5cc2a2df8..904c50f0ed 100644
+--- a/src/test/test-env-util.c
++++ b/src/test/test-env-util.c
+@@ -314,6 +314,15 @@ static void test_env_assignment_is_valid(void) {
+         assert_se(!env_assignment_is_valid("głąb=printf \"\x1b]0;<mock-chroot>\x07<mock-chroot>\""));
+ }
+ 
++static void test_deserialize_environment(void) {
++        _cleanup_strv_free_ char **env = strv_new("A=1", NULL);
++
++        assert_se(deserialize_environment(&env, "env=test") < 0);
++        assert_se(deserialize_environment(&env, "env=B=2") >= 0);
++
++        assert_se(strv_equal(env, STRV_MAKE("A=1", "B=2")));
++}
++
+ int main(int argc, char *argv[]) {
+         test_strv_env_delete();
+         test_strv_env_get();
+@@ -330,6 +339,7 @@ int main(int argc, char *argv[]) {
+         test_env_name_is_valid();
+         test_env_value_is_valid();
+         test_env_assignment_is_valid();
++        test_deserialize_environment();
+ 
+         return 0;
+ }
