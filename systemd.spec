@@ -123,6 +123,8 @@ Patch0074:      0074-core-mount-pass-c-flag-to-bin-umount-6093.patch
 Patch0075:      0075-man-systemd-timesyncd.service-8-6109.patch
 Patch0076:      0076-test-resolved-packet-add-a-simple-test-for-our-alloc.patch
 Patch0077:      0077-resolved-simplify-alloc-size-calculation.patch
+Patch0078:      0078-resolved-do-not-allocate-packets-with-minimum-size.patch
+Patch0079:      0079-fix-includes.patch
 
 
 Source0990:      hwdb.patch
