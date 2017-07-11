@@ -281,6 +281,8 @@ Provides:       udev%{_isa} = %{version}
 Obsoletes:      udev < 183
 # https://bugzilla.redhat.com/show_bug.cgi?id=1377733#c9
 Recommends:     systemd-bootchart
+# https://bugzilla.redhat.com/show_bug.cgi?id=1408878
+Recommends:     kbd
 License:        LGPLv2+
 
 %description udev
