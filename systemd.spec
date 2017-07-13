@@ -96,8 +96,7 @@ BuildRequires:  libseccomp-devel
 %if %{num_patches}
 BuildRequires:  git
 %endif
-BuildRequires:  lz4
-BuildRequires:  meson >= 0.39.1
+BuildRequires:  meson >= 0.40
 BuildRequires:  gettext
 # for now, should not be necessary when we switch to i18n.merge_file()
 BuildRequires:  intltool
@@ -993,7 +992,6 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %{_datadir}/dbus-1/system.d/org.freedesktop.machine1.conf
 %{_datadir}/dbus-1/system-services/org.freedesktop.import1.service
 %{_datadir}/dbus-1/system-services/org.freedesktop.machine1.service
-%{_datadir}/dbus-1/system-services/org.freedesktop.import1.service
 %{_datadir}/polkit-1/actions/org.freedesktop.import1.policy
 %{_datadir}/polkit-1/actions/org.freedesktop.machine1.policy
 %{_datadir}/bash-completion/completions/machinectl
