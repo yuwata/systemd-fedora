@@ -1,4 +1,4 @@
-%global gitcommit 74d8f1c55b5aa46d2745fa4a74ae9fced6a3cab8
+#global gitcommit 74d8f1c55b5aa46d2745fa4a74ae9fced6a3cab8
 %{?gitcommit:%global gitcommitshort %(c=%{gitcommit}; echo ${c:0:7})}
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
@@ -12,8 +12,8 @@
 
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        233
-Release:        7%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Version:        234
+Release:        1%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -1027,6 +1027,9 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %{pkgdir}/tests
 
 %changelog
+* Thu Jul 13 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 234-1
+- Latest release
+
 * Sat Jul  1 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 233-7.git74d8f1c
 - Update to snapshot
 - Build with meson again
