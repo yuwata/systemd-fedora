@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        234
-Release:        1%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        2%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -278,6 +278,7 @@ CONFIGURE_OPTS=(
         -Dsysvinit-path=/etc/rc.d/init.d
         -Drc-local=/etc/rc.d/rc.local
         -Dntp-servers='0.%{ntpvendor}.pool.ntp.org 1.%{ntpvendor}.pool.ntp.org 2.%{ntpvendor}.pool.ntp.org 3.%{ntpvendor}.pool.ntp.org'
+        -Dkvm-access-mode=0666
         -Dkmod=true
         -Dxkbcommon=true
         -Dblkid=true
@@ -421,6 +422,7 @@ getent group utmp &>/dev/null || groupadd -r -g 22 utmp &>/dev/null || :
 getent group tape &>/dev/null || groupadd -r -g 33 tape &>/dev/null || :
 getent group dialout &>/dev/null || groupadd -r -g 18 dialout &>/dev/null || :
 getent group input &>/dev/null || groupadd -r input &>/dev/null || :
+getent group kvm &>/dev/null || groupadd -r -g 36 kvm &>/dev/null || :
 getent group systemd-journal &>/dev/null || groupadd -r -g 190 systemd-journal 2>&1 || :
 
 getent group systemd-coredump &>/dev/null || groupadd -r systemd-coredump 2>&1 || :
@@ -1025,6 +1027,9 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %{pkgdir}/tests
 
 %changelog
+* Thu Jul 13 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 234-2
+- Create kvm group (#1431876)
+
 * Thu Jul 13 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 234-1
 - Latest release
 
