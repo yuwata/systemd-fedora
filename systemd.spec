@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        234
-Release:        2%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        3%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -41,10 +41,22 @@ Source11:       20-grubby.install
 Source12:       https://raw.githubusercontent.com/systemd/systemd/1000522a60ceade446773c67031b47a566d4a70d/src/login/systemd-user.m4
 
 %if 0
-GIT_DIR=../../src/systemd/.git git format-patch-ab --no-signature -M -N v233..v233-stable
+GIT_DIR=../../src/systemd/.git git format-patch-ab --no-signature -M -N v234..v234-stable
 i=1; for j in 00*patch; do printf "Patch%04d:      %s\n" $i $j; i=$((i+1));done|xclip
 GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[67]* hwdb/parse_hwdb.py > hwdb.patch
 %endif
+
+Patch0001:      0001-escape-Fix-help-description-6352.patch
+Patch0002:      0002-build-sys-install-udev-rule-70-joystick.-rules-hwdb-.patch
+Patch0003:      0003-add-version-argument-to-help-function-6377.patch
+Patch0004:      0004-seccomp-arm64-x32-do-not-have-_sysctl.patch
+Patch0005:      0005-seccomp-arm64-does-not-have-mmap2.patch
+Patch0006:      0006-test-seccomp-arm64-does-not-have-access-and-poll.patch
+Patch0007:      0007-fstab-generator-ignore-x-systemd.device-timeout-for-.patch
+Patch0008:      0008-core-modify-resource-leak-by-SmackProcessLabel.patch
+Patch0009:      0009-core-dump-also-missed-security-context.patch
+Patch0010:      0010-journald-make-sure-we-retain-all-stream-fds-across-r.patch
+Patch0011:      0011-Use-config_parse_sec_fix_0-also-for-JobRunningTimeou.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
@@ -1027,6 +1039,10 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %{pkgdir}/tests
 
 %changelog
+* Mon Jul 17 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 234-3
+- Fix x-systemd.timeout=0 in /etc/fstab (#1462378)
+- Minor patches (memleaks, --help fixes, seccomp on arm64)
+
 * Thu Jul 13 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 234-2
 - Create kvm group (#1431876)
 
