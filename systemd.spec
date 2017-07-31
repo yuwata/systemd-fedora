@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        234
-Release:        4%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        5%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -57,6 +57,17 @@ Patch0008:      0008-core-modify-resource-leak-by-SmackProcessLabel.patch
 Patch0009:      0009-core-dump-also-missed-security-context.patch
 Patch0010:      0010-journald-make-sure-we-retain-all-stream-fds-across-r.patch
 Patch0011:      0011-Use-config_parse_sec_fix_0-also-for-JobRunningTimeou.patch
+Patch0012:      0012-virt-enable-detecting-QEMU-TCG-via-CPUID-6399.patch
+Patch0013:      0013-test-condition-don-t-assume-that-all-non-root-users-.patch
+Patch0014:      0014-call-chase_symlinks-without-the-sysroot-prefix-6411.patch
+Patch0015:      0015-nspawn-downgrade-warning-when-we-get-sd_notify-messa.patch
+Patch0016:      0016-Revert-core-don-t-load-dropin-data-multiple-times-fo.patch
+Patch0017:      0017-bash-completion-use-the-first-argument-instead-of-th.patch
+Patch0018:      0018-boot-efi-don-t-hard-fail-on-error-for-tpm-measure-64.patch
+Patch0019:      0019-meson-D-remote-and-D-importd-should-be-combo-options.patch
+Patch0020:      0020-cryptsetup-fix-infinite-timeout-6486.patch
+Patch0021:      0021-rfkill-fix-erroneous-behavior-when-polling-the-udev-.patch
+Patch0022:      0022-core-Do-not-fail-perpetual-mount-units-without-fragm.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
@@ -1039,6 +1050,9 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %{pkgdir}/tests
 
 %changelog
+* Mon Jul 31 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 234-5
+- Backport more patches (#1476005, hopefully #1462378)
+
 * Thu Jul 27 2017 Fedora Release Engineering <releng@fedoraproject.org>
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Mass_Rebuild
 
