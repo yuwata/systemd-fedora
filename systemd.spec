@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        234
-Release:        5%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        6%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -68,6 +68,7 @@ Patch0019:      0019-meson-D-remote-and-D-importd-should-be-combo-options.patch
 Patch0020:      0020-cryptsetup-fix-infinite-timeout-6486.patch
 Patch0021:      0021-rfkill-fix-erroneous-behavior-when-polling-the-udev-.patch
 Patch0022:      0022-core-Do-not-fail-perpetual-mount-units-without-fragm.patch
+Patch0023:	0023-build-sys-bump-xslt-maxdepth-limit.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
@@ -1050,6 +1051,9 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %{pkgdir}/tests
 
 %changelog
+* Mon Sep 18 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 234-6
+- Bump xslt recursion limit for libxslt-1.30
+
 * Mon Jul 31 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 234-5
 - Backport more patches (#1476005, hopefully #1462378)
 
