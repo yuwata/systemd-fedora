@@ -1,0 +1,44 @@
+From 6d0fe8a5809ef5ccc8e92bdf2eea031178b87083 Mon Sep 17 00:00:00 2001
+From: Franck Bui <fbui@suse.com>
+Date: Wed, 30 Aug 2017 17:16:16 +0200
+Subject: [PATCH] device: make sure to remove all device units sharing the same
+ sysfs path (#6679)
+
+When a device is unplugged all device units sharing the same sysfs path
+pointing to that device are supposed to be removed.
+
+However it didn't work since while iterating the device unit list containing
+all the relevant units, each unit was removed during each iteration of
+LIST_FOREACH. However LIST_FOREACH doesn't support this use case and
+LIST_FOREACH_SAFE must be use instead.
+
+(cherry picked from commit cc0df6cc35339976c367977dc292278a1939db0c)
+---
+ src/core/device.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/core/device.c b/src/core/device.c
+index 77601c552..87186f135 100644
+--- a/src/core/device.c
++++ b/src/core/device.c
+@@ -514,7 +514,7 @@ static void device_update_found_one(Device *d, bool add, DeviceFound found, bool
+ }
+ 
+ static int device_update_found_by_sysfs(Manager *m, const char *sysfs, bool add, DeviceFound found, bool now) {
+-        Device *d, *l;
++        Device *d, *l, *n;
+ 
+         assert(m);
+         assert(sysfs);
+@@ -523,7 +523,7 @@ static int device_update_found_by_sysfs(Manager *m, const char *sysfs, bool add,
+                 return 0;
+ 
+         l = hashmap_get(m->devices_by_sysfs, sysfs);
+-        LIST_FOREACH(same_sysfs, d, l)
++        LIST_FOREACH_SAFE(same_sysfs, d, n, l)
+                 device_update_found_one(d, add, found, now);
+ 
+         return 0;
+-- 
+2.13.5
+

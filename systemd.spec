@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        234
-Release:        6%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        7%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -69,6 +69,7 @@ Patch0020:      0020-cryptsetup-fix-infinite-timeout-6486.patch
 Patch0021:      0021-rfkill-fix-erroneous-behavior-when-polling-the-udev-.patch
 Patch0022:      0022-core-Do-not-fail-perpetual-mount-units-without-fragm.patch
 Patch0023:	0023-build-sys-bump-xslt-maxdepth-limit.patch
+Patch0024:      0024-device-make-sure-to-remove-all-device-units-sharing-.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
@@ -1051,6 +1052,9 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %{pkgdir}/tests
 
 %changelog
+* Thu Sep 21 2017 Michal Sekletar <msekleta@redhat.com> - 234-7
+- Make sure to remove all device units sharing the same sysfs path (#1475570)
+
 * Mon Sep 18 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 234-6
 - Bump xslt recursion limit for libxslt-1.30
 
