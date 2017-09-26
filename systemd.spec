@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        234
-Release:        7%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        8%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -72,6 +72,7 @@ Patch0023:	0023-build-sys-bump-xslt-maxdepth-limit.patch
 Patch0024:      0024-device-make-sure-to-remove-all-device-units-sharing-.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
+Patch0999:      0999-netdev-crypttab.patch
 
 %global num_patches %{lua: c=0; for i,p in ipairs(patches) do c=c+1; end; print(c);}
 
@@ -1052,6 +1053,9 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %{pkgdir}/tests
 
 %changelog
+* Tue Sep 26 2017 Nathaniel McCallum <npmccallum@redhat.com> - 234-8
+- Backport /etc/crypttab _netdev feature from upstream
+
 * Thu Sep 21 2017 Michal Sekletar <msekleta@redhat.com> - 234-7
 - Make sure to remove all device units sharing the same sysfs path (#1475570)
 
