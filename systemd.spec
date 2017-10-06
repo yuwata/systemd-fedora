@@ -12,8 +12,8 @@
 
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        234
-Release:        8%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Version:        235
+Release:        1%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -46,33 +46,9 @@ i=1; for j in 00*patch; do printf "Patch%04d:      %s\n" $i $j; i=$((i+1));done|
 GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[67]* hwdb/parse_hwdb.py > hwdb.patch
 %endif
 
-Patch0001:      0001-escape-Fix-help-description-6352.patch
-Patch0002:      0002-build-sys-install-udev-rule-70-joystick.-rules-hwdb-.patch
-Patch0003:      0003-add-version-argument-to-help-function-6377.patch
-Patch0004:      0004-seccomp-arm64-x32-do-not-have-_sysctl.patch
-Patch0005:      0005-seccomp-arm64-does-not-have-mmap2.patch
-Patch0006:      0006-test-seccomp-arm64-does-not-have-access-and-poll.patch
-Patch0007:      0007-fstab-generator-ignore-x-systemd.device-timeout-for-.patch
-Patch0008:      0008-core-modify-resource-leak-by-SmackProcessLabel.patch
-Patch0009:      0009-core-dump-also-missed-security-context.patch
-Patch0010:      0010-journald-make-sure-we-retain-all-stream-fds-across-r.patch
-Patch0011:      0011-Use-config_parse_sec_fix_0-also-for-JobRunningTimeou.patch
-Patch0012:      0012-virt-enable-detecting-QEMU-TCG-via-CPUID-6399.patch
-Patch0013:      0013-test-condition-don-t-assume-that-all-non-root-users-.patch
-Patch0014:      0014-call-chase_symlinks-without-the-sysroot-prefix-6411.patch
-Patch0015:      0015-nspawn-downgrade-warning-when-we-get-sd_notify-messa.patch
-Patch0016:      0016-Revert-core-don-t-load-dropin-data-multiple-times-fo.patch
-Patch0017:      0017-bash-completion-use-the-first-argument-instead-of-th.patch
-Patch0018:      0018-boot-efi-don-t-hard-fail-on-error-for-tpm-measure-64.patch
-Patch0019:      0019-meson-D-remote-and-D-importd-should-be-combo-options.patch
-Patch0020:      0020-cryptsetup-fix-infinite-timeout-6486.patch
-Patch0021:      0021-rfkill-fix-erroneous-behavior-when-polling-the-udev-.patch
-Patch0022:      0022-core-Do-not-fail-perpetual-mount-units-without-fragm.patch
-Patch0023:	0023-build-sys-bump-xslt-maxdepth-limit.patch
-Patch0024:      0024-device-make-sure-to-remove-all-device-units-sharing-.patch
+Patch0001:      0001-po-update-Polish-translation-7015.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
-Patch0999:      0999-netdev-crypttab.patch
 
 %global num_patches %{lua: c=0; for i,p in ipairs(patches) do c=c+1; end; print(c);}
 
@@ -667,6 +643,8 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %dir %{_prefix}/lib/binfmt.d
 %dir %{_prefix}/lib/environment.d
 %{_prefix}/lib/environment.d/99-environment.conf
+%dir %{_prefix}/lib/modprobe.d
+%{_prefix}/lib/modprobe.d/systemd.conf
 %dir %{_prefix}/lib/kernel
 %dir %{_datadir}/systemd
 %dir %{_datadir}/dbus-1/system.d
@@ -1040,7 +1018,6 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %{pkgdir}/systemd-journal-gatewayd
 %{pkgdir}/systemd-journal-remote
 %{pkgdir}/systemd-journal-upload
-%{_prefix}/lib/tmpfiles.d/systemd-remote.conf
 %{_prefix}/lib/sysusers.d/systemd-remote.conf
 %dir %attr(0755,systemd-journal-upload,systemd-journal-upload) %{_localstatedir}/lib/systemd/journal-upload
 %{_datadir}/systemd/gatewayd
@@ -1053,6 +1030,9 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %{pkgdir}/tests
 
 %changelog
+* Fri Oct  6 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 235-1
+- Update to latest version
+
 * Tue Sep 26 2017 Nathaniel McCallum <npmccallum@redhat.com> - 234-8
 - Backport /etc/crypttab _netdev feature from upstream
 
