@@ -1,27 +1,29 @@
-From 4a0b4e5eb17ae7af860d874ecc80a1ca51108428 Mon Sep 17 00:00:00 2001
+From 0068962099fe81e644fdf2218408ce2baac0e234 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
 Date: Fri, 6 Oct 2017 17:24:50 +0200
 Subject: [PATCH] tests: skip tests when cg_pid_get_path fails
 
 ---
- src/test/test-helper.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ src/test/test-helper.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
 diff --git a/src/test/test-helper.c b/src/test/test-helper.c
-index 5b707c3276..b64623a06e 100644
+index 5b707c3276..2f61f779a5 100644
 --- a/src/test/test-helper.c
 +++ b/src/test/test-helper.c
-@@ -26,7 +26,12 @@ void enter_cgroup_subroot(void) {
+@@ -25,8 +25,14 @@
+ void enter_cgroup_subroot(void) {
          _cleanup_free_ char *cgroup_root = NULL, *cgroup_subroot = NULL;
          CGroupMask supported;
- 
--        assert_se(cg_pid_get_path(NULL, 0, &cgroup_root) >= 0);
++        int r;
++
 +        r = cg_pid_get_path(NULL, 0, &cgroup_root);
 +        if (r < 0) {
 +                log_error_errno(r, "cg_pid_get_path(NULL, 0, ...) failed, bailing out: %m");
 +                exit(EXIT_TEST_SKIP);
 +        }
-+
+ 
+-        assert_se(cg_pid_get_path(NULL, 0, &cgroup_root) >= 0);
          assert_se(asprintf(&cgroup_subroot, "%s/%" PRIx64, cgroup_root, random_u64()) >= 0);
          assert_se(cg_mask_supported(&supported) >= 0);
  
