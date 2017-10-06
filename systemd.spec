@@ -47,6 +47,7 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 %endif
 
 Patch0001:      0001-po-update-Polish-translation-7015.patch
+Patch0002:      0002-tests-skip-tests-when-cg_pid_get_path-fails.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
