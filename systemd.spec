@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        235
-Release:        1%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        2%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -48,6 +48,10 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 
 Patch0001:      0001-po-update-Polish-translation-7015.patch
 Patch0002:      0002-tests-skip-tests-when-cg_pid_get_path-fails.patch
+Patch0003:  	0003-units-add-Install-section-to-remote-cryptsetup.targe.patch
+Patch0004:  	0004-units-replace-remote-cryptsetup-pre.target-with-remo.patch
+Patch0005:  	0005-man-add-a-note-about-_netdev-usage.patch
+Patch0006:  	0006-units-make-remote-cryptsetup.target-also-after-crypt.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
@@ -1031,6 +1035,9 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %{pkgdir}/tests
 
 %changelog
+* Wed Oct 18 2017 zbyszek <zbyszek@in.waw.pl> - 235-2
+- Patches for cryptsetup _netdev
+
 * Fri Oct  6 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 235-1
 - Update to latest version
 

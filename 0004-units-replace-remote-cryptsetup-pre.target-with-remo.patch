@@ -1,0 +1,147 @@
+From a0dd209763f9e67054ee322a2dfd52bccf345c2e Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Thu, 12 Oct 2017 22:34:54 +0200
+Subject: [PATCH] units: replace remote-cryptsetup-pre.target with
+ remote-fs-pre.target
+
+remote-cryptsetup-pre.target was designed as an active unit (that pulls in
+network-online.target), the opposite of remote-fs-pre.target (a passive unit,
+with individual provider services ordering itself before it and pulling it in,
+for example iscsi.service and nfs-client.target).
+
+To make remote-cryptsetup-pre.target really work, those services should be
+ordered before it too. But this would require updates to all those services,
+not just changes from systemd side.
+
+But the requirements for remote-fs-pre.target and remote-cryptset-pre.target
+are fairly similar (e.g. iscsi devices can certainly be used for both), so
+let's reuse remote-fs-pre.target also for remote cryptsetup units. This loses
+a bit of flexibility, but does away with the requirement for various provider
+services to know about remote-cryptsetup-pre.target.
+---
+ man/crypttab.xml                      |  2 +-
+ man/systemd.special.xml               | 20 ++++----------------
+ src/cryptsetup/cryptsetup-generator.c |  2 +-
+ units/meson.build                     |  1 -
+ units/remote-cryptsetup-pre.target    | 15 ---------------
+ units/remote-cryptsetup.target        |  2 +-
+ 6 files changed, 7 insertions(+), 35 deletions(-)
+ delete mode 100644 units/remote-cryptsetup-pre.target
+
+diff --git a/man/crypttab.xml b/man/crypttab.xml
+index ac7d55271c..caed04836e 100644
+--- a/man/crypttab.xml
++++ b/man/crypttab.xml
+@@ -198,7 +198,7 @@
+         started after the network is available, similarly to
+         <citerefentry><refentrytitle>systemd.mount</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+         units marked with <option>_netdev</option>. The service unit to set up this device
+-        will be ordered between <filename>remote-cryptsetup-pre.target</filename> and
++        will be ordered between <filename>remote-fs-pre.target</filename> and
+         <filename>remote-cryptsetup.target</filename>, instead of
+         <filename>cryptsetup-pre.target</filename> and
+         <filename>cryptsetup.target</filename>.</para></listitem>
+diff --git a/man/systemd.special.xml b/man/systemd.special.xml
+index 69c24c3979..bb0c796377 100644
+--- a/man/systemd.special.xml
++++ b/man/systemd.special.xml
+@@ -81,7 +81,6 @@
+     <filename>poweroff.target</filename>,
+     <filename>printer.target</filename>,
+     <filename>reboot.target</filename>,
+-    <filename>remote-cryptsetup-pre.target</filename>,
+     <filename>remote-cryptsetup.target</filename>,
+     <filename>remote-fs-pre.target</filename>,
+     <filename>remote-fs.target</filename>,
+@@ -494,18 +493,6 @@
+           this target unit, for compatibility with SysV.</para>
+         </listitem>
+       </varlistentry>
+-      <varlistentry>
+-        <term><filename>remote-cryptsetup-pre.target</filename></term>
+-        <listitem>
+-          <para>This target unit is automatically ordered before all cryptsetup devices
+-          marked with the <option>_netdev</option>. It can be used to execute additional
+-          units before such devices are set up.</para>
+-
+-          <para>It is ordered after <filename>network.target</filename> and
+-          <filename>network-online.target</filename>, and also pulls the latter in as a
+-          <varname>Wants=</varname> dependency.</para>
+-        </listitem>
+-      </varlistentry>
+       <varlistentry>
+         <term><filename>remote-cryptsetup.target</filename></term>
+         <listitem>
+@@ -906,9 +893,10 @@
+         <term><filename>remote-fs-pre.target</filename></term>
+         <listitem>
+           <para>This target unit is automatically ordered before all
+-          remote mount point units (see above). It can be used to run
+-          certain units before the remote mounts are established. Note
+-          that this unit is generally not part of the initial
++          mount point units (see above) and cryptsetup devices
++          marked with the <option>_netdev</option>. It can be used to run
++          certain units before remote encrypted devices and mounts are established.
++          Note that this unit is generally not part of the initial
+           transaction, unless the unit that wants to be ordered before
+           all remote mounts pulls it in via a
+           <varname>Wants=</varname> type dependency. If the unit wants
+diff --git a/src/cryptsetup/cryptsetup-generator.c b/src/cryptsetup/cryptsetup-generator.c
+index 3752ca2ef2..040a1aa408 100644
+--- a/src/cryptsetup/cryptsetup-generator.c
++++ b/src/cryptsetup/cryptsetup-generator.c
+@@ -113,7 +113,7 @@ static int create_disk(
+                 "Conflicts=umount.target\n"
+                 "IgnoreOnIsolate=true\n"
+                 "After=%s\n",
+-                netdev ? "remote-cryptsetup-pre.target" : "cryptsetup-pre.target");
++                netdev ? "remote-fs-pre.target" : "cryptsetup-pre.target");
+ 
+         if (!nofail)
+                 fprintf(f,
+diff --git a/units/meson.build b/units/meson.build
+index 8494d23e9e..4e2ae3f302 100644
+--- a/units/meson.build
++++ b/units/meson.build
+@@ -48,7 +48,6 @@ units = [
+         ['proc-sys-fs-binfmt_misc.mount',       'ENABLE_BINFMT'],
+         ['reboot.target',                       '',
+          'runlevel6.target ctrl-alt-del.target'],
+-        ['remote-cryptsetup-pre.target',        'HAVE_LIBCRYPTSETUP'],
+         ['remote-cryptsetup.target',            'HAVE_LIBCRYPTSETUP',
+          join_paths(pkgsysconfdir, 'system/multi-user.target.wants/')],
+         ['remote-fs-pre.target',                ''],
+diff --git a/units/remote-cryptsetup-pre.target b/units/remote-cryptsetup-pre.target
+deleted file mode 100644
+index a375e61889..0000000000
+--- a/units/remote-cryptsetup-pre.target
++++ /dev/null
+@@ -1,15 +0,0 @@
+-#  This file is part of systemd.
+-#
+-#  systemd is free software; you can redistribute it and/or modify it
+-#  under the terms of the GNU Lesser General Public License as published by
+-#  the Free Software Foundation; either version 2.1 of the License, or
+-#  (at your option) any later version.
+-
+-[Unit]
+-Description=Remote Encrypted Volumes (Pre)
+-Documentation=man:systemd.special(7)
+-RefuseManualStart=yes
+-Before=remote-cryptsetup.target
+-
+-After=network.target network-online.target
+-Wants=network-online.target
+diff --git a/units/remote-cryptsetup.target b/units/remote-cryptsetup.target
+index c306d521f7..d485b06726 100644
+--- a/units/remote-cryptsetup.target
++++ b/units/remote-cryptsetup.target
+@@ -8,7 +8,7 @@
+ [Unit]
+ Description=Remote Encrypted Volumes
+ Documentation=man:systemd.special(7)
+-After=remote-cryptsetup-pre.target
++After=remote-fs-pre.target
+ DefaultDependencies=no
+ Conflicts=shutdown.target
+ 
