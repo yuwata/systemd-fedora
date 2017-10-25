@@ -1,8 +1,9 @@
-From 288c26165e0ff71857394f360f42432bc808556f Mon Sep 17 00:00:00 2001
+From 51f2176d0df1088407afbadc138aeaa9dbe017e8 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
 Date: Thu, 12 Oct 2017 22:43:58 +0200
 Subject: [PATCH] man: add a note about _netdev usage
 
+(cherry picked from commit 288c26165e0ff71857394f360f42432bc808556f)
 ---
  man/crypttab.xml | 12 +++++++++++-
  1 file changed, 11 insertions(+), 1 deletion(-)

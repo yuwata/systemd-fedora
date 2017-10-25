@@ -1,4 +1,4 @@
-From 8f462b074eb9830d6d5029f70c9010ce50e68357 Mon Sep 17 00:00:00 2001
+From eaaa52cc40bc7f94762ca622d4bd3e9440ccee90 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
 Date: Thu, 12 Oct 2017 22:13:03 +0200
 Subject: [PATCH] units: add [Install] section to remote-cryptsetup.target
@@ -8,6 +8,8 @@ it probably doesn't make that much difference, because all encrypted devices
 that are part of remote-fs.target (marked with _netdev) will be used for mount
 points, so they will be pulled in anyway individually, but with this change any
 such device will be configured, even if it is not pulled by any other unit.
+
+(cherry picked from commit 8f462b074eb9830d6d5029f70c9010ce50e68357)
 ---
  system-preset/90-systemd.preset | 1 +
  units/remote-cryptsetup.target  | 6 ++++++

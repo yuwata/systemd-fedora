@@ -1,0 +1,123 @@
+From aad46f8f761dfe93954ebba2cd764c4530337083 Mon Sep 17 00:00:00 2001
+From: Michal Sekletar <msekletar@users.noreply.github.com>
+Date: Tue, 10 Oct 2017 09:46:13 +0200
+Subject: [PATCH] namespace: fall back gracefully when kernel doesn't support
+ network namespaces (#7024)
+
+(cherry picked from commit 6e2d7c4f131edb19255842cdd4dc199cf8adb5ab)
+---
+ TODO                 |  3 ---
+ src/core/execute.c   | 13 ++++++++-----
+ src/core/namespace.c | 24 ++++++++++++++++++++++++
+ src/core/namespace.h | 17 +++++++++++++++++
+ 4 files changed, 49 insertions(+), 8 deletions(-)
+
+diff --git a/TODO b/TODO
+index 81f009918c..020bdae9c8 100644
+--- a/TODO
++++ b/TODO
+@@ -115,9 +115,6 @@ Features:
+ 
+ * maybe introduce gpt auto discovery for /var/tmp?
+ 
+-* fix PrivateNetwork= so that we fall back gracefully on kernels lacking
+-  namespacing support (similar for the other namespacing options)
+-
+ * maybe add gpt-partition-based user management: each user gets his own
+   LUKS-encrypted GPT partition with a new GPT type. A small nss module
+   enumerates users via udev partition enumeration. UIDs are assigned in a fixed
+diff --git a/src/core/execute.c b/src/core/execute.c
+index 2453f84fbd..ef95a75e75 100644
+--- a/src/core/execute.c
++++ b/src/core/execute.c
+@@ -3070,11 +3070,14 @@ static int exec_child(
+         }
+ 
+         if (context->private_network && runtime && runtime->netns_storage_socket[0] >= 0) {
+-                r = setup_netns(runtime->netns_storage_socket);
+-                if (r < 0) {
+-                        *exit_status = EXIT_NETWORK;
+-                        return log_unit_error_errno(unit, r, "Failed to set up network namespacing: %m");
+-                }
++                if (ns_type_supported(NAMESPACE_NET)) {
++                        r = setup_netns(runtime->netns_storage_socket);
++                        if (r < 0) {
++                                *exit_status = EXIT_NETWORK;
++                                return log_unit_error_errno(unit, r, "Failed to set up network namespacing: %m");
++                        }
++                } else
++                        log_unit_warning(unit, "PrivateNetwork=yes is configured, but the kernel does not support network namespaces, ignoring.");
+         }
+ 
+         needs_mount_namespace = exec_needs_mount_namespace(context, params, runtime);
+diff --git a/src/core/namespace.c b/src/core/namespace.c
+index 6d74b8da67..df32d666bf 100644
+--- a/src/core/namespace.c
++++ b/src/core/namespace.c
+@@ -1428,6 +1428,18 @@ fail:
+         return r;
+ }
+ 
++bool ns_type_supported(NamespaceType type) {
++        const char *t, *ns_proc;
++
++        if (type <= _NAMESPACE_TYPE_INVALID || type >= _NAMESPACE_TYPE_MAX)
++                return false;
++
++        t = namespace_type_to_string(type);
++        ns_proc = strjoina("/proc/self/ns/", t);
++
++        return access(ns_proc, F_OK) == 0;
++}
++
+ static const char *const protect_home_table[_PROTECT_HOME_MAX] = {
+         [PROTECT_HOME_NO] = "no",
+         [PROTECT_HOME_YES] = "yes",
+@@ -1444,3 +1456,15 @@ static const char *const protect_system_table[_PROTECT_SYSTEM_MAX] = {
+ };
+ 
+ DEFINE_STRING_TABLE_LOOKUP(protect_system, ProtectSystem);
++
++static const char* const namespace_type_table[] = {
++        [NAMESPACE_MOUNT] = "mnt",
++        [NAMESPACE_CGROUP] = "cgroup",
++        [NAMESPACE_UTS] = "uts",
++        [NAMESPACE_IPC] = "ipc",
++        [NAMESPACE_USER] = "user",
++        [NAMESPACE_PID] = "pid",
++        [NAMESPACE_NET] = "net",
++};
++
++DEFINE_STRING_TABLE_LOOKUP(namespace_type, NamespaceType);
+diff --git a/src/core/namespace.h b/src/core/namespace.h
+index da8d85dbc5..b244c8f337 100644
+--- a/src/core/namespace.h
++++ b/src/core/namespace.h
+@@ -36,6 +36,18 @@ typedef enum ProtectHome {
+         _PROTECT_HOME_INVALID = -1
+ } ProtectHome;
+ 
++typedef enum NamespaceType {
++        NAMESPACE_MOUNT,
++        NAMESPACE_CGROUP,
++        NAMESPACE_UTS,
++        NAMESPACE_IPC,
++        NAMESPACE_USER,
++        NAMESPACE_PID,
++        NAMESPACE_NET,
++        _NAMESPACE_TYPE_MAX,
++        _NAMESPACE_TYPE_INVALID = -1,
++} NamespaceType;
++
+ typedef enum ProtectSystem {
+         PROTECT_SYSTEM_NO,
+         PROTECT_SYSTEM_YES,
+@@ -94,3 +106,8 @@ ProtectSystem protect_system_from_string(const char *s) _pure_;
+ 
+ void bind_mount_free_many(BindMount *b, unsigned n);
+ int bind_mount_add(BindMount **b, unsigned *n, const BindMount *item);
++
++const char* namespace_type_to_string(NamespaceType t) _const_;
++NamespaceType namespace_type_from_string(const char *s) _pure_;
++
++bool ns_type_supported(NamespaceType type);

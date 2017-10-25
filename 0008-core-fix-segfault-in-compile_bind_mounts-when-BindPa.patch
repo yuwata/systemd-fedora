@@ -1,0 +1,28 @@
+From 7ba74d5f939d0322d6ea730dd0b5ceefd7d7f527 Mon Sep 17 00:00:00 2001
+From: Yu Watanabe <watanabe.yu+github@gmail.com>
+Date: Wed, 11 Oct 2017 12:27:13 +0900
+Subject: [PATCH] core: fix segfault in compile_bind_mounts() when BindPaths=
+ or BindReadOnlyPaths= is set
+
+This fixes a bug introduced by 6c47cd7d3bf35c8158a0737f34fe2c5dc95e72d6.
+
+Fixes #7055.
+
+(cherry picked from commit a8cabc612b16834260831a8163ae4b479b5c33a5)
+---
+ src/core/execute.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/core/execute.c b/src/core/execute.c
+index c4dfac96d9..2453f84fbd 100644
+--- a/src/core/execute.c
++++ b/src/core/execute.c
+@@ -2161,7 +2161,7 @@ static int compile_bind_mounts(
+         if (!bind_mounts)
+                 return -ENOMEM;
+ 
+-        for (i = 0; context->n_bind_mounts; i++) {
++        for (i = 0; i < context->n_bind_mounts; i++) {
+                 BindMount *item = context->bind_mounts + i;
+                 char *s, *d;
+ 

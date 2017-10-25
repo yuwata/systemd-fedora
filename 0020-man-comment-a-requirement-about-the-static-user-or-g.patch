@@ -1,0 +1,27 @@
+From 88d84756b38bdac98e820ca1b17e0b3bf0ea7a25 Mon Sep 17 00:00:00 2001
+From: Yu Watanabe <watanabe.yu+github@gmail.com>
+Date: Wed, 18 Oct 2017 15:30:00 +0900
+Subject: [PATCH] man: comment a requirement about the static user or group
+ when DynamicUser=yes
+
+(cherry picked from commit 3bd493dc93e1be976fb9868c349a4711b97d2790)
+---
+ man/systemd.exec.xml | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/man/systemd.exec.xml b/man/systemd.exec.xml
+index dfae0572d8..68291264bd 100644
+--- a/man/systemd.exec.xml
++++ b/man/systemd.exec.xml
+@@ -206,7 +206,10 @@
+         enabled for a unit, the name of the dynamic user/group is implicitly derived from the unit name. If the unit
+         name without the type suffix qualifies as valid user name it is used directly, otherwise a name incorporating a
+         hash of it is used. If a statically allocated user or group of the configured name already exists, it is used
+-        and no dynamic user/group is allocated. Dynamic users/groups are allocated from the UID/GID range
++        and no dynamic user/group is allocated. Note that if <varname>User=</varname> is specified and the static group
++        with the name exists, then it is required that the static user with the name already exists. Similarly,
++        if <varname>Group=</varname> is specified and the static user with the name exists, then it is required that
++        the static group with the name already exists. Dynamic users/groups are allocated from the UID/GID range
+         61184…65519. It is recommended to avoid this range for regular system or login users.  At any point in time
+         each UID/GID from this range is only assigned to zero or one dynamically allocated users/groups in
+         use. However, UID/GIDs are recycled after a unit is terminated. Care should be taken that any processes running

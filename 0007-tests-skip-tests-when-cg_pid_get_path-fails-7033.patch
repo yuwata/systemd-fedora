@@ -1,0 +1,235 @@
+From 07d4eb06d6f9ef1bb8c3666a1aaa7297eae59f17 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Tue, 10 Oct 2017 20:55:20 +0200
+Subject: [PATCH] tests: skip tests when cg_pid_get_path fails (#7033)
+
+v2:
+- cast the fstype_t type to ull, because it varies between arches.
+  Making it long long should be on the safe side.
+
+(cherry picked from commit 651d47d14b987883c604468e87e0e1871554d213)
+---
+ src/basic/cgroup-util.c     |  5 ++++-
+ src/test/test-bpf.c         |  7 ++++++-
+ src/test/test-cgroup-mask.c |  6 +++++-
+ src/test/test-engine.c      |  6 +++++-
+ src/test/test-execute.c     |  8 ++++++--
+ src/test/test-helper.c      | 17 +++++++++++------
+ src/test/test-helper.h      |  2 +-
+ src/test/test-path.c        |  6 +++++-
+ src/test/test-sched-prio.c  |  6 +++++-
+ src/test/test-unit-file.c   |  6 +++++-
+ src/test/test-unit-name.c   |  8 ++++++--
+ 11 files changed, 59 insertions(+), 18 deletions(-)
+
+diff --git a/src/basic/cgroup-util.c b/src/basic/cgroup-util.c
+index d51c3efd22..f5fed2a927 100644
+--- a/src/basic/cgroup-util.c
++++ b/src/basic/cgroup-util.c
+@@ -2456,8 +2456,11 @@ static int cg_unified_update(void) {
+                                 return -ENOMEDIUM;
+                         unified_cache = CGROUP_UNIFIED_NONE;
+                 }
+-        } else
++        } else {
++                log_debug("Unknown filesystem type %llx mounted on /sys/fs/cgroup.",
++                          (unsigned long long) fs.f_type);
+                 return -ENOMEDIUM;
++        }
+ 
+         return 0;
+ }
+diff --git a/src/test/test-bpf.c b/src/test/test-bpf.c
+index 74e9d50561..ec8e00b070 100644
+--- a/src/test/test-bpf.c
++++ b/src/test/test-bpf.c
+@@ -49,7 +49,12 @@ int main(int argc, char *argv[]) {
+         log_parse_environment();
+         log_open();
+ 
+-        enter_cgroup_subroot();
++        r = enter_cgroup_subroot();
++        if (r == -ENOMEDIUM) {
++                log_notice("cgroupfs not available, skipping tests");
++                return EXIT_TEST_SKIP;
++        }
++
+         assert_se(set_unit_path(get_testdata_dir("")) >= 0);
+         assert_se(runtime_dir = setup_fake_runtime_dir());
+ 
+diff --git a/src/test/test-cgroup-mask.c b/src/test/test-cgroup-mask.c
+index 02aae84152..6fd35c81dc 100644
+--- a/src/test/test-cgroup-mask.c
++++ b/src/test/test-cgroup-mask.c
+@@ -34,7 +34,11 @@ static int test_cgroup_mask(void) {
+         FDSet *fdset = NULL;
+         int r;
+ 
+-        enter_cgroup_subroot();
++        r = enter_cgroup_subroot();
++        if (r == -ENOMEDIUM) {
++                puts("Skipping test: cgroupfs not available");
++                return EXIT_TEST_SKIP;
++        }
+ 
+         /* Prepare the manager. */
+         assert_se(set_unit_path(get_testdata_dir("")) >= 0);
+diff --git a/src/test/test-engine.c b/src/test/test-engine.c
+index 6916f838d4..55249fdce2 100644
+--- a/src/test/test-engine.c
++++ b/src/test/test-engine.c
+@@ -37,7 +37,11 @@ int main(int argc, char *argv[]) {
+         Job *j;
+         int r;
+ 
+-        enter_cgroup_subroot();
++        r = enter_cgroup_subroot();
++        if (r == -ENOMEDIUM) {
++                log_notice_errno(r, "Skipping test: cgroupfs not available");
++                return EXIT_TEST_SKIP;
++        }
+ 
+         /* prepare the test */
+         assert_se(set_unit_path(get_testdata_dir("")) >= 0);
+diff --git a/src/test/test-execute.c b/src/test/test-execute.c
+index 6786d56197..486c7e1226 100644
+--- a/src/test/test-execute.c
++++ b/src/test/test-execute.c
+@@ -528,11 +528,15 @@ int main(int argc, char *argv[]) {
+ 
+         /* It is needed otherwise cgroup creation fails */
+         if (getuid() != 0) {
+-                printf("Skipping test: not root\n");
++                puts("Skipping test: not root");
+                 return EXIT_TEST_SKIP;
+         }
+ 
+-        enter_cgroup_subroot();
++        r = enter_cgroup_subroot();
++        if (r == -ENOMEDIUM) {
++                puts("Skipping test: cgroupfs not available");
++                return EXIT_TEST_SKIP;
++        }
+ 
+         assert_se(setenv("XDG_RUNTIME_DIR", "/tmp/", 1) == 0);
+         assert_se(set_unit_path(get_testdata_dir("/test-execute")) >= 0);
+diff --git a/src/test/test-helper.c b/src/test/test-helper.c
+index 5b707c3276..2a4b4347b6 100644
+--- a/src/test/test-helper.c
++++ b/src/test/test-helper.c
+@@ -22,20 +22,25 @@
+ #include "alloc-util.h"
+ #include "cgroup-util.h"
+ 
+-void enter_cgroup_subroot(void) {
++int enter_cgroup_subroot(void) {
+         _cleanup_free_ char *cgroup_root = NULL, *cgroup_subroot = NULL;
+         CGroupMask supported;
++        int r;
++
++        r = cg_pid_get_path(NULL, 0, &cgroup_root);
++        if (r == -ENOMEDIUM)
++                return log_warning_errno(r, "cg_pid_get_path(NULL, 0, ...) failed: %m");
++        assert(r >= 0);
+ 
+-        assert_se(cg_pid_get_path(NULL, 0, &cgroup_root) >= 0);
+         assert_se(asprintf(&cgroup_subroot, "%s/%" PRIx64, cgroup_root, random_u64()) >= 0);
+         assert_se(cg_mask_supported(&supported) >= 0);
+ 
+         /* If this fails, then we don't mind as the later cgroup operations will fail too, and it's fine if we handle
+          * any errors at that point. */
+ 
+-        if (cg_create_everywhere(supported, _CGROUP_MASK_ALL, cgroup_subroot) < 0)
+-                return;
++        r = cg_create_everywhere(supported, _CGROUP_MASK_ALL, cgroup_subroot);
++        if (r < 0)
++                return r;
+ 
+-        if (cg_attach_everywhere(supported, cgroup_subroot, 0, NULL, NULL) < 0)
+-                return;
++        return cg_attach_everywhere(supported, cgroup_subroot, 0, NULL, NULL);
+ }
+diff --git a/src/test/test-helper.h b/src/test/test-helper.h
+index 8af32c8744..f7235527a5 100644
+--- a/src/test/test-helper.h
++++ b/src/test/test-helper.h
+@@ -40,4 +40,4 @@
+                -ENOMEDIUM /* cannot determine cgroup */         \
+                )
+ 
+-void enter_cgroup_subroot(void);
++int enter_cgroup_subroot(void);
+diff --git a/src/test/test-path.c b/src/test/test-path.c
+index c1915017df..9de3dd6674 100644
+--- a/src/test/test-path.c
++++ b/src/test/test-path.c
+@@ -45,7 +45,11 @@ static int setup_test(Manager **m) {
+ 
+         assert_se(m);
+ 
+-        enter_cgroup_subroot();
++        r = enter_cgroup_subroot();
++        if (r == -ENOMEDIUM) {
++                log_notice_errno(r, "Skipping test: cgroupfs not available");
++                return EXIT_TEST_SKIP;
++        }
+ 
+         r = manager_new(UNIT_FILE_USER, MANAGER_TEST_RUN_MINIMAL, &tmp);
+         if (MANAGER_SKIP_TEST(r)) {
+diff --git a/src/test/test-sched-prio.c b/src/test/test-sched-prio.c
+index 9bed4b3832..8f526a8415 100644
+--- a/src/test/test-sched-prio.c
++++ b/src/test/test-sched-prio.c
+@@ -34,7 +34,11 @@ int main(int argc, char *argv[]) {
+         FDSet *fdset = NULL;
+         int r;
+ 
+-        enter_cgroup_subroot();
++        r = enter_cgroup_subroot();
++        if (r == -ENOMEDIUM) {
++                log_notice_errno(r, "Skipping test: cgroupfs not available");
++                return EXIT_TEST_SKIP;
++        }
+ 
+         /* prepare the test */
+         assert_se(set_unit_path(get_testdata_dir("")) >= 0);
+diff --git a/src/test/test-unit-file.c b/src/test/test-unit-file.c
+index 07f21d0d3d..c16a6342f7 100644
+--- a/src/test/test-unit-file.c
++++ b/src/test/test-unit-file.c
+@@ -858,7 +858,11 @@ int main(int argc, char *argv[]) {
+         log_parse_environment();
+         log_open();
+ 
+-        enter_cgroup_subroot();
++        r = enter_cgroup_subroot();
++        if (r == -ENOMEDIUM) {
++                log_notice_errno(r, "Skipping test: cgroupfs not available");
++                return EXIT_TEST_SKIP;
++        }
+ 
+         assert_se(runtime_dir = setup_fake_runtime_dir());
+ 
+diff --git a/src/test/test-unit-name.c b/src/test/test-unit-name.c
+index 1992357e1b..858bbf8476 100644
+--- a/src/test/test-unit-name.c
++++ b/src/test/test-unit-name.c
+@@ -465,12 +465,16 @@ static void test_unit_name_path_unescape(void) {
+ 
+ int main(int argc, char* argv[]) {
+         _cleanup_(rm_rf_physical_and_freep) char *runtime_dir = NULL;
+-        int rc = 0;
++        int r, rc = 0;
+ 
+         log_parse_environment();
+         log_open();
+ 
+-        enter_cgroup_subroot();
++        r = enter_cgroup_subroot();
++        if (r == -ENOMEDIUM) {
++                log_notice_errno(r, "Skipping test: cgroupfs not available");
++                return EXIT_TEST_SKIP;
++        }
+ 
+         assert_se(runtime_dir = setup_fake_runtime_dir());
+ 

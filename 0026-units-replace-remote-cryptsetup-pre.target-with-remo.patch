@@ -1,4 +1,4 @@
-From a0dd209763f9e67054ee322a2dfd52bccf345c2e Mon Sep 17 00:00:00 2001
+From c5e8935962eadc9e901f4fe13e187aaaad487142 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
 Date: Thu, 12 Oct 2017 22:34:54 +0200
 Subject: [PATCH] units: replace remote-cryptsetup-pre.target with
@@ -18,6 +18,8 @@ are fairly similar (e.g. iscsi devices can certainly be used for both), so
 let's reuse remote-fs-pre.target also for remote cryptsetup units. This loses
 a bit of flexibility, but does away with the requirement for various provider
 services to know about remote-cryptsetup-pre.target.
+
+(cherry picked from commit a0dd209763f9e67054ee322a2dfd52bccf345c2e)
 ---
  man/crypttab.xml                      |  2 +-
  man/systemd.special.xml               | 20 ++++----------------
@@ -42,7 +44,7 @@ index ac7d55271c..caed04836e 100644
          <filename>cryptsetup-pre.target</filename> and
          <filename>cryptsetup.target</filename>.</para></listitem>
 diff --git a/man/systemd.special.xml b/man/systemd.special.xml
-index 69c24c3979..bb0c796377 100644
+index 4beef07dd5..32706dc6cf 100644
 --- a/man/systemd.special.xml
 +++ b/man/systemd.special.xml
 @@ -81,7 +81,6 @@

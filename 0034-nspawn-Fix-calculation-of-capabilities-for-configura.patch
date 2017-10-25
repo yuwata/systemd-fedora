@@ -1,0 +1,31 @@
+From b4c63693634d3a56a1afe22dd59c63a7e8fe99f8 Mon Sep 17 00:00:00 2001
+From: myrkr <torsten.hilbrich@gmx.net>
+Date: Tue, 24 Oct 2017 09:56:40 +0200
+Subject: [PATCH] nspawn: Fix calculation of capabilities for configuration
+ file (#7087)
+
+The current code shifting an integer 1 failed for capabilities like
+CAP_MAC_ADMIN (numerical value 33). This caused issues when specifying
+them in the nspawn configuration file. Using an uint64_t 1 instead.
+
+The similar code for processing the --capability command line option
+was already correctly working.
+
+(cherry picked from commit 1898e5f9a37d1a50f8c0bd1147abe11c3d38a16b)
+---
+ src/nspawn/nspawn-settings.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/nspawn/nspawn-settings.c b/src/nspawn/nspawn-settings.c
+index c02c1ea697..285e22820f 100644
+--- a/src/nspawn/nspawn-settings.c
++++ b/src/nspawn/nspawn-settings.c
+@@ -202,7 +202,7 @@ int config_parse_capability(
+                         continue;
+                 }
+ 
+-                u |= 1 << ((uint64_t) cap);
++                u |= UINT64_C(1) << cap;
+         }
+ 
+         if (u == 0)

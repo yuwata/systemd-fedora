@@ -1,0 +1,37 @@
+From 1b7014dfc1584d1f3b10eb91c4f22e0deaca999d Mon Sep 17 00:00:00 2001
+From: Lauri Tirkkonen <lotheac@iki.fi>
+Date: Tue, 24 Oct 2017 20:40:50 +0300
+Subject: [PATCH] nspawn: EROFS for chowning mount points is not fatal (#7122)
+
+This fixes --read-only with --private-users. mkdir_userns_p may return
+-EROFS if either mkdir or lchown fails; lchown failing is fine as the
+mount point will just be overmounted, and if mkdir fails then the
+following mount() will also fail (with ENOENT).
+
+(cherry picked from commit 4f13e534282414b5e58ef31a26cc5c3f06f8cb18)
+---
+ src/nspawn/nspawn-mount.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/src/nspawn/nspawn-mount.c b/src/nspawn/nspawn-mount.c
+index 531f29cb7b..9b7ceb6bdc 100644
+--- a/src/nspawn/nspawn-mount.c
++++ b/src/nspawn/nspawn-mount.c
+@@ -598,11 +598,15 @@ int mount_all(const char *dest,
+ 
+                 r = mkdir_userns_p(dest, where, 0755, mount_settings, uid_shift);
+                 if (r < 0 && r != -EEXIST) {
+-                        if (fatal)
++                        if (fatal && r != -EROFS)
+                                 return log_error_errno(r, "Failed to create directory %s: %m", where);
+ 
+                         log_debug_errno(r, "Failed to create directory %s: %m", where);
+-                        continue;
++                        /* If we failed mkdir() or chown() due to the root
++                         * directory being read only, attempt to mount this fs
++                         * anyway and let mount_verbose log any errors */
++                        if (r != -EROFS)
++                                continue;
+                 }
+ 
+                 o = mount_table[k].options;

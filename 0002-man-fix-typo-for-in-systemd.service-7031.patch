@@ -1,0 +1,25 @@
+From 72fd308ac00d5dddc6c36c1318674270b163568f Mon Sep 17 00:00:00 2001
+From: bleep_blop <worz@tuta.io>
+Date: Mon, 9 Oct 2017 01:31:08 +0530
+Subject: [PATCH] man: fix typo for !! in systemd.service (#7031)
+
+!! must be very similar to !, not itself.
+
+(cherry picked from commit 132523e7f74e337120b2db62108470759125c349)
+---
+ man/systemd.service.xml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/man/systemd.service.xml b/man/systemd.service.xml
+index 2b183a9cef..b99f7f9df8 100644
+--- a/man/systemd.service.xml
++++ b/man/systemd.service.xml
+@@ -342,7 +342,7 @@
+               <row>
+                 <entry><literal>!!</literal></entry>
+ 
+-                <entry>This prefix is very similar to <literal>!!</literal>, however it only has an effect on systems lacking support for ambient process capabilities, i.e. without support for <varname>AmbientCapabilities=</varname>. It's intended to be used for unit files that take benefit of ambient capabilities to run processes with minimal privileges wherever possible while remaining compatible with systems that lack ambient capabilities support. Note that when <literal>!!</literal> is used, and a system lacking ambient capability support is detected any configured <varname>SystemCallFilter=</varname> and <varname>CapabilityBoundingSet=</varname> stanzas are implicitly modified, in order to permit spawned processes to drop credentials and capabilities themselves, even if this is configured to not be allowed. Moreover, if this prefix is used and a system lacking ambient capability support is detected <varname>AmbientCapabilities=</varname> will be skipped and not be applied. On systems supporting ambient capabilities, <literal>!!</literal> has no effect and is redundant.</entry>
++                <entry>This prefix is very similar to <literal>!</literal>, however it only has an effect on systems lacking support for ambient process capabilities, i.e. without support for <varname>AmbientCapabilities=</varname>. It's intended to be used for unit files that take benefit of ambient capabilities to run processes with minimal privileges wherever possible while remaining compatible with systems that lack ambient capabilities support. Note that when <literal>!!</literal> is used, and a system lacking ambient capability support is detected any configured <varname>SystemCallFilter=</varname> and <varname>CapabilityBoundingSet=</varname> stanzas are implicitly modified, in order to permit spawned processes to drop credentials and capabilities themselves, even if this is configured to not be allowed. Moreover, if this prefix is used and a system lacking ambient capability support is detected <varname>AmbientCapabilities=</varname> will be skipped and not be applied. On systems supporting ambient capabilities, <literal>!!</literal> has no effect and is redundant.</entry>
+               </row>
+             </tbody>
+           </tgroup>

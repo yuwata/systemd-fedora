@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        235
-Release:        2%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        3%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -41,17 +41,49 @@ Source11:       20-grubby.install
 Source12:       https://raw.githubusercontent.com/systemd/systemd/1000522a60ceade446773c67031b47a566d4a70d/src/login/systemd-user.m4
 
 %if 0
-GIT_DIR=../../src/systemd/.git git format-patch-ab --no-signature -M -N v234..v234-stable
+GIT_DIR=../../src/systemd/.git git format-patch-ab --no-signature -M -N v235..v235-stable
 i=1; for j in 00*patch; do printf "Patch%04d:      %s\n" $i $j; i=$((i+1));done|xclip
 GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[67]* hwdb/parse_hwdb.py > hwdb.patch
 %endif
 
 Patch0001:      0001-po-update-Polish-translation-7015.patch
-Patch0002:      0002-tests-skip-tests-when-cg_pid_get_path-fails.patch
-Patch0003:  	0003-units-add-Install-section-to-remote-cryptsetup.targe.patch
-Patch0004:  	0004-units-replace-remote-cryptsetup-pre.target-with-remo.patch
-Patch0005:  	0005-man-add-a-note-about-_netdev-usage.patch
-Patch0006:  	0006-units-make-remote-cryptsetup.target-also-after-crypt.patch
+Patch0002:      0002-man-fix-typo-for-in-systemd.service-7031.patch
+Patch0003:      0003-test-skip-hwdb-and-sysv-generator-if-the-features-ar.patch
+Patch0004:      0004-Updated-Turkish-translation-7017.patch
+Patch0005:      0005-catalog-po-update-Russian-translation-7041.patch
+Patch0006:      0006-l10n-update-Czech-Translation-7049.patch
+Patch0007:      0007-tests-skip-tests-when-cg_pid_get_path-fails-7033.patch
+Patch0008:      0008-core-fix-segfault-in-compile_bind_mounts-when-BindPa.patch
+Patch0009:      0009-namespace-fall-back-gracefully-when-kernel-doesn-t-s.patch
+Patch0010:      0010-networkd-bridge-allow-AgeingTimeSec-to-be-set-0-7021.patch
+Patch0011:      0011-systemctl-supress-enable-disable-messages-when-q-is-.patch
+Patch0012:      0012-man-update-changes-about-gateway-_gateway-7085.patch
+Patch0013:      0013-basic-env-util-drop-the-validation-when-deserializin.patch
+Patch0014:      0014-basic-env-util-don-t-relax-unesaping-of-serialized-e.patch
+Patch0015:      0015-test-path-fix-inverted-return-value-7050.patch
+Patch0016:      0016-networkd-Don-t-stop-networkd-if-CONFIG_FIB_RULES-n-i.patch
+Patch0017:      0017-dynamic-user-label-functions-not-necessary-to-export.patch
+Patch0018:      0018-dynamic-user-permit-the-case-static-uid-and-gid-are-.patch
+Patch0019:      0019-core-fix-invalid-error-message.patch
+Patch0020:      0020-man-comment-a-requirement-about-the-static-user-or-g.patch
+Patch0021:      0021-core-dynamic-user-use-_cleanup_-in-dynamic-user-lock.patch
+Patch0022:      0022-core-dynamic-user-use-gid-from-pwnam-if-a-static-use.patch
+Patch0023:      0023-networkd-Consider-linkLocalAddressing-state-while-co.patch
+Patch0024:      0024-networkd-don-t-stop-the-dhcp-server-if-it-s-not-conf.patch
+Patch0025:      0025-units-add-Install-section-to-remote-cryptsetup.targe.patch
+Patch0026:      0026-units-replace-remote-cryptsetup-pre.target-with-remo.patch
+Patch0027:      0027-man-add-a-note-about-_netdev-usage.patch
+Patch0028:      0028-units-make-remote-cryptsetup.target-also-after-crypt.patch
+Patch0029:      0029-man-describe-how-machine-id-should-be-initialized-70.patch
+Patch0030:      0030-catalog-update-french-translation.patch
+Patch0031:      0031-po-update-french-translation.patch
+Patch0032:      0032-sd-radv-Allocate-space-also-for-DNSSL-iov-option-714.patch
+Patch0033:      0033-modprobe.d-fix-directory-of-modprobe-configuration-f.patch
+Patch0034:      0034-nspawn-Fix-calculation-of-capabilities-for-configura.patch
+Patch0035:      0035-timedatectl-stop-using-xstrftime.patch
+Patch0036:      0036-core-fix-D-Bus-API.patch
+Patch0037:      0037-nspawn-EROFS-for-chowning-mount-points-is-not-fatal-.patch
+Patch0038:      0038-resolved-fix-loop-on-packets-with-pseudo-dns-types.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
@@ -1035,7 +1067,10 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %{pkgdir}/tests
 
 %changelog
-* Wed Oct 18 2017 zbyszek <zbyszek@in.waw.pl> - 235-2
+* Wed Oct 25 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 235-3
+- Backport a bunch of patches, including LP#172535
+
+* Wed Oct 18 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 235-2
 - Patches for cryptsetup _netdev
 
 * Fri Oct  6 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 235-1

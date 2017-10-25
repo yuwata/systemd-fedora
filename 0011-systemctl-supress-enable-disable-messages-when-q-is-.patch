@@ -1,0 +1,25 @@
+From 6c5ff1d86e7e54f460599e92abbb4a5327e6a6db Mon Sep 17 00:00:00 2001
+From: John Lin <johnlinp@gmail.com>
+Date: Thu, 12 Oct 2017 02:22:51 +0800
+Subject: [PATCH] systemctl: supress enable/disable messages when -q is given
+ (#7067)
+
+Fixes: #7036
+(cherry picked from commit 35d379b2e8b92388a73f245e5cfcaa7e7371e8a7)
+---
+ src/shared/bus-unit-util.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/shared/bus-unit-util.c b/src/shared/bus-unit-util.c
+index e191f8c93e..6e2022587a 100644
+--- a/src/shared/bus-unit-util.c
++++ b/src/shared/bus-unit-util.c
+@@ -1471,7 +1471,7 @@ int bus_deserialize_and_dump_unit_file_changes(sd_bus_message *m, bool quiet, Un
+         if (r < 0)
+                 return bus_log_parse_error(r);
+ 
+-        unit_file_dump_changes(0, NULL, *changes, *n_changes, false);
++        unit_file_dump_changes(0, NULL, *changes, *n_changes, quiet);
+         return 0;
+ }
+ 

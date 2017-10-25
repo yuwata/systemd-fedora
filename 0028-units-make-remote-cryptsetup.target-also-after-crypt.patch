@@ -1,4 +1,4 @@
-From a0e030f53bad355be1084a0475eb30aae20e3e43 Mon Sep 17 00:00:00 2001
+From d56bbe6540ed5075ab6c2845c63d08c12499e46d Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
 Date: Wed, 18 Oct 2017 15:14:46 +0200
 Subject: [PATCH] units: make remote-cryptsetup.target also after
@@ -6,6 +6,8 @@ Subject: [PATCH] units: make remote-cryptsetup.target also after
 
 This way people can order units before cryptsetup-pre.target and
 have them run before any cryptsetup-related stuff.
+
+(cherry picked from commit a0e030f53bad355be1084a0475eb30aae20e3e43)
 ---
  units/remote-cryptsetup.target | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)

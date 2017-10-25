@@ -1,0 +1,37 @@
+From 14d3f593b115fb46361e5dab4de0bead8451ca27 Mon Sep 17 00:00:00 2001
+From: Susant Sahani <145210+ssahani@users.noreply.github.com>
+Date: Wed, 18 Oct 2017 16:08:56 +0530
+Subject: [PATCH] networkd: don't stop the dhcp server if it's not configured.
+ (#7083)
+
+we call sd_dhcp_server_stop even if it's not configured when link is
+down resulting unwanted logs.
+```
+Oct 10 13:41:07 nena systemd-networkd[126]: eth0: Lost carrier
+Oct 10 13:41:07 nena systemd-networkd[126]: DHCP CLIENT (0x560f2dc5): STOPPED
+Oct 10 13:41:07 nena systemd-networkd[126]: eth0: DHCP lease lost
+Oct 10 13:41:07 nena systemd-networkd[126]: NDISC: Stopping IPv6 Router Solicitation client
+Oct 10 13:41:07 nena systemd-networkd[126]: Assertion 'server' failed at ../src/libsystemd-network/sd-dhcp-server.c:256, function sd_dhcp_server_stop(). Ignoring.
+```
+
+fixes #7047
+
+(cherry picked from commit 28464ae0e21e7b9dfea7b733f9470091b2480a9a)
+---
+ src/network/networkd-link.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/network/networkd-link.c b/src/network/networkd-link.c
+index c581a49b4e..70039940bc 100644
+--- a/src/network/networkd-link.c
++++ b/src/network/networkd-link.c
+@@ -3085,7 +3085,8 @@ static int link_carrier_lost(Link *link) {
+                 return r;
+         }
+ 
+-        (void) sd_dhcp_server_stop(link->dhcp_server);
++        if (link_dhcp4_server_enabled(link))
++                (void) sd_dhcp_server_stop(link->dhcp_server);
+ 
+         r = link_drop_config(link);
+         if (r < 0)
