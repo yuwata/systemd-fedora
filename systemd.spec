@@ -1,4 +1,4 @@
-#global gitcommit 74d8f1c55b5aa46d2745fa4a74ae9fced6a3cab8
+%global gitcommit 4a0e9289bf443fec9fc56af25f90e2a100ba7a41
 %{?gitcommit:%global gitcommitshort %(c=%{gitcommit}; echo ${c:0:7})}
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        235
-Release:        4%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        5%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -27,6 +27,7 @@ Source0:        https://github.com/systemd/systemd/archive/v%{version}.tar.gz#/%
 # This file must be available before %%prep.
 # It is generated during systemd build and can be found in src/core/.
 Source1:        triggers.systemd
+Source2:        split-files.py
 
 # Prevent accidental removal of the systemd package
 Source4:        yum-protect-systemd.conf
@@ -46,46 +47,7 @@ i=1; for j in 00*patch; do printf "Patch%04d:      %s\n" $i $j; i=$((i+1));done|
 GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[67]* hwdb/parse_hwdb.py > hwdb.patch
 %endif
 
-Patch0001:      0001-po-update-Polish-translation-7015.patch
-Patch0002:      0002-man-fix-typo-for-in-systemd.service-7031.patch
-Patch0003:      0003-test-skip-hwdb-and-sysv-generator-if-the-features-ar.patch
-Patch0004:      0004-Updated-Turkish-translation-7017.patch
-Patch0005:      0005-catalog-po-update-Russian-translation-7041.patch
-Patch0006:      0006-l10n-update-Czech-Translation-7049.patch
-Patch0007:      0007-tests-skip-tests-when-cg_pid_get_path-fails-7033.patch
-Patch0008:      0008-core-fix-segfault-in-compile_bind_mounts-when-BindPa.patch
-Patch0009:      0009-namespace-fall-back-gracefully-when-kernel-doesn-t-s.patch
-Patch0010:      0010-networkd-bridge-allow-AgeingTimeSec-to-be-set-0-7021.patch
-Patch0011:      0011-systemctl-supress-enable-disable-messages-when-q-is-.patch
-Patch0012:      0012-man-update-changes-about-gateway-_gateway-7085.patch
-Patch0013:      0013-basic-env-util-drop-the-validation-when-deserializin.patch
-Patch0014:      0014-basic-env-util-don-t-relax-unesaping-of-serialized-e.patch
-Patch0015:      0015-test-path-fix-inverted-return-value-7050.patch
-Patch0016:      0016-networkd-Don-t-stop-networkd-if-CONFIG_FIB_RULES-n-i.patch
-Patch0017:      0017-dynamic-user-label-functions-not-necessary-to-export.patch
-Patch0018:      0018-dynamic-user-permit-the-case-static-uid-and-gid-are-.patch
-Patch0019:      0019-core-fix-invalid-error-message.patch
-Patch0020:      0020-man-comment-a-requirement-about-the-static-user-or-g.patch
-Patch0021:      0021-core-dynamic-user-use-_cleanup_-in-dynamic-user-lock.patch
-Patch0022:      0022-core-dynamic-user-use-gid-from-pwnam-if-a-static-use.patch
-Patch0023:      0023-networkd-Consider-linkLocalAddressing-state-while-co.patch
-Patch0024:      0024-networkd-don-t-stop-the-dhcp-server-if-it-s-not-conf.patch
-Patch0025:      0025-units-add-Install-section-to-remote-cryptsetup.targe.patch
-Patch0026:      0026-units-replace-remote-cryptsetup-pre.target-with-remo.patch
-Patch0027:      0027-man-add-a-note-about-_netdev-usage.patch
-Patch0028:      0028-units-make-remote-cryptsetup.target-also-after-crypt.patch
-Patch0029:      0029-man-describe-how-machine-id-should-be-initialized-70.patch
-Patch0030:      0030-catalog-update-french-translation.patch
-Patch0031:      0031-po-update-french-translation.patch
-Patch0032:      0032-sd-radv-Allocate-space-also-for-DNSSL-iov-option-714.patch
-Patch0033:      0033-modprobe.d-fix-directory-of-modprobe-configuration-f.patch
-Patch0034:      0034-nspawn-Fix-calculation-of-capabilities-for-configura.patch
-Patch0035:      0035-timedatectl-stop-using-xstrftime.patch
-Patch0036:      0036-core-fix-D-Bus-API.patch
-Patch0037:      0037-nspawn-EROFS-for-chowning-mount-points-is-not-fatal-.patch
-Patch0038:      0038-resolved-fix-loop-on-packets-with-pseudo-dns-types.patch
-
-Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
+#Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
 %global num_patches %{lua: c=0; for i,p in ipairs(patches) do c=c+1; end; print(c);}
 
@@ -448,6 +410,23 @@ install -Dm0755 -t %{buildroot}%{_prefix}/lib/kernel/install.d/ %{SOURCE11}
 
 %find_lang %{name}
 
+# Split files in build root into rpms. See split-files.py for the
+# rules towards the end, anything which is an exception needs a line
+# here.
+python3 %{SOURCE2} %buildroot <<EOF
+/etc/inittab
+%dir %attr(0755,systemd-journal-upload,systemd-journal-upload) %{_localstatedir}/lib/systemd/journal-upload
+%ghost %config(noreplace) /etc/X11/xorg.conf.d/00-keyboard.conf
+%ghost %attr(0664,root,utmp) /var/run/utmp
+%ghost %attr(0664,root,utmp) /var/log/wtmp
+%ghost %attr(0600,root,utmp) /var/log/btmp
+%ghost %config(noreplace) /etc/hostname
+%ghost %config(noreplace) /etc/localtime
+%ghost %config(noreplace) /etc/locale.conf
+%ghost %config(noreplace) /etc/machine-id
+%ghost %config(noreplace) /etc/machine-info
+EOF
+
 %check
 %meson_test
 
@@ -630,443 +609,56 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 
 %global _docdir_fmt %{name}
 
-%files -f %{name}.lang
+%files -f %{name}.lang -f .file-list-rest
 %doc %{_pkgdocdir}
 %exclude %{_pkgdocdir}/LICENSE.*
 %license LICENSE.GPL2 LICENSE.LGPL2.1
-%dir %{_sysconfdir}/systemd
-%dir %{_sysconfdir}/systemd/system
-%ghost %dir %{_sysconfdir}/systemd/system/basic.target.wants
-%ghost %dir %{_sysconfdir}/systemd/system/bluetooth.target.wants
-%ghost %dir %{_sysconfdir}/systemd/system/default.target.wants
-%ghost %dir %{_sysconfdir}/systemd/system/getty.target.wants
-%ghost %dir %{_sysconfdir}/systemd/system/graphical.target.wants
-%ghost %dir %{_sysconfdir}/systemd/system/local-fs.target.wants
-%ghost %dir %{_sysconfdir}/systemd/system/machines.target.wants
-%ghost %dir %{_sysconfdir}/systemd/system/multi-user.target.wants
-%ghost %dir %{_sysconfdir}/systemd/system/network-online.target.wants
-%ghost %dir %{_sysconfdir}/systemd/system/printer.target.wants
-%ghost %dir %{_sysconfdir}/systemd/system/remote-fs.target.wants
-%ghost %dir %{_sysconfdir}/systemd/system/sockets.target.wants
-%ghost %dir %{_sysconfdir}/systemd/system/sysinit.target.wants
-%ghost %dir %{_sysconfdir}/systemd/system/system-update.target.wants
-%ghost %dir %{_sysconfdir}/systemd/system/timers.target.wants
-%dir %{_sysconfdir}/systemd/user
-%dir %{_sysconfdir}/systemd/network
-%dir %{_sysconfdir}/tmpfiles.d
-%dir %{_sysconfdir}/sysctl.d
-%dir %{_sysconfdir}/modules-load.d
-%dir %{_sysconfdir}/binfmt.d
-%{_sysconfdir}/X11/xinit/xinitrc.d/50-systemd-user.sh
-%ghost %verify(not md5 size mtime) %config(noreplace,missingok) /etc/crypttab
-/etc/inittab
-%config(noreplace) %{_sysconfdir}/sysctl.conf
-%{_sysconfdir}/sysctl.d/99-sysctl.conf
-%dir %{pkgdir}
-%{pkgdir}/system-generators
-%exclude %{pkgdir}/system-generators/systemd-cryptsetup-generator
-%exclude %{pkgdir}/system-generators/systemd-gpt-auto-generator
-%exclude %{pkgdir}/system-generators/systemd-hibernate-resume-generator
-%{pkgdir}/user-generators
-%{pkgdir}/user-environment-generators
-%dir %{pkgdir}/system-shutdown
-%dir %{pkgdir}/system-sleep
-%dir %{pkgdir}/catalog
-%dir %{pkgdir}/network
-%dir %{_prefix}/lib/tmpfiles.d
-%dir %{_prefix}/lib/sysusers.d
-%dir %{_prefix}/lib/sysctl.d
-%dir %{_prefix}/lib/modules-load.d
-%dir %{_prefix}/lib/binfmt.d
-%dir %{_prefix}/lib/environment.d
-%{_prefix}/lib/environment.d/99-environment.conf
-%dir %{_prefix}/lib/modprobe.d
-%{_prefix}/lib/modprobe.d/systemd.conf
-%dir %{_prefix}/lib/kernel
-%dir %{_datadir}/systemd
-%dir %{_datadir}/dbus-1/system.d
-%{_datadir}/dbus-1/system.d/org.freedesktop.systemd1.conf
-%{_datadir}/dbus-1/system.d/org.freedesktop.hostname1.conf
-%{_datadir}/dbus-1/system.d/org.freedesktop.login1.conf
-%{_datadir}/dbus-1/system.d/org.freedesktop.locale1.conf
-%{_datadir}/dbus-1/system.d/org.freedesktop.timedate1.conf
-%{_datadir}/dbus-1/system.d/org.freedesktop.resolve1.conf
-%{_datadir}/dbus-1/system.d/org.freedesktop.network1.conf
-%dir %{_datadir}/pkgconfig
-%dir %{_datadir}/zsh
-%dir %{_datadir}/zsh/site-functions
-%ghost %dir %{_localstatedir}/log/journal
-%dir %{_localstatedir}/lib/systemd
-%dir %{_localstatedir}/lib/systemd/catalog
-%ghost %dir %{_localstatedir}/lib/systemd/coredump
-%ghost %dir %{_localstatedir}/lib/systemd/backlight
-%ghost %dir %{_localstatedir}/lib/systemd/rfkill
-%ghost %dir %{_localstatedir}/lib/systemd/linger
-%ghost %{_localstatedir}/lib/systemd/random-seed
-%ghost %{_localstatedir}/lib/systemd/clock
-%ghost %{_localstatedir}/lib/systemd/catalog/database
-%{_localstatedir}/log/README
-%ghost %attr(0664,root,utmp) %{_localstatedir}/run/utmp
-%ghost %attr(0664,root,utmp) %{_localstatedir}/log/wtmp
-%ghost %attr(0600,root,utmp) %{_localstatedir}/log/btmp
-%config(noreplace) %{_sysconfdir}/systemd/system.conf
-%config(noreplace) %{_sysconfdir}/systemd/user.conf
-%config(noreplace) %{_sysconfdir}/systemd/logind.conf
-%config(noreplace) %{_sysconfdir}/systemd/journald.conf
-%config(noreplace) %{_sysconfdir}/systemd/resolved.conf
-%config(noreplace) %{_sysconfdir}/systemd/coredump.conf
-%config(noreplace) %{_sysconfdir}/systemd/system/dbus-org.freedesktop.resolve1.service
-%config(noreplace) %{_sysconfdir}/systemd/system/dbus-org.freedesktop.network1.service
-%config(noreplace) %{_sysconfdir}/yum/protected.d/systemd.conf
-%config(noreplace) %{_sysconfdir}/pam.d/systemd-user
-%{_rpmconfigdir}/macros.d/macros.systemd
-%{_sysconfdir}/xdg/systemd
-%{_sysconfdir}/rc.d/init.d/README
-%ghost %config(noreplace) %{_sysconfdir}/hostname
-%ghost %config(noreplace) %{_sysconfdir}/localtime
-%ghost %config(noreplace) %{_sysconfdir}/locale.conf
-%ghost %config(noreplace) %{_sysconfdir}/machine-id
-%ghost %config(noreplace) %{_sysconfdir}/machine-info
-%dir %{_sysconfdir}/X11/xorg.conf.d
-%ghost %config(noreplace) %{_sysconfdir}/X11/xorg.conf.d/00-keyboard.conf
-%{_bindir}/busctl
-%{_bindir}/coredumpctl
-%{_bindir}/hostnamectl
-%{_bindir}/journalctl
-%{_bindir}/localectl
-%{_bindir}/loginctl
-%{_bindir}/networkctl
-%{_bindir}/systemctl
-%{_bindir}/systemd-analyze
-%{_bindir}/systemd-ask-password
-%{_bindir}/systemd-cat
-%{_bindir}/systemd-cgls
-%{_bindir}/systemd-cgtop
-%{_bindir}/systemd-delta
-%{_bindir}/systemd-detect-virt
-%{_bindir}/systemd-escape
-%{_bindir}/systemd-firstboot
-%{_bindir}/systemd-inhibit
-%{_bindir}/systemd-machine-id-setup
-%{_bindir}/systemd-mount
-%{_bindir}/systemd-umount
-%{_bindir}/systemd-notify
-%{_bindir}/systemd-path
-%{_bindir}/systemd-resolve
-%{_bindir}/systemd-run
-%{_bindir}/systemd-socket-activate
-%{_bindir}/systemd-stdio-bridge
-%{_bindir}/systemd-sysusers
-%{_bindir}/systemd-tmpfiles
-%{_bindir}/systemd-tty-ask-password-agent
-%{_bindir}/timedatectl
-%{pkgdir}/systemd
-%{pkgdir}/libsystemd-shared-%{version}.so
-%{system_unit_dir}
-%{user_unit_dir}
-%{pkgdir}/resolv.conf
-%exclude %{system_unit_dir}/*udev*
-%exclude %{system_unit_dir}/*/*udev*
-%exclude %{system_unit_dir}/*hwdb*
-%exclude %{system_unit_dir}/*/*hwdb*
-%exclude %{system_unit_dir}/systemd-vconsole-setup.service
-%exclude %{system_unit_dir}/kmod-static-nodes.service
-%exclude %{system_unit_dir}/*/kmod-static-nodes.service
-%exclude %{system_unit_dir}/systemd-tmpfiles-setup-dev.service
-%exclude %{system_unit_dir}/*/systemd-tmpfiles-setup-dev.service
-%exclude %{system_unit_dir}/*.machine1.*
-%exclude %{system_unit_dir}/*.import1.*
-%exclude %{system_unit_dir}/systemd-machined.service
-%exclude %{system_unit_dir}/systemd-importd.service
-%exclude %{system_unit_dir}/machine.slice
-%exclude %{system_unit_dir}/machines.target
-%exclude %{system_unit_dir}/var-lib-machines.mount
-%exclude %{system_unit_dir}/*/var-lib-machines.mount
-%exclude %{system_unit_dir}/systemd-journal-gatewayd.*
-%exclude %{system_unit_dir}/systemd-journal-remote.*
-%exclude %{system_unit_dir}/*upload.*
-%exclude %{system_unit_dir}/systemd-rfkill.*
-%exclude %{system_unit_dir}/systemd-backlight*
-%exclude %{system_unit_dir}/*/systemd-random-seed.service
-%exclude %{system_unit_dir}/systemd-random-seed.service
-%exclude %{system_unit_dir}/systemd-quotacheck.service
-%exclude %{system_unit_dir}/quotaon.service
-%exclude %{system_unit_dir}/*/systemd-modules-load.service
-%exclude %{system_unit_dir}/systemd-modules-load.service
-%exclude %{system_unit_dir}/systemd-timesyncd.service
-%exclude %{system_unit_dir}/systemd-hibernate-resume@.service
-%exclude %{system_unit_dir}/systemd-hibernate.service
-%exclude %{system_unit_dir}/systemd-suspend.service
-%exclude %{system_unit_dir}/systemd-hybrid-sleep.service
-%exclude %{system_unit_dir}/systemd-nspawn@.service
-%exclude %{pkgdir}/systemd-udevd
-%exclude %{pkgdir}/systemd-vconsole-setup
-%exclude %{pkgdir}/systemd-machined
-%exclude %{pkgdir}/systemd-import
-%exclude %{pkgdir}/systemd-importd
-%exclude %{pkgdir}/systemd-pull
-%exclude %{pkgdir}/systemd-journal-gatewayd
-%exclude %{pkgdir}/systemd-journal-remote
-%exclude %{pkgdir}/systemd-journal-upload
-%exclude %{pkgdir}/systemd-backlight
-%exclude %{pkgdir}/systemd-rfkill
-%exclude %{pkgdir}/systemd-random-seed
-%exclude %{pkgdir}/systemd-quotacheck
-%exclude %{pkgdir}/systemd-modules-load
-%exclude %{pkgdir}/systemd-timesyncd
-%exclude %{pkgdir}/systemd-cryptsetup
-%exclude %{pkgdir}/systemd-hibernate-resume
-%exclude %{pkgdir}/systemd-sleep
+%ghost %dir /etc/systemd/system/basic.target.wants
+%ghost %dir /etc/systemd/system/bluetooth.target.wants
+%ghost %dir /etc/systemd/system/default.target.wants
+%ghost %dir /etc/systemd/system/getty.target.wants
+%ghost %dir /etc/systemd/system/graphical.target.wants
+%ghost %dir /etc/systemd/system/local-fs.target.wants
+%ghost %dir /etc/systemd/system/machines.target.wants
+%ghost %dir /etc/systemd/system/multi-user.target.wants
+%ghost %dir /etc/systemd/system/network-online.target.wants
+%ghost %dir /etc/systemd/system/printer.target.wants
+%ghost %dir /etc/systemd/system/remote-fs.target.wants
+%ghost %dir /etc/systemd/system/sockets.target.wants
+%ghost %dir /etc/systemd/system/sysinit.target.wants
+%ghost %dir /etc/systemd/system/system-update.target.wants
+%ghost %dir /etc/systemd/system/timers.target.wants
+%ghost %dir /var/log/journal
+%ghost %dir /var/lib/systemd/coredump
+%ghost %dir /var/lib/systemd/backlight
+%ghost %dir /var/lib/systemd/rfkill
+%ghost %dir /var/lib/systemd/linger
+%ghost /var/lib/systemd/random-seed
+%ghost /var/lib/systemd/clock
+%ghost /var/lib/systemd/catalog/database
+%ghost %dir /var/lib/rpm-state/systemd
 
-%{pkgdir}/systemd-*
-%{_prefix}/lib/tmpfiles.d/systemd.conf
-%{_prefix}/lib/tmpfiles.d/systemd-nologin.conf
-%{_prefix}/lib/tmpfiles.d/x11.conf
-%{_prefix}/lib/tmpfiles.d/legacy.conf
-%{_prefix}/lib/tmpfiles.d/tmp.conf
-%{_prefix}/lib/tmpfiles.d/var.conf
-%{_prefix}/lib/tmpfiles.d/etc.conf
-%{_prefix}/lib/tmpfiles.d/home.conf
-%{_prefix}/lib/tmpfiles.d/journal-nocow.conf
-%{_prefix}/lib/sysctl.d/50-default.conf
-%{_prefix}/lib/sysctl.d/50-coredump.conf
-%{_prefix}/lib/sysusers.d/basic.conf
-%{_prefix}/lib/sysusers.d/systemd.conf
-%{pkgdir}/system-preset/90-systemd.preset
-%{pkgdir}/catalog/systemd.catalog
-%{_prefix}/lib/kernel/install.d/
-%{_sbindir}/init
-%{_sbindir}/reboot
-%{_sbindir}/halt
-%{_sbindir}/poweroff
-%{_sbindir}/shutdown
-%{_sbindir}/telinit
-%{_sbindir}/runlevel
-%{_mandir}/man1/*
-%{_mandir}/man5/*
-%{_mandir}/man7/*
-%{_mandir}/man8/*
-
-%exclude %{_mandir}/man*/*udev*
-%exclude %{_mandir}/man*/*hwdb*
-%exclude %{_mandir}/man*/systemd-tmpfiles-setup-dev.service*
-%exclude %{_mandir}/man*/systemd-journal-gateway*
-%exclude %{_mandir}/man*/*journal-remote.*
-%exclude %{_mandir}/man*/*modules-load.*
-%exclude %{_mandir}/man*/*timesyncd.*
-%exclude %{_mandir}/man*/systemd-hibernate*
-%exclude %{_mandir}/man*/systemd-hybrid-sleep*
-%exclude %{_mandir}/man*/systemd-suspend*
-%exclude %{_mandir}/man*/systemd-nspawn.*
-%exclude %{_mandir}/man*/systemd-vconsole-setup*
-%exclude %{_mandir}/man*/systemd-machined*
-%exclude %{_mandir}/man*/systemd-journal-remote*
-%exclude %{_mandir}/man*/systemd-journal-upload*
-%exclude %{_mandir}/man*/systemd-backlight*
-%exclude %{_mandir}/man*/systemd-rfkill*
-%exclude %{_mandir}/man*/systemd-random-seed*
-%exclude %{_mandir}/man*/systemd-quotacheck*
-%exclude %{_mandir}/man*/systemd-cryptsetup*
-%exclude %{_mandir}/man*/systemd-sleep*
-
-%{_datadir}/factory/
-%{_datadir}/systemd/kbd-model-map
-%{_datadir}/systemd/language-fallback-map
-%{_datadir}/dbus-1/services/org.freedesktop.systemd1.service
-%{_datadir}/dbus-1/system-services/org.freedesktop.systemd1.service
-%{_datadir}/dbus-1/system-services/org.freedesktop.hostname1.service
-%{_datadir}/dbus-1/system-services/org.freedesktop.login1.service
-%{_datadir}/dbus-1/system-services/org.freedesktop.locale1.service
-%{_datadir}/dbus-1/system-services/org.freedesktop.timedate1.service
-%{_datadir}/dbus-1/system-services/org.freedesktop.resolve1.service
-%{_datadir}/dbus-1/system-services/org.freedesktop.network1.service
-%dir %{_datadir}/polkit-1
-%dir %{_datadir}/polkit-1/actions
-%{_datadir}/polkit-1/actions/org.freedesktop.systemd1.policy
-%{_datadir}/polkit-1/actions/org.freedesktop.hostname1.policy
-%{_datadir}/polkit-1/actions/org.freedesktop.login1.policy
-%{_datadir}/polkit-1/actions/org.freedesktop.locale1.policy
-%{_datadir}/polkit-1/actions/org.freedesktop.timedate1.policy
-%{_datadir}/polkit-1/rules.d/systemd-networkd.rules
-%{_datadir}/pkgconfig/systemd.pc
-%{_datadir}/pkgconfig/udev.pc
-%{_datadir}/bash-completion/completions/*
-%exclude %{_datadir}/bash-completion/completions/udevadm
-%exclude %{_datadir}/bash-completion/completions/machinectl
-%exclude %{_datadir}/bash-completion/completions/systemd-nspawn
-%{_datadir}/zsh/site-functions/*
-%exclude %{_datadir}/zsh/site-functions/_udevadm
-%exclude %{_datadir}/zsh/site-functions/_machinectl
-%exclude %{_datadir}/zsh/site-functions/_systemd-nspawn
-%{pkgdir}/catalog/systemd.*.catalog
-%{pkgdir}/network/80-container-host0.network
-
-%ghost %dir %{_localstatedir}/lib/rpm-state/systemd
-
-%files libs
-%{_libdir}/libnss_myhostname.so.2
-%{_libdir}/libnss_resolve.so.2
-%{_libdir}/libnss_systemd.so.2
-%{_libdir}/libudev.so.*
-%{_libdir}/libsystemd.so.*
+%files libs -f .file-list-libs
 %license LICENSE.LGPL2.1
 
-%files pam
-%{_libdir}/security/pam_systemd.so
+%files pam -f .file-list-pam
 
-%files devel
-%dir %{_includedir}/systemd
-%{_libdir}/libudev.so
-%{_libdir}/libsystemd.so
-%{_includedir}/systemd/sd-daemon.h
-%{_includedir}/systemd/sd-login.h
-%{_includedir}/systemd/sd-journal.h
-%{_includedir}/systemd/sd-id128.h
-%{_includedir}/systemd/sd-messages.h
-%{_includedir}/systemd/sd-bus-protocol.h
-%{_includedir}/systemd/sd-bus-vtable.h
-%{_includedir}/systemd/sd-bus.h
-%{_includedir}/systemd/sd-event.h
-%{_includedir}/systemd/_sd-common.h
-%{_includedir}/libudev.h
-%{_libdir}/pkgconfig/libudev.pc
-%{_libdir}/pkgconfig/libsystemd.pc
-%{_mandir}/man3/*
+%files devel -f .file-list-devel
 
-%files udev
-%dir %{_sysconfdir}/udev
-%dir %{_sysconfdir}/udev/rules.d
-%dir %{_sysconfdir}/udev/hwdb.d
-%config(noreplace) %{_sysconfdir}/udev/udev.conf
+%files udev -f .file-list-udev
 %ghost %{_sysconfdir}/udev/hwdb.bin
 %ghost %config(noreplace) %{_sysconfdir}/vconsole.conf
-%{system_unit_dir}/*udev*
-%{system_unit_dir}/*/*udev*
-%{system_unit_dir}/*hwdb*
-%{system_unit_dir}/*/*hwdb*
-%{system_unit_dir}/systemd-vconsole-setup.service
-%{system_unit_dir}/kmod-static-nodes.service
-%{system_unit_dir}/*/kmod-static-nodes.service
-%{system_unit_dir}/systemd-tmpfiles-setup-dev.service
-%{system_unit_dir}/*/systemd-tmpfiles-setup-dev.service
-%{system_unit_dir}/systemd-rfkill.*
-%{system_unit_dir}/systemd-backlight*
-%{system_unit_dir}/*/systemd-random-seed.service
-%{system_unit_dir}/systemd-random-seed.service
-%{system_unit_dir}/systemd-quotacheck.service
-%{system_unit_dir}/quotaon.service
-%{system_unit_dir}/*/systemd-modules-load.service
-%{system_unit_dir}/systemd-modules-load.service
-%{system_unit_dir}/systemd-timesyncd.service
-%{system_unit_dir}/systemd-hibernate-resume@.service
-%{system_unit_dir}/systemd-hibernate.service
-%{system_unit_dir}/systemd-hybrid-sleep.service
-%{system_unit_dir}/systemd-suspend.service
-%{_bindir}/udevadm
-%{_sbindir}/udevadm
-%{_bindir}/systemd-hwdb
-%{_bindir}/bootctl
-%{_bindir}/kernel-install
-%{pkgdir}/systemd-udevd
-%{pkgdir}/systemd-vconsole-setup
-%{pkgdir}/systemd-backlight
-%{pkgdir}/systemd-rfkill
-%{pkgdir}/systemd-random-seed
-%{pkgdir}/systemd-quotacheck
-%{pkgdir}/systemd-modules-load
-%{pkgdir}/systemd-timesyncd
-%{pkgdir}/systemd-cryptsetup
-%{pkgdir}/systemd-hibernate-resume
-%{pkgdir}/systemd-sleep
 
-%{pkgdir}/network/99-default.link
-%{_prefix}/lib/udev
-%{_datadir}/bash-completion/completions/udevadm
-%{_datadir}/zsh/site-functions/_udevadm
-%{pkgdir}/system-generators/systemd-cryptsetup-generator
-%{pkgdir}/system-generators/systemd-gpt-auto-generator
-%{pkgdir}/system-generators/systemd-hibernate-resume-generator
-%config(noreplace) %{_sysconfdir}/systemd/timesyncd.conf
+%files container -f .file-list-container
 
-%ifarch %{ix86} x86_64 aarch64
-%dir %{pkgdir}/boot
-%dir %{pkgdir}/boot/efi
-%{pkgdir}/boot/efi/*.efi
-%{pkgdir}/boot/efi/*.stub
-%endif
+%files journal-remote -f .file-list-remote
 
-%{_mandir}/man[1578]/*udev*
-%{_mandir}/man[1578]/*hwdb*
-%{_mandir}/man[1578]/systemd-tmpfiles-setup-dev.service*
-%{_mandir}/man[1578]/*modules-load.*
-%{_mandir}/man[1578]/*timesyncd.*
-%{_mandir}/man[1578]/systemd-hibernate*
-%{_mandir}/man[1578]/systemd-suspend*
-%{_mandir}/man[1578]/systemd-vconsole-setup*
-%{_mandir}/man[1578]/systemd-backlight*
-%{_mandir}/man[1578]/systemd-rfkill*
-%{_mandir}/man[1578]/systemd-random-seed*
-%{_mandir}/man[1578]/systemd-quotacheck*
-%{_mandir}/man[1578]/systemd-cryptsetup*
-%{_mandir}/man[1578]/systemd-sleep*
-
-%files container
-%{_libdir}/libnss_mymachines.so.2
-%{_bindir}/machinectl
-%{_bindir}/systemd-nspawn
-%{pkgdir}/import-pubring.gpg
-%{_prefix}/lib/tmpfiles.d/systemd-nspawn.conf
-%{system_unit_dir}/*.machine1.*
-%{system_unit_dir}/*.import1.*
-%{system_unit_dir}/systemd-machined.service
-%{system_unit_dir}/systemd-importd.service
-%{system_unit_dir}/machine.slice
-%{system_unit_dir}/machines.target
-%{system_unit_dir}/var-lib-machines.mount
-%{system_unit_dir}/*/var-lib-machines.mount
-%{system_unit_dir}/systemd-nspawn@.service
-%{pkgdir}/systemd-machined
-%{pkgdir}/systemd-import
-%{pkgdir}/systemd-importd
-%{pkgdir}/systemd-pull
-%{pkgdir}/network/80-container-ve.network
-%{pkgdir}/network/80-container-vz.network
-%{_datadir}/dbus-1/system.d/org.freedesktop.import1.conf
-%{_datadir}/dbus-1/system.d/org.freedesktop.machine1.conf
-%{_datadir}/dbus-1/system-services/org.freedesktop.import1.service
-%{_datadir}/dbus-1/system-services/org.freedesktop.machine1.service
-%{_datadir}/polkit-1/actions/org.freedesktop.import1.policy
-%{_datadir}/polkit-1/actions/org.freedesktop.machine1.policy
-%{_datadir}/bash-completion/completions/machinectl
-%{_datadir}/bash-completion/completions/systemd-nspawn
-%{_datadir}/zsh/site-functions/_machinectl
-%{_datadir}/zsh/site-functions/_systemd-nspawn
-%{_mandir}/man1/machinectl.*
-%{_mandir}/man8/systemd-machined.*
-%{_mandir}/man8/*mymachines.*
-%{_mandir}/man[1578]/systemd-nspawn.*
-
-%files journal-remote
-%config(noreplace) %{_sysconfdir}/systemd/journal-remote.conf
-%config(noreplace) %{_sysconfdir}/systemd/journal-upload.conf
-%{system_unit_dir}/systemd-journal-gatewayd.*
-%{system_unit_dir}/systemd-journal-remote.*
-%{system_unit_dir}/*upload.*
-%{pkgdir}/systemd-journal-gatewayd
-%{pkgdir}/systemd-journal-remote
-%{pkgdir}/systemd-journal-upload
-%{_prefix}/lib/sysusers.d/systemd-remote.conf
-%dir %attr(0755,systemd-journal-upload,systemd-journal-upload) %{_localstatedir}/lib/systemd/journal-upload
-%{_datadir}/systemd/gatewayd
-/usr/lib/firewalld/services/*
-%{_mandir}/man[1578]/*journal-remote.*
-%{_mandir}/man[1578]/systemd-journal-upload*
-%{_mandir}/man[1578]/systemd-journal-gateway*
-
-%files tests
-%{pkgdir}/tests
+%files tests -f .file-list-tests
 
 %changelog
+* Mon Dec 11 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 235-5.git4a0e928
+- Update to latest git snapshot for CI purposes, do not build for realz
+
 * Tue Nov 07 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 235-4
 - Rebuild for cryptsetup-2.0.0-0.2.fc28
 
