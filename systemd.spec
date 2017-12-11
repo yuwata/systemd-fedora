@@ -55,6 +55,8 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 %global have_gnu_efi 1
 %endif
 
+BuildRequires:  gcc
+BuildRequires:  gcc-c++
 BuildRequires:  libcap-devel
 BuildRequires:  libmount-devel
 BuildRequires:  pam-devel
