@@ -39,9 +39,9 @@ for file in files(buildroot):
                     /usr/lib/rpm(/macros.d|)$|
                     /usr/lib/firewalld(/services|)$|
                     /usr/share/(locale|licenses|doc)|             # no $
-                    /etc(/pam\.d|/xdg|/X11|/X11.*\.d|)$|
+                    /etc(/pam\.d|/xdg|/X11|/X11/xinit|/X11.*\.d|)$|
                     /usr/(src|lib/debug)|                         # no $
-                    /var(/log|/lib|/run|)$
+                    /var(/cache|/log|/lib|/run|)$
     ''', n, re.X):
         continue
     if '/security/pam_' in n:
@@ -52,7 +52,8 @@ for file in files(buildroot):
         o = o_tests
     elif re.search(r'''journal-(remote|gateway|upload)|
                        systemd-remote\.conf|
-                       /usr/share/systemd/gatewayd
+                       /usr/share/systemd/gatewayd|
+                       /var/log/journal/remote
     ''', n, re.X):
         o = o_remote
     elif re.search(r'''mymachines|
@@ -78,7 +79,7 @@ for file in files(buildroot):
                        rfkill|
                        random-seed|
                        modules-load|
-                       timesyncd|
+                       timesync|
                        cryptsetup|
                        kmod|
                        quota|

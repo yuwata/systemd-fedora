@@ -386,13 +386,20 @@ mkdir -p %{buildroot}%{_localstatedir}/lib/systemd/coredump
 mkdir -p %{buildroot}%{_localstatedir}/lib/systemd/catalog
 mkdir -p %{buildroot}%{_localstatedir}/lib/systemd/backlight
 mkdir -p %{buildroot}%{_localstatedir}/lib/systemd/rfkill
-mkdir -p %{buildroot}%{_localstatedir}/lib/systemd/journal-upload
 mkdir -p %{buildroot}%{_localstatedir}/lib/systemd/linger
+mkdir -p %{buildroot}%{_localstatedir}/lib/private
+mkdir -p %{buildroot}%{_localstatedir}/log/private
+mkdir -p %{buildroot}%{_localstatedir}/cache/private
+mkdir -p %{buildroot}%{_localstatedir}/lib/private/systemd/journal-upload
+mkdir -p %{buildroot}%{_localstatedir}/lib/private/systemd/timesync
+ln -s ../private/systemd/journal-upload %{buildroot}%{_localstatedir}/lib/systemd/journal-upload
+ln -s ../private/systemd/timesync %{buildroot}%{_localstatedir}/lib/systemd/timesync
 mkdir -p %{buildroot}%{_localstatedir}/log/journal
 touch %{buildroot}%{_localstatedir}/lib/systemd/catalog/database
 touch %{buildroot}%{_sysconfdir}/udev/hwdb.bin
 touch %{buildroot}%{_localstatedir}/lib/systemd/random-seed
-touch %{buildroot}%{_localstatedir}/lib/systemd/clock
+touch %{buildroot}%{_localstatedir}/lib/private/systemd/timesync/clock
+touch %{buildroot}%{_localstatedir}/lib/private/systemd/journal-upload/state
 
 # Install yum protection fragment
 install -Dm0644 %{SOURCE4} %{buildroot}%{_sysconfdir}/yum/protected.d/systemd.conf
@@ -414,8 +421,10 @@ install -Dm0755 -t %{buildroot}%{_prefix}/lib/kernel/install.d/ %{SOURCE11}
 # rules towards the end, anything which is an exception needs a line
 # here.
 python3 %{SOURCE2} %buildroot <<EOF
+%ghost %config(noreplace) /etc/crypttab
+%ghost /etc/udev/hwdb.bin
 /etc/inittab
-%dir %attr(0755,systemd-journal-upload,systemd-journal-upload) %{_localstatedir}/lib/systemd/journal-upload
+%ghost %config(noreplace) /etc/vconsole.conf
 %ghost %config(noreplace) /etc/X11/xorg.conf.d/00-keyboard.conf
 %ghost %attr(0664,root,utmp) /var/run/utmp
 %ghost %attr(0664,root,utmp) /var/log/wtmp
@@ -425,6 +434,24 @@ python3 %{SOURCE2} %buildroot <<EOF
 %ghost %config(noreplace) /etc/locale.conf
 %ghost %config(noreplace) /etc/machine-id
 %ghost %config(noreplace) /etc/machine-info
+%ghost %dir /var/cache/private
+%ghost %dir /var/lib/private
+%ghost %dir /var/lib/private/systemd
+%ghost %dir /var/lib/private/systemd/journal-upload
+%ghost /var/lib/private/systemd/journal-upload/state
+%ghost %dir /var/lib/private/systemd/timesync
+%ghost /var/lib/private/systemd/timesync/clock
+%ghost %dir /var/lib/systemd/backlight
+%ghost /var/lib/systemd/catalog/database
+%ghost %dir /var/lib/systemd/coredump
+%ghost /var/lib/systemd/journal-upload
+%ghost %dir /var/lib/systemd/linger
+%ghost /var/lib/systemd/random-seed
+%ghost %dir /var/lib/systemd/rfkill
+%ghost /var/lib/systemd/timesync
+%ghost %dir /var/log/journal
+%ghost %dir /var/log/journal/remote
+%ghost %dir /var/log/private
 EOF
 
 %check
@@ -628,14 +655,6 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %ghost %dir /etc/systemd/system/sysinit.target.wants
 %ghost %dir /etc/systemd/system/system-update.target.wants
 %ghost %dir /etc/systemd/system/timers.target.wants
-%ghost %dir /var/log/journal
-%ghost %dir /var/lib/systemd/coredump
-%ghost %dir /var/lib/systemd/backlight
-%ghost %dir /var/lib/systemd/rfkill
-%ghost %dir /var/lib/systemd/linger
-%ghost /var/lib/systemd/random-seed
-%ghost /var/lib/systemd/clock
-%ghost /var/lib/systemd/catalog/database
 %ghost %dir /var/lib/rpm-state/systemd
 
 %files libs -f .file-list-libs
@@ -646,8 +665,6 @@ getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-jou
 %files devel -f .file-list-devel
 
 %files udev -f .file-list-udev
-%ghost %{_sysconfdir}/udev/hwdb.bin
-%ghost %config(noreplace) %{_sysconfdir}/vconsole.conf
 
 %files container -f .file-list-container
 
