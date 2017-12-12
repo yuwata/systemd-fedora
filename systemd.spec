@@ -470,13 +470,11 @@ getent group tape &>/dev/null || groupadd -r -g 33 tape &>/dev/null || :
 getent group dialout &>/dev/null || groupadd -r -g 18 dialout &>/dev/null || :
 getent group input &>/dev/null || groupadd -r input &>/dev/null || :
 getent group kvm &>/dev/null || groupadd -r -g 36 kvm &>/dev/null || :
+getent group render &>/dev/null || groupadd -r render &>/dev/null || :
 getent group systemd-journal &>/dev/null || groupadd -r -g 190 systemd-journal 2>&1 || :
 
 getent group systemd-coredump &>/dev/null || groupadd -r systemd-coredump 2>&1 || :
 getent passwd systemd-coredump &>/dev/null || useradd -r -l -g systemd-coredump -d / -s /sbin/nologin -c "systemd Core Dumper" systemd-coredump &>/dev/null || :
-
-getent group systemd-timesync &>/dev/null || groupadd -r systemd-timesync 2>&1 || :
-getent passwd systemd-timesync &>/dev/null || useradd -r -l -g systemd-timesync -d / -s /sbin/nologin -c "systemd Time Synchronization" systemd-timesync &>/dev/null || :
 
 getent group systemd-network &>/dev/null || groupadd -r -g 192 systemd-network 2>&1 || :
 getent passwd systemd-network &>/dev/null || useradd -r -u 192 -l -g systemd-network -d / -s /sbin/nologin -c "systemd Network Management" systemd-network &>/dev/null || :
@@ -612,12 +610,8 @@ exit 0
 %systemd_postun_with_restart systemd-udevd.service
 
 %pre journal-remote
-getent group systemd-journal-gateway &>/dev/null || groupadd -r systemd-journal-gateway 2>&1 || :
-getent passwd systemd-journal-gateway &>/dev/null || useradd -r -l -g systemd-journal-gateway -d %{_localstatedir}/log/journal -s /sbin/nologin -c "Journal Gateway" systemd-journal-gateway &>/dev/null || :
 getent group systemd-journal-remote &>/dev/null || groupadd -r systemd-journal-remote 2>&1 || :
 getent passwd systemd-journal-remote &>/dev/null || useradd -r -l -g systemd-journal-remote -d %{_localstatedir}/log/journal/remote -s /sbin/nologin -c "Journal Remote" systemd-journal-remote &>/dev/null || :
-getent group systemd-journal-upload &>/dev/null || groupadd -r systemd-journal-upload 2>&1 || :
-getent passwd systemd-journal-upload &>/dev/null || useradd -r -l -g systemd-journal-upload -G systemd-journal -d %{_localstatedir}/log/journal/upload -s /sbin/nologin -c "Journal Upload" systemd-journal-upload &>/dev/null || :
 
 %post journal-remote
 %systemd_post systemd-journal-gatewayd.socket systemd-journal-gatewayd.service
