@@ -603,6 +603,12 @@ exit 0
 
 %preun udev
 %systemd_preun %udev_services
+if [ $1 -eq 1 ] ; then
+    if [ -f %{_localstatedir}/lib/systemd/clock ] ; then
+        mkdir -p %{_localstatedir}/lib/private/systemd/timesync
+        mv %{_localstatedir}/lib/systemd/clock %{_localstatedir}/lib/private/systemd/timesync/.
+    fi
+fi
 
 %postun udev
 # Only restart systemd-udev, to run the upgraded dameon.
@@ -623,6 +629,12 @@ getent passwd systemd-journal-remote &>/dev/null || useradd -r -l -g systemd-jou
 %systemd_preun systemd-journal-gatewayd.socket systemd-journal-gatewayd.service
 %systemd_preun systemd-journal-remote.socket systemd-journal-remote.service
 %systemd_preun systemd-journal-upload.service
+if [ $1 -eq 1 ] ; then
+    if [ -f %{_localstatedir}/lib/systemd/journal-upload/state -a ! -L %{_localstatedir}/lib/systemd/journal-upload ] ; then
+        mkdir -p %{_localstatedir}/lib/private/systemd/journal-upload
+        mv %{_localstatedir}/lib/systemd/journal-upload/state %{_localstatedir}/lib/private/systemd/journal-upload/.
+    fi
+fi
 
 %postun journal-remote
 %systemd_postun_with_restart systemd-journal-gatewayd.service
