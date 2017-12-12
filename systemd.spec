@@ -682,7 +682,8 @@ fi
 
 %changelog
 * Mon Dec 11 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 235-5.git4a0e928
-- Update to latest git snapshot for CI purposes, do not build for realz
+- Update to latest git snapshot, do not build for realz
+- Switch to libidn2 again (#1449145)
 
 * Tue Nov 07 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 235-4
 - Rebuild for cryptsetup-2.0.0-0.2.fc28
