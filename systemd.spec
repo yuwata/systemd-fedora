@@ -97,10 +97,8 @@ BuildRequires:  libseccomp-devel
 %if %{num_patches}
 BuildRequires:  git
 %endif
-BuildRequires:  meson >= 0.40
+BuildRequires:  meson >= 0.43
 BuildRequires:  gettext
-# for now, should not be necessary when we switch to i18n.merge_file()
-BuildRequires:  intltool
 
 Requires(post): coreutils
 Requires(post): sed
@@ -314,6 +312,10 @@ CONFIGURE_OPTS=(
         -Ddefault-kill-user-processes=false
         -Dtests=unsafe
         -Dinstall-tests=true
+        -Dtty-gid=5
+        -Dusers-gid=100
+        -Dnobody-user=nfsnobody
+        -Dnobody-group=nfsnobody
         -Db_lto=true
 )
 
