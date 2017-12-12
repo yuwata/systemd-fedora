@@ -70,7 +70,7 @@ BuildRequires:  xz
 BuildRequires:  lz4-devel
 BuildRequires:  lz4
 BuildRequires:  bzip2-devel
-BuildRequires:  libidn-devel
+BuildRequires:  libidn2-devel
 BuildRequires:  libcurl-devel
 BuildRequires:  kmod-devel
 BuildRequires:  elfutils-devel
@@ -301,7 +301,7 @@ CONFIGURE_OPTS=(
         -Dqrencode=true
         -Dgnutls=true
         -Dmicrohttpd=true
-        -Dlibidn=true
+        -Dlibidn2=true
         -Dlibiptc=true
         -Dlibcurl=true
         -Defi=true
