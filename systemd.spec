@@ -633,6 +633,7 @@ if [ $1 -eq 1 ] ; then
     if [ -f %{_localstatedir}/lib/systemd/journal-upload/state -a ! -L %{_localstatedir}/lib/systemd/journal-upload ] ; then
         mkdir -p %{_localstatedir}/lib/private/systemd/journal-upload
         mv %{_localstatedir}/lib/systemd/journal-upload/state %{_localstatedir}/lib/private/systemd/journal-upload/.
+        rmdir %{_localstatedir}/lib/systemd/journal-upload || :
     fi
 fi
 
