@@ -1,4 +1,4 @@
-%global gitcommit 4a0e9289bf443fec9fc56af25f90e2a100ba7a41
+#global gitcommit 4a0e9289bf443fec9fc56af25f90e2a100ba7a41
 %{?gitcommit:%global gitcommitshort %(c=%{gitcommit}; echo ${c:0:7})}
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
@@ -12,8 +12,8 @@
 
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        235
-Release:        5%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Version:        236
+Release:        1%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -47,7 +47,7 @@ i=1; for j in 00*patch; do printf "Patch%04d:      %s\n" $i $j; i=$((i+1));done|
 GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[67]* hwdb/parse_hwdb.py > hwdb.patch
 %endif
 
-#Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
+Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
 %global num_patches %{lua: c=0; for i,p in ipairs(patches) do c=c+1; end; print(c);}
 
@@ -684,6 +684,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Fri Dec 15 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 236-1
+- Update to latest version
+
 * Mon Dec 11 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 235-5.git4a0e928
 - Update to latest git snapshot, do not build for realz
 - Switch to libidn2 again (#1449145)
