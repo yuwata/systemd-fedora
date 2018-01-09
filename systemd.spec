@@ -652,22 +652,22 @@ fi
 %doc %{_pkgdocdir}
 %exclude %{_pkgdocdir}/LICENSE.*
 %license LICENSE.GPL2 LICENSE.LGPL2.1
-%ghost %dir /etc/systemd/system/basic.target.wants
-%ghost %dir /etc/systemd/system/bluetooth.target.wants
-%ghost %dir /etc/systemd/system/default.target.wants
-%ghost %dir /etc/systemd/system/getty.target.wants
-%ghost %dir /etc/systemd/system/graphical.target.wants
-%ghost %dir /etc/systemd/system/local-fs.target.wants
-%ghost %dir /etc/systemd/system/machines.target.wants
-%ghost %dir /etc/systemd/system/multi-user.target.wants
-%ghost %dir /etc/systemd/system/network-online.target.wants
-%ghost %dir /etc/systemd/system/printer.target.wants
-%ghost %dir /etc/systemd/system/remote-fs.target.wants
-%ghost %dir /etc/systemd/system/sockets.target.wants
-%ghost %dir /etc/systemd/system/sysinit.target.wants
-%ghost %dir /etc/systemd/system/system-update.target.wants
-%ghost %dir /etc/systemd/system/timers.target.wants
-%ghost %dir /var/lib/rpm-state/systemd
+%ghost %dir %attr(0755,-,-) /etc/systemd/system/basic.target.wants
+%ghost %dir %attr(0755,-,-) /etc/systemd/system/bluetooth.target.wants
+%ghost %dir %attr(0755,-,-) /etc/systemd/system/default.target.wants
+%ghost %dir %attr(0755,-,-) /etc/systemd/system/getty.target.wants
+%ghost %dir %attr(0755,-,-) /etc/systemd/system/graphical.target.wants
+%ghost %dir %attr(0755,-,-) /etc/systemd/system/local-fs.target.wants
+%ghost %dir %attr(0755,-,-) /etc/systemd/system/machines.target.wants
+%ghost %dir %attr(0755,-,-) /etc/systemd/system/multi-user.target.wants
+%ghost %dir %attr(0755,-,-) /etc/systemd/system/network-online.target.wants
+%ghost %dir %attr(0755,-,-) /etc/systemd/system/printer.target.wants
+%ghost %dir %attr(0755,-,-) /etc/systemd/system/remote-fs.target.wants
+%ghost %dir %attr(0755,-,-) /etc/systemd/system/sockets.target.wants
+%ghost %dir %attr(0755,-,-) /etc/systemd/system/sysinit.target.wants
+%ghost %dir %attr(0755,-,-) /etc/systemd/system/system-update.target.wants
+%ghost %dir %attr(0755,-,-) /etc/systemd/system/timers.target.wants
+%ghost %dir %attr(0755,-,-) /var/lib/rpm-state/systemd
 
 %files libs -f .file-list-libs
 %license LICENSE.LGPL2.1
