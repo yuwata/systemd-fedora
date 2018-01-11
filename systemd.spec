@@ -1,4 +1,4 @@
-#global gitcommit 4a0e9289bf443fec9fc56af25f90e2a100ba7a41
+%global gitcommit 3e14c4c1876b4dfeb8bf511185f70fef8d04a153
 %{?gitcommit:%global gitcommitshort %(c=%{gitcommit}; echo ${c:0:7})}
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
@@ -13,14 +13,14 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        236
-Release:        1%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        2%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
 
 # download tarballs with "spectool -g systemd.spec"
 %if %{defined gitcommit}
-Source0:        https://github.com/systemd/systemd/archive/%{?gitcommit}.tar.gz#/%{name}-%{gitcommitshort}.tar.gz
+Source0:        https://github.com/systemd/systemd-stable/archive/%{?gitcommit}.tar.gz#/%{name}-%{gitcommitshort}.tar.gz
 %else
 Source0:        https://github.com/systemd/systemd/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 %endif
@@ -684,6 +684,12 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Thu Jan 11 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 236-2.git23e14c4
+- Backport a bunch of bugfixes from upstream (#1531502, #1531381, #1526621
+  various memory corruptions in systemd-networkd)
+- /dev/kvm is marked as a static node which fixes permissions on s390x
+  and ppc64 (#1532382)
+
 * Fri Dec 15 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 236-1
 - Update to latest version
 
