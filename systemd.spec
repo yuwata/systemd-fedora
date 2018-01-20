@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        236
-Release:        2%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        3%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -684,6 +684,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Sat Jan 20 2018 Björn Esser <besser82@fedoraproject.org> - 236-3.git3e14c4c
+- Rebuilt for switch to libxcrypt
+
 * Thu Jan 11 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 236-2.git23e14c4
 - Backport a bunch of bugfixes from upstream (#1531502, #1531381, #1526621
   various memory corruptions in systemd-networkd)
