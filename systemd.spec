@@ -1,4 +1,4 @@
-%global gitcommit 3e14c4c1876b4dfeb8bf511185f70fef8d04a153
+#global gitcommit 3e14c4c1876b4dfeb8bf511185f70fef8d04a153
 %{?gitcommit:%global gitcommitshort %(c=%{gitcommit}; echo ${c:0:7})}
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
@@ -12,8 +12,8 @@
 
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        236
-Release:        4%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Version:        237
+Release:        1%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -48,7 +48,6 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 %endif
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
-Patch0999:      0999-firstboot-Include-crypt.h-for-declaration-of-crypt-i.patch
 
 %global num_patches %{lua: c=0; for i,p in ipairs(patches) do c=c+1; end; print(c);}
 
@@ -685,6 +684,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Sun Jan 28 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 237-1
+- Update to latest version
+
 * Sun Jan 21 2018 Björn Esser <besser82@fedoraproject.org> - 236-4.git3e14c4c
 - Add patch to include <crypt.h> if needed
 
