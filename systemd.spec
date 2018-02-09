@@ -1,4 +1,4 @@
-#global gitcommit 3e14c4c1876b4dfeb8bf511185f70fef8d04a153
+%global gitcommit 04a361e18f1574098d33dbdb2e030f4a44de59ee
 %{?gitcommit:%global gitcommitshort %(c=%{gitcommit}; echo ${c:0:7})}
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
@@ -255,7 +255,7 @@ License:       LGPLv2+
 They can be useful to test systemd internals.
 
 %prep
-%setup -q %{?gitcommit:-n %{name}-%{gitcommit}}
+%setup -q %{?gitcommit:-n %{name}-stable-%{gitcommit}}
 
 %if %{num_patches}
     git init
@@ -682,6 +682,10 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Fri Feb  9 2018 zbyszek <zbyszek@in.waw.pl> - 237-1.git04a361e
+- Update to first stable snapshot (various minor memory leaks and misaccesses,
+  some documentation bugs, build fixes).
+
 * Sun Jan 28 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 237-1
 - Update to latest version
 
