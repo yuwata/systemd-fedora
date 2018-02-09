@@ -1,4 +1,4 @@
-%global gitcommit 04a361e18f1574098d33dbdb2e030f4a44de59ee
+%global gitcommit 83864b442c3f11cc95e07a0164876caabe4d31ec
 %{?gitcommit:%global gitcommitshort %(c=%{gitcommit}; echo ${c:0:7})}
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
