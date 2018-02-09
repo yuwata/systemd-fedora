@@ -1,4 +1,4 @@
-%global gitcommit 83864b442c3f11cc95e07a0164876caabe4d31ec
+%global gitcommit 78bd76934d74556054ed4cb69929d4318ae82a2d
 %{?gitcommit:%global gitcommitshort %(c=%{gitcommit}; echo ${c:0:7})}
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
@@ -682,7 +682,7 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
-* Fri Feb  9 2018 zbyszek <zbyszek@in.waw.pl> - 237-1.git04a361e
+* Fri Feb  9 2018 zbyszek <zbyszek@in.waw.pl> - 237-1.git78bd769
 - Update to first stable snapshot (various minor memory leaks and misaccesses,
   some documentation bugs, build fixes).
 
