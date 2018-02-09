@@ -318,7 +318,7 @@ CONFIGURE_OPTS=(
         -Dusers-gid=100
         -Dnobody-user=nfsnobody
         -Dnobody-group=nfsnobody
-        -Db_lto=true
+        -Db_lto=false
 )
 
 %meson "${CONFIGURE_OPTS[@]}"
