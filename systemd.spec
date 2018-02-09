@@ -599,9 +599,7 @@ udevadm hwdb --update &>/dev/null
 # Replace obsolete keymaps
 # https://bugzilla.redhat.com/show_bug.cgi?id=1151958
 grep -q -E '^KEYMAP="?fi-latin[19]"?' /etc/vconsole.conf 2>/dev/null &&
-    sed -i.rpm.bak -r 's/^KEYMAP="?fi-latin[19]"?/KEYMAP="fi"/' /etc/vconsole.conf
-
-exit 0
+    sed -i.rpm.bak -r 's/^KEYMAP="?fi-latin[19]"?/KEYMAP="fi"/' /etc/vconsole.conf || :
 
 %preun udev
 %systemd_preun %udev_services
