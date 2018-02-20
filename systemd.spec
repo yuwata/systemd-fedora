@@ -317,8 +317,8 @@ CONFIGURE_OPTS=(
         -Dinstall-tests=true
         -Dtty-gid=5
         -Dusers-gid=100
-        -Dnobody-user=nfsnobody
-        -Dnobody-group=nfsnobody
+        -Dnobody-user=nobody
+        -Dnobody-group=nobody
         -Db_lto=false
 )
 
@@ -555,7 +555,7 @@ if [ $1 -eq 0 ] ; then
 fi
 
 %post libs
-%ldconfig
+%{?ldconfig}
 
 if [ -f /etc/nsswitch.conf ] ; then
         # sed-fu to add myhostanme to hosts line
