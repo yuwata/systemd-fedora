@@ -1,4 +1,4 @@
-%global gitcommit 78bd76934d74556054ed4cb69929d4318ae82a2d
+%global gitcommit dff48497371a78212d8a71db6ac9130754939b3f
 %{?gitcommit:%global gitcommitshort %(c=%{gitcommit}; echo ${c:0:7})}
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        237
-Release:        1%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        2%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -158,6 +158,7 @@ Provides:       nss-myhostname = 0.4
 Provides:       nss-myhostname%{_isa} = 0.4
 Requires(post): sed
 Requires(post): grep
+Requires(post): /usr/bin/getent
 
 %description libs
 Libraries for systemd and udev.
@@ -323,6 +324,11 @@ CONFIGURE_OPTS=(
 
 %meson "${CONFIGURE_OPTS[@]}"
 %meson_build
+
+if diff %{SOURCE1} %{_vpath_builddir}/triggers.systemd; then
+   echo -e "\n\n\nWARNING: triggers.systemd in Source1 is different!"
+   echo -e "      cp %{_vpath_builddir}/triggers.systemd %{SOURCE1}\n\n\n"
+fi
 
 %install
 %meson_install
@@ -549,7 +555,7 @@ if [ $1 -eq 0 ] ; then
 fi
 
 %post libs
-/sbin/ldconfig
+%ldconfig
 
 if [ -f /etc/nsswitch.conf ] ; then
         # sed-fu to add myhostanme to hosts line
@@ -583,7 +589,21 @@ if [ -f /etc/nsswitch.conf ] ; then
                 ' /etc/nsswitch.conf &>/dev/null || :
 fi
 
-%postun libs -p /sbin/ldconfig
+# check if nobody or nfsnobody is defined
+export SYSTEMD_NSS_BYPASS_SYNTHETIC=1
+if getent passwd nfsnobody &>/dev/null; then
+   test -f /etc/systemd/dont-synthesize-nobody || {
+       echo 'Detected system with nfsnobody defined, creating /etc/systemd/dont-synthesize-nobody'
+       touch /etc/systemd/dont-synthesize-nobody
+   }
+elif getent passwd nobody 2>/dev/null | grep -v 'nobody:[x*]:65534:65534:.*:/:/sbin/nologin' &>/dev/null; then
+   test -f /etc/systemd/dont-synthesize-nobody || {
+       echo 'Detected system with incompatible nobody defined, creating /etc/systemd/dont-synthesize-nobody'
+       touch /etc/systemd/dont-synthesize-nobody
+   }
+fi
+
+%{?ldconfig:%postun libs -p %ldconfig}
 
 %global udev_services systemd-udev{d,-settle,-trigger}.service systemd-udevd-{control,kernel}.socket systemd-timesyncd.service
 
@@ -682,7 +702,14 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
-* Fri Feb  9 2018 zbyszek <zbyszek@in.waw.pl> - 237-1.git78bd769
+* Tue Feb 20 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 237-2.gitdff4849
+- Backport a bunch of patches, most notably for the journal and various
+  memory issues. Some minor build fixes.
+- Switch to new ldconfig macros that do nothing in F28+
+- /etc/systemd/dont-synthesize-nobody is created in %%post if nfsnobody
+  or nobody users are defined (#1537262)
+
+* Fri Feb  9 2018 Zbigniew Jędrzejeweski-Szmek <zbyszek@in.waw.pl> - 237-1.git78bd769
 - Update to first stable snapshot (various minor memory leaks and misaccesses,
   some documentation bugs, build fixes).
 
