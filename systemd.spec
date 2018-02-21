@@ -1,4 +1,4 @@
-%global gitcommit dff48497371a78212d8a71db6ac9130754939b3f
+%global gitcommit 84c8da5ed92282f8ef51d5d4f8e1630c37fef3e9
 %{?gitcommit:%global gitcommitshort %(c=%{gitcommit}; echo ${c:0:7})}
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
@@ -28,6 +28,7 @@ Source0:        https://github.com/systemd/systemd/archive/v%{version}.tar.gz#/%
 # It is generated during systemd build and can be found in src/core/.
 Source1:        triggers.systemd
 Source2:        split-files.py
+Source3:        purge-nobody-user
 
 # Prevent accidental removal of the systemd package
 Source4:        yum-protect-systemd.conf
@@ -425,6 +426,8 @@ install -Dm0644 -t %{buildroot}%{system_unit_dir}/systemd-udev-trigger.service.d
 
 install -Dm0755 -t %{buildroot}%{_prefix}/lib/kernel/install.d/ %{SOURCE11}
 
+install -D -t %{buildroot}/usr/lib/systemd/ %{SOURCE3}
+
 %find_lang %{name}
 
 # Split files in build root into rpms. See split-files.py for the
@@ -434,6 +437,7 @@ python3 %{SOURCE2} %buildroot <<EOF
 %ghost %config(noreplace) /etc/crypttab
 %ghost /etc/udev/hwdb.bin
 /etc/inittab
+/usr/lib/systemd/purge-nobody-user
 %ghost %config(noreplace) /etc/vconsole.conf
 %ghost %config(noreplace) /etc/X11/xorg.conf.d/00-keyboard.conf
 %ghost %attr(0664,root,utmp) /var/run/utmp
@@ -702,6 +706,12 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Wed Feb 21 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 237-2.git84c8da5
+- Update some patches for test skipping that were updated upstream
+  before merging
+- Add /usr/lib/systemd/purge-nobody-user — a script to check if nobody is defined
+  correctly and possibly replace existing mappings
+
 * Tue Feb 20 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 237-2.gitdff4849
 - Backport a bunch of patches, most notably for the journal and various
   memory issues. Some minor build fixes.
