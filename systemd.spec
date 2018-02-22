@@ -48,6 +48,8 @@ i=1; for j in 00*patch; do printf "Patch%04d:      %s\n" $i $j; i=$((i+1));done|
 GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[67]* hwdb/parse_hwdb.py > hwdb.patch
 %endif
 
+Patch1:         systemd-typecast-usbids.patch
+
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
 %global num_patches %{lua: c=0; for i,p in ipairs(patches) do c=c+1; end; print(c);}
@@ -709,6 +711,7 @@ fi
 %changelog
 * Thu Feb 22 2018 Patrick Uiterwijk <patrick@puiterwijk.org> - 237-4.git84c8da5
 - Add coreutils dep for systemd-libs %post
+- Add patch to typecast USB IDs to avoid compile failure
 
 * Wed Feb 21 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 237-3.git84c8da5
 - Update some patches for test skipping that were updated upstream

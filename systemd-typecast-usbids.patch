@@ -1,0 +1,26 @@
+From 68b2813a0b6dcf8ff8f8eb36aa225ae90661e67e Mon Sep 17 00:00:00 2001
+From: Fedora systemd team <systemd-maint@redhat.com>
+Date: Thu, 22 Feb 2018 12:45:31 +0100
+Subject: [PATCH] Typecast USB IDs
+
+Signed-off-by: Fedora systemd team <systemd-maint@redhat.com>
+---
+ src/udev/udev-builtin-hwdb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/udev/udev-builtin-hwdb.c b/src/udev/udev-builtin-hwdb.c
+index ca7f7c2..d3556e4 100644
+--- a/src/udev/udev-builtin-hwdb.c
++++ b/src/udev/udev-builtin-hwdb.c
+@@ -77,7 +77,7 @@ static const char *modalias_usb(struct udev_device *dev, char *s, size_t size) {
+         pn = strtol(p, NULL, 16);
+         if (pn <= 0)
+                 return NULL;
+-        snprintf(s, size, "usb:v%04Xp%04X*", vn, pn);
++        snprintf(s, size, "usb:v%04Xp%04X*", (uint16_t)vn, (uint16_t)pn);
+         return s;
+ }
+ 
+-- 
+2.16.2
+
