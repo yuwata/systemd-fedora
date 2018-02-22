@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        237
-Release:        3%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        4%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -157,6 +157,7 @@ Obsoletes:      systemd-compat-libs < 230
 Obsoletes:      nss-myhostname < 0.4
 Provides:       nss-myhostname = 0.4
 Provides:       nss-myhostname%{_isa} = 0.4
+Requires(post): coreutils
 Requires(post): sed
 Requires(post): grep
 Requires(post): /usr/bin/getent
@@ -706,6 +707,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Thu Feb 22 2018 Patrick Uiterwijk <patrick@puiterwijk.org> - 237-4.git84c8da5
+- Add coreutils dep for systemd-libs %post
+
 * Wed Feb 21 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 237-3.git84c8da5
 - Update some patches for test skipping that were updated upstream
   before merging
