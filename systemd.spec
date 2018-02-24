@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        237
-Release:        5%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        6%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -159,6 +159,7 @@ Obsoletes:      systemd-compat-libs < 230
 Obsoletes:      nss-myhostname < 0.4
 Provides:       nss-myhostname = 0.4
 Provides:       nss-myhostname%{_isa} = 0.4
+Requires(post): coreutils
 Requires(post): sed
 Requires(post): grep
 Requires(post): /usr/bin/getent
@@ -600,11 +601,13 @@ export SYSTEMD_NSS_BYPASS_SYNTHETIC=1
 if getent passwd nfsnobody &>/dev/null; then
    test -f /etc/systemd/dont-synthesize-nobody || {
        echo 'Detected system with nfsnobody defined, creating /etc/systemd/dont-synthesize-nobody'
+       mkdir -p /etc/systemd || :
        : >/etc/systemd/dont-synthesize-nobody || :
    }
 elif getent passwd nobody 2>/dev/null | grep -v 'nobody:[x*]:65534:65534:.*:/:/sbin/nologin' &>/dev/null; then
    test -f /etc/systemd/dont-synthesize-nobody || {
        echo 'Detected system with incompatible nobody defined, creating /etc/systemd/dont-synthesize-nobody'
+       mkdir -p /etc/systemd || :
        : >/etc/systemd/dont-synthesize-nobody || :
    }
 fi
@@ -708,11 +711,14 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Sat Feb 24 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 237-6.git84c8da5
+- Create /etc/systemd in %%post libs if necessary (#1548607)
+
 * Fri Feb 23 2018 Adam Williamson <awilliam@redhat.com> - 237-5.git84c8da5
-- zbyszek: use : not touch to create file in -libs %%post
+- Use : not touch to create file in -libs %%post
 
 * Thu Feb 22 2018 Patrick Uiterwijk <patrick@puiterwijk.org> - 237-4.git84c8da5
-- Add coreutils dep for systemd-libs %post
+- Add coreutils dep for systemd-libs %%post
 - Add patch to typecast USB IDs to avoid compile failure
 
 * Wed Feb 21 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 237-3.git84c8da5
