@@ -1,8 +1,12 @@
 #!/bin/bash
 
-if [[ ! -x /sbin/new-kernel-pkg ]]; then
+if [[ ! -f /etc/default/grub ]]; then
     exit 0
 fi
+
+. /etc/default/grub
+
+[[ -f /etc/os-release ]] && . /etc/os-release
 
 COMMAND="$1"
 KERNEL_VERSION="$2"
@@ -10,6 +14,17 @@ BOOT_DIR_ABS="$3"
 KERNEL_IMAGE="$4"
 
 KERNEL_DIR="${KERNEL_IMAGE%/*}"
+
+MACHINE_ID=$KERNEL_INSTALL_MACHINE_ID
+
+# Remove it, since for grub2 the images are always installed in /boot
+rm -rf "${BOOT_DIR_ABS%/*}"
+
+BLS_DIR="/boot/loader/entries"
+if [ -d /sys/firmware/efi ]; then
+    BLS_DIR="/boot/efi/EFI/${ID}/loader/entries"
+fi
+
 [[ "$KERNEL_VERSION" == *\+* ]] && flavor=-"${KERNEL_VERSION##*+}"
 case "$COMMAND" in
     add)
@@ -34,18 +49,37 @@ case "$COMMAND" in
                     restorecon "/boot/.${KERNEL_IMAGE##*/}-${KERNEL_VERSION}.hmac"
             fi
         fi
+
+        if [ "x${GRUB_ENABLE_BLSCFG}" = "xtrue" ]; then
+            [[ -d "$BLS_DIR" ]] || mkdir -p "$BLS_DIR"
+            cp -aT "${KERNEL_DIR}/bls.conf" "${BLS_DIR}/${MACHINE_ID}-${KERNEL_VERSION}.conf" || exit $?
+            exit 0
+        fi
+
         /sbin/new-kernel-pkg --package "kernel${flavor}" --install "$KERNEL_VERSION" || exit $?
         /sbin/new-kernel-pkg --package "kernel${flavor}" --mkinitrd --dracut --depmod --update "$KERNEL_VERSION" || exit $?
         /sbin/new-kernel-pkg --package "kernel${flavor}" --rpmposttrans "$KERNEL_VERSION" || exit $?
+	# If grubby is used there's no need to run other installation plugins
+	exit 77
         ;;
     remove)
+
+	if [ "x${GRUB_ENABLE_BLSCFG}" = "xtrue" ]; then
+            rm -f "${BLS_DIR}/${MACHINE_ID}-${KERNEL_VERSION}.conf"
+
+            for i in vmlinuz System.map config zImage.stub dtb; do
+                rm -rf "/boot/${i}-${KERNEL_VERSION}"
+            done
+            # hmac is .vmlinuz-<version>.hmac so needs a special treatment
+            rm -f "/boot/.vmlinuz-${KERNEL_VERSION}.hmac"
+
+            exit 0
+        fi
+
         /sbin/new-kernel-pkg --package "kernel${flavor+-$flavor}" --rminitrd --rmmoddep --remove "$KERNEL_VERSION" || exit $?
+        # If grubby is used there's no need to run other installation plugins
+        exit 77
         ;;
     *)
         ;;
 esac
-
-# skip other installation plugins, if we can't find a boot loader spec conforming setup
-if ! [[ -d /boot/loader/entries || -L /boot/loader/entries ]]; then
-    exit 77
-fi
