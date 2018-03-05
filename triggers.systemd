@@ -1,8 +1,10 @@
 #  -*- Mode: rpm-spec; indent-tabs-mode: nil -*- */
+#  SPDX-License-Identifier: LGPL-2.1+
 #
 #  This file is part of systemd.
 #
 #  Copyright 2015 Zbigniew Jędrzejewski-Szmek
+#  Copyright 2018 Neal Gompa
 #
 #  systemd is free software; you can redistribute it and/or modify it
 #  under the terms of the GNU Lesser General Public License as published by
@@ -18,6 +20,8 @@
 #  along with systemd; If not, see <http://www.gnu.org/licenses/>.
 
 # The contents of this are an example to be copied into systemd.spec.
+#
+# Minimum rpm version supported: 4.13.0
 
 %transfiletriggerin -P 900900 -p <lua> -- /usr/lib/systemd/system /etc/systemd/system
 -- This script will run after any package is initially installed or
@@ -25,11 +29,13 @@
 -- installed, because other cases are covered by the *un scriptlets,
 -- so sometimes we will reload needlessly.
 
-pid = posix.fork()
-if pid == 0 then
-    assert(posix.exec("%{_bindir}/systemctl", "daemon-reload"))
-elseif pid > 0 then
-    posix.wait(pid)
+if posix.access("/run/systemd/system") then
+    pid = posix.fork()
+    if pid == 0 then
+        assert(posix.exec("%{_bindir}/systemctl", "daemon-reload"))
+    elseif pid > 0 then
+        posix.wait(pid)
+    end
 end
 
 %transfiletriggerun -p <lua> -- /usr/lib/systemd/system /etc/systemd/system
@@ -46,10 +52,12 @@ end
 -- file in %transfiletriggerun and execute the daemon-reload in
 -- the first %filetriggerpostun.
 
-posix.mkdir("%{_localstatedir}/lib")
-posix.mkdir("%{_localstatedir}/lib/rpm-state")
-posix.mkdir("%{_localstatedir}/lib/rpm-state/systemd")
-io.open("%{_localstatedir}/lib/rpm-state/systemd/needs-reload", "w")
+if posix.access("/run/systemd/system") then
+    posix.mkdir("%{_localstatedir}/lib")
+    posix.mkdir("%{_localstatedir}/lib/rpm-state")
+    posix.mkdir("%{_localstatedir}/lib/rpm-state/systemd")
+    io.open("%{_localstatedir}/lib/rpm-state/systemd/needs-reload", "w")
+end
 
 %filetriggerpostun -P 1000100 -p <lua> -- /usr/lib/systemd/system /etc/systemd/system
 if posix.access("%{_localstatedir}/lib/rpm-state/systemd/needs-reload") then
@@ -58,6 +66,92 @@ if posix.access("%{_localstatedir}/lib/rpm-state/systemd/needs-reload") then
     pid = posix.fork()
     if pid == 0 then
         assert(posix.exec("%{_bindir}/systemctl", "daemon-reload"))
+    elseif pid > 0 then
+        posix.wait(pid)
+    end
+end
+
+%transfiletriggerin -P 100700 -p <lua> -- /usr/lib/sysusers.d
+-- This script will process files installed in /usr/lib/sysusers.d to create
+-- specified users automatically. The priority is set such that it
+-- will run before the tmpfiles file trigger.
+if posix.access("/run/systemd/system") then
+    pid = posix.fork()
+    if pid == 0 then
+        assert(posix.exec("%{_bindir}/systemd-sysusers"))
+    elseif pid > 0 then
+        posix.wait(pid)
+    end
+end
+
+%transfiletriggerin -P 100500 --  /usr/lib/tmpfiles.d
+-- This script will process files installed in /usr/lib/tmpfiles.d to create
+-- tmpfiles automatically. The priority is set such that it will run
+-- after the sysusers file trigger, but before any other triggers.
+if posix.access("/run/systemd/system") then
+    pid = posix.fork()
+    if pid == 0 then
+        assert(posix.exec("%{_bindir}/systemd-tmpfiles", "--create"))
+    elseif pid > 0 then
+        posix.wait(pid)
+    end
+end
+
+%transfiletriggerin --  /usr/lib/udev/hwdb.d
+-- This script will automatically invoke hwdb update if files have been
+-- installed or updated in /usr/lib/udev/hwdb.d.
+if posix.access("/run/systemd/system") then
+    pid = posix.fork()
+    if pid == 0 then
+        assert(posix.exec("%{_bindir}/systemd-hwdb", "update"))
+    elseif pid > 0 then
+        posix.wait(pid)
+    end
+end
+
+%transfiletriggerin --  /usr/lib/systemd/catalog
+-- This script will automatically invoke journal catalog update if files
+-- have been installed or updated in /usr/lib/systemd/catalog.
+if posix.access("/run/systemd/system") then
+    pid = posix.fork()
+    if pid == 0 then
+        assert(posix.exec("%{_bindir}/journalctl", "--update-catalog"))
+    elseif pid > 0 then
+        posix.wait(pid)
+    end
+end
+
+%transfiletriggerin -- /usr/lib/udev/rules.d
+-- This script will automatically update udev with new rules if files
+-- have been installed or updated in /usr/lib/udev/rules.d.
+if posix.access("/run/systemd/system") then
+    pid = posix.fork()
+    if pid == 0 then
+        assert(posix.exec("%{_bindir}/udevadm", "control", "--reload"))
+    elseif pid > 0 then
+        posix.wait(pid)
+    end
+end
+
+%transfiletriggerin -- /usr/lib/sysctl.d
+-- This script will automatically apply sysctl rules if files have been
+-- installed or updated in /usr/lib/sysctl.d.
+if posix.access("/run/systemd/system") then
+    pid = posix.fork()
+    if pid == 0 then
+        assert(posix.exec("/usr/lib/systemd/systemd-sysctl"))
+    elseif pid > 0 then
+        posix.wait(pid)
+    end
+end
+
+%transfiletriggerin -- /usr/lib/binfmt.d
+-- This script will automatically apply binfmt rules if files have been
+-- installed or updated in /usr/lib/binfmt.d.
+if posix.access("/run/systemd/system") then
+    pid = posix.fork()
+    if pid == 0 then
+        assert(posix.exec("/usr/lib/systemd/systemd-binfmt"))
     elseif pid > 0 then
         posix.wait(pid)
     end

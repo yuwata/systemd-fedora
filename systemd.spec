@@ -1,4 +1,4 @@
-%global gitcommit 84c8da5ed92282f8ef51d5d4f8e1630c37fef3e9
+#global gitcommit 10e465b5321bd53c1fc59ffab27e724535c6bc0f
 %{?gitcommit:%global gitcommitshort %(c=%{gitcommit}; echo ${c:0:7})}
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
@@ -12,8 +12,8 @@
 
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        237
-Release:        7%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Version:        238
+Release:        1%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -48,10 +48,7 @@ i=1; for j in 00*patch; do printf "Patch%04d:      %s\n" $i $j; i=$((i+1));done|
 GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[67]* hwdb/parse_hwdb.py > hwdb.patch
 %endif
 
-Patch1:         systemd-typecast-usbids.patch
-
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
-Patch0999:      0999-kernel-install-Don-t-install-BLS-kernel-images-if-de.patch
 
 %global num_patches %{lua: c=0; for i,p in ipairs(patches) do c=c+1; end; print(c);}
 
@@ -324,6 +321,8 @@ CONFIGURE_OPTS=(
         -Dusers-gid=100
         -Dnobody-user=nobody
         -Dnobody-group=nobody
+        -Dsplit-usr=false
+        -Dsplit-bin=true
         -Db_lto=false
 )
 
@@ -341,16 +340,6 @@ fi
 # udev links
 mkdir -p %{buildroot}/%{_sbindir}
 ln -sf ../bin/udevadm %{buildroot}%{_sbindir}/udevadm
-
-# Create SysV compatibility symlinks. systemctl/systemd are smart
-# enough to detect in which way they are called.
-ln -s ../lib/systemd/systemd %{buildroot}%{_sbindir}/init
-ln -s ../bin/systemctl %{buildroot}%{_sbindir}/reboot
-ln -s ../bin/systemctl %{buildroot}%{_sbindir}/halt
-ln -s ../bin/systemctl %{buildroot}%{_sbindir}/poweroff
-ln -s ../bin/systemctl %{buildroot}%{_sbindir}/shutdown
-ln -s ../bin/systemctl %{buildroot}%{_sbindir}/telinit
-ln -s ../bin/systemctl %{buildroot}%{_sbindir}/runlevel
 
 # Compatiblity and documentation files
 touch %{buildroot}/etc/crypttab
@@ -712,6 +701,12 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Mon Mar  5 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 238-1
+- Update to latest version
+- This fixes a hard-to-trigger potential vulnerability (CVE-2018-6954)
+- New transfiletriggers are installed for udev hwdb and rules, the journal
+  catalog, sysctl.d, binfmt.d, sysusers.d, tmpfiles.d.
+
 * Tue Feb 27 2018 Javier Martinez Canillas <javierm@redhat.com> - 234-7.git84c8da5
 - Add patch to install kernel images for GRUB BootLoaderSpec support
 
