@@ -712,7 +712,7 @@ fi
 - New transfiletriggers are installed for udev hwdb and rules, the journal
   catalog, sysctl.d, binfmt.d, sysusers.d, tmpfiles.d.
 
-* Tue Feb 27 2018 Javier Martinez Canillas <javierm@redhat.com> - 234-7.git84c8da5
+* Tue Feb 27 2018 Javier Martinez Canillas <javierm@redhat.com> - 237-7.git84c8da5
 - Add patch to install kernel images for GRUB BootLoaderSpec support
 
 * Sat Feb 24 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 237-6.git84c8da5
