@@ -84,7 +84,7 @@ if posix.access("/run/systemd/system") then
     end
 end
 
-%transfiletriggerin -P 100500 --  /usr/lib/tmpfiles.d
+%transfiletriggerin -P 100500 -p <lua> -- /usr/lib/tmpfiles.d
 -- This script will process files installed in /usr/lib/tmpfiles.d to create
 -- tmpfiles automatically. The priority is set such that it will run
 -- after the sysusers file trigger, but before any other triggers.
@@ -97,7 +97,7 @@ if posix.access("/run/systemd/system") then
     end
 end
 
-%transfiletriggerin --  /usr/lib/udev/hwdb.d
+%transfiletriggerin -p <lua> -- /usr/lib/udev/hwdb.d
 -- This script will automatically invoke hwdb update if files have been
 -- installed or updated in /usr/lib/udev/hwdb.d.
 if posix.access("/run/systemd/system") then
@@ -109,7 +109,7 @@ if posix.access("/run/systemd/system") then
     end
 end
 
-%transfiletriggerin --  /usr/lib/systemd/catalog
+%transfiletriggerin -p <lua> -- /usr/lib/systemd/catalog
 -- This script will automatically invoke journal catalog update if files
 -- have been installed or updated in /usr/lib/systemd/catalog.
 if posix.access("/run/systemd/system") then
@@ -121,7 +121,7 @@ if posix.access("/run/systemd/system") then
     end
 end
 
-%transfiletriggerin -- /usr/lib/udev/rules.d
+%transfiletriggerin -p <lua> -- /usr/lib/udev/rules.d
 -- This script will automatically update udev with new rules if files
 -- have been installed or updated in /usr/lib/udev/rules.d.
 if posix.access("/run/systemd/system") then
@@ -133,7 +133,7 @@ if posix.access("/run/systemd/system") then
     end
 end
 
-%transfiletriggerin -- /usr/lib/sysctl.d
+%transfiletriggerin -p <lua> -- /usr/lib/sysctl.d
 -- This script will automatically apply sysctl rules if files have been
 -- installed or updated in /usr/lib/sysctl.d.
 if posix.access("/run/systemd/system") then
@@ -145,7 +145,7 @@ if posix.access("/run/systemd/system") then
     end
 end
 
-%transfiletriggerin -- /usr/lib/binfmt.d
+%transfiletriggerin -p <lua> -- /usr/lib/binfmt.d
 -- This script will automatically apply binfmt rules if files have been
 -- installed or updated in /usr/lib/binfmt.d.
 if posix.access("/run/systemd/system") then

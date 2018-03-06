@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        238
-Release:        1%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        2%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -703,6 +703,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Mon Mar  6 2018 Yu Watanabe <watanabe.yu@gmail.com> - 238-2
+- Fix transfiletrigger script (#1551793)
+
 * Mon Mar  5 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 238-1
 - Update to latest version
 - This fixes a hard-to-trigger potential vulnerability (CVE-2018-6954)
