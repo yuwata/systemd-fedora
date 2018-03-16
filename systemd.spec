@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        238
-Release:        3%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        4%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -50,6 +50,7 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 
 Patch0001:      0001-test-cgroup-util-bail-out-when-running-under-mock.patch
 Patch0002:      0002-basic-fs-util-skip-fsync_directory_of_file-if-proc-s.patch
+Patch0003:      0003-core-when-reloading-delay-any-actions-on-journal-and.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
@@ -704,6 +705,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Fri Mar 16 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 238-4
+- Do not close dbus connection during dbus reload call (#1554578)
+
 * Wed Mar  7 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 238-3
 - Revert the patches for GRUB BootLoaderSpec support
 - Add patch for /etc/machine-id creation (#1552843)
