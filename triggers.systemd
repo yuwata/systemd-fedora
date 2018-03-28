@@ -73,7 +73,7 @@ if test -d /run/systemd/system; then
   %{_bindir}/systemd-tmpfiles --create
 fi
 
-%transfiletriggerin -- /usr/lib/udev/hwdb.d
+%transfiletriggerin udev -- /usr/lib/udev/hwdb.d
 # This script will automatically invoke hwdb update if files have been
 # installed or updated in /usr/lib/udev/hwdb.d.
 if test -d /run/systemd/system; then
@@ -87,7 +87,7 @@ if test -d /run/systemd/system; then
   %{_bindir}/journalctl --update-catalog
 fi
 
-%transfiletriggerin -- /usr/lib/udev/rules.d
+%transfiletriggerin udev -- /usr/lib/udev/rules.d
 # This script will automatically update udev with new rules if files
 # have been installed or updated in /usr/lib/udev/rules.d.
 if test -d /run/systemd/system; then

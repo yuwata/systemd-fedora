@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        238
-Release:        6%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        7%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -706,7 +706,10 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
-* Tue Mar 27 2018 Colin Walters <walters@verbum.org>
+* Wed Mar 28 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 238-7
+- Move udev transfiletriggers to the right package
+
+* Tue Mar 27 2018 Colin Walters <walters@verbum.org> - 238-6
 - Use shell for triggers; see https://github.com/systemd/systemd/pull/8550
   This fixes compatibility with rpm-ostree.
 
