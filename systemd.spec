@@ -51,7 +51,8 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 Patch0001:      0001-test-cgroup-util-bail-out-when-running-under-mock.patch
 Patch0002:      0002-basic-fs-util-skip-fsync_directory_of_file-if-proc-s.patch
 Patch0003:      0003-core-when-reloading-delay-any-actions-on-journal-and.patch
-Patch0004:	0004-udev-net-id-Fix-check-for-address-to-keep-interface-.patch
+Patch0004:      0004-udev-net-id-Fix-check-for-address-to-keep-interface-.patch
+Patch0005:      0005-core-don-t-include-libmount.h-in-a-header-file-8580.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
