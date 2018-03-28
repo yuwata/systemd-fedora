@@ -707,7 +707,7 @@ fi
 
 %changelog
 * Wed Mar 28 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 238-7
-- Move udev transfiletriggers to the right package
+- Move udev transfiletriggers to the right package, fix quoting
 
 * Tue Mar 27 2018 Colin Walters <walters@verbum.org> - 238-6
 - Use shell for triggers; see https://github.com/systemd/systemd/pull/8550

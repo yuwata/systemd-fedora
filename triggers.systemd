@@ -47,8 +47,8 @@ fi
 # the first %filetriggerpostun.
 
 if test -d "/run/systemd/system"; then
-    mkdir -p %{_localstatedir}/lib/rpm-state/systemd"
-    touch %{_localstatedir}/lib/rpm-state/systemd/needs-reload"
+    mkdir -p "%{_localstatedir}/lib/rpm-state/systemd"
+    touch "%{_localstatedir}/lib/rpm-state/systemd/needs-reload"
 fi
 
 %filetriggerpostun -P 1000100 -- /usr/lib/systemd/system /etc/systemd/system
