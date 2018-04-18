@@ -53,6 +53,7 @@ Patch0002:      0002-basic-fs-util-skip-fsync_directory_of_file-if-proc-s.patch
 Patch0003:      0003-core-when-reloading-delay-any-actions-on-journal-and.patch
 Patch0004:      0004-udev-net-id-Fix-check-for-address-to-keep-interface-.patch
 Patch0005:      0005-core-don-t-include-libmount.h-in-a-header-file-8580.patch
+Patch0006:      0006-basic-macros-rename-noreturn-into-_noreturn_-8456.patch
 
 Patch0990:      0990-Allow-Delegate-to-be-set-on-transient-units.patch
 Patch0991:      0991-core-fix-resetting-of-Delegate-and-properly-ignore-i.patch
