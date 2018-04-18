@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        238
-Release:        7%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        7%{?gitcommit:.git%{gitcommitshort}}%{?dist}.1
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -54,6 +54,8 @@ Patch0003:      0003-core-when-reloading-delay-any-actions-on-journal-and.patch
 Patch0004:      0004-udev-net-id-Fix-check-for-address-to-keep-interface-.patch
 Patch0005:      0005-core-don-t-include-libmount.h-in-a-header-file-8580.patch
 
+Patch0990:      0990-Allow-Delegate-to-be-set-on-transient-units.patch
+Patch0991:      0991-core-fix-resetting-of-Delegate-and-properly-ignore-i.patch
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
 %global num_patches %{lua: c=0; for i,p in ipairs(patches) do c=c+1; end; print(c);}
@@ -707,6 +709,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Wed Apr 18 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 238-7.fc28.1
+- Allow fake Delegate= setting on slices (#1568594)
+
 * Wed Mar 28 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 238-7
 - Move udev transfiletriggers to the right package, fix quoting
 

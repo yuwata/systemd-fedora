@@ -1,0 +1,35 @@
+From 8eede524d4ec1806554982b67ccfc155fbeb272a Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Wed, 18 Apr 2018 19:50:07 +0200
+Subject: [PATCH] core: fix resetting of Delegate= and properly ignore invalid
+ assignment
+
+The default is false not true. If we say "ignoring" we must return 0.
+
+(cherry picked from commit ff1b8455c26b560641d476b426209e297209333a)
+---
+ src/core/load-fragment.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/core/load-fragment.c b/src/core/load-fragment.c
+index 5b30c47e83..f1b9b65d1a 100644
+--- a/src/core/load-fragment.c
++++ b/src/core/load-fragment.c
+@@ -3440,7 +3440,7 @@ int config_parse_delegate(
+          * mask to delegate. */
+ 
+         if (isempty(rvalue)) {
+-                c->delegate = true;
++                c->delegate = false;
+                 c->delegate_controllers = 0;
+                 return 0;
+         }
+@@ -3461,7 +3461,7 @@ int config_parse_delegate(
+                                 return log_oom();
+                         if (r < 0) {
+                                 log_syntax(unit, LOG_ERR, filename, line, r, "Invalid syntax, ignoring: %s", rvalue);
+-                                return r;
++                                return 0;
+                         }
+ 
+                         cc = cgroup_controller_from_string(word);
