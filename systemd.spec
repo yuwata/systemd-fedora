@@ -1,4 +1,4 @@
-#global gitcommit 10e465b5321bd53c1fc59ffab27e724535c6bc0f
+%global gitcommit 0e0aa590a8ba759679efbd72e92c0ba4811aa1ec
 %{?gitcommit:%global gitcommitshort %(c=%{gitcommit}; echo ${c:0:7})}
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
@@ -13,7 +13,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        238
-Release:        7%{?gitcommit:.git%{gitcommitshort}}%{?dist}.1
+Release:        8%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -48,15 +48,6 @@ i=1; for j in 00*patch; do printf "Patch%04d:      %s\n" $i $j; i=$((i+1));done|
 GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[67]* hwdb/parse_hwdb.py > hwdb.patch
 %endif
 
-Patch0001:      0001-test-cgroup-util-bail-out-when-running-under-mock.patch
-Patch0002:      0002-basic-fs-util-skip-fsync_directory_of_file-if-proc-s.patch
-Patch0003:      0003-core-when-reloading-delay-any-actions-on-journal-and.patch
-Patch0004:      0004-udev-net-id-Fix-check-for-address-to-keep-interface-.patch
-Patch0005:      0005-core-don-t-include-libmount.h-in-a-header-file-8580.patch
-Patch0006:      0006-basic-macros-rename-noreturn-into-_noreturn_-8456.patch
-
-Patch0990:      0990-Allow-Delegate-to-be-set-on-transient-units.patch
-Patch0991:      0991-core-fix-resetting-of-Delegate-and-properly-ignore-i.patch
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
 %global num_patches %{lua: c=0; for i,p in ipairs(patches) do c=c+1; end; print(c);}
@@ -710,6 +701,13 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Fri May 11 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 238-8.git0e0aa59
+- Backport a number of patches (documentation, hwdb updates)
+- Fixes for tmpfiles 'e' entries
+- systemd-networkd crashes
+- XEN virtualization detection on hyper-v
+- Avoid relabelling /sys/fs/cgroup if not needed (#1576240)
+
 * Wed Apr 18 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 238-7.fc28.1
 - Allow fake Delegate= setting on slices (#1568594)
 
