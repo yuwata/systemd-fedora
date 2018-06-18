@@ -1,5 +1,7 @@
-%global gitcommit 0e0aa590a8ba759679efbd72e92c0ba4811aa1ec
+#global gitcommit 4b650021751ccd404dcb329ef5e312c8a93f7ce2
 %{?gitcommit:%global gitcommitshort %(c=%{gitcommit}; echo ${c:0:7})}
+
+#global stable 1
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
 # strip the automatically generated dep here and instead co-own the
@@ -12,15 +14,15 @@
 
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
-Version:        238
-Release:        9%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Version:        239
+Release:        1%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
 
 # download tarballs with "spectool -g systemd.spec"
 %if %{defined gitcommit}
-Source0:        https://github.com/systemd/systemd-stable/archive/%{?gitcommit}.tar.gz#/%{name}-%{gitcommitshort}.tar.gz
+Source0:        https://github.com/systemd/systemd%{?stable:-stable}/archive/%{?gitcommit}.tar.gz#/%{name}-%{gitcommitshort}.tar.gz
 %else
 Source0:        https://github.com/systemd/systemd/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 %endif
@@ -258,7 +260,7 @@ License:       LGPLv2+
 They can be useful to test systemd internals.
 
 %prep
-%setup -q %{?gitcommit:-n %{name}-stable-%{gitcommit}}
+%setup -q %{?gitcommit:-n %{name}%{?stable:-stable}-%{gitcommit}}
 
 %if %{num_patches}
     git init
@@ -701,6 +703,11 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Fri Jun 22 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 239-1
+- Update to latest version, mostly bug fixes and new functionality,
+  very little breaking changes. See
+  https://github.com/systemd/systemd/blob/v239/NEWS for details.
+
 * Tue Jun 19 2018 Miro Hrončok <mhroncok@redhat.com>
 - Rebuilt for Python 3.7
 
