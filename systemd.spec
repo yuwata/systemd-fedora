@@ -15,7 +15,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        239
-Release:        1%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        2%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -703,6 +703,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Mon Jun 25 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl>
+- Rebuild for Python 3.7 again
+
 * Fri Jun 22 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 239-1
 - Update to latest version, mostly bug fixes and new functionality,
   very little breaking changes. See
