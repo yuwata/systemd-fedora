@@ -52,8 +52,6 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
-%global num_patches %{lua: c=0; for i,p in ipairs(patches) do c=c+1; end; print(c);}
-
 %ifarch %{ix86} x86_64 aarch64
 %global have_gnu_efi 1
 %endif
@@ -99,9 +97,7 @@ BuildRequires:  firewalld-filesystem
 BuildRequires:  gnu-efi gnu-efi-devel
 %endif
 BuildRequires:  libseccomp-devel
-%if %{num_patches}
 BuildRequires:  git
-%endif
 BuildRequires:  meson >= 0.43
 BuildRequires:  gettext
 
@@ -260,18 +256,7 @@ License:       LGPLv2+
 They can be useful to test systemd internals.
 
 %prep
-%setup -q %{?gitcommit:-n %{name}%{?stable:-stable}-%{gitcommit}}
-
-%if %{num_patches}
-    git init
-    git config user.email "systemd-maint@redhat.com"
-    git config user.name "Fedora systemd team"
-    git add .
-    git commit -a -q -m "%{version} baseline."
-
-    # Apply all the patches.
-    git am %{patches}
-%endif
+%autosetup %{?gitcommit:-n %{name}%{?stable:-stable}-%{gitcommit}} -p1 -Sgit
 
 %build
 %define ntpvendor %(source /etc/os-release; echo ${ID})
