@@ -42,7 +42,7 @@ Source8:        systemd-journal-gatewayd.xml
 Source9:        20-yama-ptrace.conf
 Source10:       systemd-udev-trigger-no-reload.conf
 Source11:       20-grubby.install
-Source12:       https://raw.githubusercontent.com/systemd/systemd/1000522a60ceade446773c67031b47a566d4a70d/src/login/systemd-user.m4
+Source12:       systemd-user
 
 %if 0
 GIT_DIR=../../src/systemd/.git git format-patch-ab --no-signature -M -N v235..v235-stable
@@ -273,9 +273,6 @@ They can be useful to test systemd internals.
     git am %{patches}
 %endif
 
-# Restore systemd-user pam config from before "removal of Fedora-specific bits"
-cp -p %{SOURCE12} src/login/
-
 %build
 %define ntpvendor %(source /etc/os-release; echo ${ID})
 %{!?ntpvendor: echo 'NTP vendor zone is not set!'; exit 1}
@@ -411,6 +408,9 @@ touch %{buildroot}%{_localstatedir}/lib/private/systemd/journal-upload/state
 install -Dm0644 %{SOURCE4} %{buildroot}%{_sysconfdir}/yum/protected.d/systemd.conf
 
 install -Dm0644 -t %{buildroot}/usr/lib/firewalld/services/ %{SOURCE7} %{SOURCE8}
+
+# Restore systemd-user pam config from before "removal of Fedora-specific bits"
+install -Dm0644 -t %{buildroot}/etc/pam.d/ %{SOURCE12}
 
 # Install additional docs
 # https://bugzilla.redhat.com/show_bug.cgi?id=1234951
@@ -703,6 +703,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Sun Jul 15 2018 Filipe Brandenburger <filbranden@gmail.com>
+- Override systemd-user PAM config in install and not prep
+
 * Sat Jul 14 2018 Fedora Release Engineering <releng@fedoraproject.org>
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
 
