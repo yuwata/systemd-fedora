@@ -688,6 +688,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Wed Jul 18 2018 Terje Rosten <terje.rosten@ntnu.no> - 239-3
+- Ignore return value from systemd-binfmt in scriptlet (#1565425)
+
 * Sun Jul 15 2018 Filipe Brandenburger <filbranden@gmail.com>
 - Override systemd-user PAM config in install and not prep
 
