@@ -482,9 +482,10 @@ systemctl daemon-reexec &>/dev/null || :
 journalctl --update-catalog &>/dev/null || :
 systemd-tmpfiles --create &>/dev/null || :
 
-if [ $1 -eq 1 ] ; then
-     # create /var/log/journal only on initial installation
-     mkdir -p %{_localstatedir}/log/journal
+# create /var/log/journal only on initial installation,
+# and only if it's writable (it won't be in rpm-ostree).
+if [ $1 -eq 1 ] && [ -w %{_localstatedir} ]; then
+    mkdir -p %{_localstatedir}/log/journal
 fi
 
 # Make sure new journal files will be owned by the "systemd-journal" group
