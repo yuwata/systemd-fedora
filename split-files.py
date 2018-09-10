@@ -40,6 +40,7 @@ for file in files(buildroot):
                     /usr/lib/firewalld(/services|)$|
                     /usr/share/(locale|licenses|doc)|             # no $
                     /etc(/pam\.d|/xdg|/X11|/X11/xinit|/X11.*\.d|)$|
+                    /etc/(dnf|dnf/protected.d)$|
                     /usr/(src|lib/debug)|                         # no $
                     /var(/cache|/log|/lib|/run|)$
     ''', n, re.X):

@@ -15,7 +15,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        239
-Release:        3%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        4%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -392,7 +392,7 @@ touch %{buildroot}%{_localstatedir}/lib/private/systemd/timesync/clock
 touch %{buildroot}%{_localstatedir}/lib/private/systemd/journal-upload/state
 
 # Install yum protection fragment
-install -Dm0644 %{SOURCE4} %{buildroot}%{_sysconfdir}/yum/protected.d/systemd.conf
+install -Dm0644 %{SOURCE4} %{buildroot}/etc/dnf/protected.d/systemd.conf
 
 install -Dm0644 -t %{buildroot}/usr/lib/firewalld/services/ %{SOURCE7} %{SOURCE8}
 
@@ -690,6 +690,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Mon Sep 10 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 239-4
+- Move /etc/yum/protected.d/systemd.conf to /etc/dnf/ (#1626969)
+
 * Wed Jul 18 2018 Terje Rosten <terje.rosten@ntnu.no> - 239-3
 - Ignore return value from systemd-binfmt in scriptlet (#1565425)
 
@@ -1182,7 +1185,8 @@ Resolves: rhbz#1299019
 * Thu May 21 2015 Lennart Poettering <lpoetter@redhat.com> - 220-1
 - New upstream release
 - Drop /etc/mtab hack, as that's apparently fixed in mock now (#1116158)
-- Remove ghosting for %%{_sysconfdir}/systemd/system/runlevel*.target, these targets are not configurable anymore in systemd upstream
+- Remove ghosting for /etc/systemd/system/runlevel*.target, these
+  targets are not configurable anymore in systemd upstream
 - Drop work-around for #1002806, since this is solved upstream now
 
 * Wed May 20 2015 Dennis Gilmore <dennis@ausil.us> - 219-15
