@@ -52,6 +52,7 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 
 Patch0001:      0001-build-sys-Detect-whether-struct-statx-is-defined-in-.patch
 Patch0002:      0002-meson-rename-Ddebug-to-Ddebug-extra.patch
+Patch0003:      0003-bus-socket-Fix-line_begins-to-accept-word-matching-f.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
@@ -694,6 +695,7 @@ fi
 %changelog
 * Wed Oct  3 2018 Jan Synáček <jsynacek@redhat.com> - 239-5
 - Fix meson using -Ddebug, which results in FTBFS
+- Fix line_begins() to accept word matching full string (#1631840)
 
 * Mon Sep 10 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 239-4
 - Move /etc/yum/protected.d/systemd.conf to /etc/dnf/ (#1626969)
