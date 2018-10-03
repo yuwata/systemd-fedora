@@ -15,7 +15,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        239
-Release:        4%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        5%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -51,6 +51,7 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 %endif
 
 Patch0001:      0001-build-sys-Detect-whether-struct-statx-is-defined-in-.patch
+Patch0002:      0002-meson-rename-Ddebug-to-Ddebug-extra.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
@@ -691,6 +692,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Wed Oct  3 2018 Jan Synáček <jsynacek@redhat.com> - 239-5
+- Fix meson using -Ddebug, which results in FTBFS
+
 * Mon Sep 10 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 239-4
 - Move /etc/yum/protected.d/systemd.conf to /etc/dnf/ (#1626969)
 
