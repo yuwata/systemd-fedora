@@ -1,7 +1,7 @@
-#global gitcommit 4b650021751ccd404dcb329ef5e312c8a93f7ce2
+%global gitcommit 9f3aed1c7d20c12cc932b81e127d48edf855f36c
 %{?gitcommit:%global gitcommitshort %(c=%{gitcommit}; echo ${c:0:7})}
 
-#global stable 1
+%global stable 1
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
 # strip the automatically generated dep here and instead co-own the
@@ -15,7 +15,7 @@
 Name:           systemd
 Url:            http://www.freedesktop.org/wiki/Software/systemd
 Version:        239
-Release:        5%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        6%{?gitcommit:.git%{gitcommitshort}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -27,7 +27,7 @@ Source0:        https://github.com/systemd/systemd%{?stable:-stable}/archive/%{?
 Source0:        https://github.com/systemd/systemd/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 %endif
 # This file must be available before %%prep.
-# It is generated during systemd build and can be found in src/core/.
+# It is generated during systemd build and can be found in build/src/core/.
 Source1:        triggers.systemd
 Source2:        split-files.py
 Source3:        purge-nobody-user
@@ -49,10 +49,6 @@ GIT_DIR=../../src/systemd/.git git format-patch-ab --no-signature -M -N v235..v2
 i=1; for j in 00*patch; do printf "Patch%04d:      %s\n" $i $j; i=$((i+1));done|xclip
 GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[67]* hwdb/parse_hwdb.py > hwdb.patch
 %endif
-
-Patch0001:      0001-build-sys-Detect-whether-struct-statx-is-defined-in-.patch
-Patch0002:      0002-meson-rename-Ddebug-to-Ddebug-extra.patch
-Patch0003:      0003-bus-socket-Fix-line_begins-to-accept-word-matching-f.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
@@ -693,6 +689,42 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Sun Oct 28 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 239-6.git9f3aed1
+- Fix a local vulnerability from a race condition in chown-recursive (CVE-2018-15687, #1639076)
+- Fix a local vulnerability from invalid handling of long lines in state deserialization (CVE-2018-15686, #1639071)
+- Fix a remote vulnerability in DHCPv6 in systemd-networkd (CVE-2018-15688, #1639067)
+- The DHCP server is started only when link is UP
+- DHCPv6 prefix delegation is improved
+- Downgrade logging of various messages and add loging in other places
+- Many many fixes in error handling and minor memory leaks and such
+- Fix typos and omissions in documentation
+- Typo in %%_environmnentdir rpm macro is fixed (with backwards compatiblity preserved)
+- Matching by MACAddress= in systemd-networkd is fixed
+- Creation of user runtime directories is improved, and the user
+  manager is only stopped after 10 s after the user logs out (#1642460 and other bugs)
+- systemd units systemd-timesyncd, systemd-resolved, systemd-networkd are switched back to use DynamicUser=0
+- Aliases are now resolved when loading modules from pid1. This is a (redundant) fix for a brief kernel regression.
+- "systemctl --wait start" exits immediately if no valid units are named
+- zram devices are not considered as candidates for hibernation
+- ECN is not requested for both in- and out-going connections (the sysctl overide for net.ipv4.tcp_ecn is removed)
+- Various smaller improvements to unit ordering and dependencies
+- generators are now called with the manager's environment
+- Handling of invalid (intentionally corrupt) dbus messages is improved, fixing potential local DOS avenues
+- The target of symlinks links in .wants/ and .requires/ is now ignored. This fixes an issue where
+  the unit file would sometimes be loaded from such a symlink, leading to non-deterministic unit contents.
+- Filtering of kernel threads is improved. This fixes an issues with newer kernels where hybrid kernel/user
+  threads are used by bpfilter.
+- "noresume" can be used on the kernel command line to force normal boot even if a hibernation images is present
+- Hibernation is not advertised if resume= is not present on the kernenl command line
+- Hibernation/Suspend/... modes can be disabled using AllowSuspend=,
+  AllowHibernation=, AllowSuspendThenHibernate=, AllowHybridSleep=
+- LOGO= and DOCUMENTATION_URL= are documented for the os-release file
+- The hashmap mempool is now only used internally in systemd, and is disabled for external users of the systemd libraries
+- Additional state is serialized/deserialized when logind is restarted, fixing the handling of user objects
+- Catalog entries for the journal are improved (#1639482)
+- If suspend fails, the post-suspend hooks are still called.
+- Various build issues on less-common architectures are fixed
+
 * Wed Oct  3 2018 Jan Synáček <jsynacek@redhat.com> - 239-5
 - Fix meson using -Ddebug, which results in FTBFS
 - Fix line_begins() to accept word matching full string (#1631840)
