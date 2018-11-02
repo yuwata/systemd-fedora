@@ -15,7 +15,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        239
-Release:        6%{?commit:.git%{shortcommit}}%{?dist}
+Release:        7%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -110,6 +110,7 @@ Requires(pre):  /usr/bin/getent
 Requires(pre):  /usr/sbin/groupadd
 Requires:       dbus >= 1.9.18
 Requires:       %{name}-pam = %{version}-%{release}
+Requires:       %{name}-rpm-macros = %{version}-%{release}
 Requires:       %{name}-libs = %{version}-%{release}
 Recommends:     diffutils
 Requires:       util-linux
@@ -169,6 +170,13 @@ Requires:       %{name} = %{version}-%{release}
 
 %description pam
 Systemd PAM module registers the session with systemd-logind.
+
+%package rpm-macros
+Summary:        Macros that define paths and scriptlets related to systemd
+
+%description rpm-macros
+Just the definitions of rpm macros. Use %%{?systemd_requires} in the
+binary packages that use any scriptlets from this package.
 
 %package devel
 Summary:        Development headers for systemd
@@ -678,6 +686,8 @@ fi
 
 %files pam -f .file-list-pam
 
+%files rpm-macros -f .file-list-rpm-macros
+
 %files devel -f .file-list-devel
 
 %files udev -f .file-list-udev
@@ -689,6 +699,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Fri Nov  2 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 239-7.git9f3aed1
+- Split out the rpm macros into systemd-rpm-macros subpackage (#1645298)
+
 * Sun Oct 28 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 239-6.git9f3aed1
 - Fix a local vulnerability from a race condition in chown-recursive (CVE-2018-15687, #1639076)
 - Fix a local vulnerability from invalid handling of long lines in state deserialization (CVE-2018-15686, #1639071)

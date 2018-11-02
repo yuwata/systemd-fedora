@@ -18,6 +18,7 @@ def files(root):
 o_libs = open('.file-list-libs', 'w')
 o_udev = open('.file-list-udev', 'w')
 o_pam = open('.file-list-pam', 'w')
+o_rpm_macros = open('.file-list-rpm-macros', 'w')
 o_devel = open('.file-list-devel', 'w')
 o_container = open('.file-list-container', 'w')
 o_remote = open('.file-list-remote', 'w')
@@ -47,6 +48,8 @@ for file in files(buildroot):
         continue
     if '/security/pam_' in n:
         o = o_pam
+    elif 'rpm/macros' in n:
+        o = o_rpm_macros
     elif re.search(r'/lib.*\.pc|/man3/|/usr/include|(?<!/libsystemd-shared-...).so$', n):
         o = o_devel
     elif '/usr/lib/systemd/tests' in n:
