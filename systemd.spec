@@ -173,6 +173,7 @@ Systemd PAM module registers the session with systemd-logind.
 
 %package rpm-macros
 Summary:        Macros that define paths and scriptlets related to systemd
+BuildArch:      noarch
 
 %description rpm-macros
 Just the definitions of rpm macros. Use %%{?systemd_requires} in the
