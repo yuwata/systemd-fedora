@@ -1,5 +1,5 @@
-%global gitcommit 9f3aed1c7d20c12cc932b81e127d48edf855f36c
-%{?gitcommit:%global gitcommitshort %(c=%{gitcommit}; echo ${c:0:7})}
+%global commit 9f3aed1c7d20c12cc932b81e127d48edf855f36c
+%{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
 %global stable 1
 
@@ -13,18 +13,18 @@
 %global user_unit_dir %{pkgdir}/user
 
 Name:           systemd
-Url:            http://www.freedesktop.org/wiki/Software/systemd
+Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        239
-Release:        6%{?gitcommit:.git%{gitcommitshort}}%{?dist}
+Release:        6%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
 
 # download tarballs with "spectool -g systemd.spec"
-%if %{defined gitcommit}
-Source0:        https://github.com/systemd/systemd%{?stable:-stable}/archive/%{?gitcommit}.tar.gz#/%{name}-%{gitcommitshort}.tar.gz
+%if %{defined commit}
+Source0:        https://github.com/systemd/systemd%{?stable:-stable}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        https://github.com/systemd/systemd/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Source0:        https://github.com/systemd/systemd/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 # This file must be available before %%prep.
 # It is generated during systemd build and can be found in build/src/core/.
@@ -256,7 +256,7 @@ License:       LGPLv2+
 They can be useful to test systemd internals.
 
 %prep
-%autosetup %{?gitcommit:-n %{name}%{?stable:-stable}-%{gitcommit}} -p1 -Sgit
+%autosetup %{?commit:-n %{name}%{?stable:-stable}-%{commit}} -p1 -Sgit
 
 %build
 %define ntpvendor %(source /etc/os-release; echo ${ID})
