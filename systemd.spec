@@ -322,11 +322,6 @@ CONFIGURE_OPTS=(
 %meson "${CONFIGURE_OPTS[@]}"
 %meson_build
 
-if diff %{SOURCE1} %{_vpath_builddir}/triggers.systemd; then
-   echo -e "\n\n\nWARNING: triggers.systemd in Source1 is different!"
-   echo -e "      cp %{_vpath_builddir}/triggers.systemd %{SOURCE1}\n\n\n"
-fi
-
 %install
 %meson_install
 
