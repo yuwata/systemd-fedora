@@ -15,7 +15,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        239
-Release:        7%{?commit:.git%{shortcommit}}%{?dist}
+Release:        8%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -105,6 +105,8 @@ Requires(post): coreutils
 Requires(post): sed
 Requires(post): acl
 Requires(post): grep
+# systemd-machine-id-setup requires libssl
+Requires(post): openssl-libs
 Requires(pre):  coreutils
 Requires(pre):  /usr/bin/getent
 Requires(pre):  /usr/sbin/groupadd
@@ -695,6 +697,10 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Mon Nov 05 2018 Adam Williamson <awilliam@redhat.com> - 239-8.git9f3aed1
+- Requires(post) openssl-libs to fix live image build machine-id issue
+  See: https://pagure.io/dusty/failed-composes/issue/960
+
 * Mon Nov  5 2018 Yu Watanabe <watanabe.yu@gmail.com>
 - Set proper attributes to private directories
 
