@@ -432,8 +432,8 @@ python3 %{SOURCE2} %buildroot <<EOF
 %ghost %config(noreplace) /etc/locale.conf
 %ghost %config(noreplace) /etc/machine-id
 %ghost %config(noreplace) /etc/machine-info
-%ghost %dir /var/cache/private
-%ghost %dir /var/lib/private
+%ghost %attr(0700,root,root) %dir /var/cache/private
+%ghost %attr(0700,root,root) %dir /var/lib/private
 %ghost %dir /var/lib/private/systemd
 %ghost %dir /var/lib/private/systemd/journal-upload
 %ghost /var/lib/private/systemd/journal-upload/state
@@ -449,7 +449,7 @@ python3 %{SOURCE2} %buildroot <<EOF
 %ghost /var/lib/systemd/timesync
 %ghost %dir /var/log/journal
 %ghost %dir /var/log/journal/remote
-%ghost %dir /var/log/private
+%ghost %attr(0700,root,root) %dir /var/log/private
 EOF
 
 %check
@@ -695,6 +695,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Mon Nov  5 2018 Yu Watanabe <watanabe.yu@gmail.com>
+- Set proper attributes to private directories
+
 * Fri Nov  2 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 239-7.git9f3aed1
 - Split out the rpm macros into systemd-rpm-macros subpackage (#1645298)
 
