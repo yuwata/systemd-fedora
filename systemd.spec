@@ -15,7 +15,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        239
-Release:        8%{?commit:.git%{shortcommit}}%{?dist}
+Release:        9%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -510,18 +510,13 @@ if [ -e /etc/fstab ]; then
          sed -i.rpm.bak -r '/^devpts\s+\/dev\/pts\s+devpts\s+defaults\s+/d; /^tmpfs\s+\/dev\/shm\s+tmpfs\s+defaults\s+/d; /^sysfs\s+\/sys\s+sysfs\s+defaults\s+/d; /^proc\s+\/proc\s+proc\s+defaults\s+/d' /etc/fstab || :
 fi
 
-# Services we install by default, and which are controlled by presets.
+# We reset the enablement of all services upon initial installation
+# https://bugzilla.redhat.com/show_bug.cgi?id=1118740#c23
+# This will fix up enablement of any preset services that got installed
+# before systemd due to rpm ordering problems:
+# https://bugzilla.redhat.com/show_bug.cgi?id=1647172
 if [ $1 -eq 1 ] ; then
-        systemctl preset --quiet \
-                remote-fs.target \
-                getty@.service \
-                serial-getty@.service \
-                console-getty.service \
-                debug-shell.service \
-                systemd-networkd.service \
-                systemd-networkd-wait-online.service \
-                systemd-resolved.service \
-                >/dev/null || :
+        systemctl preset-all &>/dev/null || :
 fi
 
 # remove obsolete systemd-readahead file
@@ -697,7 +692,10 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
-* Mon Nov 05 2018 Adam Williamson <awilliam@redhat.com> - 239-8.git9f3aed1
+* Thu Nov  8 2018 Adam Williamson <awilliam@redhat.com> - 239-9.git9f3aed1
+- Go back to using systemctl preset-all in %post (#1647172, #1118740)
+
+* Mon Nov  5 2018 Adam Williamson <awilliam@redhat.com> - 239-8.git9f3aed1
 - Requires(post) openssl-libs to fix live image build machine-id issue
   See: https://pagure.io/dusty/failed-composes/issue/960
 
