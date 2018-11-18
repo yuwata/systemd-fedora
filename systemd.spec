@@ -499,10 +499,6 @@ chmod g+s /run/log/journal/ /run/log/journal/`cat /etc/machine-id 2>/dev/null` /
 # Apply ACL to the journal directory
 setfacl -Rnm g:wheel:rx,d:g:wheel:rx,g:adm:rx,d:g:adm:rx /var/log/journal/ &>/dev/null || :
 
-# Stop-gap until rsyslog.rpm does this on its own. (This is supposed
-# to fail when the link already exists)
-ln -s /usr/lib/systemd/system/rsyslog.service /etc/systemd/system/syslog.service &>/dev/null || :
-
 # Remove spurious /etc/fstab entries from very old installations
 # https://bugzilla.redhat.com/show_bug.cgi?id=1009023
 if [ -e /etc/fstab ]; then
@@ -692,6 +688,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Sun Nov 18 2018 Alejandro Domínguez Muñoz <adomu@net-c.com> - 239-9.git9f3aed1
+- Remove link creation for rsyslog.service
+
 * Thu Nov  8 2018 Adam Williamson <awilliam@redhat.com> - 239-9.git9f3aed1
 - Go back to using systemctl preset-all in %post (#1647172, #1118740)
 
