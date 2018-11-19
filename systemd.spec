@@ -15,7 +15,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        239
-Release:        9%{?commit:.git%{shortcommit}}%{?dist}
+Release:        10%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -688,7 +688,7 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
-* Sun Nov 18 2018 Alejandro Domínguez Muñoz <adomu@net-c.com> - 239-9.git9f3aed1
+* Sun Nov 18 2018 Alejandro Domínguez Muñoz <adomu@net-c.com> - 239-10.git9f3aed1
 - Remove link creation for rsyslog.service
 
 * Thu Nov  8 2018 Adam Williamson <awilliam@redhat.com> - 239-9.git9f3aed1
