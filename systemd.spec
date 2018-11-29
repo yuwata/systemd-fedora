@@ -548,16 +548,6 @@ if [ -f /etc/nsswitch.conf ] ; then
                 s/[[:blank:]]*$/ myhostname/
                 ' /etc/nsswitch.conf &>/dev/null || :
 
-        # remove mymachines from passwd and group lines of /etc/nsswitch.conf
-        # https://bugzilla.redhat.com/show_bug.cgi?id=1284325
-        # https://meetbot.fedoraproject.org/fedora-meeting/2015-11-25/fesco.2015-11-25-18.00.html
-        # To avoid the removal, e.g. add a space at the end of the line.
-        grep -E -q '^(passwd|group):.* mymachines$' /etc/nsswitch.conf &&
-        sed -i.bak -r -e '
-                s/^(passwd:.*) mymachines$/\1/;
-                s/^(group:.*) mymachines$/\1/;
-                ' /etc/nsswitch.conf &>/dev/null || :
-
         # Add [!UNAVAIL=return] after resolve
         grep -E -q '^hosts:.*resolve[[:space:]]*($|[[:alpha:]])' /etc/nsswitch.conf &&
         sed -i.bak -e '
