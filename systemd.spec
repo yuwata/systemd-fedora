@@ -508,9 +508,6 @@ if [ $1 -eq 1 ] ; then
         systemctl preset-all &>/dev/null || :
 fi
 
-# remove obsolete systemd-readahead file
-rm -f /.readahead &>/dev/null || :
-
 %preun
 if [ $1 -eq 0 ] ; then
         systemctl disable --quiet \
