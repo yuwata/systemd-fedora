@@ -499,13 +499,6 @@ chmod g+s /run/log/journal/ /run/log/journal/`cat /etc/machine-id 2>/dev/null` /
 # Apply ACL to the journal directory
 setfacl -Rnm g:wheel:rx,d:g:wheel:rx,g:adm:rx,d:g:adm:rx /var/log/journal/ &>/dev/null || :
 
-# Remove spurious /etc/fstab entries from very old installations
-# https://bugzilla.redhat.com/show_bug.cgi?id=1009023
-if [ -e /etc/fstab ]; then
-   grep -v -E -q '^(devpts|tmpfs|sysfs|proc)' /etc/fstab || \
-         sed -i.rpm.bak -r '/^devpts\s+\/dev\/pts\s+devpts\s+defaults\s+/d; /^tmpfs\s+\/dev\/shm\s+tmpfs\s+defaults\s+/d; /^sysfs\s+\/sys\s+sysfs\s+defaults\s+/d; /^proc\s+\/proc\s+proc\s+defaults\s+/d' /etc/fstab || :
-fi
-
 # We reset the enablement of all services upon initial installation
 # https://bugzilla.redhat.com/show_bug.cgi?id=1118740#c23
 # This will fix up enablement of any preset services that got installed
