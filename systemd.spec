@@ -548,12 +548,6 @@ if [ -f /etc/nsswitch.conf ] ; then
                 s/[[:blank:]]*$/ myhostname/
                 ' /etc/nsswitch.conf &>/dev/null || :
 
-        # Add [!UNAVAIL=return] after resolve
-        grep -E -q '^hosts:.*resolve[[:space:]]*($|[[:alpha:]])' /etc/nsswitch.conf &&
-        sed -i.bak -e '
-                /^hosts:/ { s/resolve/& [!UNAVAIL=return]/}
-                ' /etc/nsswitch.conf &>/dev/null || :
-
         # Add nss-systemd to passwd and group
         grep -E -q '^(passwd|group):.* systemd' /etc/nsswitch.conf ||
         sed -i.bak -r -e '
