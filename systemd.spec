@@ -529,20 +529,33 @@ fi
 %post libs
 %{?ldconfig}
 
-if [ -f /etc/nsswitch.conf ] ; then
-        # sed-fu to add myhostanme to hosts line
-        grep -v -E -q '^hosts:.* myhostname' /etc/nsswitch.conf &&
+function mod_nss() {
+    if [ -f "$1" ] ; then
+        # sed-fu to add myhostname to hosts line
+        grep -E -q '^hosts:.* myhostname' "$1" ||
         sed -i.bak -e '
                 /^hosts:/ !b
                 /\<myhostname\>/ b
                 s/[[:blank:]]*$/ myhostname/
-                ' /etc/nsswitch.conf &>/dev/null || :
+                ' "$1" &>/dev/null || :
 
         # Add nss-systemd to passwd and group
-        grep -E -q '^(passwd|group):.* systemd' /etc/nsswitch.conf ||
+        grep -E -q '^(passwd|group):.* systemd' "$1" ||
         sed -i.bak -r -e '
                 s/^(passwd|group):(.*)/\1: \2 systemd/
-                ' /etc/nsswitch.conf &>/dev/null || :
+                ' "$1" &>/dev/null || :
+    fi
+}
+
+FILE="$(readlink /etc/nsswitch.conf || echo /etc/nsswitch.conf)"
+if [ "$FILE" = "/etc/authselect/nsswitch.conf" ]; then
+        mod_nss "/etc/authselect/user-nsswitch.conf"
+        authselect apply-changes &> /dev/null || :
+else
+        mod_nss "$FILE"
+        # also apply the same changes to user-nsswitch.conf to affect
+        # possible future authselect configuration
+        mod_nss "/etc/authselect/user-nsswitch.conf"
 fi
 
 # check if nobody or nfsnobody is defined
@@ -662,6 +675,11 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Thu Nov 29 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl>
+- Adjust scriptlets to modify /etc/authselect/user-nsswitch.conf
+  (see https://github.com/pbrezina/authselect/issues/77)
+- Drop old scriptlets for nsswitch.conf modifications for nss-mymachines and nss-resolve
+
 * Sun Nov 18 2018 Alejandro Domínguez Muñoz <adomu@net-c.com> - 239-10.git9f3aed1
 - Remove link creation for rsyslog.service
 
