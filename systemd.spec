@@ -548,7 +548,7 @@ function mod_nss() {
 }
 
 FILE="$(readlink /etc/nsswitch.conf || echo /etc/nsswitch.conf)"
-if [ "$FILE" = "/etc/authselect/nsswitch.conf" ]; then
+if [ "$FILE" = "/etc/authselect/nsswitch.conf" ] && authselect check &>/dev/null; then
         mod_nss "/etc/authselect/user-nsswitch.conf"
         authselect apply-changes &> /dev/null || :
 else
