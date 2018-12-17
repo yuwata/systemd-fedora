@@ -1,4 +1,4 @@
-%global commit 9f3aed1c7d20c12cc932b81e127d48edf855f36c
+%global commit 3bf819c4ca718a6bc4b3b871cf52a0d1b518967d
 %{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
 %global stable 1
@@ -675,12 +675,20 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Mon Dec 17 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 239-10.git9f3aed1
+- Hibernation checks for resume= are rescinded (#1645870)
+- Various patches:
+  - memory issues in logind, networkd, journald (#1653068), sd-device, etc.
+  - Adaptations for newer meson, lz4, kernel
+  - Fixes for misleading bugs in documentation
+- net.ipv4.conf.all.rp_filter is changed from 1 to 2
+
 * Thu Nov 29 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl>
 - Adjust scriptlets to modify /etc/authselect/user-nsswitch.conf
   (see https://github.com/pbrezina/authselect/issues/77)
 - Drop old scriptlets for nsswitch.conf modifications for nss-mymachines and nss-resolve
 
-* Sun Nov 18 2018 Alejandro Domínguez Muñoz <adomu@net-c.com> - 239-10.git9f3aed1
+* Sun Nov 18 2018 Alejandro Domínguez Muñoz <adomu@net-c.com>
 - Remove link creation for rsyslog.service
 
 * Thu Nov  8 2018 Adam Williamson <awilliam@redhat.com> - 239-9.git9f3aed1
