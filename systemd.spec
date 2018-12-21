@@ -1,7 +1,7 @@
-%global commit 3bf819c4ca718a6bc4b3b871cf52a0d1b518967d
+#global commit a188229ade906a1374efea4d1851b510d6216c38
 %{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
-%global stable 1
+#global stable 1
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
 # strip the automatically generated dep here and instead co-own the
@@ -14,8 +14,8 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        239
-Release:        10%{?commit:.git%{shortcommit}}%{?dist}
+Version:        240%{?commit:~0.git%{shortcommit}}
+Release:        1%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -100,6 +100,8 @@ BuildRequires:  libseccomp-devel
 BuildRequires:  git
 BuildRequires:  meson >= 0.43
 BuildRequires:  gettext
+# We use RUNNING_ON_VALGRIND in tests, so the headers need to be available
+BuildRequires:  valgrind-devel
 
 Requires(post): coreutils
 Requires(post): sed
@@ -414,6 +416,8 @@ install -Dm0755 -t %{buildroot}%{_prefix}/lib/kernel/install.d/ %{SOURCE11}
 
 install -D -t %{buildroot}/usr/lib/systemd/ %{SOURCE3}
 
+sed -i 's|#!/usr/bin/env python3|#!%{__python3}|' %{buildroot}/usr/lib/systemd/tests/run-unit-tests.py
+
 %find_lang %{name}
 
 # Split files in build root into rpms. See split-files.py for the
@@ -675,6 +679,10 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Fri Dec 21 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 240-1
+- Update to latest release
+  See https://github.com/systemd/systemd/blob/master/NEWS for the list of changes.
+
 * Mon Dec 17 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 239-10.git9f3aed1
 - Hibernation checks for resume= are rescinded (#1645870)
 - Various patches:
