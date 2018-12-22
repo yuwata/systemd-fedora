@@ -52,6 +52,8 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 
 Patch0001:      0001-test-json-check-absolute-and-relative-difference-in-.patch
 Patch0002:      0002-Revert-units-set-NoNewPrivileges-for-all-long-runnin.patch
+Patch0003:      0003-Revert-sd-device-ignore-bind-unbind-events-for-now.patch
+Patch0004:      0004-Revert-udevd-configure-a-child-process-name-for-work.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
