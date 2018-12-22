@@ -15,7 +15,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        240%{?commit:~0.git%{shortcommit}}
-Release:        1%{?dist}
+Release:        2%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -688,6 +688,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Sat Dec 22 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 240-2
+- Add two more patches that revert recent udev changes
+
 * Fri Dec 21 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 240-1
 - Update to latest release
   See https://github.com/systemd/systemd/blob/master/NEWS for the list of changes.
