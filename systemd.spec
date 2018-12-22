@@ -390,14 +390,13 @@ mkdir -p %{buildroot}%{_localstatedir}/lib/private
 mkdir -p %{buildroot}%{_localstatedir}/log/private
 mkdir -p %{buildroot}%{_localstatedir}/cache/private
 mkdir -p %{buildroot}%{_localstatedir}/lib/private/systemd/journal-upload
-mkdir -p %{buildroot}%{_localstatedir}/lib/private/systemd/timesync
+mkdir -p %{buildroot}%{_localstatedir}/lib/systemd/timesync
 ln -s ../private/systemd/journal-upload %{buildroot}%{_localstatedir}/lib/systemd/journal-upload
-ln -s ../private/systemd/timesync %{buildroot}%{_localstatedir}/lib/systemd/timesync
 mkdir -p %{buildroot}%{_localstatedir}/log/journal
 touch %{buildroot}%{_localstatedir}/lib/systemd/catalog/database
 touch %{buildroot}%{_sysconfdir}/udev/hwdb.bin
 touch %{buildroot}%{_localstatedir}/lib/systemd/random-seed
-touch %{buildroot}%{_localstatedir}/lib/private/systemd/timesync/clock
+touch %{buildroot}%{_localstatedir}/lib/systemd/timesync/clock
 touch %{buildroot}%{_localstatedir}/lib/private/systemd/journal-upload/state
 
 # Install yum protection fragment
@@ -446,8 +445,8 @@ python3 %{SOURCE2} %buildroot <<EOF
 %ghost %dir /var/lib/private/systemd
 %ghost %dir /var/lib/private/systemd/journal-upload
 %ghost /var/lib/private/systemd/journal-upload/state
-%ghost %dir /var/lib/private/systemd/timesync
-%ghost /var/lib/private/systemd/timesync/clock
+%ghost %dir /var/lib/systemd/timesync
+%ghost /var/lib/systemd/timesync/clock
 %ghost %dir /var/lib/systemd/backlight
 %ghost /var/lib/systemd/catalog/database
 %ghost %dir /var/lib/systemd/coredump
@@ -455,7 +454,6 @@ python3 %{SOURCE2} %buildroot <<EOF
 %ghost %dir /var/lib/systemd/linger
 %ghost /var/lib/systemd/random-seed
 %ghost %dir /var/lib/systemd/rfkill
-%ghost /var/lib/systemd/timesync
 %ghost %dir /var/log/journal
 %ghost %dir /var/log/journal/remote
 %ghost %attr(0700,root,root) %dir /var/log/private
@@ -585,10 +583,22 @@ fi
 
 %global udev_services systemd-udev{d,-settle,-trigger}.service systemd-udevd-{control,kernel}.socket systemd-timesyncd.service
 
+%pre udev
+getent group systemd-timesync &>/dev/null || groupadd -r systemd-timesync 2>&1 || :
+getent passwd systemd-timesync &>/dev/null || useradd -r -l -g systemd-timesync -d / -s /sbin/nologin -c "systemd Time Synchronization" systemd-timesync &>/dev/null || :
+
 %post udev
 # Move old stuff around in /var/lib
 mv %{_localstatedir}/lib/random-seed %{_localstatedir}/lib/systemd/random-seed &>/dev/null
 mv %{_localstatedir}/lib/backlight %{_localstatedir}/lib/systemd/backlight &>/dev/null
+if [ -L %{_localstatedir}/lib/systemd/timesync ]; then
+    rm %{_localstatedir}/lib/systemd/timesync
+    mv %{_localstatedir}/lib/private/systemd/timesync %{_localstatedir}/lib/systemd/timesync
+fi
+if [ -f %{_localstatedir}/lib/systemd/clock ] ; then
+    mkdir -p %{_localstatedir}/lib/systemd/timesync
+    mv %{_localstatedir}/lib/systemd/clock %{_localstatedir}/lib/systemd/timesync/.
+fi
 
 udevadm hwdb --update &>/dev/null
 %systemd_post %udev_services
@@ -601,12 +611,6 @@ grep -q -E '^KEYMAP="?fi-latin[19]"?' /etc/vconsole.conf 2>/dev/null &&
 
 %preun udev
 %systemd_preun %udev_services
-if [ $1 -eq 1 ] ; then
-    if [ -f %{_localstatedir}/lib/systemd/clock ] ; then
-        mkdir -p %{_localstatedir}/lib/private/systemd/timesync
-        mv %{_localstatedir}/lib/systemd/clock %{_localstatedir}/lib/private/systemd/timesync/.
-    fi
-fi
 
 %postun udev
 # Only restart systemd-udev, to run the upgraded dameon.
