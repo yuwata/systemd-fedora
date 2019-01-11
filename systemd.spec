@@ -15,7 +15,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        240
-Release:        3%{?commit:.git%{shortcommit}}%{?dist}
+Release:        4%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -413,6 +413,13 @@ install -Dm0644 -t %{buildroot}%{_pkgdocdir}/ %{SOURCE9}
 # https://bugzilla.redhat.com/show_bug.cgi?id=1378974
 install -Dm0644 -t %{buildroot}%{system_unit_dir}/systemd-udev-trigger.service.d/ %{SOURCE10}
 
+# A temporary work-around for https://bugzilla.redhat.com/show_bug.cgi?id=1663040
+mkdir -p %{buildroot}%{system_unit_dir}/systemd-hostnamed.service.d/
+cat >%{buildroot}%{system_unit_dir}/systemd-hostnamed.service.d/disable-privatedevices.conf <<EOF
+[Service]
+PrivateDevices=no
+EOF
+
 install -Dm0755 -t %{buildroot}%{_prefix}/lib/kernel/install.d/ %{SOURCE11}
 
 install -D -t %{buildroot}/usr/lib/systemd/ %{SOURCE3}
@@ -685,6 +692,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Fri Jan 11 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 240-4.gitf02b547
+- Add a work-around for selinux issue on live images (#1663040)
+
 * Fri Jan 11 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 240-3.gitf02b547
 - systemd-journald and systemd-journal-remote reject entries which
   contain too many fields (CVE-2018-16865, #1664973) and set limits on the
