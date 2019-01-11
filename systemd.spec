@@ -1,7 +1,7 @@
-#global commit a188229ade906a1374efea4d1851b510d6216c38
+%global commit f02b5472c6f0c41e5dc8dc2c84590866baf937ff
 %{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
-#global stable 1
+%global stable 1
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
 # strip the automatically generated dep here and instead co-own the
@@ -14,8 +14,8 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        240%{?commit:~0.git%{shortcommit}}
-Release:        2%{?dist}
+Version:        240
+Release:        3%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -50,10 +50,7 @@ i=1; for j in 00*patch; do printf "Patch%04d:      %s\n" $i $j; i=$((i+1));done|
 GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[67]* hwdb/parse_hwdb.py > hwdb.patch
 %endif
 
-Patch0001:      0001-test-json-check-absolute-and-relative-difference-in-.patch
 Patch0002:      0002-Revert-units-set-NoNewPrivileges-for-all-long-runnin.patch
-Patch0003:      0003-Revert-sd-device-ignore-bind-unbind-events-for-now.patch
-Patch0004:      0004-Revert-udevd-configure-a-child-process-name-for-work.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
@@ -688,6 +685,13 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Fri Jan 11 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 240-3.gitf02b547
+- systemd-journald and systemd-journal-remote reject entries which
+  contain too many fields (CVE-2018-16865, #1664973) and set limits on the
+  process' command line length (CVE-2018-16864, #1664972)
+- $DBUS_SESSION_BUS_ADDRESS is again exported by pam_systemd (#1662857)
+- A fix for systemd-udevd crash (#1662303)
+
 * Sat Dec 22 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 240-2
 - Add two more patches that revert recent udev changes
 
