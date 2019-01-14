@@ -15,7 +15,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        240
-Release:        4%{?commit:.git%{shortcommit}}%{?dist}
+Release:        5%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -692,6 +692,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Mon Jan 14 2019 Björn Esser <besser82@fedoraproject.org>
+- Rebuilt for libcrypt.so.2 (#1666033)
+
 * Fri Jan 11 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 240-4.gitf02b547
 - Add a work-around for selinux issue on live images (#1663040)
 
