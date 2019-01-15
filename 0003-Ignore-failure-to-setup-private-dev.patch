@@ -1,0 +1,46 @@
+From dbe7ff3240dd30240402632dfa9d95a71f425267 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Tue, 15 Jan 2019 10:34:10 +0100
+Subject: [PATCH] Ignore failure to setup private /dev
+
+This partially reverts 1beab8b0d0.
+---
+ src/core/namespace.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/src/core/namespace.c b/src/core/namespace.c
+index c2ca3e0334..6113b9a5ea 100644
+--- a/src/core/namespace.c
++++ b/src/core/namespace.c
+@@ -58,6 +58,7 @@ typedef struct MountEntry {
+         bool has_prefix:1;        /* Already is prefixed by the root dir? */
+         bool read_only:1;         /* Shall this mount point be read-only? */
+         bool applied:1;           /* Already applied */
++        bool xxx:1;
+         char *path_malloc;        /* Use this instead of 'path_const' if we had to allocate memory */
+         const char *source_const; /* The source path, for bind mounts */
+         char *source_malloc;
+@@ -1413,7 +1414,10 @@ int setup_namespace(
+                                 }
+ 
+                                 r = apply_mount(root, m);
+-                                if (r < 0)
++                                if (m->mode == PRIVATE_DEV && IN_SET(r, -EPERM, -EACCES)) {
++                                        m->xxx = true;
++                                        log_warning_errno(r, "Failed to prepare private /dev, ignoring: %m");
++                                } else if (r < 0)
+                                         goto finish;
+ 
+                                 m->applied = true;
+@@ -1433,6 +1437,8 @@ int setup_namespace(
+ 
+                 /* Second round, flip the ro bits if necessary. */
+                 for (m = mounts; m < mounts + n_mounts; ++m) {
++                        if (m->xxx)
++                                continue;
+                         r = make_read_only(m, blacklist, proc_self_mountinfo);
+                         if (r < 0)
+                                 goto finish;
+-- 
+2.19.2
+

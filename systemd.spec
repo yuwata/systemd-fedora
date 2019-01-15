@@ -15,7 +15,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        240
-Release:        5%{?commit:.git%{shortcommit}}%{?dist}
+Release:        6%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -51,6 +51,7 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 %endif
 
 Patch0002:      0002-Revert-units-set-NoNewPrivileges-for-all-long-runnin.patch
+Patch0003:      0003-Ignore-failure-to-setup-private-dev.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
@@ -692,6 +693,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Tue Jan 15 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 240-6.gitf02b547
+- Add a work-around for #1663040
+
 * Mon Jan 14 2019 Björn Esser <besser82@fedoraproject.org>
 - Rebuilt for libcrypt.so.2 (#1666033)
 
