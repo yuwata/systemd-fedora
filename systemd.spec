@@ -1,7 +1,7 @@
-%global commit f02b5472c6f0c41e5dc8dc2c84590866baf937ff
+#global commit f02b5472c6f0c41e5dc8dc2c84590866baf937ff
 %{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
-%global stable 1
+#global stable 1
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
 # strip the automatically generated dep here and instead co-own the
@@ -14,17 +14,19 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        240
-Release:        6%{?commit:.git%{shortcommit}}%{?dist}
+Version:        241~rc1
+Release:        1%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
+
+%global github_version %(c=%{version}; echo ${c}|tr '~' '-')
 
 # download tarballs with "spectool -g systemd.spec"
 %if %{defined commit}
 Source0:        https://github.com/systemd/systemd%{?stable:-stable}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        https://github.com/systemd/systemd/archive/v%{version}/%{name}-%{version}.tar.gz
+Source0:        https://github.com/systemd/systemd/archive/v%{github_version}/%{name}-%{github_version}.tar.gz
 %endif
 # This file must be available before %%prep.
 # It is generated during systemd build and can be found in build/src/core/.
@@ -51,7 +53,6 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 %endif
 
 Patch0002:      0002-Revert-units-set-NoNewPrivileges-for-all-long-runnin.patch
-Patch0003:      0003-Ignore-failure-to-setup-private-dev.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
@@ -272,7 +273,7 @@ License:       LGPLv2+
 They can be useful to test systemd internals.
 
 %prep
-%autosetup %{?commit:-n %{name}%{?stable:-stable}-%{commit}} -p1 -Sgit
+%autosetup -n %{?commit:%{name}%{?stable:-stable}-%{commit}}%{!?commit:%{name}%{?stable:-stable}-%{github_version}} -p1 -Sgit
 
 %build
 %define ntpvendor %(source /etc/os-release; echo ${ID})
@@ -693,6 +694,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Sat Jan 26 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 241~rc1-1
+- Update to latest release -rc1
+
 * Tue Jan 15 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 240-6.gitf02b547
 - Add a work-around for #1663040
 
