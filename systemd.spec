@@ -326,6 +326,7 @@ CONFIGURE_OPTS=(
         -Dsplit-usr=false
         -Dsplit-bin=true
         -Db_lto=false
+        -Dversion-tag=v%{version}-%{release}
 )
 
 %meson "${CONFIGURE_OPTS[@]}"
