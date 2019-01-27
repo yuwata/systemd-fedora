@@ -15,7 +15,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        241~rc1
-Release:        1%{?commit:.git%{shortcommit}}%{?dist}
+Release:        2%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -52,6 +52,7 @@ i=1; for j in 00*patch; do printf "Patch%04d:      %s\n" $i $j; i=$((i+1));done|
 GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[67]* hwdb/parse_hwdb.py > hwdb.patch
 %endif
 
+Patch0001:      0001-kernel-install-fix-dracut-initrd-detection-240-backw.patch
 Patch0002:      0002-Revert-units-set-NoNewPrivileges-for-all-long-runnin.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
@@ -694,6 +695,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Sun Jan 27 2019 Yu Watanabe <watanabe.yu@gmail.com> - 241~rc1-2
+- Backport a patch for kernel-install
+
 * Sat Jan 26 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 241~rc1-1
 - Update to latest release -rc1
 
