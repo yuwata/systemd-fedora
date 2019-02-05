@@ -14,8 +14,8 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        241~rc1
-Release:        3%{?commit:.git%{shortcommit}}%{?dist}
+Version:        241~rc2
+Release:        1%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -696,6 +696,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Tue Feb  5 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 241~rc2-1
+- Update to latest release -rc2
+
 * Sun Feb 03 2019 Fedora Release Engineering <releng@fedoraproject.org>
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
 
