@@ -14,8 +14,8 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        241~rc2
-Release:        2%{?commit:.git%{shortcommit}}%{?dist}
+Version:        241
+Release:        1%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
