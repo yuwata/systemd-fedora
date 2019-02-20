@@ -1,7 +1,7 @@
-#global commit f02b5472c6f0c41e5dc8dc2c84590866baf937ff
+%global commit a09c170122cf3b37c3e4431bf082f9dbdc07fc70
 %{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
-#global stable 1
+%global stable 1
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
 # strip the automatically generated dep here and instead co-own the
@@ -15,7 +15,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        241
-Release:        1%{?commit:.git%{shortcommit}}%{?dist}
+Release:        2%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -695,6 +695,10 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Wed Feb 20 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 241-2.gita09c170
+- Prevent buffer overread in systemd-udevd
+- Properly validate dbus paths received over dbus (#1678394, CVE-2019-6454)
+
 * Sat Feb  9 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 241~rc2-2
 - Turn LTO back on
 
