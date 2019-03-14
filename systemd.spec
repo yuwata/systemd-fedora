@@ -52,6 +52,7 @@ i=1; for j in 00*patch; do printf "Patch%04d:      %s\n" $i $j; i=$((i+1));done|
 GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[67]* hwdb/parse_hwdb.py > hwdb.patch
 %endif
 
+Patch0001:      0001-Skip-dhcp-6-client-tests.patch
 Patch0002:      0002-Revert-units-set-NoNewPrivileges-for-all-long-runnin.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
