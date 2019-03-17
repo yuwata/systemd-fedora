@@ -508,8 +508,9 @@ if [ $1 -eq 1 ] && [ -w %{_localstatedir} ]; then
 fi
 
 # Make sure new journal files will be owned by the "systemd-journal" group
-chgrp systemd-journal /run/log/journal/ /run/log/journal/`cat /etc/machine-id 2>/dev/null` /var/log/journal/ /var/log/journal/`cat /etc/machine-id 2>/dev/null` &>/dev/null || :
-chmod g+s /run/log/journal/ /run/log/journal/`cat /etc/machine-id 2>/dev/null` /var/log/journal/ /var/log/journal/`cat /etc/machine-id 2>/dev/null` &>/dev/null || :
+machine_id=$(cat /etc/machine-id 2>/dev/null)
+chgrp systemd-journal /{run,var}/log/journal/{,${machine_id}} &>/dev/null || :
+chmod g+s /{run,var}/log/journal/{,${machine_id}} &>/dev/null || :
 
 # Apply ACL to the journal directory
 setfacl -Rnm g:wheel:rx,d:g:wheel:rx,g:adm:rx,d:g:adm:rx /var/log/journal/ &>/dev/null || :
