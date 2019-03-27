@@ -325,6 +325,7 @@ CONFIGURE_OPTS=(
         -Dsplit-usr=false
         -Dsplit-bin=true
         -Db_lto=true
+        -Db_ndebug=false
         -Dversion-tag=v%{version}-%{release}
 )
 
@@ -469,7 +470,7 @@ python3 %{SOURCE2} %buildroot <<EOF
 EOF
 
 %check
-%meson_test
+%ninja_test -C %{_vpath_builddir}
 
 #############################################################################################
 
