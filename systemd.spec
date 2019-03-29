@@ -1,4 +1,4 @@
-%global commit c1f8ff8d0de7e303b8004b02a0a47d4cc103a7f8
+%global commit cbf14c9500d5e6820fd7d96166ca0bf75c6850df
 %{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
 %global stable 1
@@ -15,7 +15,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        241
-Release:        3%{?commit:.git%{shortcommit}}%{?dist}
+Release:        4%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -94,6 +94,7 @@ BuildRequires:  pkgconfig
 BuildRequires:  gperf
 BuildRequires:  gawk
 BuildRequires:  tree
+BuildRequires:  hostname
 BuildRequires:  python3-devel
 BuildRequires:  python3-lxml
 BuildRequires:  firewalld-filesystem
@@ -697,6 +698,12 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Fri Mar 29 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 241-4.gitcbf14c9
+- Backport various patches from the v241..v242 range:
+  kernel-install will not create the boot loader entry automatically (#1648907),
+  various bash completion improvements (#1183769),
+  memory leaks and such (#1685286).
+
 * Thu Mar 14 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 241-3.gitc1f8ff8
 - Declare hyperv and framebuffer devices master-of-seat again (#1683197)
 
