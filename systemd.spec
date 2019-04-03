@@ -533,14 +533,10 @@ if [ $1 -eq 0 ] ; then
                 serial-getty@.service \
                 console-getty.service \
                 debug-shell.service \
-                systemd-readahead-replay.service \
-                systemd-readahead-collect.service \
                 systemd-networkd.service \
                 systemd-networkd-wait-online.service \
                 systemd-resolved.service \
                 >/dev/null || :
-
-        rm -f /etc/systemd/system/default.target &>/dev/null || :
 fi
 
 %post libs
