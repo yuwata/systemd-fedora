@@ -53,6 +53,8 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 %endif
 
 Patch0002:      0002-Revert-units-set-NoNewPrivileges-for-all-long-runnin.patch
+Patch0010:      0010-test-seccomp-fix-compilation-on-arm64.patch
+Patch0011:      0011-seccomp-rework-how-the-S-UG-ID-filter-is-installed.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
