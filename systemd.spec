@@ -1,7 +1,7 @@
-%global commit cbf14c9500d5e6820fd7d96166ca0bf75c6850df
+#global commit cbf14c9500d5e6820fd7d96166ca0bf75c6850df
 %{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
-%global stable 1
+#global stable 1
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
 # strip the automatically generated dep here and instead co-own the
@@ -14,8 +14,8 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        241
-Release:        4%{?commit:.git%{shortcommit}}%{?dist}
+Version:        242~rc2
+Release:        1%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -694,6 +694,11 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Wed Apr  3 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 242~rc2-1
+- Update to the latest prerelease.
+- The bug reported on latest update that systemd-resolved and systemd-networkd are
+  re-enabled after upgrade is fixed.
+
 * Fri Mar 29 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 241-4.gitcbf14c9
 - Backport various patches from the v241..v242 range:
   kernel-install will not create the boot loader entry automatically (#1648907),
