@@ -14,7 +14,7 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        242~rc2
+Version:        242~rc3
 Release:        1%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
@@ -53,8 +53,6 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 %endif
 
 Patch0002:      0002-Revert-units-set-NoNewPrivileges-for-all-long-runnin.patch
-Patch0010:      0010-test-seccomp-fix-compilation-on-arm64.patch
-Patch0011:      0011-seccomp-rework-how-the-S-UG-ID-filter-is-installed.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
@@ -696,6 +694,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Thu Apr  4 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 242~rc3-1
+- Update to latest prerelease
+
 * Wed Apr  3 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 242~rc2-1
 - Update to the latest prerelease.
 - The bug reported on latest update that systemd-resolved and systemd-networkd are
