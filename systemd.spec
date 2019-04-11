@@ -14,7 +14,7 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        242~rc4
+Version:        242
 Release:        1%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
@@ -694,6 +694,10 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Thu Apr 11 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 242
+- Update to latest release
+- Make scriptlet failure non-fatal
+
 * Tue Apr  9 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 242~rc4-1
 - Update to latest prerelease
 
