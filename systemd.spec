@@ -15,7 +15,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        242
-Release:        1%{?commit:.git%{shortcommit}}%{?dist}
+Release:        2%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -694,7 +694,10 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
-* Thu Apr 11 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 242
+* Tue Apr 16 2019 Adam Williamson <awilliam@redhat.com> - 242-2
+- Rebuild with Meson fix for #1699099
+
+* Thu Apr 11 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 242-1
 - Update to latest release
 - Make scriptlet failure non-fatal
 
