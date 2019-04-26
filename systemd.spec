@@ -154,6 +154,10 @@ date, locale, maintain a list of logged-in users, system accounts,
 runtime directories and settings, and daemons to manage simple network
 configuration, network time synchronization, log forwarding, and name
 resolution.
+%if 0%{stable}
+This package was built from the %{version}-stable branch of systemd,
+commit https://github.com/systemd/systemd-stable/commit/%{shortcommit}.
+%endif
 
 %package libs
 Summary:        systemd libraries
