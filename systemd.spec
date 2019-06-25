@@ -15,7 +15,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        242
-Release:        4%{?commit:.git%{shortcommit}}%{?dist}
+Release:        5%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -698,6 +698,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Tue Jun 25 2019 Björn Esser <besser82@fedoraproject.org>- 242-5.git7a6d834
+- Rebuilt (libqrencode.so.4)
+
 * Tue Jun 25 2019 Miro Hrončok <mhroncok@redhat.com>- 242-4.git7a6d834
 - Rebuilt for iptables update (libip4tc.so.2)
 
