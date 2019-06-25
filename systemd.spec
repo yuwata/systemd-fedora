@@ -15,7 +15,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        242
-Release:        3%{?commit:.git%{shortcommit}}%{?dist}
+Release:        4%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -698,6 +698,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Tue Jun 25 2019 Miro Hrončok <mhroncok@redhat.com>- 242-4.git7a6d834
+- Rebuilt for iptables update (libip4tc.so.2)
+
 * Fri Apr 26 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 242-3.git7a6d834
 - Add symbol to mark vtable format changes (anything using sd_add_object_vtable
   or sd_add_fallback_vtable needs to be rebuilt)
