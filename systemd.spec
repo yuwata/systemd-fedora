@@ -1,4 +1,4 @@
-%global commit 7a6d834c0104304f506852eddc25b22e1ce65e3b
+%global commit 9d34e79ae8ef891adf3757f9248566def70471ad
 %{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
 %global stable 1
@@ -15,7 +15,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        242
-Release:        5%{?commit:.git%{shortcommit}}%{?dist}
+Release:        6%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -698,6 +698,11 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Sat Jul 20 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 242-6.git9d34e79
+- Ignore bad rdrand output on AMD CPUs (#1729268)
+- A bunch of backported patches from upstream: documentation, memory
+  access fixups, command output tweaks (#1708996)
+
 * Tue Jun 25 2019 Björn Esser <besser82@fedoraproject.org>- 242-5.git7a6d834
 - Rebuilt (libqrencode.so.4)
 
