@@ -1,7 +1,7 @@
-%global commit 9d34e79ae8ef891adf3757f9248566def70471ad
+#global commit 9d34e79ae8ef891adf3757f9248566def70471ad
 %{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
-%global stable 1
+#global stable 1
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
 # strip the automatically generated dep here and instead co-own the
@@ -14,8 +14,8 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        242
-Release:        7%{?commit:.git%{shortcommit}}%{?dist}
+Version:        243~rc1
+Release:        1%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -154,7 +154,7 @@ date, locale, maintain a list of logged-in users, system accounts,
 runtime directories and settings, and daemons to manage simple network
 configuration, network time synchronization, log forwarding, and name
 resolution.
-%if 0%{stable}
+%if 0%{?stable}
 This package was built from the %{version}-stable branch of systemd,
 commit https://github.com/systemd/systemd-stable/commit/%{shortcommit}.
 %endif
@@ -331,6 +331,8 @@ CONFIGURE_OPTS=(
         -Dsplit-bin=true
         -Db_lto=true
         -Db_ndebug=false
+        -Dman=true
+        -Ddefault-hierarchy=hybrid
         -Dversion-tag=v%{version}-%{release}
 )
 
@@ -354,11 +356,6 @@ install -Dm0644 -t %{buildroot}/etc/ %{SOURCE5}
 # /etc/sysctl.conf compat
 install -Dm0644 %{SOURCE6} %{buildroot}/etc/sysctl.conf
 ln -s ../sysctl.conf %{buildroot}/etc/sysctl.d/99-sysctl.conf
-
-# We create all wants links manually at installation time to make sure
-# they are not owned and hence overriden by rpm after the user deleted
-# them.
-rm -r %{buildroot}%{_sysconfdir}/systemd/system/*.target.wants
 
 # Make sure these directories are properly owned
 mkdir -p %{buildroot}%{system_unit_dir}/basic.target.wants
@@ -698,6 +695,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Tue Jul 30 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 243~rc1-1
+- Update to latest version (#1715699, #1696373, #1711065, #1718192)
+
 * Sat Jul 27 2019 Fedora Release Engineering <releng@fedoraproject.org>
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
 
