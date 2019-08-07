@@ -1,0 +1,33 @@
+From 4c071d7f2a269f1c7b25402a272f90701b8a070c Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Mon, 5 Aug 2019 15:02:13 +0200
+Subject: [PATCH] meson: create (empty) /etc/systemd/system during installation
+
+We explicitly create /etc/systemd/user and other parts of the basic directory
+tree. I think we should create /etc/systemd/system too. (The alternative would
+be to not create those other directories too, but I think it's nice to have
+the basic directory structure in place after installation.)
+
+https://bugzilla.redhat.com/show_bug.cgi?id=1737362
+---
+ src/core/meson.build | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/src/core/meson.build b/src/core/meson.build
+index 267d65a3b2..fb6820e109 100644
+--- a/src/core/meson.build
++++ b/src/core/meson.build
+@@ -212,7 +212,6 @@ meson.add_install_script('sh', '-c', mkdir_p.format(systemsleepdir))
+ meson.add_install_script('sh', '-c', mkdir_p.format(systemgeneratordir))
+ meson.add_install_script('sh', '-c', mkdir_p.format(usergeneratordir))
+ 
+-meson.add_install_script('sh', '-c',
+-                         mkdir_p.format(join_paths(pkgsysconfdir, 'user')))
+-meson.add_install_script('sh', '-c',
+-                         mkdir_p.format(join_paths(sysconfdir, 'xdg/systemd')))
++meson.add_install_script('sh', '-c', mkdir_p.format(join_paths(pkgsysconfdir, 'system')))
++meson.add_install_script('sh', '-c', mkdir_p.format(join_paths(pkgsysconfdir, 'user')))
++meson.add_install_script('sh', '-c', mkdir_p.format(join_paths(sysconfdir, 'xdg/systemd')))
+-- 
+2.22.0
+
