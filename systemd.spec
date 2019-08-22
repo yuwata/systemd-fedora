@@ -14,8 +14,8 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        243~rc1
-Release:        2%{?commit:.git%{shortcommit}}%{?dist}
+Version:        243~rc2
+Release:        1%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -52,9 +52,9 @@ i=1; for j in 00*patch; do printf "Patch%04d:      %s\n" $i $j; i=$((i+1));done|
 GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[67]* hwdb/parse_hwdb.py > hwdb.patch
 %endif
 
-# Create and therefore own and provide /etc/systemd/system
-# https://github.com/systemd/systemd/pull/13267
-Patch0001:      0001-meson-create-empty-etc-systemd-system-during-install.patch
+# https://bugzilla.redhat.com/show_bug.cgi?id=1738828
+Patch0001:      https://github.com/keszybz/systemd/commit/464a73411c13596a130a7a8f0ac00ca728e5f69e.patch
+
 Patch0002:      0002-Revert-units-set-NoNewPrivileges-for-all-long-runnin.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
@@ -335,7 +335,6 @@ CONFIGURE_OPTS=(
         -Db_lto=true
         -Db_ndebug=false
         -Dman=true
-        -Ddefault-hierarchy=hybrid
         -Dversion-tag=v%{version}-%{release}
 )
 
@@ -698,6 +697,13 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Thu Aug 22 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 243~rc2-1
+- Update to latest pre-release. Fixes #1740113, #1717712.
+- The default scheduler for disks is set to BFQ (1738828)
+- The default cgroup hierarchy is set to unified (cgroups v2) (#1732114).
+  Use systemd.unified-cgroup-hierachy=no on the kernel command line to revert.
+  See https://fedoraproject.org/wiki/Changes/CGroupsV2.
+
 * Wed Aug 07 2019 Adam Williamson <awilliam@redhat.com> - 243~rc1-2
 - Backport PR #1737362 so we own /etc/systemd/system again (#1737362)
 
