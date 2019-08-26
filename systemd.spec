@@ -701,7 +701,7 @@ fi
 - Update to latest pre-release. Fixes #1740113, #1717712.
 - The default scheduler for disks is set to BFQ (1738828)
 - The default cgroup hierarchy is set to unified (cgroups v2) (#1732114).
-  Use systemd.unified-cgroup-hierachy=no on the kernel command line to revert.
+  Use systemd.unified-cgroup-hierachy=0 on the kernel command line to revert.
   See https://fedoraproject.org/wiki/Changes/CGroupsV2.
 
 * Wed Aug 07 2019 Adam Williamson <awilliam@redhat.com> - 243~rc1-2
