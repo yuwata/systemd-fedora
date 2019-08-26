@@ -15,7 +15,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        243~rc2
-Release:        1%{?commit:.git%{shortcommit}}%{?dist}
+Release:        2%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -56,6 +56,10 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 Patch0001:      https://github.com/keszybz/systemd/commit/464a73411c13596a130a7a8f0ac00ca728e5f69e.patch
 
 Patch0002:      0002-Revert-units-set-NoNewPrivileges-for-all-long-runnin.patch
+
+# https://github.com/systemd/systemd/pull/13406
+# Fixes problems with consolehelper binaries in systemd-launched user sessions
+Patch0003:      13406.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
@@ -697,6 +701,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Mon Aug 26 2019 Adam Williamson <awilliam@redhat.com> - 243~rc2-2
+- Backport PR #13406 to solve PATH ordering issue (#1744059)
+
 * Thu Aug 22 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 243~rc2-1
 - Update to latest pre-release. Fixes #1740113, #1717712.
 - The default scheduler for disks is set to BFQ (1738828)
