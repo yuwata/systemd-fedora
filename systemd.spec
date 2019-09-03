@@ -57,10 +57,6 @@ Patch0001:      https://github.com/keszybz/systemd/commit/464a73411c13596a130a7a
 
 Patch0002:      0002-Revert-units-set-NoNewPrivileges-for-all-long-runnin.patch
 
-# https://github.com/systemd/systemd/pull/13406
-# Fixes problems with consolehelper binaries in systemd-launched user sessions
-Patch0003:      13406.patch
-
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
 %ifarch %{ix86} x86_64 aarch64
