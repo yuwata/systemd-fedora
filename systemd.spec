@@ -14,8 +14,8 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        243~rc2
-Release:        2%{?commit:.git%{shortcommit}}%{?dist}
+Version:        243
+Release:        1%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -701,6 +701,14 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Tue Sep  3 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 243-1
+- Update to latest release
+- Emission of Session property-changed notifications from logind is fixed
+  (this was breaking the switching of sessions to and from gnome).
+- Security issue: unprivileged users were allowed to change DNS
+  servers configured in systemd-resolved. Now proper polkit authorization
+  is required.
+
 * Mon Aug 26 2019 Adam Williamson <awilliam@redhat.com> - 243~rc2-2
 - Backport PR #13406 to solve PATH ordering issue (#1744059)
 
