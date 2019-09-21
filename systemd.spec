@@ -142,6 +142,8 @@ Conflicts:      initscripts < 9.56.1
 %if 0%{?fedora}
 Conflicts:      fedora-release < 23-0.12
 %endif
+Obsoletes:	timedatex < 0.6-3
+Provides:       timedatex = 0.6-3
 
 %description
 systemd is a system and service manager that runs as PID 1 and starts
@@ -707,6 +709,7 @@ fi
 - Mark the accelerometer in HP laptops as part of the laptop base
 - Fix relabeling of directories with relabel-extra.d/
 - Fix potential stuck noop jobs in pid1
+- Obsolete timedatex package (#1735584)
 
 * Tue Sep  3 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 243-1
 - Update to latest release
