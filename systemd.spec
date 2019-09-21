@@ -1,7 +1,7 @@
-#global commit 9d34e79ae8ef891adf3757f9248566def70471ad
+%global commit fab6f010ac6c3bc93a10868de722d7c8c3622eb9
 %{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
-#global stable 1
+%global stable 1
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
 # strip the automatically generated dep here and instead co-own the
@@ -15,7 +15,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        243
-Release:        1%{?commit:.git%{shortcommit}}%{?dist}
+Release:        2%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -697,6 +697,17 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Sat Sep 21 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 243-2.gitfab6f01
+- Backport a bunch of patches (memory access issues, improvements to error
+  reporting and handling in networkd, some misleading man page contents #1751363)
+- Fix permissions on static nodes (#1740664)
+- Make systemd-networks follow the RFC for DHPCv6 and radv timeouts
+- Fix one crash in systemd-resolved (#1703598)
+- Make journal catalog creation reproducible (avoid unordered hashmap use)
+- Mark the accelerometer in HP laptops as part of the laptop base
+- Fix relabeling of directories with relabel-extra.d/
+- Fix potential stuck noop jobs in pid1
+
 * Tue Sep  3 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 243-1
 - Update to latest release
 - Emission of Session property-changed notifications from logind is fixed
