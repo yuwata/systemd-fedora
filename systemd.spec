@@ -1,4 +1,4 @@
-%global commit fab6f010ac6c3bc93a10868de722d7c8c3622eb9
+%global commit ef677436aa203c24816021dd698b57f219f0ff64
 %{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
 %global stable 1
@@ -15,7 +15,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        243
-Release:        2%{?commit:.git%{shortcommit}}%{?dist}
+Release:        3%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -699,6 +699,10 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Thu Oct 10 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 243-3.gitef67743
+- Various minor documentation and error message cleanups
+- Do not use cgroup v1 hierarchy in nspawn on groups v2 (#1756143)
+
 * Sat Sep 21 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 243-2.gitfab6f01
 - Backport a bunch of patches (memory access issues, improvements to error
   reporting and handling in networkd, some misleading man page contents #1751363)
