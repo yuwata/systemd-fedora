@@ -1,0 +1,104 @@
+From 8af4c8abfb59ab66f1f5a34f0eac1342e6f0c7e5 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Thu, 17 Oct 2019 12:37:12 +0200
+Subject: [PATCH] udev: tag any display devices as master-of-seat when
+ nomodeset is used
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Fixes #13773. See also https://bugzilla.redhat.com/show_bug.cgi?id=1728240,
+https://github.com/sddm/sddm/issues/1204.
+
+When nomodeset is used on the kernel command line, there is no graphics
+device that the kernel knows, so we don't tag anything as master-of-seat,
+and seat0 has CanGraphical=no.
+
+$ loginctl seat-status seat0 ; loginctl show-seat seat0
+seat0
+         Devices:
+                  ├─/sys/devices/LNXSYSTM:00/LNXPWRBN:00/input/input0
+                  │ input:input0 "Power Button"
+                  ├─/sys/devices/pci0000:00/0000:00:02.1/0000:02:00.0/usb1
+                  │ usb:usb1
+                  │ └─/sys/devices/pci0000:00/0000:00:02.1/0000:02:00.0/usb1/1-1/1-1:1.0/0003:0627:0001.0001/input/input4
+                  │   input:input4 "QEMU QEMU USB Tablet"
+                  ├─/sys/devices/pci0000:00/0000:00:02.1/0000:02:00.0/usb2
+                  │ usb:usb2
+                  ├─/sys/devices/pci0000:00/0000:00:1b.0/sound/card0
+                  │ sound:card0 "Intel"
+                  ├─/sys/devices/platform/i8042/serio0/input/input1
+                  │ input:input1 "AT Translated Set 2 keyboard"
+                  │ ├─/sys/devices/platform/i8042/serio0/input/input1/input1::capslock
+                  │ │ leds:input1::capslock
+                  │ ├─/sys/devices/platform/i8042/serio0/input/input1/input1::numlock
+                  │ │ leds:input1::numlock
+                  │ └─/sys/devices/platform/i8042/serio0/input/input1/input1::scrolllock
+                  │   leds:input1::scrolllock
+                  └─/sys/devices/platform/i8042/serio1/input/input3
+                    input:input3 "ImExPS/2 Generic Explorer Mouse"
+Id=seat0
+CanMultiSession=yes
+CanTTY=yes
+CanGraphical=no
+Sessions=
+IdleHint=yes
+IdleSinceHint=0
+IdleSinceHintMonotonic=0
+
+Let's tag the PCI device with "master-of-seat", so we get CanGraphical=yes, and "seat",
+so it is show as part of the seat:
+
+[fedora@f31-bios ~]$ loginctl seat-status seat0 ; loginctl show-seat seat0
+seat0
+         Devices:
+                  ├─/sys/devices/LNXSYSTM:00/LNXPWRBN:00/input/input0
+                  │ input:input0 "Power Button"
+                  ├─/sys/devices/pci0000:00/0000:00:01.0
+                  │ [MASTER] pci:0000:00:01.0
+                  ├─/sys/devices/pci0000:00/0000:00:02.1/0000:02:00.0/usb1
+                  │ usb:usb1
+                  │ └─/sys/devices/pci0000:00/0000:00:02.1/0000:02:00.0/usb1/1-1/1-1:1.0/0003:0627:0001.0001/input/input4
+                  │   input:input4 "QEMU QEMU USB Tablet"
+                  ├─/sys/devices/pci0000:00/0000:00:02.1/0000:02:00.0/usb2
+                  │ usb:usb2
+                  ├─/sys/devices/pci0000:00/0000:00:1b.0/sound/card0
+                  │ sound:card0 "Intel"
+                  ├─/sys/devices/platform/i8042/serio0/input/input1
+                  │ input:input1 "AT Translated Set 2 keyboard"
+                  │ ├─/sys/devices/platform/i8042/serio0/input/input1/input1::capslock
+                  │ │ leds:input1::capslock
+                  │ ├─/sys/devices/platform/i8042/serio0/input/input1/input1::numlock
+                  │ │ leds:input1::numlock
+                  │ └─/sys/devices/platform/i8042/serio0/input/input1/input1::scrolllock
+                  │   leds:input1::scrolllock
+                  └─/sys/devices/platform/i8042/serio1/input/input3
+                    input:input3 "ImExPS/2 Generic Explorer Mouse"
+Id=seat0
+CanMultiSession=yes
+CanTTY=yes
+CanGraphical=yes
+Sessions=
+IdleHint=yes
+IdleSinceHint=0
+IdleSinceHintMonotonic=0
+---
+ src/login/71-seat.rules.in | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/src/login/71-seat.rules.in b/src/login/71-seat.rules.in
+index 6010f048aef..2bbd18363e6 100644
+--- a/src/login/71-seat.rules.in
++++ b/src/login/71-seat.rules.in
+@@ -24,6 +24,11 @@ SUBSYSTEM=="graphics", KERNEL=="fb[0-9]", DRIVERS=="hyperv_fb", TAG+="master-of-
+ # Allow efifb / uvesafb to be a master if KMS is disabled
+ SUBSYSTEM=="graphics", KERNEL=="fb[0-9]", IMPORT{cmdline}="nomodeset", TAG+="master-of-seat"
+ 
++# Allow any PCI graphics device to be a master and synthesize a seat if KMS
++# is disabled and the kernel doesn't have a driver that would work with this device.
++SUBSYSTEM=="pci", ENV{ID_PCI_CLASS_FROM_DATABASE}=="Display controller", \
++                  ENV{DRIVER}=="", IMPORT{cmdline}="nomodeset", TAG+="seat", TAG+="master-of-seat"
++
+ SUBSYSTEM=="drm", KERNEL=="card[0-9]*", TAG+="seat", TAG+="master-of-seat"
+ SUBSYSTEM=="usb", ATTR{bDeviceClass}=="09", TAG+="seat"
+ 

@@ -15,7 +15,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        243
-Release:        3%{?commit:.git%{shortcommit}}%{?dist}
+Release:        4%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -56,6 +56,11 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 Patch0001:      https://github.com/keszybz/systemd/commit/464a73411c13596a130a7a8f0ac00ca728e5f69e.patch
 
 Patch0002:      0002-Revert-units-set-NoNewPrivileges-for-all-long-runnin.patch
+
+# https://bugzilla.redhat.com/show_bug.cgi?id=1728240
+# https://github.com/systemd/systemd/issues/13773
+# https://github.com/systemd/systemd/pull/13792
+Patch0003:      13792.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
@@ -699,6 +704,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Fri Oct 18 2019 Adam Williamson <awilliam@redhat.com> - 243-4.gitef67743
+- Backport PR #13792 to fix nomodeset+BIOS CanGraphical bug (#1728240)
+
 * Thu Oct 10 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 243-3.gitef67743
 - Various minor documentation and error message cleanups
 - Do not use cgroup v1 hierarchy in nspawn on groups v2 (#1756143)
