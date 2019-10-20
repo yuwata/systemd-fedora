@@ -199,8 +199,11 @@ Summary:        Macros that define paths and scriptlets related to systemd
 BuildArch:      noarch
 
 %description rpm-macros
-Just the definitions of rpm macros. Use %%{?systemd_requires} in the
-binary packages that use any scriptlets from this package.
+Just the definitions of rpm macros.
+
+See
+https://docs.fedoraproject.org/en-US/packaging-guidelines/Scriptlets/#_systemd
+for information how to use those macros.
 
 %package devel
 Summary:        Development headers for systemd
