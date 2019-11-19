@@ -1,4 +1,4 @@
-%global commit ef677436aa203c24816021dd698b57f219f0ff64
+#global commit ef677436aa203c24816021dd698b57f219f0ff64
 %{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
 %global stable 1
@@ -14,8 +14,8 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        243
-Release:        4%{?commit:.git%{shortcommit}}%{?dist}
+Version:        243.4
+Release:        1%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -26,7 +26,11 @@ Summary:        System and Service Manager
 %if %{defined commit}
 Source0:        https://github.com/systemd/systemd%{?stable:-stable}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
+%if 0%{stable}
+Source0:        https://github.com/systemd/systemd-stable/archive/v%{github_version}/%{name}-%{github_version}.tar.gz
+%else
 Source0:        https://github.com/systemd/systemd/archive/v%{github_version}/%{name}-%{github_version}.tar.gz
+%endif
 %endif
 # This file must be available before %%prep.
 # It is generated during systemd build and can be found in build/src/core/.
@@ -56,11 +60,6 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 Patch0001:      https://github.com/keszybz/systemd/commit/464a73411c13596a130a7a8f0ac00ca728e5f69e.patch
 
 Patch0002:      0002-Revert-units-set-NoNewPrivileges-for-all-long-runnin.patch
-
-# https://bugzilla.redhat.com/show_bug.cgi?id=1728240
-# https://github.com/systemd/systemd/issues/13773
-# https://github.com/systemd/systemd/pull/13792
-Patch0003:      13792.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
@@ -707,6 +706,15 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Tue Nov 19 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 243.4
+- Latest bugfix release. Systemd-stable snapshots will now be numbered.
+- Fix broken PrivateDevices filter on big-endian, s390x in particular (#1769148)
+- systemd-modules-load.service should only warn, not fail, on error (#1254340)
+- Fix incorrect certificate validation with DNS over TLS (#1771725, #1771726,
+  CVE-2018-21029)
+- Fix regression with crypttab keys with colons
+- Various memleaks and minor memory access issues, warning adjustments
+
 * Fri Oct 18 2019 Adam Williamson <awilliam@redhat.com> - 243-4.gitef67743
 - Backport PR #13792 to fix nomodeset+BIOS CanGraphical bug (#1728240)
 
