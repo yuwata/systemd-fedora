@@ -1,4 +1,4 @@
-From 224a4eaf6701431af907179e313138213b60ce6c Mon Sep 17 00:00:00 2001
+From 69860269011435e30e45713e44ba5adeaea8b546 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
 Date: Wed, 3 Apr 2019 10:56:14 +0200
 Subject: [PATCH] Revert "units: set NoNewPrivileges= for all long-running
@@ -22,7 +22,7 @@ This reverts commit 64d7f7b4a15f1534fb19fda6b601fec50783bee4.
  13 files changed, 13 deletions(-)
 
 diff --git a/units/systemd-coredump@.service.in b/units/systemd-coredump@.service.in
-index afb2ab9d17..5babc11e4c 100644
+index 951faa62a1..c3997d17d0 100644
 --- a/units/systemd-coredump@.service.in
 +++ b/units/systemd-coredump@.service.in
 @@ -22,7 +22,6 @@ IPAddressDeny=any
@@ -34,7 +34,7 @@ index afb2ab9d17..5babc11e4c 100644
  PrivateDevices=yes
  PrivateNetwork=yes
 diff --git a/units/systemd-hostnamed.service.in b/units/systemd-hostnamed.service.in
-index b4f606cf78..f7977e1504 100644
+index 1365d749ca..c0d4b02418 100644
 --- a/units/systemd-hostnamed.service.in
 +++ b/units/systemd-hostnamed.service.in
 @@ -19,7 +19,6 @@ ExecStart=@rootlibexecdir@/systemd-hostnamed
@@ -57,7 +57,7 @@ index c276283908..f48d673d58 100644
  NotifyAccess=all
  SystemCallArchitectures=native
 diff --git a/units/systemd-journal-remote.service.in b/units/systemd-journal-remote.service.in
-index dd6322e62c..c867aca104 100644
+index 6181d15d77..11f7aefcce 100644
 --- a/units/systemd-journal-remote.service.in
 +++ b/units/systemd-journal-remote.service.in
 @@ -17,7 +17,6 @@ ExecStart=@rootlibexecdir@/systemd-journal-remote --listen-https=-3 --output=/va
@@ -69,10 +69,10 @@ index dd6322e62c..c867aca104 100644
  PrivateNetwork=yes
  PrivateTmp=yes
 diff --git a/units/systemd-journald.service.in b/units/systemd-journald.service.in
-index fab405502a..308622e9b3 100644
+index 303d5a4826..f0eb094cf4 100644
 --- a/units/systemd-journald.service.in
 +++ b/units/systemd-journald.service.in
-@@ -22,7 +22,6 @@ FileDescriptorStoreMax=4224
+@@ -24,7 +24,6 @@ FileDescriptorStoreMax=4224
  IPAddressDeny=any
  LockPersonality=yes
  MemoryDenyWriteExecute=yes
@@ -81,7 +81,7 @@ index fab405502a..308622e9b3 100644
  RestartSec=0
  RestrictAddressFamilies=AF_UNIX AF_NETLINK
 diff --git a/units/systemd-localed.service.in b/units/systemd-localed.service.in
-index 7bca34409a..05fb4f0c80 100644
+index 10ecff5184..f1578bd626 100644
 --- a/units/systemd-localed.service.in
 +++ b/units/systemd-localed.service.in
 @@ -19,7 +19,6 @@ ExecStart=@rootlibexecdir@/systemd-localed
@@ -93,10 +93,10 @@ index 7bca34409a..05fb4f0c80 100644
  PrivateNetwork=yes
  PrivateTmp=yes
 diff --git a/units/systemd-logind.service.in b/units/systemd-logind.service.in
-index 3eef95c661..53af530aea 100644
+index ccbe631586..81fbee6fb6 100644
 --- a/units/systemd-logind.service.in
 +++ b/units/systemd-logind.service.in
-@@ -27,7 +27,6 @@ FileDescriptorStoreMax=512
+@@ -35,7 +35,6 @@ FileDescriptorStoreMax=512
  IPAddressDeny=any
  LockPersonality=yes
  MemoryDenyWriteExecute=yes
@@ -105,7 +105,7 @@ index 3eef95c661..53af530aea 100644
  ProtectControlGroups=yes
  ProtectHome=yes
 diff --git a/units/systemd-machined.service.in b/units/systemd-machined.service.in
-index d6deefea08..092abc128f 100644
+index fa344d487d..b8ca60ddcc 100644
 --- a/units/systemd-machined.service.in
 +++ b/units/systemd-machined.service.in
 @@ -22,7 +22,6 @@ ExecStart=@rootlibexecdir@/systemd-machined
@@ -114,13 +114,13 @@ index d6deefea08..092abc128f 100644
  MemoryDenyWriteExecute=yes
 -NoNewPrivileges=yes
  ProtectHostname=yes
+ ProtectKernelLogs=yes
  RestrictAddressFamilies=AF_UNIX AF_NETLINK AF_INET AF_INET6
- RestrictRealtime=yes
 diff --git a/units/systemd-networkd.service.in b/units/systemd-networkd.service.in
-index 2c74da6f1e..eaabcb9941 100644
+index 01931665a4..0531fcbf12 100644
 --- a/units/systemd-networkd.service.in
 +++ b/units/systemd-networkd.service.in
-@@ -24,7 +24,6 @@ CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_BROADCAST CAP_N
+@@ -25,7 +25,6 @@ DeviceAllow=char-* rw
  ExecStart=!!@rootlibexecdir@/systemd-networkd
  LockPersonality=yes
  MemoryDenyWriteExecute=yes
@@ -129,7 +129,7 @@ index 2c74da6f1e..eaabcb9941 100644
  ProtectHome=yes
  ProtectKernelModules=yes
 diff --git a/units/systemd-resolved.service.in b/units/systemd-resolved.service.in
-index eee5d5ea8f..a8f442ef6f 100644
+index f73697832c..4b8aa68f07 100644
 --- a/units/systemd-resolved.service.in
 +++ b/units/systemd-resolved.service.in
 @@ -25,7 +25,6 @@ CapabilityBoundingSet=CAP_SETPCAP CAP_NET_RAW CAP_NET_BIND_SERVICE
@@ -153,10 +153,10 @@ index 3abb958310..7447ed5b5b 100644
  TimeoutSec=30s
  Type=notify
 diff --git a/units/systemd-timedated.service.in b/units/systemd-timedated.service.in
-index df546f471f..4d50999a22 100644
+index 87859f4aef..337067244e 100644
 --- a/units/systemd-timedated.service.in
 +++ b/units/systemd-timedated.service.in
-@@ -19,7 +19,6 @@ ExecStart=@rootlibexecdir@/systemd-timedated
+@@ -20,7 +20,6 @@ ExecStart=@rootlibexecdir@/systemd-timedated
  IPAddressDeny=any
  LockPersonality=yes
  MemoryDenyWriteExecute=yes
@@ -165,7 +165,7 @@ index df546f471f..4d50999a22 100644
  ProtectControlGroups=yes
  ProtectHome=yes
 diff --git a/units/systemd-timesyncd.service.in b/units/systemd-timesyncd.service.in
-index 6512531e1c..2b2e1d73d2 100644
+index f0486a70ab..bb1ce55977 100644
 --- a/units/systemd-timesyncd.service.in
 +++ b/units/systemd-timesyncd.service.in
 @@ -24,7 +24,6 @@ CapabilityBoundingSet=CAP_SYS_TIME

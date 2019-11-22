@@ -1,7 +1,7 @@
 #global commit ef677436aa203c24816021dd698b57f219f0ff64
 %{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
-%global stable 1
+#global stable 0
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
 # strip the automatically generated dep here and instead co-own the
@@ -14,7 +14,7 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        243.4
+Version:        244~rc1
 Release:        1%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
@@ -26,7 +26,7 @@ Summary:        System and Service Manager
 %if %{defined commit}
 Source0:        https://github.com/systemd/systemd%{?stable:-stable}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-%if 0%{stable}
+%if 0%{?stable}
 Source0:        https://github.com/systemd/systemd-stable/archive/v%{github_version}/%{name}-%{github_version}.tar.gz
 %else
 Source0:        https://github.com/systemd/systemd/archive/v%{github_version}/%{name}-%{github_version}.tar.gz
@@ -300,6 +300,7 @@ CONFIGURE_OPTS=(
         -Dsysvinit-path=/etc/rc.d/init.d
         -Drc-local=/etc/rc.d/rc.local
         -Dntp-servers='0.%{ntpvendor}.pool.ntp.org 1.%{ntpvendor}.pool.ntp.org 2.%{ntpvendor}.pool.ntp.org 3.%{ntpvendor}.pool.ntp.org'
+        -Duser-path=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin
         -Ddev-kvm-mode=0666
         -Dkmod=true
         -Dxkbcommon=true
@@ -706,6 +707,15 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Fri Nov 22 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 244~rc1-1
+- Update to latest pre-release version,
+  see https://github.com/systemd/systemd/blob/master/NEWS#L3.
+  Biggest items: cgroups v2 cpuset controller, fido_id builtin in udev,
+  systemd-networkd does not create a default route for link local addressing,
+  systemd-networkd supports dynamic reconfiguration and a bunch of new settings.
+  Network files support matching on WLAN SSID and BSSID.
+- Better error messages when preset/enable/disable are used with a glob (#1763488)
+
 * Tue Nov 19 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 243.4
 - Latest bugfix release. Systemd-stable snapshots will now be numbered.
 - Fix broken PrivateDevices filter on big-endian, s390x in particular (#1769148)
