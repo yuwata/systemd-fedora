@@ -149,6 +149,10 @@ Conflicts:      fedora-release < 23-0.12
 Obsoletes:	timedatex < 0.6-3
 Provides:       timedatex = 0.6-3
 
+# https://bugzilla.redhat.com/show_bug.cgi?id=1753381
+Provides:       u2f-hidraw-policy = 1.0.2-40
+Obsoletes:      u2f-hidraw-policy < 1.0.2-40
+
 %description
 systemd is a system and service manager that runs as PID 1 and starts
 the rest of the system. It provides aggressive parallelization
@@ -715,6 +719,7 @@ fi
   systemd-networkd supports dynamic reconfiguration and a bunch of new settings.
   Network files support matching on WLAN SSID and BSSID.
 - Better error messages when preset/enable/disable are used with a glob (#1763488)
+- u2f-hidraw-policy package is obsoleted (#1753381)
 
 * Tue Nov 19 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 243.4
 - Latest bugfix release. Systemd-stable snapshots will now be numbered.
