@@ -14,7 +14,7 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        244~rc1
+Version:        244
 Release:        1%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
@@ -711,6 +711,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Fri Nov 29 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 244-1
+- Update to latest version. Just minor bugs fixed since the pre-release.
+
 * Fri Nov 22 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 244~rc1-1
 - Update to latest pre-release version,
   see https://github.com/systemd/systemd/blob/master/NEWS#L3.
