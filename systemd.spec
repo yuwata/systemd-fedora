@@ -59,8 +59,6 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
 Patch0001:      https://github.com/keszybz/systemd/commit/464a73411c13596a130a7a8f0ac00ca728e5f69e.patch
 
-Patch0002:      0002-Revert-units-set-NoNewPrivileges-for-all-long-runnin.patch
-
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
 %ifarch %{ix86} x86_64 aarch64
@@ -714,6 +712,7 @@ fi
 * Sun Dec 15 2019  <zbyszek@nano-f31> - 244.1-1
 - Update to latest stable batch (systemd-networkd fixups, better
   support for seccomp on s390x, minor cleanups to documentation).
+- Drop patch to revert addition of NoNewPrivileges to systemd units
 
 * Fri Nov 29 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 244-1
 - Update to latest version. Just minor bugs fixed since the pre-release.
