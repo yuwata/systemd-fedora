@@ -1,7 +1,7 @@
 #global commit ef677436aa203c24816021dd698b57f219f0ff64
 %{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
-#global stable 0
+%global stable 1
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
 # strip the automatically generated dep here and instead co-own the
@@ -14,7 +14,7 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        244
+Version:        244.1
 Release:        1%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
@@ -711,6 +711,10 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Sun Dec 15 2019  <zbyszek@nano-f31> - 244.1-1
+- Update to latest stable batch (systemd-networkd fixups, better
+  support for seccomp on s390x, minor cleanups to documentation).
+
 * Fri Nov 29 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 244-1
 - Update to latest version. Just minor bugs fixed since the pre-release.
 
