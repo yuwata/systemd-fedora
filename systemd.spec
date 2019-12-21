@@ -15,7 +15,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        244.1
-Release:        1%{?commit:.git%{shortcommit}}%{?dist}
+Release:        2%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -303,6 +303,7 @@ CONFIGURE_OPTS=(
         -Drc-local=/etc/rc.d/rc.local
         -Dntp-servers='0.%{ntpvendor}.pool.ntp.org 1.%{ntpvendor}.pool.ntp.org 2.%{ntpvendor}.pool.ntp.org 3.%{ntpvendor}.pool.ntp.org'
         -Duser-path=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin
+        -Dservice-watchdog=
         -Ddev-kvm-mode=0666
         -Dkmod=true
         -Dxkbcommon=true
@@ -709,6 +710,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Sat Dec 21 2019  <zbyszek@nano-f31> - 244.1-2
+- Disable service watchdogs (for systemd units)
+
 * Sun Dec 15 2019  <zbyszek@nano-f31> - 244.1-1
 - Update to latest stable batch (systemd-networkd fixups, better
   support for seccomp on s390x, minor cleanups to documentation).
