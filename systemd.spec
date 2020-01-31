@@ -15,7 +15,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        244.1
-Release:        2%{?commit:.git%{shortcommit}}%{?dist}
+Release:        3%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -710,6 +710,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Fri Jan 31 2020 Fedora Release Engineering <releng@fedoraproject.org>
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
+
 * Sat Dec 21 2019  <zbyszek@nano-f31> - 244.1-2
 - Disable service watchdogs (for systemd units)
 
