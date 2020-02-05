@@ -731,7 +731,7 @@ fi
   net.naming-scheme= can be used to undo the change. The change applies
   to container interface names on the host.
 
-- Fixes #1774242, #1787089, #1793980/CVE-2019-20386, #1798414/CVE-2020-1712.
+- Fixes #1774242, #1787089, #1798414/CVE-2020-1712.
 
 * Fri Jan 31 2020 Fedora Release Engineering <releng@fedoraproject.org>
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
