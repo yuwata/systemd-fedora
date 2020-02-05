@@ -1,7 +1,7 @@
 #global commit ef677436aa203c24816021dd698b57f219f0ff64
 %{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
-%global stable 1
+# %%global stable 1
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
 # strip the automatically generated dep here and instead co-own the
@@ -14,8 +14,8 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        244.1
-Release:        3%{?commit:.git%{shortcommit}}%{?dist}
+Version:        245~rc1
+Release:        1%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -69,6 +69,8 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  libcap-devel
 BuildRequires:  libmount-devel
+BuildRequires:  libfdisk-devel
+BuildRequires:  libpwquality-devel
 BuildRequires:  pam-devel
 BuildRequires:  libselinux-devel
 BuildRequires:  audit-libs-devel
@@ -86,6 +88,7 @@ BuildRequires:  libidn2-devel
 BuildRequires:  libcurl-devel
 BuildRequires:  kmod-devel
 BuildRequires:  elfutils-devel
+BuildRequires:  openssl-devel
 BuildRequires:  libgcrypt-devel
 BuildRequires:  libgpg-error-devel
 BuildRequires:  gnutls-devel
@@ -112,6 +115,7 @@ BuildRequires:  meson >= 0.43
 BuildRequires:  gettext
 # We use RUNNING_ON_VALGRIND in tests, so the headers need to be available
 BuildRequires:  valgrind-devel
+BuildRequires:  pkgconfig(bash-completion)
 
 Requires(post): coreutils
 Requires(post): sed
@@ -308,6 +312,7 @@ CONFIGURE_OPTS=(
         -Dkmod=true
         -Dxkbcommon=true
         -Dblkid=true
+        -Dfdisk=true
         -Dseccomp=true
         -Dima=true
         -Dselinux=true
@@ -320,11 +325,14 @@ CONFIGURE_OPTS=(
         -Dpam=true
         -Dacl=true
         -Dsmack=true
+        -Dopenssl=true
+        -Dp11kit=true
         -Dgcrypt=true
         -Daudit=true
         -Delfutils=true
         -Dlibcryptsetup=true
         -Delfutils=true
+        -Dpwquality=true
         -Dqrencode=true
         -Dgnutls=true
         -Dmicrohttpd=true
@@ -710,6 +718,21 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Wed Feb  5 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 245~rc1-1
+- New upstream release, see
+  https://raw.githubusercontent.com/systemd/systemd/v245-rc1/NEWS.
+
+  This release includes completely new functionality: systemd-repart,
+  systemd-homed, user reconds in json, and multi-instantiable
+  journald, and a partial rework of internal communcation to use
+  varlink, and bunch of more incremental changes.
+
+  The "predictable" interface name naming scheme is changed,
+  net.naming-scheme= can be used to undo the change. The change applies
+  to container interface names on the host.
+
+- Fixes #1774242, #1787089, #1793980/CVE-2019-20386, #1798414/CVE-2020-1712.
+
 * Fri Jan 31 2020 Fedora Release Engineering <releng@fedoraproject.org>
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
 
