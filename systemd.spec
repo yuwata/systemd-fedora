@@ -15,7 +15,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        245~rc1
-Release:        1%{?commit:.git%{shortcommit}}%{?dist}
+Release:        2%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -49,6 +49,10 @@ Source9:        20-yama-ptrace.conf
 Source10:       systemd-udev-trigger-no-reload.conf
 Source11:       20-grubby.install
 Source12:       systemd-user
+
+# A stop-gap measure until
+# https://src.fedoraproject.org/rpms/fedora-release/pull-request/80 is merged.
+Source13:       99-default-disable-fallback.preset
 
 %if 0
 GIT_DIR=../../src/systemd/.git git format-patch-ab --no-signature -M -N v235..v235-stable
@@ -455,6 +459,8 @@ install -D -t %{buildroot}/usr/lib/systemd/ %{SOURCE3}
 
 sed -i 's|#!/usr/bin/env python3|#!%{__python3}|' %{buildroot}/usr/lib/systemd/tests/run-unit-tests.py
 
+install -D -t %{buildroot}/usr/lib/systemd/user-preset/ %{SOURCE13}
+
 %find_lang %{name}
 
 # Split files in build root into rpms. See split-files.py for the
@@ -544,9 +550,12 @@ setfacl -Rnm g:wheel:rx,d:g:wheel:rx,g:adm:rx,d:g:adm:rx /var/log/journal/ &>/de
 # https://bugzilla.redhat.com/show_bug.cgi?id=1118740#c23
 # This will fix up enablement of any preset services that got installed
 # before systemd due to rpm ordering problems:
-# https://bugzilla.redhat.com/show_bug.cgi?id=1647172
+# https://bugzilla.redhat.com/show_bug.cgi?id=1647172.
+# We also do this for user units, see
+# https://fedoraproject.org/wiki/Changes/Systemd_presets_for_user_units.
 if [ $1 -eq 1 ] ; then
         systemctl preset-all &>/dev/null || :
+        systemctl --global preset-all &>/dev/null || :
 fi
 
 %preun
@@ -718,6 +727,10 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Fri Feb  7 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 245~rc1-2
+- Add default 'disable *' preset for user units
+  (see https://fedoraproject.org/wiki/Changes/Systemd_presets_for_user_units).
+
 * Wed Feb  5 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 245~rc1-1
 - New upstream release, see
   https://raw.githubusercontent.com/systemd/systemd/v245-rc1/NEWS.
