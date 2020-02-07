@@ -54,6 +54,11 @@ Source12:       systemd-user
 # https://src.fedoraproject.org/rpms/fedora-release/pull-request/80 is merged.
 Source13:       99-default-disable-fallback.preset
 
+Source21:       macros.sysusers
+Source22:       sysusers.attr
+Source23:       sysusers.prov
+Source24:       sysusers.generate-pre.sh
+
 %if 0
 GIT_DIR=../../src/systemd/.git git format-patch-ab --no-signature -M -N v235..v235-stable
 i=1; for j in 00*patch; do printf "Patch%04d:      %s\n" $i $j; i=$((i+1));done|xclip
@@ -461,6 +466,11 @@ sed -i 's|#!/usr/bin/env python3|#!%{__python3}|' %{buildroot}/usr/lib/systemd/t
 
 install -D -t %{buildroot}/usr/lib/systemd/user-preset/ %{SOURCE13}
 
+install -m 0644 -D -t %{buildroot}%{_rpmconfigdir}/macros.d/ %{SOURCE21}
+install -m 0644 -D -t %{buildroot}%{_rpmconfigdir}/fileattrs/ %{SOURCE22}
+install -m 0755 -D -t %{buildroot}%{_rpmconfigdir}/ %{SOURCE23}
+install -m 0755 -D -t %{buildroot}%{_rpmconfigdir}/ %{SOURCE24}
+
 %find_lang %{name}
 
 # Split files in build root into rpms. See split-files.py for the
@@ -728,8 +738,11 @@ fi
 
 %changelog
 * Fri Feb  7 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 245~rc1-2
-- Add default 'disable *' preset for user units
-  (see https://fedoraproject.org/wiki/Changes/Systemd_presets_for_user_units).
+- Add default 'disable *' preset for user units (#1792474),
+  see https://fedoraproject.org/wiki/Changes/Systemd_presets_for_user_units.
+- Add macro to generate "compat" scriptlets based off sysusers.d format
+  and autogenerate user() and group() virtual provides (#1792462),
+  see https://fedoraproject.org/wiki/Changes/Adopting_sysusers.d_format.
 
 * Wed Feb  5 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 245~rc1-1
 - New upstream release, see

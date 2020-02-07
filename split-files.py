@@ -48,7 +48,7 @@ for file in files(buildroot):
         continue
     if '/security/pam_' in n:
         o = o_pam
-    elif 'rpm/macros' in n:
+    elif '/rpm/' in n:
         o = o_rpm_macros
     elif re.search(r'/lib.*\.pc|/man3/|/usr/include|(?<!/libsystemd-shared-...).so$', n):
         o = o_devel
