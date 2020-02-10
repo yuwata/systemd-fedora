@@ -1,0 +1,33 @@
+From 99fdffaa194cbfed659b0c1bfd0ace4bfcd2a245 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Mon, 10 Feb 2020 17:19:52 +0100
+Subject: [PATCH] Revert "Support Plugable UD-PRO8 dock"
+
+This reverts commit 95f2b4dd237faa57fd3e93245d560e47cdedfc2c.
+
+Unfortunately the same usb hub is used in other places, and causes
+numerous regressions (#14822,
+https://bugzilla.redhat.com/show_bug.cgi?id=1800820). Let's revert
+until a non-regressing approach is found.
+---
+ src/login/71-seat.rules.in | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/src/login/71-seat.rules.in b/src/login/71-seat.rules.in
+index 2a9ddb93aa7..2bbd18363e6 100644
+--- a/src/login/71-seat.rules.in
++++ b/src/login/71-seat.rules.in
+@@ -32,12 +32,9 @@ SUBSYSTEM=="pci", ENV{ID_PCI_CLASS_FROM_DATABASE}=="Display controller", \
+ SUBSYSTEM=="drm", KERNEL=="card[0-9]*", TAG+="seat", TAG+="master-of-seat"
+ SUBSYSTEM=="usb", ATTR{bDeviceClass}=="09", TAG+="seat"
+ 
+-# 'Plugable UD-160' USB hub, sound, network, graphics adapter
++# 'Plugable' USB hub, sound, network, graphics adapter
+ SUBSYSTEM=="usb", ATTR{idVendor}=="2230", ATTR{idProduct}=="000[13]", ENV{ID_AUTOSEAT}="1"
+ 
+-# 'Plugable UD-PRO8' USB hub, sound, network, graphics adapter
+-SUBSYSTEM=="usb", ATTR{idVendor}=="1a40", ATTR{idProduct}=="0201", ENV{ID_AUTOSEAT}="1"
+-
+ # qemu (version 2.4+) has a PCI-PCI bridge (-device pci-bridge-seat) to group
+ # devices belonging to one seat. See:
+ #     http://git.qemu.org/?p=qemu.git;a=blob;f=docs/multiseat.txt

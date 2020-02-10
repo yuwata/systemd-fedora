@@ -68,6 +68,8 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
 Patch0001:      https://github.com/keszybz/systemd/commit/464a73411c13596a130a7a8f0ac00ca728e5f69e.patch
 
+Patch0010:      https://github.com/systemd/systemd/commit/99fdffaa194cbfed659b0c1bfd0ace4bfcd2a245.patch
+
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
 %ifarch %{ix86} x86_64 aarch64
@@ -743,6 +745,7 @@ fi
 - Add macro to generate "compat" scriptlets based off sysusers.d format
   and autogenerate user() and group() virtual provides (#1792462),
   see https://fedoraproject.org/wiki/Changes/Adopting_sysusers.d_format.
+- Revert patch to udev rules causing regression with usb hubs (#1800820).
 
 * Wed Feb  5 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 245~rc1-1
 - New upstream release, see
