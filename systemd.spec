@@ -513,7 +513,7 @@ python3 %{SOURCE2} %buildroot <<EOF
 EOF
 
 %check
-%ninja_test -C %{_vpath_builddir}
+meson test -C %{_vpath_builddir} -t 3
 
 #############################################################################################
 
