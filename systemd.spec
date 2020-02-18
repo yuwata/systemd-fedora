@@ -15,7 +15,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        245~rc1
-Release:        2%{?commit:.git%{shortcommit}}%{?dist}
+Release:        3%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -71,6 +71,9 @@ Patch0001:      https://github.com/keszybz/systemd/commit/464a73411c13596a130a7a
 Patch0010:      https://github.com/systemd/systemd/commit/99fdffaa194cbfed659b0c1bfd0ace4bfcd2a245.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
+
+# https://bugzilla.redhat.com/show_bug.cgi?id=1803293
+Patch1000:      0001-Revert-job-Don-t-mark-as-redundant-if-deps-are-relev.patch
 
 %ifarch %{ix86} x86_64 aarch64
 %global have_gnu_efi 1
@@ -739,6 +742,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Tue Feb 18 2020 Adam Williamson <awilliam@redhat.com> - 245~rc1-3
+- Revert 097537f0 to fix plymouth etc. running when they shouldn't (#1803293)
+
 * Fri Feb  7 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 245~rc1-2
 - Add default 'disable *' preset for user units (#1792474),
   see https://fedoraproject.org/wiki/Changes/Systemd_presets_for_user_units.
