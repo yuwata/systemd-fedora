@@ -543,7 +543,28 @@ getent passwd systemd-resolve &>/dev/null || useradd -r -u 193 -l -g systemd-res
 
 %post
 systemd-machine-id-setup &>/dev/null || :
-systemctl daemon-reexec &>/dev/null || { test "$(cat /proc/1/comm 2>/dev/null)" = "systemd" && kill -TERM 1 &>/dev/null; } || :
+
+systemctl daemon-reexec &>/dev/null || {
+  if test -d /run/systemd/system ; then
+  # systemd v239 had bug #9553 in D-Bus authentication of the private socket,
+  # which was later fixed in v240 by #9625.
+  #
+  # The end result is that a `systemctl daemon-reexec` call as root will fail
+  # when upgrading from systemd v239, which means the system will not start
+  # running the new version of systemd after this post install script runs.
+  #
+  # To work around this issue, let's fall back to using a `kill -TERM 1` to
+  # re-execute the daemon when the `systemctl daemon-reexec` call fails.
+  #
+  # In order to prevent issues when the reason why the daemon-reexec failed is
+  # not the aforementioned bug, let's only use this fallback when:
+  #   - we're upgrading this RPM package; and
+  #   - we confirm that systemd is running as PID1 on this system.
+  if [ $1 -gt 1 ] && [ -d /run/systemd/system ] ; then
+    kill -TERM 1 &>/dev/null || :
+  fi
+}
+
 journalctl --update-catalog &>/dev/null || :
 systemd-tmpfiles --create &>/dev/null || :
 
@@ -743,8 +764,12 @@ fi
 
 %changelog
 * Wed Feb 26 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 245~rc1-4
-- Fix scriptlet to not kill non-systemd pid1 (#1803240)
 - Modify the downstream udev rule to use bfq to only apply to disks (#1803500)
+
+* Fri Feb 21 2020 Filipe Brandenburger <filbranden@gmail.com> - 245~rc1-4
+- Update daemon-reexec fallback to check whether the system is booted with
+  systemd as PID 1 and check whether we're upgrading before using kill -TERM
+  on PID 1 (#1803240)
 
 * Tue Feb 18 2020 Adam Williamson <awilliam@redhat.com> - 245~rc1-3
 - Revert 097537f0 to fix plymouth etc. running when they shouldn't (#1803293)
