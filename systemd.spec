@@ -66,7 +66,7 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 %endif
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
-Patch0001:      https://github.com/keszybz/systemd/commit/464a73411c13596a130a7a8f0ac00ca728e5f69e.patch
+Patch0001:      use-bfq-scheduler.patch
 
 Patch0010:      https://github.com/systemd/systemd/commit/99fdffaa194cbfed659b0c1bfd0ace4bfcd2a245.patch
 
@@ -744,6 +744,7 @@ fi
 %changelog
 * Wed Feb 26 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 245~rc1-4
 - Fix scriptlet to not kill non-systemd pid1 (#1803240)
+- Modify the downstream udev rule to use bfq to only apply to disks (#1803500)
 
 * Tue Feb 18 2020 Adam Williamson <awilliam@redhat.com> - 245~rc1-3
 - Revert 097537f0 to fix plymouth etc. running when they shouldn't (#1803293)
