@@ -15,7 +15,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        245~rc1
-Release:        3%{?commit:.git%{shortcommit}}%{?dist}
+Release:        4%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -543,7 +543,7 @@ getent passwd systemd-resolve &>/dev/null || useradd -r -u 193 -l -g systemd-res
 
 %post
 systemd-machine-id-setup &>/dev/null || :
-systemctl daemon-reexec &>/dev/null || kill -TERM 1 &>/dev/null || :
+systemctl daemon-reexec &>/dev/null || { test "$(cat /proc/1/comm 2>/dev/null)" = "systemd" && kill -TERM 1 &>/dev/null; } || :
 journalctl --update-catalog &>/dev/null || :
 systemd-tmpfiles --create &>/dev/null || :
 
@@ -742,6 +742,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Wed Feb 26 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 245~rc1-4
+- Fix scriptlet to not kill non-systemd pid1 (#1803240)
+
 * Tue Feb 18 2020 Adam Williamson <awilliam@redhat.com> - 245~rc1-3
 - Revert 097537f0 to fix plymouth etc. running when they shouldn't (#1803293)
 
