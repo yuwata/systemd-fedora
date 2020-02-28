@@ -545,7 +545,6 @@ getent passwd systemd-resolve &>/dev/null || useradd -r -u 193 -l -g systemd-res
 systemd-machine-id-setup &>/dev/null || :
 
 systemctl daemon-reexec &>/dev/null || {
-  if test -d /run/systemd/system ; then
   # systemd v239 had bug #9553 in D-Bus authentication of the private socket,
   # which was later fixed in v240 by #9625.
   #
