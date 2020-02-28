@@ -785,7 +785,7 @@ fi
 - Revert 097537f0 to fix plymouth etc. running when they shouldn't (#1803293)
 
 * Fri Feb  7 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 245~rc1-2
-- Add default 'disable *' preset for user units (#1792474),
+- Add default 'disable *' preset for user units (#1792474, #1468501),
   see https://fedoraproject.org/wiki/Changes/Systemd_presets_for_user_units.
 - Add macro to generate "compat" scriptlets based off sysusers.d format
   and autogenerate user() and group() virtual provides (#1792462),
