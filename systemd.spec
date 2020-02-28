@@ -771,6 +771,10 @@ fi
 - "Upgrade" dependency on kbd package from Recommends to Requires (#1408878)
 - Move systemd-bless-boot.service and systemd-boot-system-token.service to
   systemd-udev subpackage (#1807462)
+- Move a bunch of other services to systemd-udev:
+  systemd-pstore.service, all fsck-related functionality,
+  systemd-volatile-root.service, systemd-verity-setup.service, and a few
+  other related files.
 
 * Fri Feb 21 2020 Filipe Brandenburger <filbranden@gmail.com> - 245~rc1-4
 - Update daemon-reexec fallback to check whether the system is booted with
