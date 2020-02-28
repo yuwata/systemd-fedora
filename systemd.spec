@@ -12,6 +12,8 @@
 %global system_unit_dir %{pkgdir}/system
 %global user_unit_dir %{pkgdir}/user
 
+%bcond_without tests
+
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        245~rc1
@@ -516,7 +518,9 @@ python3 %{SOURCE2} %buildroot <<EOF
 EOF
 
 %check
+%if %{with tests}
 meson test -C %{_vpath_builddir} -t 3
+%endif
 
 #############################################################################################
 
