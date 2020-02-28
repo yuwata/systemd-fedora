@@ -254,7 +254,7 @@ Obsoletes:      udev < 183
 # https://bugzilla.redhat.com/show_bug.cgi?id=1377733#c9
 Recommends:     systemd-bootchart
 # https://bugzilla.redhat.com/show_bug.cgi?id=1408878
-Recommends:     kbd
+Requires:       kbd
 License:        LGPLv2+
 
 %description udev
@@ -764,6 +764,7 @@ fi
 %changelog
 * Wed Feb 26 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 245~rc1-4
 - Modify the downstream udev rule to use bfq to only apply to disks (#1803500)
+- "Upgrade" dependency on kbd package from Recommends to Requires (#1408878)
 
 * Fri Feb 21 2020 Filipe Brandenburger <filbranden@gmail.com> - 245~rc1-4
 - Update daemon-reexec fallback to check whether the system is booted with
