@@ -77,6 +77,8 @@ for file in files(buildroot):
     elif re.search(r'''udev(?!\.pc)|
                        hwdb|
                        bootctl|
+                       bless-boot|
+                       boot-system-token|
                        kernel-install|
                        vconsole|
                        backlight|

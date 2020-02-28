@@ -769,6 +769,8 @@ fi
 * Wed Feb 26 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 245~rc1-4
 - Modify the downstream udev rule to use bfq to only apply to disks (#1803500)
 - "Upgrade" dependency on kbd package from Recommends to Requires (#1408878)
+- Move systemd-bless-boot.service and systemd-boot-system-token.service to
+  systemd-udev subpackage (#1807462)
 
 * Fri Feb 21 2020 Filipe Brandenburger <filbranden@gmail.com> - 245~rc1-4
 - Update daemon-reexec fallback to check whether the system is booted with
