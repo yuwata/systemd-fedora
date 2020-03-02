@@ -25,7 +25,7 @@ index 00000000000..480b941761f
 +
 +ACTION=="add", SUBSYSTEM=="block", \
 +  KERNEL=="mmcblk*[0-9]|msblk*[0-9]|mspblk*[0-9]|sd*[!0-9]|sr*", \
-+  DEVTYPE=="disk", \
++  ENV{DEVTYPE}=="disk", \
 +  ATTR{queue/scheduler}="bfq"
 diff --git a/rules.d/meson.build b/rules.d/meson.build
 index b6a32ba77e2..1da958b4d46 100644
