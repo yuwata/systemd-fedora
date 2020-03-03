@@ -515,7 +515,7 @@ EOF
 
 %check
 %if %{with tests}
-meson test -C %{_vpath_builddir} -t 3
+meson test -C %{_vpath_builddir} -t 6
 %endif
 
 #############################################################################################
