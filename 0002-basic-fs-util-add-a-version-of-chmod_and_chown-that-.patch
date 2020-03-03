@@ -1,0 +1,144 @@
+From 6cb356ca9fe063846cfb883ef484f7e7e411096c Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Tue, 3 Mar 2020 11:51:50 +0100
+Subject: [PATCH 2/3] basic/fs-util: add a version of chmod_and_chown that
+ doesn not use  /proc
+
+---
+ src/basic/fs-util.c     | 46 +++++++++++++++++++++++++++++++++++++++++
+ src/basic/fs-util.h     |  1 +
+ src/test/test-fs-util.c | 45 ++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 92 insertions(+)
+
+diff --git a/src/basic/fs-util.c b/src/basic/fs-util.c
+index f8095e85d8..558cafbcaf 100644
+--- a/src/basic/fs-util.c
++++ b/src/basic/fs-util.c
+@@ -272,6 +272,52 @@ int fchmod_and_chown(int fd, mode_t mode, uid_t uid, gid_t gid) {
+         return do_chown || do_chmod;
+ }
+ 
++int chmod_and_chown_unsafe(const char *path, mode_t mode, uid_t uid, gid_t gid) {
++        bool do_chown, do_chmod;
++        struct stat st;
++
++        assert(path);
++
++        /* Change ownership and access mode of the specified path, see description of fchmod_and_chown().
++         * Should only be used on trusted paths. */
++
++        if (lstat(path, &st) < 0)
++                return -errno;
++
++        do_chown =
++                (uid != UID_INVALID && st.st_uid != uid) ||
++                (gid != GID_INVALID && st.st_gid != gid);
++
++        do_chmod =
++                !S_ISLNK(st.st_mode) && /* chmod is not defined on symlinks */
++                ((mode != MODE_INVALID && ((st.st_mode ^ mode) & 07777) != 0) ||
++                 do_chown); /* If we change ownership, make sure we reset the mode afterwards, since chown()
++                             * modifies the access mode too */
++
++        if (mode == MODE_INVALID)
++                mode = st.st_mode; /* If we only shall do a chown(), save original mode, since chown() might break it. */
++        else if ((mode & S_IFMT) != 0 && ((mode ^ st.st_mode) & S_IFMT) != 0)
++                return -EINVAL; /* insist on the right file type if it was specified */
++
++        if (do_chown && do_chmod) {
++                mode_t minimal = st.st_mode & mode; /* the subset of the old and the new mask */
++
++                if (((minimal ^ st.st_mode) & 07777) != 0)
++                        if (chmod(path, minimal & 07777) < 0)
++                                return -errno;
++        }
++
++        if (do_chown)
++                if (lchown(path, uid, gid) < 0)
++                        return -errno;
++
++        if (do_chmod)
++                if (chmod(path, mode & 07777) < 0)
++                        return -errno;
++
++        return do_chown || do_chmod;
++}
++
+ int fchmod_umask(int fd, mode_t m) {
+         mode_t u;
+         int r;
+diff --git a/src/basic/fs-util.h b/src/basic/fs-util.h
+index 78d68be9fd..6b9ade2ec1 100644
+--- a/src/basic/fs-util.h
++++ b/src/basic/fs-util.h
+@@ -34,6 +34,7 @@ int readlink_and_make_absolute(const char *p, char **r);
+ 
+ int chmod_and_chown(const char *path, mode_t mode, uid_t uid, gid_t gid);
+ int fchmod_and_chown(int fd, mode_t mode, uid_t uid, gid_t gid);
++int chmod_and_chown_unsafe(const char *path, mode_t mode, uid_t uid, gid_t gid);
+ 
+ int fchmod_umask(int fd, mode_t mode);
+ int fchmod_opath(int fd, mode_t m);
+diff --git a/src/test/test-fs-util.c b/src/test/test-fs-util.c
+index d0c6fb82bf..d97ccfda3b 100644
+--- a/src/test/test-fs-util.c
++++ b/src/test/test-fs-util.c
+@@ -802,6 +802,50 @@ static void test_chmod_and_chown(void) {
+         assert_se(S_ISLNK(st.st_mode));
+ }
+ 
++static void test_chmod_and_chown_unsafe(void) {
++        _cleanup_(rm_rf_physical_and_freep) char *d = NULL;
++        _unused_ _cleanup_umask_ mode_t u = umask(0000);
++        struct stat st;
++        const char *p;
++
++        if (geteuid() != 0)
++                return;
++
++        log_info("/* %s */", __func__);
++
++        assert_se(mkdtemp_malloc(NULL, &d) >= 0);
++
++        p = strjoina(d, "/reg");
++        assert_se(mknod(p, S_IFREG | 0123, 0) >= 0);
++
++        assert_se(chmod_and_chown_unsafe(p, S_IFREG | 0321, 1, 2) >= 0);
++        assert_se(chmod_and_chown_unsafe(p, S_IFDIR | 0555, 3, 4) == -EINVAL);
++
++        assert_se(lstat(p, &st) >= 0);
++        assert_se(S_ISREG(st.st_mode));
++        assert_se((st.st_mode & 07777) == 0321);
++
++        p = strjoina(d, "/dir");
++        assert_se(mkdir(p, 0123) >= 0);
++
++        assert_se(chmod_and_chown_unsafe(p, S_IFDIR | 0321, 1, 2) >= 0);
++        assert_se(chmod_and_chown_unsafe(p, S_IFREG | 0555, 3, 4) == -EINVAL);
++
++        assert_se(lstat(p, &st) >= 0);
++        assert_se(S_ISDIR(st.st_mode));
++        assert_se((st.st_mode & 07777) == 0321);
++
++        p = strjoina(d, "/lnk");
++        assert_se(symlink("idontexist", p) >= 0);
++
++        assert_se(chmod_and_chown_unsafe(p, S_IFLNK | 0321, 1, 2) >= 0);
++        assert_se(chmod_and_chown_unsafe(p, S_IFREG | 0555, 3, 4) == -EINVAL);
++        assert_se(chmod_and_chown_unsafe(p, S_IFDIR | 0555, 3, 4) == -EINVAL);
++
++        assert_se(lstat(p, &st) >= 0);
++        assert_se(S_ISLNK(st.st_mode));
++}
++
+ int main(int argc, char *argv[]) {
+         test_setup_logging(LOG_INFO);
+ 
+@@ -819,6 +863,7 @@ int main(int argc, char *argv[]) {
+         test_fsync_directory_of_file();
+         test_rename_noreplace();
+         test_chmod_and_chown();
++        test_chmod_and_chown_unsafe();
+ 
+         return 0;
+ }

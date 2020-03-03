@@ -1,0 +1,53 @@
+From e3ba241cd4003ee6eb6704e8c53240687534d6ce Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Tue, 3 Mar 2020 10:18:32 +0100
+Subject: [PATCH] sysusers: many different errnos to express one condition
+
+See https://bugzilla.redhat.com/show_bug.cgi?id=1807768. It turns
+out that sysusers cannot query if the group exists:
+Failed to check if group dnsmasq already exists: No such process
+...
+Failed to check if group systemd-timesync already exists: No such process
+
+When the same command is executed later, the issue does not occur. Not sure why
+the behaviour in the initial transaction is different. But let's accept all
+errors that the man pages list.
+---
+ src/sysusers/sysusers.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/src/sysusers/sysusers.c b/src/sysusers/sysusers.c
+index 2771fd959f..1b1f19e817 100644
+--- a/src/sysusers/sysusers.c
++++ b/src/sysusers/sysusers.c
+@@ -94,6 +94,12 @@ STATIC_DESTRUCTOR_REGISTER(database_groups, set_free_freep);
+ STATIC_DESTRUCTOR_REGISTER(uid_range, freep);
+ STATIC_DESTRUCTOR_REGISTER(arg_root, freep);
+ 
++static int errno_is_not_exists(int code) {
++        /* See getpwnam(3) and getgrnam(3): those codes and others can be returned if the user or group are
++         * not found. */
++        return IN_SET(code, 0, ENOENT, ESRCH, EBADF, EPERM);
++}
++
+ static int load_user_database(void) {
+         _cleanup_fclose_ FILE *f = NULL;
+         const char *passwd_path;
+@@ -971,7 +977,7 @@ static int add_user(Item *i) {
+ 
+                         return 0;
+                 }
+-                if (!IN_SET(errno, 0, ENOENT))
++                if (!errno_is_not_exists(errno))
+                         return log_error_errno(errno, "Failed to check if user %s already exists: %m", i->name);
+         }
+ 
+@@ -1108,7 +1114,7 @@ static int get_gid_by_name(const char *name, gid_t *gid) {
+                         *gid = g->gr_gid;
+                         return 0;
+                 }
+-                if (!IN_SET(errno, 0, ENOENT))
++                if (!errno_is_not_exists(errno))
+                         return log_error_errno(errno, "Failed to check if group %s already exists: %m", name);
+         }
+ 
