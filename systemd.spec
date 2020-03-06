@@ -16,7 +16,7 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        245~rc2
+Version:        245
 Release:        1%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
@@ -65,10 +65,6 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
 Patch0001:      use-bfq-scheduler.patch
-
-Patch0002:      0001-sysusers-many-different-errnos-to-express-one-condit.patch
-Patch0003:      0002-basic-fs-util-add-a-version-of-chmod_and_chown-that-.patch
-Patch0004:      0003-sysusers-do-not-require-proc-to-be-mounted.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
 
@@ -762,7 +758,10 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
-* Wed Feb 26 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 245~rc1-4
+* Fri Mar  6 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 245-1
+- Update to latest version (#1807485)
+
+* Wed Feb 26 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 245~rc2-1
 - Modify the downstream udev rule to use bfq to only apply to disks (#1803500)
 - "Upgrade" dependency on kbd package from Recommends to Requires (#1408878)
 - Move systemd-bless-boot.service and systemd-boot-system-token.service to
