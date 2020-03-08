@@ -158,7 +158,7 @@ Conflicts:      initscripts < 9.56.1
 %if 0%{?fedora}
 Conflicts:      fedora-release < 23-0.12
 %endif
-Obsoletes:	timedatex < 0.6-3
+Obsoletes:      timedatex < 0.6-3
 Provides:       timedatex = 0.6-3
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1753381
