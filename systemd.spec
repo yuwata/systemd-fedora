@@ -16,7 +16,7 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        245.2
+Version:        245.3
 Release:        1%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
@@ -758,6 +758,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Thu Mar 26 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 245.3-1
+- Update to latest stable version (no issue that got reported in bugzilla)
+
 * Wed Mar 18 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 245.2-1
 - Update to latest stable version (a few bug fixes for random things) (#1798776)
 
