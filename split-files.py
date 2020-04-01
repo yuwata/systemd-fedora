@@ -46,7 +46,7 @@ for file in files(buildroot):
                     /var(/cache|/log|/lib|/run|)$
     ''', n, re.X):
         continue
-    if '/security/pam_' in n:
+    if '/security/pam_' in n or '/man8/pam_' in n:
         o = o_pam
     elif '/rpm/' in n:
         o = o_rpm_macros
