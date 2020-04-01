@@ -394,9 +394,9 @@ mkdir -p %{buildroot}%{system_unit_dir}/basic.target.wants
 mkdir -p %{buildroot}%{system_unit_dir}/default.target.wants
 mkdir -p %{buildroot}%{system_unit_dir}/dbus.target.wants
 mkdir -p %{buildroot}%{system_unit_dir}/syslog.target.wants
-mkdir -p %{buildroot}%{_localstatedir}/run
+mkdir -p %{buildroot}/run
 mkdir -p %{buildroot}%{_localstatedir}/log
-touch %{buildroot}%{_localstatedir}/run/utmp
+touch %{buildroot}/run/utmp
 touch %{buildroot}%{_localstatedir}/log/{w,b}tmp
 
 # Make sure the user generators dir exists too
@@ -481,7 +481,7 @@ python3 %{SOURCE2} %buildroot <<EOF
 /usr/lib/systemd/purge-nobody-user
 %ghost %config(noreplace) /etc/vconsole.conf
 %ghost %config(noreplace) /etc/X11/xorg.conf.d/00-keyboard.conf
-%ghost %attr(0664,root,utmp) /var/run/utmp
+%ghost %attr(0664,root,utmp) /run/utmp
 %ghost %attr(0664,root,utmp) /var/log/wtmp
 %ghost %attr(0600,root,utmp) /var/log/btmp
 %ghost %config(noreplace) /etc/hostname
@@ -1000,7 +1000,7 @@ fi
 - Remove link creation for rsyslog.service
 
 * Thu Nov  8 2018 Adam Williamson <awilliam@redhat.com> - 239-9.git9f3aed1
-- Go back to using systemctl preset-all in %post (#1647172, #1118740)
+- Go back to using systemctl preset-all in %%post (#1647172, #1118740)
 
 * Mon Nov  5 2018 Adam Williamson <awilliam@redhat.com> - 239-8.git9f3aed1
 - Requires(post) openssl-libs to fix live image build machine-id issue

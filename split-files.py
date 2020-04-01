@@ -43,6 +43,7 @@ for file in files(buildroot):
                     /etc(/pam\.d|/xdg|/X11|/X11/xinit|/X11.*\.d|)$|
                     /etc/(dnf|dnf/protected.d)$|
                     /usr/(src|lib/debug)|                         # no $
+                    /run$|
                     /var(/cache|/log|/lib|/run|)$
     ''', n, re.X):
         continue
