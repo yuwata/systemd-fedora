@@ -180,8 +180,7 @@ runtime directories and settings, and daemons to manage simple network
 configuration, network time synchronization, log forwarding, and name
 resolution.
 %if 0%{?stable}
-This package was built from the %{version}-stable branch of systemd,
-commit https://github.com/systemd/systemd-stable/commit/%{shortcommit}.
+This package was built from the %{version}-stable branch of systemd.
 %endif
 
 %package libs
