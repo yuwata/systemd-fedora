@@ -39,7 +39,7 @@ addFilter(r'systemd-tests\..*: W: no-documentation')
 
 addFilter(r'systemd-tests.*: E: zero-length /usr/lib/systemd/tests/testdata/test-umount/empty.mountinfo')
 
-addFilter(r'hardcoded-library-path in.*(firewalld|install.d)')
+addFilter(r'hardcoded-library-path in.*(firewalld|install.d|lib/systemd)')
 
 # everybody does it this way: systemd, syslog-ng, rsyslog
 addFilter(r'unversioned-explicit-provides syslog')

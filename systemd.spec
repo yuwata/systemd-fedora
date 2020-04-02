@@ -51,6 +51,7 @@ Source9:        20-yama-ptrace.conf
 Source10:       systemd-udev-trigger-no-reload.conf
 Source11:       20-grubby.install
 Source12:       systemd-user
+Source13:       libsystemd-shared.abignore
 
 Source21:       macros.sysusers
 Source22:       sysusers.attr
@@ -459,6 +460,8 @@ PrivateDevices=no
 EOF
 
 install -Dm0755 -t %{buildroot}%{_prefix}/lib/kernel/install.d/ %{SOURCE11}
+
+install -Dm0755 -t %{buildroot}%{_prefix}/lib/systemd/ %{SOURCE13}
 
 install -D -t %{buildroot}/usr/lib/systemd/ %{SOURCE3}
 
