@@ -162,10 +162,6 @@ Conflicts:      fedora-release < 23-0.12
 Obsoletes:      timedatex < 0.6-3
 Provides:       timedatex = 0.6-3
 
-# https://bugzilla.redhat.com/show_bug.cgi?id=1753381
-Provides:       u2f-hidraw-policy = 1.0.2-40
-Obsoletes:      u2f-hidraw-policy < 1.0.2-40
-
 %description
 systemd is a system and service manager that runs as PID 1 and starts
 the rest of the system. It provides aggressive parallelization
@@ -236,6 +232,8 @@ to libudev or libsystemd.
 
 %package udev
 Summary: Rule-based device node and kernel event manager
+License:        LGPLv2+
+
 Requires:       %{name}%{?_isa} = %{version}-%{release}
 Requires(post):   systemd
 Requires(preun):  systemd
@@ -251,7 +249,10 @@ Obsoletes:      udev < 183
 Suggests:       systemd-bootchart
 # https://bugzilla.redhat.com/show_bug.cgi?id=1408878
 Requires:       kbd
-License:        LGPLv2+
+
+# https://bugzilla.redhat.com/show_bug.cgi?id=1753381
+Provides:       u2f-hidraw-policy = 1.0.2-40
+Obsoletes:      u2f-hidraw-policy < 1.0.2-40
 
 %description udev
 This package contains systemd-udev and the rules and hardware database
