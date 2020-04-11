@@ -1,3 +1,4 @@
+*~
 /systemd-*/
 /.build-*.log
 /x86_64/
