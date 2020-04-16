@@ -12,12 +12,15 @@
 %global system_unit_dir %{pkgdir}/system
 %global user_unit_dir %{pkgdir}/user
 
+# Bootstrap may be needed to break intercircular dependencies with
+# cryptsetup, e.g. when re-building cryptsetup on a json-c SONAME-bump.
+%bcond_with    bootstrap
 %bcond_without tests
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        245.4
-Release:        1%{?commit:.git%{shortcommit}}%{?dist}
+Release:        2%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -85,7 +88,9 @@ BuildRequires:  libpwquality-devel
 BuildRequires:  pam-devel
 BuildRequires:  libselinux-devel
 BuildRequires:  audit-libs-devel
+%if %{without bootstrap}
 BuildRequires:  cryptsetup-devel
+%endif
 BuildRequires:  dbus-devel
 BuildRequires:  libacl-devel
 BuildRequires:  gobject-introspection-devel
@@ -341,7 +346,11 @@ CONFIGURE_OPTS=(
         -Dgcrypt=true
         -Daudit=true
         -Delfutils=true
+%if %{without bootstrap}
         -Dlibcryptsetup=true
+%else
+        -Dlibcryptsetup=false
+%endif
         -Delfutils=true
         -Dpwquality=true
         -Dqrencode=true
@@ -761,6 +770,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Thu Apr 16 2020 Björn Esser <besser82@fedoraproject.org> - 245.4-2
+- Add bootstrap option to break circular deps on cryptsetup
+
 * Wed Apr  1 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 245.4-1
 - Update to latest stable version (#1814454)
 
