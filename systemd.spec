@@ -92,6 +92,8 @@ BuildRequires:  audit-libs-devel
 BuildRequires:  cryptsetup-devel
 %endif
 BuildRequires:  dbus-devel
+# /usr/bin/getfacl is needed by test-acl-util
+BuildRequires:  acl
 BuildRequires:  libacl-devel
 BuildRequires:  gobject-introspection-devel
 BuildRequires:  libblkid-devel
