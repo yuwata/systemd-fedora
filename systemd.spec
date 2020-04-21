@@ -20,7 +20,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        245.5
-Release:        1%{?commit:.git%{shortcommit}}%{?dist}
+Release:        2%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -772,6 +772,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Tue Apr 21 2020 Björn Esser <besser82@fedoraproject.org> - 245.5-2
+- Add explicit BuildRequires: acl
+
 * Fri Apr 17 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 245.5-1
 - Update to latest stable version (#1819313, #1815412, #1800875)
 
