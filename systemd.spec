@@ -14,7 +14,7 @@
 
 # Bootstrap may be needed to break intercircular dependencies with
 # cryptsetup, e.g. when re-building cryptsetup on a json-c SONAME-bump.
-%bcond_with    bootstrap
+%bcond_without bootstrap
 %bcond_without tests
 
 Name:           systemd
@@ -774,6 +774,7 @@ fi
 %changelog
 * Tue Apr 21 2020 Björn Esser <besser82@fedoraproject.org> - 245.5-2
 - Add explicit BuildRequires: acl
+- Bootstrapping for json-c SONAME bump
 
 * Fri Apr 17 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 245.5-1
 - Update to latest stable version (#1819313, #1815412, #1800875)
