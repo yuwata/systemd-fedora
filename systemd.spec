@@ -14,7 +14,7 @@
 
 # Bootstrap may be needed to break intercircular dependencies with
 # cryptsetup, e.g. when re-building cryptsetup on a json-c SONAME-bump.
-%bcond_without bootstrap
+%bcond_with    bootstrap
 %bcond_without tests
 
 Name:           systemd
