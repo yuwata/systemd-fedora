@@ -773,7 +773,8 @@ fi
 
 %changelog
 * Sun May 31 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 245.6-1
-- Update to latest stable version (some documentation updates, minor memory correctness issues)
+- Update to latest stable version (some documentation updates, minor
+  memory correctness issues) (#1815605, #1827467)
 
 * Tue Apr 21 2020 Björn Esser <besser82@fedoraproject.org> - 245.5-2
 - Add explicit BuildRequires: acl
