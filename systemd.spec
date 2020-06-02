@@ -20,7 +20,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        245.6
-Release:        1%{?commit:.git%{shortcommit}}%{?dist}
+Release:        2%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -241,17 +241,18 @@ to libudev or libsystemd.
 Summary: Rule-based device node and kernel event manager
 License:        LGPLv2+
 
-Requires:       %{name}%{?_isa} = %{version}-%{release}
+Requires:       systemd%{?_isa} = %{version}-%{release}
 Requires(post):   systemd
 Requires(preun):  systemd
 Requires(postun): systemd
 Requires(post): grep
 Requires:       kmod >= 18-4
-# obsolete parent package so that dnf will install new subpackage on upgrade (#1260394)
-Obsoletes:      %{name} < 229-5
+# https://bodhi.fedoraproject.org/updates/FEDORA-2020-dd43dd05b1
+Obsoletes:      systemd < 245.6-1
 Provides:       udev = %{version}
 Provides:       udev%{_isa} = %{version}
 Obsoletes:      udev < 183
+
 # https://bugzilla.redhat.com/show_bug.cgi?id=1377733#c9
 Suggests:       systemd-bootchart
 # https://bugzilla.redhat.com/show_bug.cgi?id=1408878
@@ -772,9 +773,12 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Tue Jun  2 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 245.6-2
+- Add self-obsoletes to fix upgrades from F31
+
 * Sun May 31 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 245.6-1
 - Update to latest stable version (some documentation updates, minor
-  memory correctness issues) (#1815605, #1827467)
+  memory correctness issues) (#1815605, #1827467, #1842067)
 
 * Tue Apr 21 2020 Björn Esser <besser82@fedoraproject.org> - 245.5-2
 - Add explicit BuildRequires: acl
