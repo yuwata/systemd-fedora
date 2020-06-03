@@ -334,6 +334,24 @@ License:       LGPLv2+
 "Installed tests" that are usually run as part of the build system.
 They can be useful to test systemd internals.
 
+%package standalone-tmpfiles
+Summary:       Standalone tmpfiles binary for use in non-systemd systems
+RemovePathPostfixes: .standalone
+
+%description standalone-tmpfiles
+Standalone tmpfiles binary with no dependencies on the systemd-shared library
+or other libraries from systemd-libs. This package conflicts with the main
+systemd package and is meant for use in non-systemd systems.
+
+%package standalone-sysusers
+Summary:       Standalone sysusers binary for use in non-systemd systems
+RemovePathPostfixes: .standalone
+
+%description standalone-sysusers
+Standalone sysusers binary with no dependencies on the systemd-shared library
+or other libraries from systemd-libs. This package conflicts with the main
+systemd package and is meant for use in non-systemd systems.
+
 %prep
 %autosetup -n %{?commit:%{name}%{?stable:-stable}-%{commit}}%{!?commit:%{name}%{?stable:-stable}-%{github_version}} -p1
 
@@ -388,6 +406,7 @@ CONFIGURE_OPTS=(
         -Dtpm=true
         -Dhwdb=true
         -Dsysusers=true
+        -Dstandalone-binaries=true
         -Ddefault-kill-user-processes=false
         -Dtests=unsafe
         -Dinstall-tests=true
@@ -829,7 +848,15 @@ fi
 
 %files tests -f .file-list-tests
 
+%files standalone-tmpfiles -f .file-list-standalone-tmpfiles
+
+%files standalone-sysusers -f .file-list-standalone-sysusers
+
 %changelog
+* Thu Sep 24 2020 Filipe Brandenburger <filbranden@gmail.com> - 246.6-2
+- Build a package with standalone binaries for non-systemd systems.
+  For now, only systemd-sysusers is included.
+
 * Thu Sep 24 2020 Christian Glombek <lorbus@fedoraproject.org> - 246.6-2
 - Split out networkd sub-package and add to main package as recommended dependency
 
