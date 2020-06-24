@@ -20,7 +20,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        245.6
-Release:        2%{?commit:.git%{shortcommit}}%{?dist}
+Release:        3%{?commit:.git%{shortcommit}}%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -380,6 +380,7 @@ CONFIGURE_OPTS=(
         -Db_ndebug=false
         -Dman=true
         -Dversion-tag=v%{version}-%{release}
+        -Dfallback-hostname=fedora
 )
 
 %meson "${CONFIGURE_OPTS[@]}"
@@ -773,6 +774,11 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Wed Jun 24 2020 Bastien Nocera <bnocera@redhat.com> - 245.6-3
++ systemd-245.6-3
+- Set fallback-hostname to fedora so that unset hostnames are still
+  recognisable (#1392925)
+
 * Tue Jun  2 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 245.6-2
 - Add self-obsoletes to fix upgrades from F31
 
