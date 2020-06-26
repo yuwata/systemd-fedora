@@ -1,7 +1,7 @@
-#global commit ef677436aa203c24816021dd698b57f219f0ff64
+#global commit 7f56c26d1041e686efa72b339250a98fb6ee8f00
 %{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
-%global stable 1
+#global stable 1
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
 # strip the automatically generated dep here and instead co-own the
@@ -19,8 +19,8 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        245.6
-Release:        3%{?commit:.git%{shortcommit}}%{?dist}
+Version:        246~rc1
+Release:        1%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -71,9 +71,6 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 Patch0001:      use-bfq-scheduler.patch
 
 Patch0998:      0998-resolved-create-etc-resolv.conf-symlink-at-runtime.patch
-
-# https://bugzilla.redhat.com/show_bug.cgi?id=1803293
-Patch1000:      0001-Revert-job-Don-t-mark-as-redundant-if-deps-are-relev.patch
 
 %ifarch %{ix86} x86_64 aarch64
 %global have_gnu_efi 1
@@ -774,8 +771,20 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Thu Jul  9 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 246~rc1-1
+- New upstream release, see
+  https://raw.githubusercontent.com/systemd/systemd/v246-rc1/NEWS.
+
+  This release includes many new unit settings, related inter alia to
+  cgroupsv2 freezer support and cpu affinity, encryption and verification.
+  systemd-networkd has a ton of new functionality and many other tools gained
+  smaller enhancements. systemd-homed gained FIDO2 support.
+
+  Documentation has been significantly improved: sd-bus and sd-hwdb
+  libraries are now fully documented; man pages have been added for
+  the D-BUS APIs of systemd daemons and various new interfaces.
+
 * Wed Jun 24 2020 Bastien Nocera <bnocera@redhat.com> - 245.6-3
-+ systemd-245.6-3
 - Set fallback-hostname to fedora so that unset hostnames are still
   recognisable (#1392925)
 
