@@ -613,6 +613,7 @@ if [ $1 -eq 0 ] ; then
                 systemd-networkd.service \
                 systemd-networkd-wait-online.service \
                 systemd-resolved.service \
+                systemd-homed.service \
                 >/dev/null || :
 fi
 
