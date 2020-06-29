@@ -125,7 +125,6 @@ BuildRequires:  firewalld-filesystem
 BuildRequires:  gnu-efi gnu-efi-devel
 %endif
 BuildRequires:  libseccomp-devel
-BuildRequires:  git
 BuildRequires:  meson >= 0.43
 BuildRequires:  gettext
 # We use RUNNING_ON_VALGRIND in tests, so the headers need to be available
@@ -312,7 +311,7 @@ License:       LGPLv2+
 They can be useful to test systemd internals.
 
 %prep
-%autosetup -n %{?commit:%{name}%{?stable:-stable}-%{commit}}%{!?commit:%{name}%{?stable:-stable}-%{github_version}} -p1 -Sgit
+%autosetup -n %{?commit:%{name}%{?stable:-stable}-%{commit}}%{!?commit:%{name}%{?stable:-stable}-%{github_version}} -p1
 
 %build
 %define ntpvendor %(source /etc/os-release; echo ${ID})
