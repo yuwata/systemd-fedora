@@ -524,7 +524,7 @@ EOF
 
 %check
 %if %{with tests}
-meson test -C %{_vpath_builddir} -t 6
+meson test -C %{_vpath_builddir} -t 6 --print-errorlogs
 %endif
 
 #############################################################################################
