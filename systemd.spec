@@ -785,6 +785,8 @@ fi
   libraries are now fully documented; man pages have been added for
   the D-BUS APIs of systemd daemons and various new interfaces.
 
+  Closes #1392925, #1790972, #1197886, #1525593.
+
 * Wed Jun 24 2020 Bastien Nocera <bnocera@redhat.com> - 245.6-3
 - Set fallback-hostname to fedora so that unset hostnames are still
   recognisable (#1392925)
