@@ -338,6 +338,7 @@ CONFIGURE_OPTS=(
         -Dzlib=true
         -Dbzip2=true
         -Dlz4=true
+        -Dzstd=true
         -Dpam=true
         -Dacl=true
         -Dsmack=true
