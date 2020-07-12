@@ -627,7 +627,13 @@ function mod_nss() {
         # Add nss-systemd to passwd and group
         grep -E -q '^(passwd|group):.* systemd' "$1" ||
         sed -i.bak -r -e '
-                s/^(passwd|group):(.*)/\1: \2 systemd/
+                s/^(passwd|group):(.*)/\1:\2 systemd/
+                ' "$1" &>/dev/null || :
+
+        # Add nss-resolve to hosts
+        grep -E -q '^hosts:.* resolve' "$1" ||
+        sed -i.bak -r -e '
+                s/^(hosts):(.*) files( mdns4_minimal .NOTFOUND=return.)? dns myhostname/\1:\2 resolve [!UNAVAIL=return] myhostname files\3 dns/
                 ' "$1" &>/dev/null || :
     fi
 }
