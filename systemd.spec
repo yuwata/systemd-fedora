@@ -623,14 +623,6 @@ fi
 
 function mod_nss() {
     if [ -f "$1" ] ; then
-        # sed-fu to add myhostname to hosts line
-        grep -E -q '^hosts:.* myhostname' "$1" ||
-        sed -i.bak -e '
-                /^hosts:/ !b
-                /\<myhostname\>/ b
-                s/[[:blank:]]*$/ myhostname/
-                ' "$1" &>/dev/null || :
-
         # Add nss-systemd to passwd and group
         grep -E -q '^(passwd|group):.* systemd' "$1" ||
         sed -i.bak -r -e '
