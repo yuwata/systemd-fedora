@@ -20,7 +20,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        246~rc1
-Release:        1%{?dist}
+Release:        2%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -377,6 +377,9 @@ CONFIGURE_OPTS=(
         -Dman=true
         -Dversion-tag=v%{version}-%{release}
         -Dfallback-hostname=fedora
+        -Ddefault-dnssec=no
+        -Ddefault-mdns=resolve
+        -Ddefault-llmnr=resolve
 )
 
 %meson "${CONFIGURE_OPTS[@]}"
@@ -763,6 +766,11 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Sun Jul 12 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 246~rc1-2
+- Enable systemd-resolved (with DNSSEC disabled by default, and LLMNR
+  and mDNS support in resolve-only mode by default).
+  See https://fedoraproject.org/wiki/Changes/systemd-resolved.
+
 * Thu Jul  9 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 246~rc1-1
 - New upstream release, see
   https://raw.githubusercontent.com/systemd/systemd/v246-rc1/NEWS.
