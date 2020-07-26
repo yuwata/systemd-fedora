@@ -20,7 +20,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        246~rc2
-Release:        1%{?dist}
+Release:        2%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -69,6 +69,8 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
 Patch0001:      use-bfq-scheduler.patch
+
+Patch0002:      0001-Bump-tmp-size-back-to-50-of-RAM.patch
 
 %ifarch %{ix86} x86_64 aarch64
 %global have_gnu_efi 1
@@ -772,6 +774,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Sun Jul 26 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 246~rc2-2
+- Make /tmp be 50% of RAM again (#1856514)
+
 * Fri Jul 24 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 246~rc2-1
 - New pre-release with incremental fixes
   (#1856037, #1858845, #1856122, #1857783)
