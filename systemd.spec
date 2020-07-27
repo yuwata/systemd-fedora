@@ -78,6 +78,7 @@ Patch0002:      0001-Bump-tmp-size-back-to-50-of-RAM.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
+BuildRequires:  coreutils
 BuildRequires:  libcap-devel
 BuildRequires:  libmount-devel
 BuildRequires:  libfdisk-devel
