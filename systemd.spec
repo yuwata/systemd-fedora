@@ -73,6 +73,7 @@ Patch0001:      use-bfq-scheduler.patch
 Patch0002:      0001-Bump-tmp-size-back-to-50-of-RAM.patch
 Patch0003:      0001-test-fs-util-do-not-assume-dev-is-always-real.patch
 Patch0004:      0001-test-path-increase-timeout.patch
+Patch0005:      0001-test-ndisc-rs-increase-timeouts.patch
 
 %ifarch %{ix86} x86_64 aarch64
 %global have_gnu_efi 1
