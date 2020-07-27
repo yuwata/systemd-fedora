@@ -1,0 +1,88 @@
+From d42b6d20b8565c543547fd0ebde9774a854580f9 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Mon, 27 Jul 2020 15:08:35 +0200
+Subject: [PATCH] test-path: increase timeout
+
+The tests fail in Fedora's koji with a timeout. Let's just bump
+the timeout:
+--- stderr ---
+Failed to connect to system bus: No such file or directory
+-.slice: Failed to enable/disable controllers on cgroup /system.slice/kojid.service, ignoring: Permission denied
+path-exists.service: Failed to create cgroup /system.slice/kojid.service/path-exists.service: Permission denied
+path-exists.service: Succeeded.
+-.slice: Failed to enable/disable controllers on cgroup /system.slice/kojid.service, ignoring: Permission denied
+path-exists.service: Failed to create cgroup /system.slice/kojid.service/path-exists.service: Permission denied
+path-exists.service: Succeeded.
+path-exists.path: Succeeded.
+Failed to connect to system bus: No such file or directory
+-.slice: Failed to enable/disable controllers on cgroup /system.slice/kojid.service, ignoring: Permission denied
+path-existsglob.service: Failed to create cgroup /system.slice/kojid.service/path-existsglob.service: Permission denied
+path-existsglob.service: Succeeded.
+-.slice: Failed to enable/disable controllers on cgroup /system.slice/kojid.service, ignoring: Permission denied
+path-existsglob.service: Failed to create cgroup /system.slice/kojid.service/path-existsglob.service: Permission denied
+path-existsglob.service: Succeeded.
+path-existsglob.path: Succeeded.
+Failed to connect to system bus: No such file or directory
+-.slice: Failed to enable/disable controllers on cgroup /system.slice/kojid.service, ignoring: Permission denied
+path-changed.service: Failed to create cgroup /system.slice/kojid.service/path-changed.service: Permission denied
+path-changed.service: Succeeded.
+-.slice: Failed to enable/disable controllers on cgroup /system.slice/kojid.service, ignoring: Permission denied
+path-changed.service: Failed to create cgroup /system.slice/kojid.service/path-changed.service: Permission denied
+path-changed.service: Succeeded.
+path-changed.path: Succeeded.
+Failed to connect to system bus: No such file or directory
+-.slice: Failed to enable/disable controllers on cgroup /system.slice/kojid.service, ignoring: Permission denied
+path-modified.service: Failed to create cgroup /system.slice/kojid.service/path-modified.service: Permission denied
+path-modified.service: Succeeded.
+-.slice: Failed to enable/disable controllers on cgroup /system.slice/kojid.service, ignoring: Permission denied
+path-modified.service: Failed to create cgroup /system.slice/kojid.service/path-modified.service: Permission denied
+path-modified.service: Succeeded.
+path-modified.path: Succeeded.
+Failed to connect to system bus: No such file or directory
+-.slice: Failed to enable/disable controllers on cgroup /system.slice/kojid.service, ignoring: Permission denied
+path-mycustomunit.service: Failed to create cgroup /system.slice/kojid.service/path-mycustomunit.service: Permission denied
+path-mycustomunit.service: Succeeded.
+path-unit.path: Succeeded.
+Failed to connect to system bus: No such file or directory
+-.slice: Failed to enable/disable controllers on cgroup /system.slice/kojid.service, ignoring: Permission denied
+path-directorynotempty.service: Failed to create cgroup /system.slice/kojid.service/path-directorynotempty.service: Permission denied
+path-directorynotempty.service: Succeeded.
+-.slice: Failed to enable/disable controllers on cgroup /system.slice/kojid.service, ignoring: Permission denied
+path-directorynotempty.service: Failed to create cgroup /system.slice/kojid.service/path-directorynotempty.service: Permission denied
+path-directorynotempty.service: Failed to attach to cgroup /system.slice/kojid.service/path-directorynotempty.service: No such file or directory
+path-directorynotempty.service: Failed at step CGROUP spawning /bin/true: No such file or directory
+path-directorynotempty.service: Main process exited, code=exited, status=219/CGROUP
+path-directorynotempty.service: Failed with result 'exit-code'.
+Test timeout when testing path-directorynotempty.path
+---
+ src/test/test-path.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
+
+diff --git a/src/test/test-path.c b/src/test/test-path.c
+index e8844fd5ef..b4fb2479ec 100644
+--- a/src/test/test-path.c
++++ b/src/test/test-path.c
+@@ -79,13 +79,10 @@ static Service *service_for_path(Manager *m, Path *path, const char *service_nam
+ }
+ 
+ static void check_states(Manager *m, Path *path, Service *service, PathState path_state, ServiceState service_state) {
+-        usec_t ts;
+-        usec_t timeout = 2 * USEC_PER_SEC;
+-
+         assert_se(m);
+         assert_se(service);
+ 
+-        ts = now(CLOCK_MONOTONIC);
++        usec_t ts = now(CLOCK_MONOTONIC);
+ 
+         while (path->result != PATH_SUCCESS || service->result != SERVICE_SUCCESS ||
+                path->state != path_state || service->state != service_state) {
+@@ -105,7 +102,7 @@ static void check_states(Manager *m, Path *path, Service *service, PathState pat
+                                 service_result_to_string(service->result));
+ 
+                 n = now(CLOCK_MONOTONIC);
+-                if (ts + timeout < n) {
++                if (ts + 30 * USEC_PER_SEC < n) {
+                         log_error("Test timeout when testing %s", UNIT(path)->id);
+                         exit(EXIT_FAILURE);
+                 }
