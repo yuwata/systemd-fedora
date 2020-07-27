@@ -71,6 +71,7 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 Patch0001:      use-bfq-scheduler.patch
 
 Patch0002:      0001-Bump-tmp-size-back-to-50-of-RAM.patch
+Patch0003:      0001-test-fs-util-do-not-assume-dev-is-always-real.patch
 
 %ifarch %{ix86} x86_64 aarch64
 %global have_gnu_efi 1
