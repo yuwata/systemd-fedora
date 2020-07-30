@@ -70,11 +70,6 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
 Patch0001:      use-bfq-scheduler.patch
 
-Patch0002:      0001-Bump-tmp-size-back-to-50-of-RAM.patch
-Patch0003:      0001-test-fs-util-do-not-assume-dev-is-always-real.patch
-Patch0004:      0001-test-path-increase-timeout.patch
-Patch0005:      0001-test-ndisc-rs-increase-timeouts.patch
-
 %ifarch %{ix86} x86_64 aarch64
 %global have_gnu_efi 1
 %endif
@@ -790,6 +785,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Thu Jul 30 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 246~rc2-2
+- Update to released version. Only some minor bugfixes since the pre-release.
+
 * Sun Jul 26 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 246~rc2-2
 - Make /tmp be 50% of RAM again (#1856514)
 - Re-run 'systemctl preset systemd-resolved' on upgrades.
