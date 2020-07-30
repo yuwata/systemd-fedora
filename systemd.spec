@@ -19,8 +19,8 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        246~rc2
-Release:        2%{?dist}
+Version:        246
+Release:        1%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -785,7 +785,7 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
-* Thu Jul 30 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 246~rc2-2
+* Thu Jul 30 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 246-1
 - Update to released version. Only some minor bugfixes since the pre-release.
 
 * Sun Jul 26 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 246~rc2-2
