@@ -70,6 +70,9 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
 Patch0001:      use-bfq-scheduler.patch
 
+Patch0002:      0001-Revert-test-path-increase-timeout.patch
+Patch0003:      0002-test-path-do-not-fail-the-test-if-we-fail-to-start-s.patch
+
 %ifarch %{ix86} x86_64 aarch64
 %global have_gnu_efi 1
 %endif
