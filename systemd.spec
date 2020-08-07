@@ -73,6 +73,8 @@ Patch0001:      use-bfq-scheduler.patch
 Patch0002:      0001-Revert-test-path-increase-timeout.patch
 Patch0003:      0002-test-path-do-not-fail-the-test-if-we-fail-to-start-s.patch
 
+Patch0004:      0001-test-acl-util-output-more-debug-info.patch
+
 %ifarch %{ix86} x86_64 aarch64
 %global have_gnu_efi 1
 %endif
