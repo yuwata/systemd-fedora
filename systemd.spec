@@ -19,7 +19,7 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        246.2
+Version:        246.3
 Release:        1%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
@@ -792,6 +792,11 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Wed Aug 26 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 246.3-1
+- Update to bugfix version (some networkd fixes, minor documentation
+  fixes, relax handling of various error conditions, other fixlets for
+  bugs without bugzilla numbers).
+
 * Mon Aug 17 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 246.2-1
 - A few minor bugfixes
 - Adjust seccomp filter for kernel 5.8 and glibc 2.32 (#1869030)
