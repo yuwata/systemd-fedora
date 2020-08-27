@@ -31,9 +31,12 @@
 
       - name: Gather SELinux denials since boot
         shell: |
-            ausearch -m avc -m selinux_err -m user_avc -ts boot > /tmp/avc.log 2> /tmp/avc.err.log
-            grep -q '<no matches>' /tmp/avc.err.log && result=pass || result=fail
-            echo -e "results:\n- {result: $result, test: reboot}" > /tmp/results.yml
+            result=pass
+            dmesg | grep -i -e type=1300 -e type=1400 > /tmp/avc.log && result=fail
+            ausearch -m avc -m selinux_err -m user_avc -ts boot &>> /tmp/avc.log
+            grep -q '<no matches>' /tmp/avc.log || result=fail
+            echo -e "\nresults:\n- test: reboot and collect AVC\n  result: $result\n  logs:\n  - avc.log\n\n" > /tmp/results.yml
+            ( [ $result = "pass" ] && echo PASS test-reboot || echo FAIL test-reboot ) > /tmp/test.log
 
     always:
       - name: Pull out the artifacts
@@ -42,6 +45,6 @@
           src: "{{ item }}"
           flat: yes
         with_items:
+          - /tmp/test.log
           - /tmp/avc.log
-          - /tmp/avc.err.log
           - /tmp/results.yml
