@@ -715,8 +715,12 @@ if [ -f %{_localstatedir}/lib/systemd/clock ] ; then
 fi
 
 udevadm hwdb --update &>/dev/null
+
 %systemd_post %udev_services
-/usr/lib/systemd/systemd-random-seed save 2>&1
+
+# Try to save the random seed, but don't complain if /dev/urandom is unavailable
+/usr/lib/systemd/systemd-random-seed save 2>&1 | \
+    grep -v 'Failed to open /dev/urandom' || :
 
 # Replace obsolete keymaps
 # https://bugzilla.redhat.com/show_bug.cgi?id=1151958
