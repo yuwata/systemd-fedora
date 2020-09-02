@@ -801,6 +801,11 @@ fi
 
 %changelog
 * Wed Sep  2 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 246.4-1
+- Update to latest stable version: a rework of how the unit cache mtime works
+  (hopefully #1872068, #1871327, #1867930), plus various fixes to
+  systemd-resolved, systemd-dissect, systemd-analyze, systemd-ask-password-agent,
+  systemd-networkd, systemd-homed, systemd-machine-id-setup, presets for
+  instantiated units, documentation and shell completions.
 - Create /etc/resolv.conf symlink upon installation (#1873856)
 - Move nss-mdns before nss-resolve in /etc/nsswitch.conf and disable
   mdns by default in systemd-resolved (#1867830)
