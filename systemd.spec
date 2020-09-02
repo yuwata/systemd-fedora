@@ -385,7 +385,8 @@ CONFIGURE_OPTS=(
         -Dversion-tag=v%{version}-%{release}
         -Dfallback-hostname=fedora
         -Ddefault-dnssec=no
-        -Ddefault-mdns=resolve
+        # https://bugzilla.redhat.com/show_bug.cgi?id=1867830
+        -Ddefault-mdns=no
         -Ddefault-llmnr=resolve
 )
 
@@ -660,7 +661,7 @@ function mod_nss() {
         # Add nss-resolve to hosts
         grep -E -q '^hosts:.* resolve' "$1" ||
         sed -i.bak -r -e '
-                s/^(hosts):(.*) files( mdns4_minimal .NOTFOUND=return.)? dns myhostname/\1:\2 resolve [!UNAVAIL=return] myhostname files\3 dns/
+                s/^(hosts):(.*) files( mdns4_minimal .NOTFOUND=return.)? dns myhostname/\1:\2 files\3 resolve [!UNAVAIL=return] myhostname dns/
                 ' "$1" &>/dev/null || :
     fi
 }
@@ -801,6 +802,8 @@ fi
 %changelog
 * Wed Sep  2 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 246.4-1
 - Create /etc/resolv.conf symlink upon installation (#1873856)
+- Move nss-mdns before nss-resolve in /etc/nsswitch.conf and disable
+  mdns by default in systemd-resolved (#1867830)
 
 * Wed Aug 26 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 246.3-1
 - Update to bugfix version (some networkd fixes, minor documentation
