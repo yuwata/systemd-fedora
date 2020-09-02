@@ -19,7 +19,7 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        246.3
+Version:        246.4
 Release:        1%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
@@ -599,6 +599,15 @@ chmod g+s /{run,var}/log/journal/{,${machine_id}} &>/dev/null || :
 # Apply ACL to the journal directory
 setfacl -Rnm g:wheel:rx,d:g:wheel:rx,g:adm:rx,d:g:adm:rx /var/log/journal/ &>/dev/null || :
 
+[ $1 -eq 1 ] || exit 0
+
+# Create /etc/resolv.conf symlink
+# We would also create it using tmpfiles, but let's do this here too
+# before NetworkManager gets a chance. (systemd-tmpfiles invocation above
+# does not do this, because it's marked with ! and we don't specify --boot.)
+# https://bugzilla.redhat.com/show_bug.cgi?id=1873856
+ln -sv ../run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+
 # We reset the enablement of all services upon initial installation
 # https://bugzilla.redhat.com/show_bug.cgi?id=1118740#c23
 # This will fix up enablement of any preset services that got installed
@@ -606,10 +615,8 @@ setfacl -Rnm g:wheel:rx,d:g:wheel:rx,g:adm:rx,d:g:adm:rx /var/log/journal/ &>/de
 # https://bugzilla.redhat.com/show_bug.cgi?id=1647172.
 # We also do this for user units, see
 # https://fedoraproject.org/wiki/Changes/Systemd_presets_for_user_units.
-if [ $1 -eq 1 ] ; then
-        systemctl preset-all &>/dev/null || :
-        systemctl --global preset-all &>/dev/null || :
-fi
+systemctl preset-all &>/dev/null || :
+systemctl --global preset-all &>/dev/null || :
 
 %preun
 if [ $1 -eq 0 ] ; then
@@ -792,6 +799,9 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Wed Sep  2 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 246.4-1
+- Create /etc/resolv.conf symlink upon installation (#1873856)
+
 * Wed Aug 26 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 246.3-1
 - Update to bugfix version (some networkd fixes, minor documentation
   fixes, relax handling of various error conditions, other fixlets for
