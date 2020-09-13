@@ -602,12 +602,12 @@ setfacl -Rnm g:wheel:rx,d:g:wheel:rx,g:adm:rx,d:g:adm:rx /var/log/journal/ &>/de
 
 [ $1 -eq 1 ] || exit 0
 
-# Create /etc/resolv.conf symlink
-# We would also create it using tmpfiles, but let's do this here too
-# before NetworkManager gets a chance. (systemd-tmpfiles invocation above
+# Create /etc/resolv.conf symlink.
+# We would also create it using tmpfiles, but let's do this here unconditionally
+# too before NetworkManager gets a chance. (systemd-tmpfiles invocation above
 # does not do this, because it's marked with ! and we don't specify --boot.)
 # https://bugzilla.redhat.com/show_bug.cgi?id=1873856
-ln -sv ../run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+ln -fsv ../run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
 
 # We reset the enablement of all services upon initial installation
 # https://bugzilla.redhat.com/show_bug.cgi?id=1118740#c23
@@ -808,6 +808,8 @@ fi
 - Update to latest stable release (a bunch of small network-related
   fixes in systemd-networkd and socket handling, documentation updates,
   a bunch of fixes for error handling).
+- Also remove existing file when creating /etc/resolv.conf symlink
+  upon installation (#1873856 again)
 
 * Wed Sep  2 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 246.4-1
 - Update to latest stable version: a rework of how the unit cache mtime works
