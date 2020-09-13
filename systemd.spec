@@ -19,7 +19,7 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        246.4
+Version:        246.5
 Release:        1%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
@@ -804,6 +804,11 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Sun Sep 13 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 246.5-1
+- Update to latest stable release (a bunch of small network-related
+  fixes in systemd-networkd and socket handling, documentation updates,
+  a bunch of fixes for error handling).
+
 * Wed Sep  2 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 246.4-1
 - Update to latest stable version: a rework of how the unit cache mtime works
   (hopefully #1872068, #1871327, #1867930), plus various fixes to
