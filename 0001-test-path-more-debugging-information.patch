@@ -1,4 +1,4 @@
-From 6781346769d29612930ffd2a0f4c3fd602026328 Mon Sep 17 00:00:00 2001
+From 35fbc6b2db3fda9015ecfaa2a60d1a47de35c583 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
 Date: Mon, 14 Sep 2020 08:56:28 +0200
 Subject: [PATCH] test-path: more debugging information
@@ -14,7 +14,7 @@ independent parts in log files.
  1 file changed, 18 insertions(+), 13 deletions(-)
 
 diff --git a/src/test/test-path.c b/src/test/test-path.c
-index 1075f31bc6..218b8a976b 100644
+index 6c0db53f10..7c32e0948f 100644
 --- a/src/test/test-path.c
 +++ b/src/test/test-path.c
 @@ -1,7 +1,6 @@
@@ -25,7 +25,7 @@ index 1075f31bc6..218b8a976b 100644
  #include <sys/stat.h>
  #include <sys/types.h>
  
-@@ -78,32 +77,38 @@ static Service *service_for_path(Manager *m, Path *path, const char *service_nam
+@@ -78,25 +77,30 @@ static Service *service_for_path(Manager *m, Path *path, const char *service_nam
          return SERVICE(service_unit);
  }
  
@@ -35,7 +35,7 @@ index 1075f31bc6..218b8a976b 100644
          assert_se(m);
          assert_se(service);
  
-         usec_t end = now(CLOCK_MONOTONIC) + 30 * USEC_PER_SEC;
+         usec_t end = now(CLOCK_MONOTONIC) + 2 * USEC_PER_SEC;
  
 -        while (path->result != PATH_SUCCESS || service->result != SERVICE_SUCCESS ||
 -               path->state != path_state || service->state != service_state) {
@@ -64,6 +64,12 @@ index 1075f31bc6..218b8a976b 100644
 +                         UNIT(service)->id,
 +                         service_state_to_string(service->state),
 +                         service_result_to_string(service->result));
+ 
+                 if (service->state == SERVICE_FAILED) {
+                         log_warning("Failed to start service %s, ignoring: %s/%s",
+@@ -106,12 +110,13 @@ static void check_states(Manager *m, Path *path, Service *service, PathState pat
+                         break;
+                 }
  
 -                if (now(CLOCK_MONOTONIC) >= end) {
 +                if (n >= end) {
