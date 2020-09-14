@@ -71,11 +71,12 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 Patch0001:      use-bfq-scheduler.patch
 
 Patch0002:      0001-Revert-test-path-increase-timeout.patch
-Patch0003:      0002-test-path-do-not-fail-the-test-if-we-fail-to-start-s.patch
-Patch0004:      0001-test-path-more-debugging-information.patch
+Patch0003:      0002-test-path-more-debugging-information.patch
+Patch0004:      0003-test-path-do-not-fail-the-test-if-we-fail-to-start-s.patch
+Patch0005:      0004-test-path-use-Type-exec.patch
 
-Patch0005:      0001-test-acl-util-output-more-debug-info.patch
-Patch0006:      0001-Do-not-assert-in-test_add_acls_for_user.patch
+Patch0006:      0001-test-acl-util-output-more-debug-info.patch
+Patch0007:      0001-Do-not-assert-in-test_add_acls_for_user.patch
 
 %ifarch %{ix86} x86_64 aarch64
 %global have_gnu_efi 1

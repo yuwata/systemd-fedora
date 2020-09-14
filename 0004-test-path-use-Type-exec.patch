@@ -1,0 +1,94 @@
+From 1a83d7234e374e991235f4ef21c56998f93cb875 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Mon, 14 Sep 2020 08:58:54 +0200
+Subject: [PATCH 4/4] test-path: use Type=exec
+
+In general, Type=exec is superior to Type=simple. Let's not assume that
+the service is started before it was really started.
+---
+ test/test-path/path-changed.service           | 2 +-
+ test/test-path/path-directorynotempty.service | 2 +-
+ test/test-path/path-exists.service            | 2 +-
+ test/test-path/path-existsglob.service        | 2 +-
+ test/test-path/path-makedirectory.service     | 2 +-
+ test/test-path/path-modified.service          | 2 +-
+ test/test-path/path-mycustomunit.service      | 2 +-
+ 7 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/test/test-path/path-changed.service b/test/test-path/path-changed.service
+index fb465d76bb..b75552df4f 100644
+--- a/test/test-path/path-changed.service
++++ b/test/test-path/path-changed.service
+@@ -3,5 +3,5 @@ Description=Service Test for Path units
+ 
+ [Service]
+ ExecStart=/bin/true
+-Type=simple
++Type=exec
+ RemainAfterExit=true
+diff --git a/test/test-path/path-directorynotempty.service b/test/test-path/path-directorynotempty.service
+index fb465d76bb..b75552df4f 100644
+--- a/test/test-path/path-directorynotempty.service
++++ b/test/test-path/path-directorynotempty.service
+@@ -3,5 +3,5 @@ Description=Service Test for Path units
+ 
+ [Service]
+ ExecStart=/bin/true
+-Type=simple
++Type=exec
+ RemainAfterExit=true
+diff --git a/test/test-path/path-exists.service b/test/test-path/path-exists.service
+index fb465d76bb..b75552df4f 100644
+--- a/test/test-path/path-exists.service
++++ b/test/test-path/path-exists.service
+@@ -3,5 +3,5 @@ Description=Service Test for Path units
+ 
+ [Service]
+ ExecStart=/bin/true
+-Type=simple
++Type=exec
+ RemainAfterExit=true
+diff --git a/test/test-path/path-existsglob.service b/test/test-path/path-existsglob.service
+index fb465d76bb..b75552df4f 100644
+--- a/test/test-path/path-existsglob.service
++++ b/test/test-path/path-existsglob.service
+@@ -3,5 +3,5 @@ Description=Service Test for Path units
+ 
+ [Service]
+ ExecStart=/bin/true
+-Type=simple
++Type=exec
+ RemainAfterExit=true
+diff --git a/test/test-path/path-makedirectory.service b/test/test-path/path-makedirectory.service
+index fb465d76bb..b75552df4f 100644
+--- a/test/test-path/path-makedirectory.service
++++ b/test/test-path/path-makedirectory.service
+@@ -3,5 +3,5 @@ Description=Service Test for Path units
+ 
+ [Service]
+ ExecStart=/bin/true
+-Type=simple
++Type=exec
+ RemainAfterExit=true
+diff --git a/test/test-path/path-modified.service b/test/test-path/path-modified.service
+index fb465d76bb..b75552df4f 100644
+--- a/test/test-path/path-modified.service
++++ b/test/test-path/path-modified.service
+@@ -3,5 +3,5 @@ Description=Service Test for Path units
+ 
+ [Service]
+ ExecStart=/bin/true
+-Type=simple
++Type=exec
+ RemainAfterExit=true
+diff --git a/test/test-path/path-mycustomunit.service b/test/test-path/path-mycustomunit.service
+index bcdafe4f30..8fbc40d13f 100644
+--- a/test/test-path/path-mycustomunit.service
++++ b/test/test-path/path-mycustomunit.service
+@@ -3,5 +3,5 @@ Description=Service Test Path Unit
+ 
+ [Service]
+ ExecStart=/bin/true
+-Type=simple
++Type=exec
+ RemainAfterExit=true
