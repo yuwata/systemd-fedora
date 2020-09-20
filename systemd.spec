@@ -19,7 +19,7 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        246.5
+Version:        246.6
 Release:        1%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
@@ -806,6 +806,11 @@ fi
 %files tests -f .file-list-tests
 
 %changelog
+* Sun Sep 20 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 246.6-1
+- Update to latest stable release (various minor fixes: manager,
+  networking, bootct, kernel-install, systemd-dissect, systemd-homed,
+  fstab-generator, documentation) (#1876905)
+
 * Sun Sep 13 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 246.5-1
 - Update to latest stable release (a bunch of small network-related
   fixes in systemd-networkd and socket handling, documentation updates,
