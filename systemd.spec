@@ -20,7 +20,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        246.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -154,6 +154,7 @@ Requires:       dbus >= 1.9.18
 Requires:       %{name}-pam = %{version}-%{release}
 Requires:       %{name}-rpm-macros = %{version}-%{release}
 Requires:       %{name}-libs = %{version}-%{release}
+Recommends:     %{name}-networkd = %{version}-%{release}
 Recommends:     diffutils
 Requires:       util-linux
 Recommends:     libxkbcommon%{?_isa}
@@ -166,7 +167,7 @@ Provides:       system-setup-keyboard = 0.9
 # systemd-sysv-convert was removed in f20: https://fedorahosted.org/fpc/ticket/308
 Obsoletes:      systemd-sysv < 206
 # self-obsoletes so that dnf will install new subpackages on upgrade (#1260394)
-Obsoletes:      %{name} < 229-5
+Obsoletes:      %{name} < 246.6-2
 Provides:       systemd-sysv = 206
 Conflicts:      initscripts < 9.56.1
 %if 0%{?fedora}
@@ -310,6 +311,19 @@ and to write journal files from serialized journal contents.
 
 This package contains systemd-journal-gatewayd,
 systemd-journal-remote, and systemd-journal-upload.
+
+%package networkd
+Summary:        A system service that manages network configurations
+Requires:       %{name}%{?_isa} = %{version}-%{release}
+License:        LGPLv2+
+# https://src.fedoraproject.org/rpms/systemd/pull-request/34
+Obsoletes:      systemd < 246.6-2
+
+%description networkd
+%{summary}.
+
+It detects and configures network devices as they appear,
+as well as creating virtual network devices.
 
 %package tests
 Summary:       Internal unit tests for systemd
@@ -631,8 +645,6 @@ if [ $1 -eq 0 ] ; then
                 serial-getty@.service \
                 console-getty.service \
                 debug-shell.service \
-                systemd-networkd.service \
-                systemd-networkd-wait-online.service \
                 systemd-resolved.service \
                 systemd-homed.service \
                 >/dev/null || :
@@ -767,6 +779,14 @@ fi
 %systemd_postun_with_restart systemd-journal-upload.service
 %firewalld_reload
 
+%preun networkd
+if [ $1 -eq 0 ] ; then
+        systemctl disable --quiet \
+                systemd-networkd.service \
+                systemd-networkd-wait-online.service \
+                >/dev/null || :
+fi
+
 %global _docdir_fmt %{name}
 
 %files -f %{name}.lang -f .file-list-rest
@@ -805,9 +825,14 @@ fi
 
 %files journal-remote -f .file-list-remote
 
+%files networkd -f .file-list-networkd
+
 %files tests -f .file-list-tests
 
 %changelog
+* Thu Sep 24 2020 Christian Glombek <lorbus@fedoraproject.org> - 246.6-2
+- Split out networkd sub-package and add to main package as recommended dependency
+
 * Sun Sep 20 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 246.6-1
 - Update to latest stable release (various minor fixes: manager,
   networking, bootct, kernel-install, systemd-dissect, systemd-homed,
