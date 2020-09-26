@@ -175,6 +175,10 @@ Conflicts:      fedora-release < 23-0.12
 %endif
 Obsoletes:      timedatex < 0.6-3
 Provides:       timedatex = 0.6-3
+Conflicts:      %{name}-standalone-tmpfiles < %{version}-%{release}^
+Obsoletes:      %{name}-standalone-tmpfiles < %{version}-%{release}^
+Conflicts:      %{name}-standalone-sysusers < %{version}-%{release}^
+Obsoletes:      %{name}-standalone-sysusers < %{version}-%{release}^
 
 %description
 systemd is a system and service manager that runs as PID 1 and starts
