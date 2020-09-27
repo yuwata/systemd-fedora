@@ -16,6 +16,7 @@
 # cryptsetup, e.g. when re-building cryptsetup on a json-c SONAME-bump.
 %bcond_with    bootstrap
 %bcond_without tests
+%bcond_without lto
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
@@ -420,7 +421,11 @@ CONFIGURE_OPTS=(
         -Dnobody-group=nobody
         -Dsplit-usr=false
         -Dsplit-bin=true
+%if %{with lto}
         -Db_lto=true
+%else
+        -Db_lto=false
+%endif
         -Db_ndebug=false
         -Dman=true
         -Dversion-tag=v%{version}-%{release}
