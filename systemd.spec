@@ -528,7 +528,7 @@ EOF
 
 install -Dm0755 -t %{buildroot}%{_prefix}/lib/kernel/install.d/ %{SOURCE11}
 
-install -Dm0755 -t %{buildroot}%{_prefix}/lib/systemd/ %{SOURCE13}
+install -Dm0644 -t %{buildroot}%{_prefix}/lib/systemd/ %{SOURCE13}
 
 install -D -t %{buildroot}/usr/lib/systemd/ %{SOURCE3}
 
