@@ -122,6 +122,7 @@ BuildRequires:  qrencode-devel
 BuildRequires:  libmicrohttpd-devel
 BuildRequires:  libxkbcommon-devel
 BuildRequires:  iptables-devel
+BuildRequires:  pkgconfig(libfido2)
 BuildRequires:  libxslt
 BuildRequires:  docbook-style-xsl
 BuildRequires:  pkgconfig
@@ -406,6 +407,7 @@ CONFIGURE_OPTS=(
         -Dlibidn2=true
         -Dlibiptc=true
         -Dlibcurl=true
+        -Dlibfido2=true
         -Defi=true
         -Dgnu-efi=%{?have_gnu_efi:true}%{?!have_gnu_efi:false}
         -Dtpm=true
