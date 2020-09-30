@@ -650,13 +650,6 @@ setfacl -Rnm g:wheel:rx,d:g:wheel:rx,g:adm:rx,d:g:adm:rx /var/log/journal/ &>/de
 
 [ $1 -eq 1 ] || exit 0
 
-# Create /etc/resolv.conf symlink.
-# We would also create it using tmpfiles, but let's do this here unconditionally
-# too before NetworkManager gets a chance. (systemd-tmpfiles invocation above
-# does not do this, because it's marked with ! and we don't specify --boot.)
-# https://bugzilla.redhat.com/show_bug.cgi?id=1873856
-ln -fsv ../run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
-
 # We reset the enablement of all services upon initial installation
 # https://bugzilla.redhat.com/show_bug.cgi?id=1118740#c23
 # This will fix up enablement of any preset services that got installed
@@ -666,6 +659,15 @@ ln -fsv ../run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
 # https://fedoraproject.org/wiki/Changes/Systemd_presets_for_user_units.
 systemctl preset-all &>/dev/null || :
 systemctl --global preset-all &>/dev/null || :
+
+# Create /etc/resolv.conf symlink.
+# We would also create it using tmpfiles, but let's do this here
+# too before NetworkManager gets a chance. (systemd-tmpfiles invocation above
+# does not do this, because it's marked with ! and we don't specify --boot.)
+# https://bugzilla.redhat.com/show_bug.cgi?id=1873856
+if systemctl -q is-enabled systemd-resolved.service &>/dev/null; then
+  ln -fsv ../run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+fi
 
 %preun
 if [ $1 -eq 0 ] ; then
