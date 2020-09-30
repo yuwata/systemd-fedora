@@ -54,12 +54,10 @@ for file in files(buildroot):
         o = o_pam
     elif '/rpm/' in n:
         o = o_rpm_macros
-    elif re.search(r'networkd(?!.*\.conf)', n, re.X):
-        o = o_networkd
-    elif re.search(r'/lib.*\.pc|/man3/|/usr/include|(?<!/libsystemd-shared-...).so$', n):
-        o = o_devel
     elif '/usr/lib/systemd/tests' in n:
         o = o_tests
+    elif re.search(r'/lib.*\.pc|/man3/|/usr/include|(?<!/libsystemd-shared-...).so$', n):
+        o = o_devel
     elif re.search(r'''journal-(remote|gateway|upload)|
                        systemd-remote\.conf|
                        /usr/share/systemd/gatewayd|
@@ -74,10 +72,17 @@ for file in files(buildroot):
                        /machine.slice|
                        /machines.target|
                        var-lib-machines.mount|
-                       network/80-container-v[ez]|
+                       network/80-container|
+                       network/80-vm|
                        org.freedesktop.(import|machine)1
     ''', n, re.X):
         o = o_container
+    elif re.search(r'''/usr/lib/systemd/network/..-wifi|
+                       networkd|
+                       networkctl|
+                       org.freedesktop.network1
+    ''', n, re.X):
+        o = o_networkd
     elif '.so.' in n:
         o = o_libs
     elif re.search(r'''udev(?!\.pc)|

@@ -21,7 +21,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        246.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -868,6 +868,10 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Wed Sep 30 2020 Dusty Mabe <dusty@dustymabe.com> - 246.6-3
+- Try to make files in subpackages (especially the networkd subpackage)
+  more appropriate.
+
 * Thu Sep 24 2020 Filipe Brandenburger <filbranden@gmail.com> - 246.6-2
 - Build a package with standalone binaries for non-systemd systems.
   For now, only systemd-sysusers is included.
