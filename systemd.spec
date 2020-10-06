@@ -78,6 +78,7 @@ Patch0005:      0004-test-path-use-Type-exec.patch
 
 Patch0006:      0001-test-acl-util-output-more-debug-info.patch
 Patch0007:      0001-Do-not-assert-in-test_add_acls_for_user.patch
+Patch0008:      0001-Document-some-reasonable-DNS-servers-in-the-example-.patch
 
 Patch0009:      https://github.com/systemd/systemd/pull/17050/commits/f58b96d3e8d1cb0dd3666bc74fa673918b586612.patch
 
@@ -369,6 +370,7 @@ CONFIGURE_OPTS=(
         -Dsysvinit-path=/etc/rc.d/init.d
         -Drc-local=/etc/rc.d/rc.local
         -Dntp-servers='0.%{ntpvendor}.pool.ntp.org 1.%{ntpvendor}.pool.ntp.org 2.%{ntpvendor}.pool.ntp.org 3.%{ntpvendor}.pool.ntp.org'
+        -Ddns-servers=
         -Duser-path=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin
         -Dservice-watchdog=
         -Ddev-kvm-mode=0666
