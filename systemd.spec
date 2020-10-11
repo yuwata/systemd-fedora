@@ -320,17 +320,16 @@ This package contains systemd-journal-gatewayd,
 systemd-journal-remote, and systemd-journal-upload.
 
 %package networkd
-Summary:        A system service that manages network configurations
+Summary:        System daemon that manages network configurations
 Requires:       %{name}%{?_isa} = %{version}-%{release}
 License:        LGPLv2+
 # https://src.fedoraproject.org/rpms/systemd/pull-request/34
 Obsoletes:      systemd < 246.6-2
 
 %description networkd
-%{summary}.
-
-It detects and configures network devices as they appear,
-as well as creating virtual network devices.
+systemd-networkd is a system service that manages networks. It detects
+and configures network devices as they appear, as well as creating virtual
+network devices.
 
 %package tests
 Summary:       Internal unit tests for systemd
