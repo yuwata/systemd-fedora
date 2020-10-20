@@ -1,7 +1,7 @@
-#global commit 7f56c26d1041e686efa72b339250a98fb6ee8f00
+#global commit c4b843473a75fb38ed5bf54e9d3cfb1cb3719efa
 %{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
-%global stable 1
+#global stable 1
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
 # strip the automatically generated dep here and instead co-own the
@@ -20,8 +20,8 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        246.6
-Release:        3%{?dist}
+Version:        247~rc1
+Release:        1%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -70,15 +70,6 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
 Patch0001:      use-bfq-scheduler.patch
-
-Patch0002:      0001-Revert-test-path-increase-timeout.patch
-Patch0003:      0002-test-path-more-debugging-information.patch
-Patch0004:      0003-test-path-do-not-fail-the-test-if-we-fail-to-start-s.patch
-Patch0005:      0004-test-path-use-Type-exec.patch
-
-Patch0006:      0001-test-acl-util-output-more-debug-info.patch
-Patch0007:      0001-Do-not-assert-in-test_add_acls_for_user.patch
-Patch0008:      0001-Document-some-reasonable-DNS-servers-in-the-example-.patch
 
 Patch0009:      https://github.com/systemd/systemd/pull/17050/commits/f58b96d3e8d1cb0dd3666bc74fa673918b586612.patch
 
@@ -183,6 +174,16 @@ Obsoletes:      %{name}-standalone-tmpfiles < %{version}-%{release}^
 Conflicts:      %{name}-standalone-sysusers < %{version}-%{release}^
 Obsoletes:      %{name}-standalone-sysusers < %{version}-%{release}^
 
+# Recommends to replace normal Requires deps for stuff that is dlopen()ed
+Recommends:     libcryptsetup.so.12()(64bit)
+Recommends:     libcryptsetup.so.12(CRYPTSETUP_2.0)(64bit)
+Recommends:     libidn2.so.0()(64bit)
+Recommends:     libidn2.so.0(IDN2_0.0.0)(64bit)
+Recommends:     libpcre2-8.so.0()(64bit)
+Recommends:     libpwquality.so.1()(64bit)
+Recommends:     libpwquality.so.1(LIBPWQUALITY_1.0)(64bit)
+Recommends:     libqrencode.so.4()(64bit)
+
 %description
 systemd is a system and service manager that runs as PID 1 and starts
 the rest of the system. It provides aggressive parallelization
@@ -276,6 +277,10 @@ Requires:       kbd
 Provides:       u2f-hidraw-policy = 1.0.2-40
 Obsoletes:      u2f-hidraw-policy < 1.0.2-40
 
+# Recommends to replace normal Requires deps for stuff that is dlopen()ed
+Recommends:     libcryptsetup.so.12()(64bit)
+Recommends:     libcryptsetup.so.12(CRYPTSETUP_2.0)(64bit)
+
 %description udev
 This package contains systemd-udev and the rules and hardware database
 needed to manage device nodes. This package is necessary on physical
@@ -366,6 +371,7 @@ systemd package and is meant for use in non-systemd systems.
 %{!?ntpvendor: echo 'NTP vendor zone is not set!'; exit 1}
 
 CONFIGURE_OPTS=(
+        -Dmode=release
         -Dsysvinit-path=/etc/rc.d/init.d
         -Drc-local=/etc/rc.d/rc.local
         -Dntp-servers='0.%{ntpvendor}.pool.ntp.org 1.%{ntpvendor}.pool.ntp.org 2.%{ntpvendor}.pool.ntp.org 3.%{ntpvendor}.pool.ntp.org'
@@ -422,6 +428,7 @@ CONFIGURE_OPTS=(
         -Dusers-gid=100
         -Dnobody-user=nobody
         -Dnobody-group=nobody
+        -Dcompat-mutable-uid-boundaries=true
         -Dsplit-usr=false
         -Dsplit-bin=true
 %if %{with lto}
@@ -871,6 +878,21 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Tue Oct 20 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 247~rc1
+- New upstream pre-release. See
+  https://github.com/systemd/systemd/blob/v247-rc1/NEWS.
+  Many smaller and bigger improvements and features are introduced.
+  Note that systemd-oomd is not built as part of this package.
+  (#1885101, #1890632, #1879216)
+
+  A backwards-incompatible change affects PCI network devices which
+  are connected through a bridge which is itself associated with a
+  slot. When more than one device was associated with the same slot,
+  one of the devices would pseudo-randomly get named after the slot.
+  That name is now not generated at all. This changed behaviour is
+  causes the net naming scheme to be changed to "v247". To restore
+  previous behaviour, specify net.naming-scheme=v245.
+
 * Wed Sep 30 2020 Dusty Mabe <dusty@dustymabe.com> - 246.6-3
 - Try to make files in subpackages (especially the networkd subpackage)
   more appropriate.
