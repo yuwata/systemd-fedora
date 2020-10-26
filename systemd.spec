@@ -610,9 +610,6 @@ getent group systemd-journal &>/dev/null || groupadd -r -g 190 systemd-journal 2
 getent group systemd-coredump &>/dev/null || groupadd -r systemd-coredump 2>&1 || :
 getent passwd systemd-coredump &>/dev/null || useradd -r -l -g systemd-coredump -d / -s /sbin/nologin -c "systemd Core Dumper" systemd-coredump &>/dev/null || :
 
-getent group systemd-network &>/dev/null || groupadd -r -g 192 systemd-network 2>&1 || :
-getent passwd systemd-network &>/dev/null || useradd -r -u 192 -l -g systemd-network -d / -s /sbin/nologin -c "systemd Network Management" systemd-network &>/dev/null || :
-
 getent group systemd-resolve &>/dev/null || groupadd -r -g 193 systemd-resolve 2>&1 || :
 getent passwd systemd-resolve &>/dev/null || useradd -r -u 193 -l -g systemd-resolve -d / -s /sbin/nologin -c "systemd Resolver" systemd-resolve &>/dev/null || :
 
@@ -823,13 +820,15 @@ fi
 %systemd_postun_with_restart systemd-journal-upload.service
 %firewalld_reload
 
+%pre networkd
+getent group systemd-network &>/dev/null || groupadd -r -g 192 systemd-network 2>&1 || :
+getent passwd systemd-network &>/dev/null || useradd -r -u 192 -l -g systemd-network -d / -s /sbin/nologin -c "systemd Network Management" systemd-network &>/dev/null || :
+
+%post networkd
+%systemd_post systemd-networkd.service systemd-networkd-wait-online.service
+
 %preun networkd
-if [ $1 -eq 0 ] ; then
-        systemctl disable --quiet \
-                systemd-networkd.service \
-                systemd-networkd-wait-online.service \
-                >/dev/null || :
-fi
+%systemd_preun systemd-networkd.service systemd-networkd-wait-online.service
 
 %global _docdir_fmt %{name}
 
