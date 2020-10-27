@@ -673,8 +673,17 @@ systemctl --global preset-all &>/dev/null || :
 # too before NetworkManager gets a chance. (systemd-tmpfiles invocation above
 # does not do this, because it's marked with ! and we don't specify --boot.)
 # https://bugzilla.redhat.com/show_bug.cgi?id=1873856
-if systemctl -q is-enabled systemd-resolved.service &>/dev/null &&
-   ! mountpoint /etc/resolv.conf &>/dev/null; then
+#
+# If systemd is not running, don't overwrite the symlink because that
+# will immediately break DNS resolution, since systemd-resolved is
+# also not running (https://bugzilla.redhat.com/show_bug.cgi?id=1891847).
+#
+# Also don't creat the symlink to the stub when the stub is disabled (#1891847 again).
+if test -d /run/systemd/system/ &&
+   systemctl -q is-enabled systemd-resolved.service &>/dev/null &&
+   ! mountpoint /etc/resolv.conf &>/dev/null &&
+   ! systemd-analyze cat-config systemd/resolved.conf 2>/dev/null | \
+        grep -qE '^DNSStubListener\s*=\s*([nN][oO]?|[fF]|[fF][aA][lL][sS][eE]|0|[oO][fF][fF])$'; then
   ln -fsv ../run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
 fi
 
