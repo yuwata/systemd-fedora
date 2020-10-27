@@ -71,6 +71,9 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
 Patch0001:      use-bfq-scheduler.patch
 
+# While we don't have https://github.com/SELinuxProject/refpolicy/pull/308
+Patch0002:      0001-selinux-fall-back-to-the-netlink-based-API.patch
+
 Patch0009:      https://github.com/systemd/systemd/pull/17050/commits/f58b96d3e8d1cb0dd3666bc74fa673918b586612.patch
 
 %ifarch %{ix86} x86_64 aarch64
