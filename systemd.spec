@@ -71,6 +71,8 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
 Patch0001:      use-bfq-scheduler.patch
 
+Patch0002:      0001-meson-allow-oomd-to-be-enabled-even-in-release-mode.patch
+
 Patch0009:      https://github.com/systemd/systemd/pull/17050/commits/f58b96d3e8d1cb0dd3666bc74fa673918b586612.patch
 
 %ifarch %{ix86} x86_64 aarch64
@@ -446,6 +448,7 @@ CONFIGURE_OPTS=(
         # https://bugzilla.redhat.com/show_bug.cgi?id=1867830
         -Ddefault-mdns=no
         -Ddefault-llmnr=resolve
+        -Doomd=true
 )
 
 %meson "${CONFIGURE_OPTS[@]}"
@@ -892,7 +895,6 @@ getent passwd systemd-network &>/dev/null || useradd -r -u 192 -l -g systemd-net
 - New upstream pre-release. See
   https://github.com/systemd/systemd/blob/v247-rc1/NEWS.
   Many smaller and bigger improvements and features are introduced.
-  Note that systemd-oomd is not built as part of this package.
   (#1885101, #1890632, #1879216)
 
   A backwards-incompatible change affects PCI network devices which
@@ -902,6 +904,9 @@ getent passwd systemd-network &>/dev/null || useradd -r -u 192 -l -g systemd-net
   That name is now not generated at all. This changed behaviour is
   causes the net naming scheme to be changed to "v247". To restore
   previous behaviour, specify net.naming-scheme=v245.
+
+  systemd-oomd is built, but should not be considered "production
+  ready" at this point. Testing and bug reports are welcome.
 
 * Wed Sep 30 2020 Dusty Mabe <dusty@dustymabe.com> - 246.6-3
 - Try to make files in subpackages (especially the networkd subpackage)
