@@ -72,6 +72,7 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 Patch0001:      use-bfq-scheduler.patch
 
 Patch0002:      0001-meson-allow-oomd-to-be-enabled-even-in-release-mode.patch
+Patch0003:      0001-test-path-util-do-not-fail-if-the-fd_is_mount_point-.patch
 
 Patch0009:      https://github.com/systemd/systemd/pull/17050/commits/f58b96d3e8d1cb0dd3666bc74fa673918b586612.patch
 
