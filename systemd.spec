@@ -134,6 +134,8 @@ BuildRequires:  gettext
 # We use RUNNING_ON_VALGRIND in tests, so the headers need to be available
 BuildRequires:  valgrind-devel
 BuildRequires:  pkgconfig(bash-completion)
+BuildRequires:  perl
+BuildRequires:  perl(IPC::SysV)
 
 Requires(post): coreutils
 Requires(post): sed
