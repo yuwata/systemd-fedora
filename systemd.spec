@@ -1,4 +1,4 @@
-#global commit c4b843473a75fb38ed5bf54e9d3cfb1cb3719efa
+%global commit e2357b1c8a87b610066b8b2a59517bcfb20b832e
 %{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
 #global stable 1
@@ -21,7 +21,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        247~rc2
-Release:        1%{?dist}
+Release:        1.1%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -62,6 +62,8 @@ Source22:       sysusers.attr
 Source23:       sysusers.prov
 Source24:       sysusers.generate-pre.sh
 
+Source99:       patch-list.txt
+
 %if 0
 GIT_DIR=../../src/systemd/.git git format-patch-ab --no-signature -M -N v235..v235-stable
 i=1; for j in 00*patch; do printf "Patch%04d:      %s\n" $i $j; i=$((i+1));done|xclip
@@ -71,11 +73,10 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
 Patch0001:      use-bfq-scheduler.patch
 
-Patch0002:      0001-meson-allow-oomd-to-be-enabled-even-in-release-mode.patch
 Patch0003:      0001-test-path-util-do-not-fail-if-the-fd_is_mount_point-.patch
 Patch0004:      0001-test-path-util-ignore-test-failure.patch
 
-Patch0009:      https://github.com/systemd/systemd/pull/17050/commits/f58b96d3e8d1cb0dd3666bc74fa673918b586612.patch
+%include %{SOURCE99}
 
 %ifarch %{ix86} x86_64 aarch64
 %global have_gnu_efi 1
@@ -893,6 +894,10 @@ getent passwd systemd-network &>/dev/null || useradd -r -u 192 -l -g systemd-net
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Sat Nov 14 2020 Yu Watanabe <watanabe.yu@gmail.com> - 247~rc2-1.1.gite2357b1
+- Update to latest git snapshot e2357b1c8a87b610066b8b2a59517bcfb20b832e
+- Merge upstream/pr/17050
+
 * Tue Oct 20 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 247~rc2
 - New upstream pre-release. See
   https://github.com/systemd/systemd/blob/v247-rc1/NEWS.
