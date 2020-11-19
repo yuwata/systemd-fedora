@@ -1,4 +1,4 @@
-%global commit e2357b1c8a87b610066b8b2a59517bcfb20b832e
+%global commit 5abede3247591248718026cb8be6cd231de7728b
 %{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
 #global stable 1
@@ -21,7 +21,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        247~rc2
-Release:        1.1%{?dist}
+Release:        1.2%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -894,6 +894,15 @@ getent passwd systemd-network &>/dev/null || useradd -r -u 192 -l -g systemd-net
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Thu Nov 19 2020 Yu Watanabe <watanabe.yu@gmail.com> - 247~rc2-1.2.git5abede3
+- Update to latest git snapshot 5abede3247591248718026cb8be6cd231de7728b
+- Merge upstream/pr/17050
+- Merge upstream/pr/17622
+- Merge upstream/pr/17631
+- Merge upstream/pr/17634
+- Merge upstream/pr/17649
+- Merge upstream/pr/17669
+
 * Sat Nov 14 2020 Yu Watanabe <watanabe.yu@gmail.com> - 247~rc2-1.1.gite2357b1
 - Update to latest git snapshot e2357b1c8a87b610066b8b2a59517bcfb20b832e
 - Merge upstream/pr/17050

@@ -1,0 +1,22 @@
+From 1058390d205ba40a03bc6fc40c9700ffb76bff5d Mon Sep 17 00:00:00 2001
+From: Yu Watanabe <watanabe.yu+github@gmail.com>
+Date: Fri, 20 Nov 2020 02:50:30 +0900
+Subject: [PATCH] pstore: use log_oom()
+
+---
+ src/pstore/pstore.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/pstore/pstore.c b/src/pstore/pstore.c
+index 05046b57ea..db8a71fbab 100644
+--- a/src/pstore/pstore.c
++++ b/src/pstore/pstore.c
+@@ -304,7 +304,7 @@ static void process_dmesg_files(PStoreList *list) {
+                  * output either. */
+                 size_t needed = strlen(pe->dirent.d_name) + strlen(":\n") + pe->content_size + 1;
+                 if (!GREEDY_REALLOC(dmesg, dmesg_allocated, dmesg_size + needed)) {
+-                        log_warning_errno(ENOMEM, "Failed to write dmesg file: %m");
++                        log_oom();
+                         dmesg_bad = true;
+                         continue;
+                 }

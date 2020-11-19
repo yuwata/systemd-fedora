@@ -1,0 +1,27 @@
+From 52dc835eef5037799741a4fac3900a373476bbd4 Mon Sep 17 00:00:00 2001
+From: Yu Watanabe <watanabe.yu+github@gmail.com>
+Date: Tue, 17 Nov 2020 10:50:12 +0900
+Subject: [PATCH] core/mount: mount_start() may be called during the state is
+ MOUNT_MOUNTING_DONE
+
+As, both MOUNT_MOUNTING and MOUNT_MOUNTING_DONE are mapped to
+UNIT_ACTIVATING.
+
+Fixes #17570.
+---
+ src/core/mount.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/core/mount.c b/src/core/mount.c
+index 41dc7e9967..faa2cb0e03 100644
+--- a/src/core/mount.c
++++ b/src/core/mount.c
+@@ -1144,7 +1144,7 @@ static int mount_start(Unit *u) {
+                 return -EAGAIN;
+ 
+         /* Already on it! */
+-        if (m->state == MOUNT_MOUNTING)
++        if (IN_SET(m->state, MOUNT_MOUNTING, MOUNT_MOUNTING_DONE))
+                 return 0;
+ 
+         assert(IN_SET(m->state, MOUNT_DEAD, MOUNT_FAILED));

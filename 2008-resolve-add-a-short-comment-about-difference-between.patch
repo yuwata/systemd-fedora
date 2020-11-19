@@ -1,0 +1,23 @@
+From a37eb63ffa2ec786035956258d93df247263f2bd Mon Sep 17 00:00:00 2001
+From: Yu Watanabe <watanabe.yu+github@gmail.com>
+Date: Wed, 18 Nov 2020 03:22:56 +0900
+Subject: [PATCH] resolve: add a short comment about difference between
+ dnssd_render_instance_name() and config_parse_dnssd_service_name()
+
+---
+ src/resolve/resolved-conf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/resolve/resolved-conf.c b/src/resolve/resolved-conf.c
+index 2d68e38450..b454472e63 100644
+--- a/src/resolve/resolved-conf.c
++++ b/src/resolve/resolved-conf.c
+@@ -232,7 +232,7 @@ int config_parse_dnssd_service_name(
+         static const Specifier specifier_table[] = {
+                 { 'm', specifier_machine_id,      NULL },
+                 { 'b', specifier_boot_id,         NULL },
+-                { 'H', specifier_host_name,       NULL },
++                { 'H', specifier_host_name,       NULL }, /* We will use specifier_dnssd_host_name(). */
+                 { 'v', specifier_kernel_release,  NULL },
+                 { 'a', specifier_architecture,    NULL },
+                 { 'o', specifier_os_id,           NULL },

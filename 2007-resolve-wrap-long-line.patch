@@ -1,0 +1,33 @@
+From d63542bc02829500405dd9d29c5d7324db11b09e Mon Sep 17 00:00:00 2001
+From: Yu Watanabe <watanabe.yu+github@gmail.com>
+Date: Wed, 18 Nov 2020 03:20:30 +0900
+Subject: [PATCH] resolve: wrap long line
+
+---
+ src/resolve/resolved-conf.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/src/resolve/resolved-conf.c b/src/resolve/resolved-conf.c
+index d8646094c0..2d68e38450 100644
+--- a/src/resolve/resolved-conf.c
++++ b/src/resolve/resolved-conf.c
+@@ -217,7 +217,18 @@ int config_parse_search_domains(
+         return 0;
+ }
+ 
+-int config_parse_dnssd_service_name(const char *unit, const char *filename, unsigned line, const char *section, unsigned section_line, const char *lvalue, int ltype, const char *rvalue, void *data, void *userdata) {
++int config_parse_dnssd_service_name(
++                const char *unit,
++                const char *filename,
++                unsigned line,
++                const char *section,
++                unsigned section_line,
++                const char *lvalue,
++                int ltype,
++                const char *rvalue,
++                void *data,
++                void *userdata) {
++
+         static const Specifier specifier_table[] = {
+                 { 'm', specifier_machine_id,      NULL },
+                 { 'b', specifier_boot_id,         NULL },

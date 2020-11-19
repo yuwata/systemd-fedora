@@ -1,1 +1,14 @@
 Patch2001: 2001-test-mountpointutil-util-do-not-assert-in-test_mnt_i.patch
+Patch2002: 2002-sd-device-make-device_add_property_internal-inline.patch
+Patch2003: 2003-udev-save-version-of-udevd-which-generates-the-udev-.patch
+Patch2004: 2004-sd-device-make-sd_device_has_current_tag-and-friends.patch
+Patch2005: 2005-core-mount-mount-command-may-fail-after-adding-the-c.patch
+Patch2006: 2006-core-mount-mount_start-may-be-called-during-the-stat.patch
+Patch2007: 2007-resolve-wrap-long-line.patch
+Patch2008: 2008-resolve-add-a-short-comment-about-difference-between.patch
+Patch2009: 2009-resolve-make-config_parse_dnssd_service_name-accepts.patch
+Patch2010: 2010-resolve-ignore-invalid-service-template-name.patch
+Patch2011: 2011-coccinelle-add-one-more-rule-to-use-return-value-of-.patch
+Patch2012: 2012-tree-wide-use-return-value-of-log_xxx_errno.patch
+Patch2013: 2013-coccinelle-always-use-SYNTHETIC_ERRNO-macro.patch
+Patch2014: 2014-pstore-use-log_oom.patch
