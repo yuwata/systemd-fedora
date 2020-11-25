@@ -1,0 +1,355 @@
+From 793c30a5b40df5e7850c88e4c410a856c002e5d2 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Thu, 8 Oct 2020 16:59:26 +0200
+Subject: [PATCH] networkd: merge ll addressing fallback modes into normal
+ "boolean" values
+
+They are not really boolean, because we have both ipv4 and ipv6, but
+for each protocol we have either unset, no, and yes.
+
+From https://github.com/systemd/systemd/issues/13316#issuecomment-582906817:
+LinkLocalAddressing must be a boolean option, at least for ipv4:
+- LinkLocalAddressing=no => no LL at all.
+
+- LinkLocalAddressing=yes + Static Address => invalid configuration, warn and
+  interpret as LinkLocalAddressing=no, no LL at all.
+
+(we check that during parsing and reject)
+
+- LinkLocalAddressing=yes + DHCP => LL process should be subordinated to the
+  DHCP one, an LL address must be acquired at start or after a short N
+  unsuccessful DHCP attemps, and must not stop DHCP to keeping trying. When a
+  DHCP address is acquired, drop the LL address. If the DHCP address is lost,
+  re-adquire a new LL address.
+
+(next patch will move in this direction)
+
+- LinkLocalAddressing=fallback has no reason to exist, because LL address must
+  always be allocated as a fallback option when using DHCP. Having both DHCP
+  and LL address at the same time is an RFC violation, so
+  LinkLocalAdressing=yes correctly implemented is already the "fallback"
+  behavior. The fallback option must be deprecated and if present in older
+  configs must be interpreted as LinkLocalAddressing=yes.
+
+(removed)
+
+- And for IPv6, the LinkLocalAddress option has any sense at all? IPv6-LL
+  address aren't required to be always set for every IPv6 enabled interface (in
+  this case, coexisting with static or dynamic address if any)? Shouldn't be
+  always =yes?
+
+(good question)
+
+This effectively reverts 29e81083bd2fcb2dbf83f67ef358c7d25adf7e9d. There is no
+special "fallback" mode now, so the check doesn't make sense anymore.
+---
+ man/systemd.network.xml                       | 18 +++++++-----------
+ src/basic/string-table.h                      |  5 ++---
+ src/network/networkd-dhcp4.c                  |  3 +--
+ src/network/networkd-ipv4ll.c                 |  2 +-
+ src/network/networkd-link.c                   | 13 ++++++-------
+ src/network/networkd-link.h                   |  2 +-
+ src/network/networkd-network.c                |  7 -------
+ src/network/networkd-util.c                   | 19 +++++++++----------
+ src/network/networkd-util.h                   |  3 ---
+ ...ient-with-ipv4ll-with-dhcp-server.network} |  2 +-
+ ...t-with-ipv4ll-without-dhcp-server.network} |  2 +-
+ test/test-network/systemd-networkd-tests.py   | 12 ++++++------
+ 12 files changed, 35 insertions(+), 53 deletions(-)
+ rename test/test-network/conf/{dhcp-client-with-ipv4ll-fallback-with-dhcp-server.network => dhcp-client-with-ipv4ll-with-dhcp-server.network} (66%)
+ rename test/test-network/conf/{dhcp-client-with-ipv4ll-fallback-without-dhcp-server.network => dhcp-client-with-ipv4ll-without-dhcp-server.network} (73%)
+
+diff --git a/man/systemd.network.xml b/man/systemd.network.xml
+index 1f389a05f3..3b029dca63 100644
+--- a/man/systemd.network.xml
++++ b/man/systemd.network.xml
+@@ -364,17 +364,13 @@
+         <varlistentry>
+           <term><varname>LinkLocalAddressing=</varname></term>
+           <listitem>
+-            <para>Enables link-local address autoconfiguration. Accepts <literal>yes</literal>,
+-            <literal>no</literal>, <literal>ipv4</literal>, <literal>ipv6</literal>,
+-            <literal>fallback</literal>, or <literal>ipv4-fallback</literal>. If
+-            <literal>fallback</literal> or <literal>ipv4-fallback</literal> is specified, then an IPv4
+-            link-local address is configured only when DHCPv4 fails. If <literal>fallback</literal>,
+-            an IPv6 link-local address is always configured, and if <literal>ipv4-fallback</literal>,
+-            the address is not configured. Note that, the fallback mechanism works only when DHCPv4
+-            client is enabled, that is, it requires <literal>DHCP=yes</literal> or
+-            <literal>DHCP=ipv4</literal>. If <varname>Bridge=</varname> is set, defaults to
+-            <literal>no</literal>, and if not, defaults to <literal>ipv6</literal>.
+-            </para>
++            <para>Enables link-local address autoconfiguration. Accepts <option>yes</option>,
++            <option>no</option>, <option>ipv4</option>, and <option>ipv6</option>. An IPv6 link-local address
++            is configured when <option>yes</option> or <option>ipv6</option>. An IPv4 link-local address is
++            configured when <option>yes</option> or <option>ipv4</option>.</para>
++
++            <para>Defaults to <option>no</option> when <varname>Bridge=yes</varname> is set, and
++            <option>ipv6</option> otherwise.</para>
+           </listitem>
+         </varlistentry>
+         <varlistentry>
+diff --git a/src/basic/string-table.h b/src/basic/string-table.h
+index b6b3611ace..4911a455c5 100644
+--- a/src/basic/string-table.h
++++ b/src/basic/string-table.h
+@@ -28,13 +28,12 @@ ssize_t string_table_lookup(const char * const *table, size_t len, const char *k
+ 
+ #define _DEFINE_STRING_TABLE_LOOKUP_FROM_STRING_WITH_BOOLEAN(name,type,yes,scope) \
+         scope type name##_from_string(const char *s) {                  \
+-                int b;                                                  \
+                 if (!s)                                                 \
+                         return -1;                                      \
+-                b = parse_boolean(s);                                   \
++                int b = parse_boolean(s);                               \
+                 if (b == 0)                                             \
+                         return (type) 0;                                \
+-                else if (b > 0)                                         \
++                if (b > 0)                                              \
+                         return yes;                                     \
+                 return (type) string_table_lookup(name##_table, ELEMENTSOF(name##_table), s); \
+         }
+diff --git a/src/network/networkd-dhcp4.c b/src/network/networkd-dhcp4.c
+index 02d33841b6..48b3a6a52a 100644
+--- a/src/network/networkd-dhcp4.c
++++ b/src/network/networkd-dhcp4.c
+@@ -1048,8 +1048,7 @@ static int dhcp4_handler(sd_dhcp_client *client, int event, void *userdata) {
+ 
+         switch (event) {
+                 case SD_DHCP_CLIENT_EVENT_STOP:
+-
+-                        if (link_ipv4ll_enabled(link, ADDRESS_FAMILY_FALLBACK_IPV4)) {
++                        if (link_ipv4ll_enabled(link)) {
+                                 assert(link->ipv4ll);
+ 
+                                 log_link_debug(link, "DHCP client is stopped. Acquiring IPv4 link-local address");
+diff --git a/src/network/networkd-ipv4ll.c b/src/network/networkd-ipv4ll.c
+index 295abe866e..45c1e50458 100644
+--- a/src/network/networkd-ipv4ll.c
++++ b/src/network/networkd-ipv4ll.c
+@@ -167,7 +167,7 @@ int ipv4ll_configure(Link *link) {
+ 
+         assert(link);
+ 
+-        if (!link_ipv4ll_enabled(link, ADDRESS_FAMILY_IPV4 | ADDRESS_FAMILY_FALLBACK_IPV4))
++        if (!link_ipv4ll_enabled(link))
+                 return 0;
+ 
+         r = ipv4ll_init(link);
+diff --git a/src/network/networkd-link.c b/src/network/networkd-link.c
+index ced18de425..4d866ebae3 100644
+--- a/src/network/networkd-link.c
++++ b/src/network/networkd-link.c
+@@ -55,9 +55,8 @@
+ #include "util.h"
+ #include "vrf.h"
+ 
+-bool link_ipv4ll_enabled(Link *link, AddressFamily mask) {
++bool link_ipv4ll_enabled(Link *link) {
+         assert(link);
+-        assert((mask & ~(ADDRESS_FAMILY_IPV4 | ADDRESS_FAMILY_FALLBACK_IPV4)) == 0);
+ 
+         if (link->flags & IFF_LOOPBACK)
+                 return false;
+@@ -80,7 +79,7 @@ bool link_ipv4ll_enabled(Link *link, AddressFamily mask) {
+         if (link->network->bond)
+                 return false;
+ 
+-        return link->network->link_local & mask;
++        return link->network->link_local & ADDRESS_FAMILY_IPV4;
+ }
+ 
+ bool link_ipv6ll_enabled(Link *link) {
+@@ -795,7 +794,7 @@ void link_check_ready(Link *link) {
+                 bool has_ndisc_address = false;
+                 NDiscAddress *n;
+ 
+-                if (link_ipv4ll_enabled(link, ADDRESS_FAMILY_IPV4) && !link->ipv4ll_address_configured) {
++                if (link_ipv4ll_enabled(link) && !link->ipv4ll_address_configured) {
+                         log_link_debug(link, "%s(): IPv4LL is not configured.", __func__);
+                         return;
+                 }
+@@ -814,7 +813,7 @@ void link_check_ready(Link *link) {
+ 
+                 if ((link_dhcp4_enabled(link) || link_dhcp6_enabled(link)) &&
+                     !link->dhcp_address && set_isempty(link->dhcp6_addresses) && !has_ndisc_address &&
+-                    !(link_ipv4ll_enabled(link, ADDRESS_FAMILY_FALLBACK_IPV4) && link->ipv4ll_address_configured)) {
++                    !(link_ipv4ll_enabled(link) && link->ipv4ll_address_configured)) {
+                         log_link_debug(link, "%s(): DHCP4 or DHCP6 is enabled but no dynamic address is assigned yet.", __func__);
+                         return;
+                 }
+@@ -824,7 +823,7 @@ void link_check_ready(Link *link) {
+                             !(link->dhcp6_address_configured && link->dhcp6_route_configured) &&
+                             !(link->dhcp6_pd_address_configured && link->dhcp6_pd_route_configured) &&
+                             !(link->ndisc_addresses_configured && link->ndisc_routes_configured) &&
+-                            !(link_ipv4ll_enabled(link, ADDRESS_FAMILY_FALLBACK_IPV4) && link->ipv4ll_address_configured)) {
++                            !(link_ipv4ll_enabled(link) && link->ipv4ll_address_configured)) {
+                                 /* When DHCP or RA is enabled, at least one protocol must provide an address, or
+                                  * an IPv4ll fallback address must be configured. */
+                                 log_link_debug(link, "%s(): dynamic addresses or routes are not configured.", __func__);
+@@ -1230,7 +1229,7 @@ static int link_acquire_ipv4_conf(Link *link) {
+         assert(link->manager);
+         assert(link->manager->event);
+ 
+-        if (link_ipv4ll_enabled(link, ADDRESS_FAMILY_IPV4)) {
++        if (link_ipv4ll_enabled(link)) {
+                 assert(link->ipv4ll);
+ 
+                 log_link_debug(link, "Acquiring IPv4 link-local address");
+diff --git a/src/network/networkd-link.h b/src/network/networkd-link.h
+index cd541920cb..666ba4acf2 100644
+--- a/src/network/networkd-link.h
++++ b/src/network/networkd-link.h
+@@ -231,7 +231,7 @@ int link_ipv6ll_gained(Link *link, const struct in6_addr *address);
+ 
+ int link_set_mtu(Link *link, uint32_t mtu);
+ 
+-bool link_ipv4ll_enabled(Link *link, AddressFamily mask);
++bool link_ipv4ll_enabled(Link *link);
+ 
+ int link_stop_engines(Link *link, bool may_keep_dhcp);
+ 
+diff --git a/src/network/networkd-network.c b/src/network/networkd-network.c
+index 3254641461..f927337957 100644
+--- a/src/network/networkd-network.c
++++ b/src/network/networkd-network.c
+@@ -214,13 +214,6 @@ int network_verify(Network *network) {
+         if (network->link_local < 0)
+                 network->link_local = network->bridge ? ADDRESS_FAMILY_NO : ADDRESS_FAMILY_IPV6;
+ 
+-        if (FLAGS_SET(network->link_local, ADDRESS_FAMILY_FALLBACK_IPV4) &&
+-            !FLAGS_SET(network->dhcp, ADDRESS_FAMILY_IPV4)) {
+-                log_warning("%s: fallback assignment of IPv4 link local address is enabled but DHCPv4 is disabled. "
+-                            "Disabling the fallback assignment.", network->filename);
+-                SET_FLAG(network->link_local, ADDRESS_FAMILY_FALLBACK_IPV4, false);
+-        }
+-
+         /* IPMasquerade=yes implies IPForward=yes */
+         if (network->ip_masquerade)
+                 network->ip_forward |= ADDRESS_FAMILY_IPV4;
+diff --git a/src/network/networkd-util.c b/src/network/networkd-util.c
+index 8ddcbb2fce..83b38b2b05 100644
+--- a/src/network/networkd-util.c
++++ b/src/network/networkd-util.c
+@@ -15,15 +15,6 @@ static const char* const address_family_table[_ADDRESS_FAMILY_MAX] = {
+         [ADDRESS_FAMILY_IPV6]          = "ipv6",
+ };
+ 
+-static const char* const link_local_address_family_table[_ADDRESS_FAMILY_MAX] = {
+-        [ADDRESS_FAMILY_NO]            = "no",
+-        [ADDRESS_FAMILY_YES]           = "yes",
+-        [ADDRESS_FAMILY_IPV4]          = "ipv4",
+-        [ADDRESS_FAMILY_IPV6]          = "ipv6",
+-        [ADDRESS_FAMILY_FALLBACK]      = "fallback",
+-        [ADDRESS_FAMILY_FALLBACK_IPV4] = "ipv4-fallback",
+-};
+-
+ static const char* const routing_policy_rule_address_family_table[_ADDRESS_FAMILY_MAX] = {
+         [ADDRESS_FAMILY_YES]           = "both",
+         [ADDRESS_FAMILY_IPV4]          = "ipv4",
+@@ -47,7 +38,15 @@ static const char* const dhcp_lease_server_type_table[_SD_DHCP_LEASE_SERVER_TYPE
+ };
+ 
+ DEFINE_STRING_TABLE_LOOKUP_WITH_BOOLEAN(address_family, AddressFamily, ADDRESS_FAMILY_YES);
+-DEFINE_STRING_TABLE_LOOKUP_WITH_BOOLEAN(link_local_address_family, AddressFamily, ADDRESS_FAMILY_YES);
++
++AddressFamily link_local_address_family_from_string(const char *s) {
++        if (streq_ptr(s, "fallback"))         /* compat name */
++                return ADDRESS_FAMILY_YES;
++        if (streq_ptr(s, "fallback-ipv4"))    /* compat name */
++                return ADDRESS_FAMILY_IPV4;
++        return address_family_from_string(s);
++}
++
+ DEFINE_STRING_TABLE_LOOKUP(routing_policy_rule_address_family, AddressFamily);
+ DEFINE_STRING_TABLE_LOOKUP(duplicate_address_detection_address_family, AddressFamily);
+ DEFINE_CONFIG_PARSE_ENUM(config_parse_link_local_address_family, link_local_address_family,
+diff --git a/src/network/networkd-util.h b/src/network/networkd-util.h
+index 6100a0031c..7b48046c35 100644
+--- a/src/network/networkd-util.h
++++ b/src/network/networkd-util.h
+@@ -16,8 +16,6 @@ typedef enum AddressFamily {
+         ADDRESS_FAMILY_IPV4           = 1 << 0,
+         ADDRESS_FAMILY_IPV6           = 1 << 1,
+         ADDRESS_FAMILY_YES            = ADDRESS_FAMILY_IPV4 | ADDRESS_FAMILY_IPV6,
+-        ADDRESS_FAMILY_FALLBACK_IPV4  = 1 << 2,
+-        ADDRESS_FAMILY_FALLBACK       = ADDRESS_FAMILY_FALLBACK_IPV4 | ADDRESS_FAMILY_IPV6,
+         _ADDRESS_FAMILY_MAX,
+         _ADDRESS_FAMILY_INVALID = -1,
+ } AddressFamily;
+@@ -34,7 +32,6 @@ CONFIG_PARSER_PROTOTYPE(config_parse_address_family_with_kernel);
+ const char *address_family_to_string(AddressFamily b) _const_;
+ AddressFamily address_family_from_string(const char *s) _pure_;
+ 
+-const char *link_local_address_family_to_string(AddressFamily b) _const_;
+ AddressFamily link_local_address_family_from_string(const char *s) _pure_;
+ 
+ const char *routing_policy_rule_address_family_to_string(AddressFamily b) _const_;
+diff --git a/test/test-network/conf/dhcp-client-with-ipv4ll-fallback-with-dhcp-server.network b/test/test-network/conf/dhcp-client-with-ipv4ll-with-dhcp-server.network
+similarity index 66%
+rename from test/test-network/conf/dhcp-client-with-ipv4ll-fallback-with-dhcp-server.network
+rename to test/test-network/conf/dhcp-client-with-ipv4ll-with-dhcp-server.network
+index 9ebdbb4f8d..0455e09b4c 100644
+--- a/test/test-network/conf/dhcp-client-with-ipv4ll-fallback-with-dhcp-server.network
++++ b/test/test-network/conf/dhcp-client-with-ipv4ll-with-dhcp-server.network
+@@ -3,5 +3,5 @@ Name=veth99
+ 
+ [Network]
+ DHCP=ipv4
+-LinkLocalAddressing=fallback
++LinkLocalAddressing=yes
+ IPv6AcceptRA=no
+diff --git a/test/test-network/conf/dhcp-client-with-ipv4ll-fallback-without-dhcp-server.network b/test/test-network/conf/dhcp-client-with-ipv4ll-without-dhcp-server.network
+similarity index 73%
+rename from test/test-network/conf/dhcp-client-with-ipv4ll-fallback-without-dhcp-server.network
+rename to test/test-network/conf/dhcp-client-with-ipv4ll-without-dhcp-server.network
+index 5489c62a54..2723e0a273 100644
+--- a/test/test-network/conf/dhcp-client-with-ipv4ll-fallback-without-dhcp-server.network
++++ b/test/test-network/conf/dhcp-client-with-ipv4ll-without-dhcp-server.network
+@@ -3,7 +3,7 @@ Name=veth99
+ 
+ [Network]
+ DHCP=ipv4
+-LinkLocalAddressing=fallback
++LinkLocalAddressing=yes
+ IPv6AcceptRA=no
+ 
+ [DHCPv4]
+diff --git a/test/test-network/systemd-networkd-tests.py b/test/test-network/systemd-networkd-tests.py
+index 1062f93e55..4bbd6e7171 100755
+--- a/test/test-network/systemd-networkd-tests.py
++++ b/test/test-network/systemd-networkd-tests.py
+@@ -3429,8 +3429,8 @@ class NetworkdDHCPClientTests(unittest.TestCase, Utilities):
+         'dhcp-client-use-dns-yes.network',
+         'dhcp-client-use-domains.network',
+         'dhcp-client-vrf.network',
+-        'dhcp-client-with-ipv4ll-fallback-with-dhcp-server.network',
+-        'dhcp-client-with-ipv4ll-fallback-without-dhcp-server.network',
++        'dhcp-client-with-ipv4ll-with-dhcp-server.network',
++        'dhcp-client-with-ipv4ll-without-dhcp-server.network',
+         'dhcp-client-with-static-address.network',
+         'dhcp-client.network',
+         'dhcp-server-decline.network',
+@@ -3996,9 +3996,9 @@ class NetworkdDHCPClientTests(unittest.TestCase, Utilities):
+         print(output)
+         self.assertRegex(output, 'onlink')
+ 
+-    def test_dhcp_client_with_ipv4ll_fallback_with_dhcp_server(self):
++    def test_dhcp_client_with_ipv4ll_with_dhcp_server(self):
+         copy_unit_to_networkd_unit_path('25-veth.netdev', 'dhcp-server-veth-peer.network',
+-                                        'dhcp-client-with-ipv4ll-fallback-with-dhcp-server.network')
++                                        'dhcp-client-with-ipv4ll-with-dhcp-server.network')
+         start_networkd()
+         self.wait_online(['veth-peer:carrier'])
+         start_dnsmasq(lease_time='2m')
+@@ -4033,9 +4033,9 @@ class NetworkdDHCPClientTests(unittest.TestCase, Utilities):
+ 
+         search_words_in_dnsmasq_log('DHCPOFFER', show_all=True)
+ 
+-    def test_dhcp_client_with_ipv4ll_fallback_without_dhcp_server(self):
++    def test_dhcp_client_with_ipv4ll_without_dhcp_server(self):
+         copy_unit_to_networkd_unit_path('25-veth.netdev', 'dhcp-server-veth-peer.network',
+-                                        'dhcp-client-with-ipv4ll-fallback-without-dhcp-server.network')
++                                        'dhcp-client-with-ipv4ll-without-dhcp-server.network')
+         start_networkd()
+         self.wait_online(['veth99:degraded', 'veth-peer:routable'])
+ 

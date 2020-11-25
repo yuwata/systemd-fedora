@@ -1,4 +1,4 @@
-From f2a8c56518c0967f106fc82670d312e76e89dd4d Mon Sep 17 00:00:00 2001
+From 9e25cca1302b5c37ff8b02df5427583ba3e46f6a Mon Sep 17 00:00:00 2001
 From: Yu Watanabe <watanabe.yu+github@gmail.com>
 Date: Mon, 16 Nov 2020 19:28:40 +0900
 Subject: [PATCH] sd-device: make device_add_property_internal() inline

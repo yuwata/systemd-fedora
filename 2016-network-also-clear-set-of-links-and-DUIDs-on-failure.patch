@@ -1,0 +1,186 @@
+From 9afc318a6802f0cc67bd3304f4a7651ae1d88abd Mon Sep 17 00:00:00 2001
+From: Yu Watanabe <watanabe.yu+github@gmail.com>
+Date: Tue, 24 Nov 2020 16:08:09 +0900
+Subject: [PATCH] network: also clear set of links and DUIDs on failure
+
+DUID object may be owned by Network object, and it may be freed later on
+reloading .network files.
+
+Link object needs to be freed when the corresponding interface is removed.
+---
+ src/network/networkd-dhcp-common.c | 92 ++++++++++++++++--------------
+ src/network/networkd-manager.h     |  1 +
+ 2 files changed, 49 insertions(+), 44 deletions(-)
+
+diff --git a/src/network/networkd-dhcp-common.c b/src/network/networkd-dhcp-common.c
+index aa7e6102fe..ea62fba93b 100644
+--- a/src/network/networkd-dhcp-common.c
++++ b/src/network/networkd-dhcp-common.c
+@@ -88,13 +88,37 @@ static int duid_set_uuid(DUID *duid, sd_id128_t uuid) {
+         return 1;
+ }
+ 
++static void finalize_requesting_uuid(Manager *m, Link *except) {
++        Link *link;
++        int r;
++
++        assert(m);
++
++
++        while ((link = set_steal_first(m->links_requesting_uuid))) {
++                if (link != except) {
++                        r = link_configure(link);
++                        if (r < 0)
++                                link_enter_failed(link);
++                }
++
++                link_unref(link);
++        }
++
++        m->links_requesting_uuid = set_free(m->links_requesting_uuid);
++        m->duids_requesting_uuid = set_free(m->duids_requesting_uuid);
++
++        /* To avoid calling GetProductUUID() bus method so frequently, set the flag below
++         * even if the method fails. */
++        m->has_product_uuid = true;
++}
++
+ static int get_product_uuid_handler(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
+         Manager *manager = userdata;
+         const sd_bus_error *e;
+         const void *a;
+         size_t sz;
+         DUID *duid;
+-        Link *link;
+         int r;
+ 
+         assert(m);
+@@ -105,41 +129,26 @@ static int get_product_uuid_handler(sd_bus_message *m, void *userdata, sd_bus_er
+                 r = sd_bus_error_get_errno(e);
+                 log_warning_errno(r, "Could not get product UUID. Falling back to use machine-app-specific ID as DUID-UUID: %s",
+                                   bus_error_message(e, r));
+-                goto configure;
++                goto finalize;
+         }
+ 
+         r = sd_bus_message_read_array(m, 'y', &a, &sz);
+         if (r < 0) {
+                 log_warning_errno(r, "Failed to get product UUID. Falling back to use machine-app-specific ID as DUID-UUID: %m");
+-                goto configure;
++                goto finalize;
+         }
+ 
+         if (sz != sizeof(sd_id128_t)) {
+                 log_warning("Invalid product UUID. Falling back to use machine-app-specific ID as DUID-UUID.");
+-                goto configure;
++                goto finalize;
+         }
+ 
+         memcpy(&manager->product_uuid, a, sz);
+         while ((duid = set_steal_first(manager->duids_requesting_uuid)))
+                 (void) duid_set_uuid(duid, manager->product_uuid);
+ 
+-        manager->duids_requesting_uuid = set_free(manager->duids_requesting_uuid);
+-
+-configure:
+-        while ((link = set_steal_first(manager->links_requesting_uuid))) {
+-                link_unref(link);
+-
+-                r = link_configure(link);
+-                if (r < 0)
+-                        link_enter_failed(link);
+-        }
+-
+-        manager->links_requesting_uuid = set_free(manager->links_requesting_uuid);
+-
+-        /* To avoid calling GetProductUUID() bus method so frequently, set the flag below
+-         * even if the method fails. */
+-        manager->has_product_uuid = true;
+-
++finalize:
++        finalize_requesting_uuid(manager, NULL);
+         return 1;
+ }
+ 
+@@ -151,8 +160,6 @@ int manager_request_product_uuid(Manager *m, Link *link) {
+         if (m->has_product_uuid)
+                 return 0;
+ 
+-        log_debug("Requesting product UUID");
+-
+         if (link) {
+                 DUID *duid;
+ 
+@@ -169,6 +176,9 @@ int manager_request_product_uuid(Manager *m, Link *link) {
+                         return log_oom();
+         }
+ 
++        if (m->requesting_uuid)
++                return 0;
++
+         if (!m->bus || sd_bus_is_ready(m->bus) <= 0) {
+                 log_debug("Not connected to system bus, requesting product UUID later.");
+                 return 0;
+@@ -185,8 +195,15 @@ int manager_request_product_uuid(Manager *m, Link *link) {
+                         m,
+                         "b",
+                         false);
+-        if (r < 0)
+-                return log_warning_errno(r, "Failed to get product UUID: %m");
++        if (r < 0) {
++                /* On failure, assume that uuid is already acquired. */
++                finalize_requesting_uuid(m, link);
++
++                return log_warning_errno(r, "Failed to request product UUID: %m");
++        }
++
++        log_debug("Requesting product UUID");
++        m->requesting_uuid = true;
+ 
+         return 0;
+ }
+@@ -231,26 +248,13 @@ int link_configure_duid(Link *link) {
+                 return 1;
+         }
+ 
+-        if (!m->links_requesting_uuid) {
+-                r = manager_request_product_uuid(m, link);
+-                if (r < 0) {
+-                        if (r == -ENOMEM)
+-                                return r;
+-
+-                        log_link_warning_errno(link, r,
+-                                               "Failed to get product UUID. Falling back to use machine-app-specific ID as DUID-UUID: %m");
+-                        return 1;
+-                }
+-        } else {
+-                r = set_put(m->links_requesting_uuid, link);
+-                if (r < 0)
+-                        return log_oom();
+-                if (r > 0)
+-                        link_ref(link);
++        r = manager_request_product_uuid(m, link);
++        if (r < 0) {
++                log_link_warning_errno(link, r,
++                                       "Failed to get product UUID. Falling back to use machine-app-specific ID as DUID-UUID: %m");
+ 
+-                r = set_put(m->duids_requesting_uuid, duid);
+-                if (r < 0)
+-                        return log_oom();
++                /* On failure, assume that duid is already configured. */
++                return 1;
+         }
+ 
+         return 0;
+diff --git a/src/network/networkd-manager.h b/src/network/networkd-manager.h
+index b67116be59..8faf0f949b 100644
+--- a/src/network/networkd-manager.h
++++ b/src/network/networkd-manager.h
+@@ -51,6 +51,7 @@ struct Manager {
+         DUID duid;
+         sd_id128_t product_uuid;
+         bool has_product_uuid;
++        bool requesting_uuid;
+         Set *links_requesting_uuid;
+         Set *duids_requesting_uuid;
+ 

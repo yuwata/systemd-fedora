@@ -1,0 +1,54 @@
+From b554d89431235689524885c0524c7ebab7ce65cd Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Thu, 8 Oct 2020 16:51:25 +0200
+Subject: [PATCH] sd-dhcp-client: report transient DHCP failure to the caller
+
+So far we only reported major state transitions like failure to acquire
+the message. Let's report the initial failure after a few timeouts in
+a new event type.
+
+The number of timeouts is hardcoded as 3, since Windows seems to be using
+that. I don't think we need to make this configurable out of the box. A
+reasonable default may be enough.
+---
+ src/libsystemd-network/sd-dhcp-client.c | 6 ++++++
+ src/systemd/sd-dhcp-client.h            | 2 ++
+ 2 files changed, 8 insertions(+)
+
+diff --git a/src/libsystemd-network/sd-dhcp-client.c b/src/libsystemd-network/sd-dhcp-client.c
+index 76f762cf96..f47a542483 100644
+--- a/src/libsystemd-network/sd-dhcp-client.c
++++ b/src/libsystemd-network/sd-dhcp-client.c
+@@ -38,6 +38,9 @@
+ #define RESTART_AFTER_NAK_MIN_USEC (1 * USEC_PER_SEC)
+ #define RESTART_AFTER_NAK_MAX_USEC (30 * USEC_PER_MINUTE)
+ 
++#define TRANSIENT_FAILURE_ATTEMPTS 3 /* Arbitrary limit: how many attempts are considered enough to report
++                                      * transient failure. */
++
+ typedef struct sd_dhcp_client_id {
+         uint8_t type;
+         union {
+@@ -1299,6 +1302,9 @@ static int client_timeout_resend(
+                 goto error;
+         }
+ 
++        if (client->attempt >= TRANSIENT_FAILURE_ATTEMPTS)
++                client_notify(client, SD_DHCP_CLIENT_EVENT_TRANSIENT_FAILURE);
++
+         return 0;
+ 
+ error:
+diff --git a/src/systemd/sd-dhcp-client.h b/src/systemd/sd-dhcp-client.h
+index 44bafe6df5..c35328a9a6 100644
+--- a/src/systemd/sd-dhcp-client.h
++++ b/src/systemd/sd-dhcp-client.h
+@@ -40,6 +40,8 @@ enum {
+         SD_DHCP_CLIENT_EVENT_EXPIRED            = 3,
+         SD_DHCP_CLIENT_EVENT_RENEW              = 4,
+         SD_DHCP_CLIENT_EVENT_SELECTING          = 5,
++        SD_DHCP_CLIENT_EVENT_TRANSIENT_FAILURE  = 6, /* Sent when we have not received a reply after the first few attempts.
++                                                      * The client may want to start acquiring link-local addresses. */
+ };
+ 
+ enum {

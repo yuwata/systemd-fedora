@@ -1,0 +1,28 @@
+From c004e8e81e931647c25a352b69c64c876a1d30b1 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Wed, 7 Oct 2020 14:13:39 +0200
+Subject: [PATCH] man: adjust description of MaxAttempts
+
+The code was changed in 715cedfbf03a2eb1d4dca5d1b2b876e52a3b652d to allow more than
+six attempts and the old description stopped making sense.
+---
+ man/systemd.network.xml | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/man/systemd.network.xml b/man/systemd.network.xml
+index 70e1608c4a..1f389a05f3 100644
+--- a/man/systemd.network.xml
++++ b/man/systemd.network.xml
+@@ -1664,9 +1664,9 @@ IPv6Token=prefixstable:2002:da8:1::</programlisting></para>
+           <term><varname>MaxAttempts=</varname></term>
+           <listitem>
+             <para>Specifies how many times the DHCPv4 client configuration should be attempted. Takes a
+-            number or <literal>infinity</literal>. Defaults to <literal>infinity</literal>.
+-            Note that the time between retries is increased exponentially, so the network will not be
+-            overloaded even if this number is high.</para>
++            number or <literal>infinity</literal>. Defaults to <literal>infinity</literal>. Note that the
++            time between retries is increased exponentially, up to approximately one per minute, so the
++            network will not be overloaded even if this number is high.</para>
+           </listitem>
+         </varlistentry>
+ 

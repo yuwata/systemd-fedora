@@ -1,0 +1,138 @@
+From 897f526b1f176ec1af6cedc2abb418d856ad9fae Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Thu, 8 Oct 2020 20:14:51 +0200
+Subject: [PATCH] networkd: start ipv4ll when dhcp has trouble getting a lease
+
+Fixes #13316.
+---
+ man/systemd.network.xml                        |  7 +++++--
+ src/network/networkd-dhcp4.c                   | 15 +++++++++++++++
+ src/network/networkd-link.c                    | 17 ++++++++---------
+ test/test-network/conf/dhcp-client-vrf.network |  1 -
+ test/test-network/systemd-networkd-tests.py    |  3 ---
+ 5 files changed, 28 insertions(+), 15 deletions(-)
+
+diff --git a/man/systemd.network.xml b/man/systemd.network.xml
+index 3b029dca63..27263c34eb 100644
+--- a/man/systemd.network.xml
++++ b/man/systemd.network.xml
+@@ -367,7 +367,9 @@
+             <para>Enables link-local address autoconfiguration. Accepts <option>yes</option>,
+             <option>no</option>, <option>ipv4</option>, and <option>ipv6</option>. An IPv6 link-local address
+             is configured when <option>yes</option> or <option>ipv6</option>. An IPv4 link-local address is
+-            configured when <option>yes</option> or <option>ipv4</option>.</para>
++            configured when <option>yes</option> or <option>ipv4</option> and when DHCPv4 autoconfiguration
++            has been unsuccessful for some time. (IPv4 link-local address autoconfiguration will usually
++            happen in parallel with repeated attempts to acquire a DHCPv4 lease).</para>
+ 
+             <para>Defaults to <option>no</option> when <varname>Bridge=yes</varname> is set, and
+             <option>ipv6</option> otherwise.</para>
+@@ -1662,7 +1664,8 @@ IPv6Token=prefixstable:2002:da8:1::</programlisting></para>
+             <para>Specifies how many times the DHCPv4 client configuration should be attempted. Takes a
+             number or <literal>infinity</literal>. Defaults to <literal>infinity</literal>. Note that the
+             time between retries is increased exponentially, up to approximately one per minute, so the
+-            network will not be overloaded even if this number is high.</para>
++            network will not be overloaded even if this number is high. The default is suitable in most
++            circumstances.</para>
+           </listitem>
+         </varlistentry>
+ 
+diff --git a/src/network/networkd-dhcp4.c b/src/network/networkd-dhcp4.c
+index 48b3a6a52a..0f2451cac5 100644
+--- a/src/network/networkd-dhcp4.c
++++ b/src/network/networkd-dhcp4.c
+@@ -1135,6 +1135,21 @@ static int dhcp4_handler(sd_dhcp_client *client, int event, void *userdata) {
+                                         return -ENOMSG;
+                         }
+                         break;
++
++                case SD_DHCP_CLIENT_EVENT_TRANSIENT_FAILURE:
++                        if (link_ipv4ll_enabled(link)) {
++                                assert(link->ipv4ll);
++
++                                if (!sd_ipv4ll_is_running(link->ipv4ll)) {
++                                        log_link_debug(link, "Problems acquiring DHCP lease, acquiring IPv4 link-local address");
++
++                                        r = sd_ipv4ll_start(link->ipv4ll);
++                                        if (r < 0)
++                                                return log_link_warning_errno(link, r, "Could not acquire IPv4 link-local address: %m");
++                                }
++                        }
++                        break;
++
+                 default:
+                         if (event < 0)
+                                 log_link_warning_errno(link, event, "DHCP error: Client failed: %m");
+diff --git a/src/network/networkd-link.c b/src/network/networkd-link.c
+index 4d866ebae3..541ca23b6e 100644
+--- a/src/network/networkd-link.c
++++ b/src/network/networkd-link.c
+@@ -1229,7 +1229,14 @@ static int link_acquire_ipv4_conf(Link *link) {
+         assert(link->manager);
+         assert(link->manager->event);
+ 
+-        if (link_ipv4ll_enabled(link)) {
++        if (link->dhcp_client) {
++                log_link_debug(link, "Acquiring DHCPv4 lease");
++
++                r = sd_dhcp_client_start(link->dhcp_client);
++                if (r < 0)
++                        return log_link_warning_errno(link, r, "Could not acquire DHCPv4 lease: %m");
++
++        } else if (link_ipv4ll_enabled(link)) {
+                 assert(link->ipv4ll);
+ 
+                 log_link_debug(link, "Acquiring IPv4 link-local address");
+@@ -1239,14 +1246,6 @@ static int link_acquire_ipv4_conf(Link *link) {
+                         return log_link_warning_errno(link, r, "Could not acquire IPv4 link-local address: %m");
+         }
+ 
+-        if (link->dhcp_client) {
+-                log_link_debug(link, "Acquiring DHCPv4 lease");
+-
+-                r = sd_dhcp_client_start(link->dhcp_client);
+-                if (r < 0)
+-                        return log_link_warning_errno(link, r, "Could not acquire DHCPv4 lease: %m");
+-        }
+-
+         return 0;
+ }
+ 
+diff --git a/test/test-network/conf/dhcp-client-vrf.network b/test/test-network/conf/dhcp-client-vrf.network
+index bb1d2e09c5..a277d5ecbf 100644
+--- a/test/test-network/conf/dhcp-client-vrf.network
++++ b/test/test-network/conf/dhcp-client-vrf.network
+@@ -4,5 +4,4 @@ Name=veth99
+ [Network]
+ DHCP=yes
+ IPv6AcceptRA=yes
+-LinkLocalAddressing=yes
+ VRF=vrf99
+diff --git a/test/test-network/systemd-networkd-tests.py b/test/test-network/systemd-networkd-tests.py
+index 4bbd6e7171..6d5ca11527 100755
+--- a/test/test-network/systemd-networkd-tests.py
++++ b/test/test-network/systemd-networkd-tests.py
+@@ -3926,7 +3926,6 @@ class NetworkdDHCPClientTests(unittest.TestCase, Utilities):
+         print('## ip address show vrf vrf99')
+         output = check_output('ip address show vrf vrf99')
+         print(output)
+-        self.assertRegex(output, 'inet 169.254.[0-9]*.[0-9]*/16 brd 169.254.255.255 scope link veth99')
+         self.assertRegex(output, 'inet 192.168.5.[0-9]*/24 brd 192.168.5.255 scope global dynamic veth99')
+         self.assertRegex(output, 'inet6 2600::[0-9a-f]*/128 scope global (dynamic noprefixroute|noprefixroute dynamic)')
+         self.assertRegex(output, 'inet6 .* scope link')
+@@ -3934,7 +3933,6 @@ class NetworkdDHCPClientTests(unittest.TestCase, Utilities):
+         print('## ip address show dev veth99')
+         output = check_output('ip address show dev veth99')
+         print(output)
+-        self.assertRegex(output, 'inet 169.254.[0-9]*.[0-9]*/16 brd 169.254.255.255 scope link veth99')
+         self.assertRegex(output, 'inet 192.168.5.[0-9]*/24 brd 192.168.5.255 scope global dynamic veth99')
+         self.assertRegex(output, 'inet6 2600::[0-9a-f]*/128 scope global (dynamic noprefixroute|noprefixroute dynamic)')
+         self.assertRegex(output, 'inet6 .* scope link')
+@@ -3943,7 +3941,6 @@ class NetworkdDHCPClientTests(unittest.TestCase, Utilities):
+         output = check_output('ip route show vrf vrf99')
+         print(output)
+         self.assertRegex(output, 'default via 192.168.5.1 dev veth99 proto dhcp src 192.168.5.')
+-        self.assertRegex(output, '169.254.0.0/16 dev veth99 proto kernel scope link src 169.254')
+         self.assertRegex(output, '192.168.5.0/24 dev veth99 proto kernel scope link src 192.168.5')
+         self.assertRegex(output, '192.168.5.0/24 via 192.168.5.5 dev veth99 proto dhcp')
+         self.assertRegex(output, '192.168.5.1 dev veth99 proto dhcp scope link src 192.168.5')

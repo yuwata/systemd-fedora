@@ -1,0 +1,30 @@
+From 2fd911c81c5905d919cfdb937e44a9f387fc69ec Mon Sep 17 00:00:00 2001
+From: Yu Watanabe <watanabe.yu+github@gmail.com>
+Date: Tue, 24 Nov 2020 15:47:13 +0900
+Subject: [PATCH] network: stop to assign UUID when reconfiguring link
+
+This fixes the following race in reconfiguring link:
+1. an interface requests UUID.
+2. the interface is reconfigured and link_configure() is called.
+3. sd-lldp client is started on the interface (it is enabled by default).
+4. networkd acquires UUID, and get_product_uuid_handler() calls
+   link_configure() for the link again.
+5. link_lldp_rx_configure() fails to set ifindex for already running
+   sd-lldp client.
+6. the link enters failed state.
+---
+ src/network/networkd-link.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/network/networkd-link.c b/src/network/networkd-link.c
+index ced18de425..86c2fa4f5f 100644
+--- a/src/network/networkd-link.c
++++ b/src/network/networkd-link.c
+@@ -2206,6 +2206,7 @@ static int link_reconfigure_internal(Link *link, sd_netlink_message *m, bool for
+         link_free_carrier_maps(link);
+         link_free_engines(link);
+         link->network = network_unref(link->network);
++        link_unref(set_remove(link->manager->links_requesting_uuid, link));
+ 
+         /* Then, apply new .network file */
+         r = network_apply(network, link);
