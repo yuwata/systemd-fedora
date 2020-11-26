@@ -20,7 +20,7 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        247~rc2
+Version:        247
 Release:        1%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
@@ -71,7 +71,6 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
 Patch0001:      use-bfq-scheduler.patch
 
-Patch0002:      0001-meson-allow-oomd-to-be-enabled-even-in-release-mode.patch
 Patch0003:      0001-test-path-util-do-not-fail-if-the-fd_is_mount_point-.patch
 Patch0004:      0001-test-path-util-ignore-test-failure.patch
 
@@ -893,6 +892,10 @@ getent passwd systemd-network &>/dev/null || useradd -r -u 192 -l -g systemd-net
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Thu Nov 26 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 247-1
+- Update to the latest version
+- #1900878 should be fixed
+
 * Tue Oct 20 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 247~rc2
 - New upstream pre-release. See
   https://github.com/systemd/systemd/blob/v247-rc1/NEWS.
