@@ -72,12 +72,10 @@ for file in files(buildroot):
                        /machine.slice|
                        /machines.target|
                        var-lib-machines.mount|
-                       network/80-container|
-                       network/80-vm|
                        org.freedesktop.(import|machine)1
     ''', n, re.X):
         o = o_container
-    elif re.search(r'''/usr/lib/systemd/network/..-wifi|
+    elif re.search(r'''/usr/lib/systemd/network/80-|
                        networkd|
                        networkctl|
                        org.freedesktop.network1
