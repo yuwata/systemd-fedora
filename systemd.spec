@@ -1,7 +1,7 @@
 #global commit c4b843473a75fb38ed5bf54e9d3cfb1cb3719efa
 %{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
-#global stable 1
+%global stable 1
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
 # strip the automatically generated dep here and instead co-own the
@@ -20,7 +20,7 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        247
+Version:        247.1
 Release:        1%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
@@ -892,6 +892,13 @@ getent passwd systemd-network &>/dev/null || useradd -r -u 192 -l -g systemd-net
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Tue Dec  1 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 247.1-1
+- Latest stable release
+- Fixes #1902819.
+- Files to configure networking with systemd-networkd in a VM or container are
+  moved to systemd-networkd subpackage. (They were previously in the -container
+  subpackage, which is for container/VM management.)
+
 * Thu Nov 26 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 247-1
 - Update to the latest version
 - #1900878 should be fixed
