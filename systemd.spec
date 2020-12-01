@@ -1,4 +1,4 @@
-#global commit c4b843473a75fb38ed5bf54e9d3cfb1cb3719efa
+%global commit c4b843473a75fb38ed5bf54e9d3cfb1cb3719efa
 %{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
 %global stable 1
@@ -62,6 +62,8 @@ Source22:       sysusers.attr
 Source23:       sysusers.prov
 Source24:       sysusers.generate-pre.sh
 
+Source99:       patch-list.txt
+
 %if 0
 GIT_DIR=../../src/systemd/.git git format-patch-ab --no-signature -M -N v235..v235-stable
 i=1; for j in 00*patch; do printf "Patch%04d:      %s\n" $i $j; i=$((i+1));done|xclip
@@ -77,6 +79,8 @@ Patch0005:      0001-test-login-skip-consistency-checks-when-logind-is-no.patch
 
 Patch0009:      https://github.com/systemd/systemd/pull/17050/commits/f58b96d3e8d1cb0dd3666bc74fa673918b586612.patch
 Patch0010:      https://github.com/systemd/systemd/pull/18062/commits/9cc6a94790eecfc808335b759355a4005d66f6e3.patch
+
+%include %{SOURCE99}
 
 %ifarch %{ix86} x86_64 aarch64
 %global have_gnu_efi 1
