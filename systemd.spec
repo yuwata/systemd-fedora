@@ -20,8 +20,8 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        247.1
-Release:        3%{?dist}
+Version:        247.2
+Release:        1%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -73,6 +73,7 @@ Patch0001:      use-bfq-scheduler.patch
 
 Patch0003:      0001-test-path-util-do-not-fail-if-the-fd_is_mount_point-.patch
 Patch0004:      0001-test-path-util-ignore-test-failure.patch
+Patch0005:      0001-test-login-skip-consistency-checks-when-logind-is-no.patch
 
 Patch0009:      https://github.com/systemd/systemd/pull/17050/commits/f58b96d3e8d1cb0dd3666bc74fa673918b586612.patch
 
@@ -892,6 +893,10 @@ getent passwd systemd-network &>/dev/null || useradd -r -u 192 -l -g systemd-net
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Wed Dec 16 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 247.2-1
+- Minor stable release
+- Fixes #1908071.
+
 * Tue Dec  8 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 247.1-3
 - Rebuild with fallback hostname change reverted.
 

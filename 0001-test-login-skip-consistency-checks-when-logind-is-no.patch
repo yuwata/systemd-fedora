@@ -1,0 +1,169 @@
+From aee1d734a5034d47005a339ec5b2b39583795039 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Wed, 16 Dec 2020 15:56:44 +0100
+Subject: [PATCH] test-login: skip consistency checks when logind is not active
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+There are two ways in swich sd_login_* functions acquire data:
+some are derived from the cgroup path, but others use the data serialized
+by logind.
+
+When the tests are executed under Fedora's mock, without systemd-spawn
+but instead in a traditional chroot, test-login gets confused:
+the "outside" cgroup path is visible, so sd_pid_get_unit() and
+sd_pid_get_session() work, but sd_session_is_active() and other functions
+that need logind data fail.
+
+Such a buildroot setup is fairly bad, but it can be encountered in the wild, so
+let's just skip the tests in that case.
+
+/* Information printed is from the live system */
+sd_pid_get_unit(0, …) → "session-237.scope"
+sd_pid_get_user_unit(0, …) → "n/a"
+sd_pid_get_slice(0, …) → "user-1000.slice"
+sd_pid_get_session(0, …) → "237"
+sd_pid_get_owner_uid(0, …) → 1000
+sd_pid_get_cgroup(0, …) → "/user.slice/user-1000.slice/session-237.scope"
+sd_uid_get_display(1000, …) → "(null)"
+sd_uid_get_sessions(1000, …) → [0] ""
+sd_uid_get_seats(1000, …) → [0] ""
+Assertion 'r >= 0' failed at src/libsystemd/sd-login/test-login.c:104, function test_login(). Aborting.
+---
+ src/libsystemd/sd-login/test-login.c | 98 +++++++++++++++-------------
+ 1 file changed, 52 insertions(+), 46 deletions(-)
+
+diff --git a/src/libsystemd/sd-login/test-login.c b/src/libsystemd/sd-login/test-login.c
+index 5b2ff93e1c..f762b8475b 100644
+--- a/src/libsystemd/sd-login/test-login.c
++++ b/src/libsystemd/sd-login/test-login.c
+@@ -112,68 +112,74 @@ static void test_login(void) {
+ 
+         if (session) {
+                 r = sd_session_is_active(session);
+-                assert_se(r >= 0);
+-                log_info("sd_session_is_active(\"%s\") → %s", session, yes_no(r));
++                if (r == -ENXIO)
++                        log_notice("sd_session_is_active failed with ENXIO, it seems logind is not running.");
++                else {
++                        /* All those tests will fail with ENXIO, so let's skip them. */
+ 
+-                r = sd_session_is_remote(session);
+-                assert_se(r >= 0);
+-                log_info("sd_session_is_remote(\"%s\") → %s", session, yes_no(r));
++                        assert_se(r >= 0);
++                        log_info("sd_session_is_active(\"%s\") → %s", session, yes_no(r));
+ 
+-                r = sd_session_get_state(session, &state);
+-                assert_se(r == 0);
+-                log_info("sd_session_get_state(\"%s\") → \"%s\"", session, state);
++                        r = sd_session_is_remote(session);
++                        assert_se(r >= 0);
++                        log_info("sd_session_is_remote(\"%s\") → %s", session, yes_no(r));
+ 
+-                assert_se(sd_session_get_uid(session, &u) >= 0);
+-                log_info("sd_session_get_uid(\"%s\") → "UID_FMT, session, u);
+-                assert_se(u == u2);
++                        r = sd_session_get_state(session, &state);
++                        assert_se(r == 0);
++                        log_info("sd_session_get_state(\"%s\") → \"%s\"", session, state);
+ 
+-                assert_se(sd_session_get_type(session, &type) >= 0);
+-                log_info("sd_session_get_type(\"%s\") → \"%s\"", session, type);
++                        assert_se(sd_session_get_uid(session, &u) >= 0);
++                        log_info("sd_session_get_uid(\"%s\") → "UID_FMT, session, u);
++                        assert_se(u == u2);
+ 
+-                assert_se(sd_session_get_class(session, &class) >= 0);
+-                log_info("sd_session_get_class(\"%s\") → \"%s\"", session, class);
++                        assert_se(sd_session_get_type(session, &type) >= 0);
++                        log_info("sd_session_get_type(\"%s\") → \"%s\"", session, type);
+ 
+-                r = sd_session_get_display(session, &display);
+-                assert_se(IN_SET(r, 0, -ENODATA));
+-                log_info("sd_session_get_display(\"%s\") → \"%s\"", session, strna(display));
++                        assert_se(sd_session_get_class(session, &class) >= 0);
++                        log_info("sd_session_get_class(\"%s\") → \"%s\"", session, class);
+ 
+-                r = sd_session_get_remote_user(session, &remote_user);
+-                assert_se(IN_SET(r, 0, -ENODATA));
+-                log_info("sd_session_get_remote_user(\"%s\") → \"%s\"",
+-                         session, strna(remote_user));
++                        r = sd_session_get_display(session, &display);
++                        assert_se(IN_SET(r, 0, -ENODATA));
++                        log_info("sd_session_get_display(\"%s\") → \"%s\"", session, strna(display));
+ 
+-                r = sd_session_get_remote_host(session, &remote_host);
+-                assert_se(IN_SET(r, 0, -ENODATA));
+-                log_info("sd_session_get_remote_host(\"%s\") → \"%s\"",
+-                         session, strna(remote_host));
++                        r = sd_session_get_remote_user(session, &remote_user);
++                        assert_se(IN_SET(r, 0, -ENODATA));
++                        log_info("sd_session_get_remote_user(\"%s\") → \"%s\"",
++                                 session, strna(remote_user));
+ 
+-                r = sd_session_get_seat(session, &seat);
+-                if (r >= 0) {
+-                        assert_se(seat);
++                        r = sd_session_get_remote_host(session, &remote_host);
++                        assert_se(IN_SET(r, 0, -ENODATA));
++                        log_info("sd_session_get_remote_host(\"%s\") → \"%s\"",
++                                 session, strna(remote_host));
+ 
+-                        log_info("sd_session_get_seat(\"%s\") → \"%s\"", session, seat);
++                        r = sd_session_get_seat(session, &seat);
++                        if (r >= 0) {
++                                assert_se(seat);
++
++                                log_info("sd_session_get_seat(\"%s\") → \"%s\"", session, seat);
+ 
+ #pragma GCC diagnostic push
+ #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+-                        r = sd_seat_can_multi_session(seat);
++                                r = sd_seat_can_multi_session(seat);
+ #pragma GCC diagnostic pop
+-                        assert_se(r == 1);
+-                        log_info("sd_session_can_multi_seat(\"%s\") → %s", seat, yes_no(r));
++                                assert_se(r == 1);
++                                log_info("sd_session_can_multi_seat(\"%s\") → %s", seat, yes_no(r));
+ 
+-                        r = sd_seat_can_tty(seat);
+-                        assert_se(r >= 0);
+-                        log_info("sd_session_can_tty(\"%s\") → %s", seat, yes_no(r));
++                                r = sd_seat_can_tty(seat);
++                                assert_se(r >= 0);
++                                log_info("sd_session_can_tty(\"%s\") → %s", seat, yes_no(r));
+ 
+-                        r = sd_seat_can_graphical(seat);
+-                        assert_se(r >= 0);
+-                        log_info("sd_session_can_graphical(\"%s\") → %s", seat, yes_no(r));
+-                } else {
+-                        log_info_errno(r, "sd_session_get_seat(\"%s\"): %m", session);
+-                        assert_se(r == -ENODATA);
++                                r = sd_seat_can_graphical(seat);
++                                assert_se(r >= 0);
++                                log_info("sd_session_can_graphical(\"%s\") → %s", seat, yes_no(r));
++                        } else {
++                                log_info_errno(r, "sd_session_get_seat(\"%s\"): %m", session);
++                                assert_se(r == -ENODATA);
++                        }
++
++                        assert_se(sd_uid_get_state(u, &state2) == 0);
++                        log_info("sd_uid_get_state("UID_FMT", …) → %s", u, state2);
+                 }
+-
+-                assert_se(sd_uid_get_state(u, &state2) == 0);
+-                log_info("sd_uid_get_state("UID_FMT", …) → %s", u, state2);
+         }
+ 
+         if (seat) {
+@@ -214,7 +220,7 @@ static void test_login(void) {
+         assert_se(sd_get_seats(NULL) == r);
+ 
+         r = sd_seat_get_active(NULL, &t, NULL);
+-        assert_se(IN_SET(r, 0, -ENODATA));
++        assert_se(IN_SET(r, 0, -ENODATA, -ENXIO));
+         log_info("sd_seat_get_active(NULL, …) (active session on current seat) → %s / \"%s\"", e(r), strnull(t));
+         free(t);
+ 
