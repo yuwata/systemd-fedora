@@ -21,7 +21,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        247.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -76,6 +76,7 @@ Patch0004:      0001-test-path-util-ignore-test-failure.patch
 Patch0005:      0001-test-login-skip-consistency-checks-when-logind-is-no.patch
 
 Patch0009:      https://github.com/systemd/systemd/pull/17050/commits/f58b96d3e8d1cb0dd3666bc74fa673918b586612.patch
+Patch0010:      https://github.com/systemd/systemd/pull/18062/commits/9cc6a94790eecfc808335b759355a4005d66f6e3.patch
 
 %ifarch %{ix86} x86_64 aarch64
 %global have_gnu_efi 1
@@ -893,6 +894,11 @@ getent passwd systemd-network &>/dev/null || useradd -r -u 192 -l -g systemd-net
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Wed Dec 23 2020 Jonathan Underwood <jonathan.underwood@gmail.com> - 247.2-2
+- Add patch to enable crypttab to support disabling of luks read and
+  write workqueues (corresponding to
+  https://github.com/systemd/systemd/pull/18062/).
+
 * Wed Dec 16 2020 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 247.2-1
 - Minor stable release
 - Fixes #1908071.

@@ -1,0 +1,102 @@
+From 9cc6a94790eecfc808335b759355a4005d66f6e3 Mon Sep 17 00:00:00 2001
+From: "Jonathan G. Underwood" <jonathan.underwood@gmail.com>
+Date: Tue, 22 Dec 2020 20:04:52 +0000
+Subject: [PATCH] cryptsetup: add support for workqueue options
+
+This commit adds support for disabling the read and write
+workqueues with the new crypttab options no-read-workqueue
+and no-write-workqueue. These correspond to the cryptsetup
+options --perf-no_read_workqueue and --perf-no_write_workqueue
+respectively.
+---
+ man/crypttab.xml             | 19 +++++++++++++++++++
+ src/cryptsetup/cryptsetup.c  | 12 ++++++++++++
+ src/shared/cryptsetup-util.h |  8 ++++++++
+ 3 files changed, 39 insertions(+)
+
+diff --git a/man/crypttab.xml b/man/crypttab.xml
+index 2062a5b8e70..72fe2e692da 100644
+--- a/man/crypttab.xml
++++ b/man/crypttab.xml
+@@ -342,6 +342,25 @@
+         </listitem>
+       </varlistentry>
+ 
++      <varlistentry>
++        <term><option>no-read-workqueue</option></term>
++
++        <listitem><para>Bypass dm-crypt internal workqueue and process read requests synchronously. The
++        default is to queue these requests and process them asynchronously.</para>
++
++        <para>This requires kernel 5.9 or newer.</para>
++        </listitem>
++      </varlistentry>
++      <varlistentry>
++        <term><option>no-write-workqueue</option></term>
++
++        <listitem><para>Bypass dm-crypt internal workqueue and process write requests synchronously. The
++        default is to queue these requests and process them asynchronously.</para>
++
++        <para>This requires kernel 5.9 or newer.</para>
++        </listitem>
++      </varlistentry>
++
+       <varlistentry>
+         <term><option>skip=</option></term>
+ 
+diff --git a/src/cryptsetup/cryptsetup.c b/src/cryptsetup/cryptsetup.c
+index 7b21a7457a1..65cbd1aec83 100644
+--- a/src/cryptsetup/cryptsetup.c
++++ b/src/cryptsetup/cryptsetup.c
+@@ -60,6 +60,8 @@ static bool arg_verify = false;
+ static bool arg_discards = false;
+ static bool arg_same_cpu_crypt = false;
+ static bool arg_submit_from_crypt_cpus = false;
++static bool arg_no_read_workqueue = false;
++static bool arg_no_write_workqueue = false;
+ static bool arg_tcrypt_hidden = false;
+ static bool arg_tcrypt_system = false;
+ static bool arg_tcrypt_veracrypt = false;
+@@ -236,6 +238,10 @@ static int parse_one_option(const char *option) {
+                 arg_same_cpu_crypt = true;
+         else if (streq(option, "submit-from-crypt-cpus"))
+                 arg_submit_from_crypt_cpus = true;
++        else if (streq(option, "no-read-workqueue"))
++                arg_no_read_workqueue = true;
++        else if (streq(option, "no-write-workqueue"))
++                arg_no_write_workqueue = true;
+         else if (streq(option, "luks"))
+                 arg_type = ANY_LUKS;
+ /* since cryptsetup 2.3.0 (Feb 2020) */
+@@ -1352,6 +1358,12 @@ static uint32_t determine_flags(void) {
+         if (arg_submit_from_crypt_cpus)
+                 flags |= CRYPT_ACTIVATE_SUBMIT_FROM_CRYPT_CPUS;
+ 
++        if (arg_no_read_workqueue)
++                flags |= CRYPT_ACTIVATE_NO_READ_WORKQUEUE;
++
++        if (arg_no_write_workqueue)
++                flags |= CRYPT_ACTIVATE_NO_WRITE_WORKQUEUE;
++
+ #ifdef CRYPT_ACTIVATE_SERIALIZE_MEMORY_HARD_PBKDF
+         /* Try to decrease the risk of OOM event if memory hard key derivation function is in use */
+         /* https://gitlab.com/cryptsetup/cryptsetup/issues/446/ */
+diff --git a/src/shared/cryptsetup-util.h b/src/shared/cryptsetup-util.h
+index fa2d2f65f3c..afac5cd46bd 100644
+--- a/src/shared/cryptsetup-util.h
++++ b/src/shared/cryptsetup-util.h
+@@ -7,6 +7,14 @@
+ #if HAVE_LIBCRYPTSETUP
+ #include <libcryptsetup.h>
+ 
++/* These next two are defined in libcryptsetup.h from cryptsetup version 2.3.4 forwards. */
++#ifndef CRYPT_ACTIVATE_NO_READ_WORKQUEUE
++#define CRYPT_ACTIVATE_NO_READ_WORKQUEUE (1 << 24)
++#endif
++#ifndef CRYPT_ACTIVATE_NO_WRITE_WORKQUEUE
++#define CRYPT_ACTIVATE_NO_WRITE_WORKQUEUE (1 << 25)
++#endif
++
+ extern int (*sym_crypt_activate_by_passphrase)(struct crypt_device *cd, const char *name, int keyslot, const char *passphrase, size_t passphrase_size, uint32_t flags);
+ #if HAVE_CRYPT_ACTIVATE_BY_SIGNED_KEY
+ extern int (*sym_crypt_activate_by_signed_key)(struct crypt_device *cd, const char *name, const char *volume_key, size_t volume_key_size, const char *signature, size_t signature_size, uint32_t flags);
