@@ -454,6 +454,10 @@ CONFIGURE_OPTS=(
         -Doomd=true
 )
 
+%if %{without lto}
+%global _lto_cflags %nil
+%endif
+
 %meson "${CONFIGURE_OPTS[@]}"
 %meson_build
 
