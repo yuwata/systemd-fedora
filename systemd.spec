@@ -155,7 +155,7 @@ Requires:       dbus >= 1.9.18
 Requires:       %{name}-pam = %{version}-%{release}
 Requires:       %{name}-rpm-macros = %{version}-%{release}
 Requires:       %{name}-libs = %{version}-%{release}
-Recommends:     %{name}-networkd = %{version}-%{release}
+%{?fedora:Recommends:     %{name}-networkd = %{version}-%{release}}
 Recommends:     diffutils
 Requires:       util-linux
 Recommends:     libxkbcommon%{?_isa}
