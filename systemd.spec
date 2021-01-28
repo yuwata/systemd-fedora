@@ -123,6 +123,7 @@ BuildRequires:  pkgconfig
 BuildRequires:  gperf
 BuildRequires:  gawk
 BuildRequires:  tree
+BuildRequires:  tpm2-tss-devel
 BuildRequires:  hostname
 BuildRequires:  python3-devel
 BuildRequires:  python3-lxml
@@ -419,6 +420,7 @@ CONFIGURE_OPTS=(
         -Dlibiptc=true
         -Dlibcurl=true
         -Dlibfido2=true
+        -Dtpm2=true
         -Defi=true
         -Dgnu-efi=%{?have_gnu_efi:true}%{?!have_gnu_efi:false}
         -Dtpm=true
