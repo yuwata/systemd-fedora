@@ -1,7 +1,7 @@
-%global commit c4b843473a75fb38ed5bf54e9d3cfb1cb3719efa
+%global commit 57353d2909e503e3e5c7e69251ba95a31e1a72ce
 %{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
-%global stable 1
+#global stable 1
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
 # strip the automatically generated dep here and instead co-own the
@@ -21,7 +21,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        247.2
-Release:        3%{?dist}
+Release:        3.1%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -895,6 +895,10 @@ getent passwd systemd-network &>/dev/null || useradd -r -u 192 -l -g systemd-net
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Thu Jan 28 2021 Yu Watanabe <watanabe.yu@gmail.com> - 247.2-3.1.git57353d2
+- Update to latest git snapshot 57353d2909e503e3e5c7e69251ba95a31e1a72ce
+- Merge upstream/pr/18375
+
 * Wed Jan 27 2021 Fedora Release Engineering <releng@fedoraproject.org>
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
 

@@ -1,0 +1,4 @@
+Patch2001: 2001-log-make-tools-also-read-the-kernel-command-line-whe.patch
+Patch2002: 2002-tree-wide-enable-colorized-logging-for-daemons-when-.patch
+Patch2003: 2003-core-set-SYSTEMD_EXEC_PID-environment-variable-for-e.patch
+Patch2004: 2004-log-skip-to-read-the-kernel-command-line-if-the-proc.patch

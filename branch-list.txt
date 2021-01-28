@@ -1,1 +1,1 @@
-#upstream/pr/14915 yuwata     network: support network namespace
+upstream/pr/18375 yuwata     tree-wide: make CLI tools also read kernel command line when run as service

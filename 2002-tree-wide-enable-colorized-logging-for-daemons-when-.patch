@@ -1,0 +1,1028 @@
+From 252f56bd84817abae685497a3435611e6858c65d Mon Sep 17 00:00:00 2001
+From: Yu Watanabe <watanabe.yu+github@gmail.com>
+Date: Sun, 17 Jan 2021 15:12:28 +0900
+Subject: [PATCH] tree-wide: enable colorized logging for daemons when run in
+ console
+
+It may be useful when debugging daemons.
+---
+ src/analyze/analyze.c                              |  2 +-
+ src/backlight/backlight.c                          |  2 +-
+ src/basic/log.c                                    | 14 +-------------
+ src/basic/log.h                                    |  3 +--
+ src/binfmt/binfmt.c                                |  2 +-
+ src/busctl/busctl.c                                |  2 +-
+ src/cgls/cgls.c                                    |  2 +-
+ src/cgroups-agent/cgroups-agent.c                  |  2 +-
+ src/cgtop/cgtop.c                                  |  2 +-
+ src/coredump/coredump.c                            |  2 +-
+ src/coredump/coredumpctl.c                         |  2 +-
+ src/cryptsetup/cryptsetup.c                        |  2 +-
+ src/delta/delta.c                                  |  2 +-
+ src/detect-virt/detect-virt.c                      |  2 +-
+ src/escape/escape.c                                |  2 +-
+ src/firstboot/firstboot.c                          |  2 +-
+ src/fsck/fsck.c                                    |  2 +-
+ src/hibernate-resume/hibernate-resume.c            |  2 +-
+ src/home/homectl.c                                 |  2 +-
+ src/home/homed.c                                   |  2 +-
+ src/home/homework.c                                |  2 +-
+ src/hostname/hostnamectl.c                         |  2 +-
+ src/hostname/hostnamed.c                           |  2 +-
+ src/id128/id128.c                                  |  2 +-
+ src/import/importd.c                               |  2 +-
+ src/initctl/initctl.c                              |  2 +-
+ src/journal-remote/journal-gatewayd.c              |  2 +-
+ src/journal/cat.c                                  |  2 +-
+ src/journal/journalctl.c                           |  2 +-
+ src/locale/localectl.c                             |  2 +-
+ src/locale/localed.c                               |  2 +-
+ src/login/loginctl.c                               |  2 +-
+ src/login/logind.c                                 |  2 +-
+ src/machine/machinectl.c                           |  2 +-
+ src/machine/machined.c                             |  2 +-
+ src/modules-load/modules-load.c                    |  2 +-
+ src/network/networkctl.c                           |  2 +-
+ src/network/networkd.c                             |  2 +-
+ src/network/wait-online/wait-online.c              |  2 +-
+ src/oom/oomd.c                                     |  2 +-
+ src/partition/growfs.c                             |  2 +-
+ src/partition/makefs.c                             |  2 +-
+ src/portable/portablectl.c                         |  2 +-
+ src/portable/portabled.c                           |  2 +-
+ src/pstore/pstore.c                                |  2 +-
+ src/quotacheck/quotacheck.c                        |  2 +-
+ src/random-seed/random-seed.c                      |  2 +-
+ src/remount-fs/remount-fs.c                        |  2 +-
+ src/reply-password/reply-password.c                |  2 +-
+ src/resolve/resolvectl.c                           |  2 +-
+ src/resolve/resolved.c                             |  2 +-
+ src/rfkill/rfkill.c                                |  2 +-
+ src/sleep/sleep.c                                  |  2 +-
+ src/sulogin-shell/sulogin-shell.c                  |  2 +-
+ src/sysctl/sysctl.c                                |  2 +-
+ src/sysext/sysext.c                                |  2 +-
+ src/sysusers/sysusers.c                            |  2 +-
+ src/test/test-chase-symlinks.c                     |  2 +-
+ src/timedate/timedatectl.c                         |  2 +-
+ src/timedate/timedated.c                           |  2 +-
+ src/timesync/timesyncd.c                           |  2 +-
+ src/tmpfiles/tmpfiles.c                            |  2 +-
+ .../tty-ask-password-agent.c                       |  2 +-
+ src/update-done/update-done.c                      |  2 +-
+ src/update-utmp/update-utmp.c                      |  2 +-
+ src/user-sessions/user-sessions.c                  |  2 +-
+ src/userdb/userdbctl.c                             |  2 +-
+ src/userdb/userdbd.c                               |  2 +-
+ src/userdb/userwork.c                              |  2 +-
+ src/vconsole/vconsole-setup.c                      |  2 +-
+ src/veritysetup/veritysetup.c                      |  2 +-
+ src/volatile-root/volatile-root.c                  |  2 +-
+ 72 files changed, 72 insertions(+), 85 deletions(-)
+
+diff --git a/src/analyze/analyze.c b/src/analyze/analyze.c
+index a45cc00853..1c270f1919 100644
+--- a/src/analyze/analyze.c
++++ b/src/analyze/analyze.c
+@@ -2447,7 +2447,7 @@ static int run(int argc, char *argv[]) {
+         setlocale(LC_ALL, "");
+         setlocale(LC_NUMERIC, "C"); /* we want to format/parse floats in C style */
+ 
+-        log_setup_cli();
++        log_setup();
+ 
+         r = parse_argv(argc, argv);
+         if (r <= 0)
+diff --git a/src/backlight/backlight.c b/src/backlight/backlight.c
+index d1b6a81e33..1faf9ef330 100644
+--- a/src/backlight/backlight.c
++++ b/src/backlight/backlight.c
+@@ -380,7 +380,7 @@ static int run(int argc, char *argv[]) {
+         unsigned max_brightness, brightness;
+         int r;
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         if (strv_contains(strv_skip(argv, 1), "--help"))
+                 return help();
+diff --git a/src/basic/log.c b/src/basic/log.c
+index 4163f2e8d9..f2cd1c3041 100644
+--- a/src/basic/log.c
++++ b/src/basic/log.c
+@@ -1456,19 +1456,7 @@ int log_dup_console(void) {
+         return 0;
+ }
+ 
+-void log_setup_service(void) {
+-        /* Sets up logging the way it is most appropriate for running a program as a service. Note that using this
+-         * doesn't make the binary unsuitable for invocation on the command line, as log output will still go to the
+-         * terminal if invoked interactively. */
+-
+-        log_set_target(LOG_TARGET_AUTO);
+-        log_parse_environment();
+-        (void) log_open();
+-}
+-
+-void log_setup_cli(void) {
+-        /* Sets up logging the way it is most appropriate for running a program as a CLI utility. */
+-
++void log_setup(void) {
+         log_set_target(LOG_TARGET_AUTO);
+         log_parse_environment();
+         (void) log_open();
+diff --git a/src/basic/log.h b/src/basic/log.h
+index 9421fc8b49..60e67270db 100644
+--- a/src/basic/log.h
++++ b/src/basic/log.h
+@@ -300,5 +300,4 @@ int log_syntax_invalid_utf8_internal(
+ 
+ #define DEBUG_LOGGING _unlikely_(log_get_max_level() >= LOG_DEBUG)
+ 
+-void log_setup_service(void);
+-void log_setup_cli(void);
++void log_setup(void);
+diff --git a/src/binfmt/binfmt.c b/src/binfmt/binfmt.c
+index 43ed2f385b..83ce2720ea 100644
+--- a/src/binfmt/binfmt.c
++++ b/src/binfmt/binfmt.c
+@@ -191,7 +191,7 @@ static int run(int argc, char *argv[]) {
+         if (r <= 0)
+                 return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         umask(0022);
+ 
+diff --git a/src/busctl/busctl.c b/src/busctl/busctl.c
+index 8a31916ad7..39c3abc6b4 100644
+--- a/src/busctl/busctl.c
++++ b/src/busctl/busctl.c
+@@ -2566,7 +2566,7 @@ static int busctl_main(int argc, char *argv[]) {
+ static int run(int argc, char *argv[]) {
+         int r;
+ 
+-        log_setup_cli();
++        log_setup();
+ 
+         r = parse_argv(argc, argv);
+         if (r <= 0)
+diff --git a/src/cgls/cgls.c b/src/cgls/cgls.c
+index 693b5047f2..5db8847a0d 100644
+--- a/src/cgls/cgls.c
++++ b/src/cgls/cgls.c
+@@ -164,7 +164,7 @@ static void show_cg_info(const char *controller, const char *path) {
+ static int run(int argc, char *argv[]) {
+         int r, output_flags;
+ 
+-        log_setup_cli();
++        log_setup();
+ 
+         r = parse_argv(argc, argv);
+         if (r <= 0)
+diff --git a/src/cgroups-agent/cgroups-agent.c b/src/cgroups-agent/cgroups-agent.c
+index eeb4ba80f5..071cba3099 100644
+--- a/src/cgroups-agent/cgroups-agent.c
++++ b/src/cgroups-agent/cgroups-agent.c
+@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
+                 return EXIT_FAILURE;
+         }
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         fd = socket(AF_UNIX, SOCK_DGRAM|SOCK_CLOEXEC, 0);
+         if (fd < 0) {
+diff --git a/src/cgtop/cgtop.c b/src/cgtop/cgtop.c
+index 9c96b4d697..6b1491c386 100644
+--- a/src/cgtop/cgtop.c
++++ b/src/cgtop/cgtop.c
+@@ -916,7 +916,7 @@ static int run(int argc, char *argv[]) {
+         CGroupMask mask;
+         int r;
+ 
+-        log_setup_cli();
++        log_setup();
+ 
+         r = parse_argv(argc, argv);
+         if (r <= 0)
+diff --git a/src/coredump/coredump.c b/src/coredump/coredump.c
+index d546e1b8f6..bc8d34952b 100644
+--- a/src/coredump/coredump.c
++++ b/src/coredump/coredump.c
+@@ -861,7 +861,7 @@ static int process_socket(int fd) {
+ 
+         assert(fd >= 0);
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         log_debug("Processing coredump received on stdin...");
+ 
+diff --git a/src/coredump/coredumpctl.c b/src/coredump/coredumpctl.c
+index 1a62916427..2e423be826 100644
+--- a/src/coredump/coredumpctl.c
++++ b/src/coredump/coredumpctl.c
+@@ -1109,7 +1109,7 @@ static int run(int argc, char *argv[]) {
+         int r, units_active;
+ 
+         setlocale(LC_ALL, "");
+-        log_setup_cli();
++        log_setup();
+ 
+         /* The journal merging logic potentially needs a lot of fds. */
+         (void) rlimit_nofile_bump(HIGH_RLIMIT_NOFILE);
+diff --git a/src/cryptsetup/cryptsetup.c b/src/cryptsetup/cryptsetup.c
+index 65cbd1aec8..d4034a7a4d 100644
+--- a/src/cryptsetup/cryptsetup.c
++++ b/src/cryptsetup/cryptsetup.c
+@@ -1396,7 +1396,7 @@ static int run(int argc, char *argv[]) {
+                 return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
+                                        "This program requires at least two arguments.");
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         cryptsetup_enable_logging(cd);
+ 
+diff --git a/src/delta/delta.c b/src/delta/delta.c
+index 4295abdc30..b91c237f01 100644
+--- a/src/delta/delta.c
++++ b/src/delta/delta.c
+@@ -644,7 +644,7 @@ static int parse_argv(int argc, char *argv[]) {
+ static int run(int argc, char *argv[]) {
+         int r, k, n_found = 0;
+ 
+-        log_setup_cli();
++        log_setup();
+ 
+         r = parse_argv(argc, argv);
+         if (r <= 0)
+diff --git a/src/detect-virt/detect-virt.c b/src/detect-virt/detect-virt.c
+index 14d649c6ed..e35f74a016 100644
+--- a/src/detect-virt/detect-virt.c
++++ b/src/detect-virt/detect-virt.c
+@@ -128,7 +128,7 @@ static int run(int argc, char *argv[]) {
+          * to detect whether we are being run in a virtualized
+          * environment or not */
+ 
+-        log_setup_cli();
++        log_setup();
+ 
+         r = parse_argv(argc, argv);
+         if (r <= 0)
+diff --git a/src/escape/escape.c b/src/escape/escape.c
+index 05d03ad762..7454145d94 100644
+--- a/src/escape/escape.c
++++ b/src/escape/escape.c
+@@ -159,7 +159,7 @@ static int run(int argc, char *argv[]) {
+         char **i;
+         int r;
+ 
+-        log_setup_cli();
++        log_setup();
+ 
+         r = parse_argv(argc, argv);
+         if (r <= 0)
+diff --git a/src/firstboot/firstboot.c b/src/firstboot/firstboot.c
+index afead11b42..977c4f6dbe 100644
+--- a/src/firstboot/firstboot.c
++++ b/src/firstboot/firstboot.c
+@@ -1272,7 +1272,7 @@ static int run(int argc, char *argv[]) {
+         if (r <= 0)
+                 return r;
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         umask(0022);
+ 
+diff --git a/src/fsck/fsck.c b/src/fsck/fsck.c
+index 04752fe9dc..cd012f0f3a 100644
+--- a/src/fsck/fsck.c
++++ b/src/fsck/fsck.c
+@@ -256,7 +256,7 @@ static int run(int argc, char *argv[]) {
+         int r, exit_status;
+         pid_t pid;
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         if (argc > 2)
+                 return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
+diff --git a/src/hibernate-resume/hibernate-resume.c b/src/hibernate-resume/hibernate-resume.c
+index d8f91f4e66..58e35e403e 100644
+--- a/src/hibernate-resume/hibernate-resume.c
++++ b/src/hibernate-resume/hibernate-resume.c
+@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
+                 return EXIT_FAILURE;
+         }
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         umask(0022);
+ 
+diff --git a/src/home/homectl.c b/src/home/homectl.c
+index 93d322110b..8730ea35ee 100644
+--- a/src/home/homectl.c
++++ b/src/home/homectl.c
+@@ -3345,7 +3345,7 @@ static int run(int argc, char *argv[]) {
+ 
+         int r;
+ 
+-        log_setup_cli();
++        log_setup();
+ 
+         r = redirect_bus_mgr();
+         if (r < 0)
+diff --git a/src/home/homed.c b/src/home/homed.c
+index e4d64bdfda..807d25e273 100644
+--- a/src/home/homed.c
++++ b/src/home/homed.c
+@@ -17,7 +17,7 @@ static int run(int argc, char *argv[]) {
+         _cleanup_(notify_on_cleanup) const char *notify_stop = NULL;
+         int r;
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         r = service_parse_argv("systemd-homed.service",
+                                "A service to create, remove, change or inspect home areas.",
+diff --git a/src/home/homework.c b/src/home/homework.c
+index 35f3206bb0..bb5a774f81 100644
+--- a/src/home/homework.c
++++ b/src/home/homework.c
+@@ -1633,7 +1633,7 @@ static int run(int argc, char *argv[]) {
+ 
+         start = now(CLOCK_MONOTONIC);
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         umask(0022);
+ 
+diff --git a/src/hostname/hostnamectl.c b/src/hostname/hostnamectl.c
+index c2338a69f6..249999a450 100644
+--- a/src/hostname/hostnamectl.c
++++ b/src/hostname/hostnamectl.c
+@@ -444,7 +444,7 @@ static int run(int argc, char *argv[]) {
+         int r;
+ 
+         setlocale(LC_ALL, "");
+-        log_setup_cli();
++        log_setup();
+ 
+         r = parse_argv(argc, argv);
+         if (r <= 0)
+diff --git a/src/hostname/hostnamed.c b/src/hostname/hostnamed.c
+index 35c2c37f92..0e4dd02b49 100644
+--- a/src/hostname/hostnamed.c
++++ b/src/hostname/hostnamed.c
+@@ -1064,7 +1064,7 @@ static int run(int argc, char *argv[]) {
+         _cleanup_(sd_bus_flush_close_unrefp) sd_bus *bus = NULL;
+         int r;
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         r = service_parse_argv("systemd-hostnamed.service",
+                                "Manage the system hostname and related metadata.",
+diff --git a/src/id128/id128.c b/src/id128/id128.c
+index 086f398108..2a1d56b7ab 100644
+--- a/src/id128/id128.c
++++ b/src/id128/id128.c
+@@ -249,7 +249,7 @@ static int id128_main(int argc, char *argv[]) {
+ static int run(int argc, char *argv[]) {
+         int r;
+ 
+-        log_setup_cli();
++        log_setup();
+ 
+         r = parse_argv(argc, argv);
+         if (r <= 0)
+diff --git a/src/import/importd.c b/src/import/importd.c
+index 15914cc885..345fc7c2cb 100644
+--- a/src/import/importd.c
++++ b/src/import/importd.c
+@@ -1361,7 +1361,7 @@ static int run(int argc, char *argv[]) {
+         _cleanup_(manager_unrefp) Manager *m = NULL;
+         int r;
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         r = service_parse_argv("systemd-importd.service",
+                                "VM and container image import and export service.",
+diff --git a/src/initctl/initctl.c b/src/initctl/initctl.c
+index e0b78334f5..d818f452f7 100644
+--- a/src/initctl/initctl.c
++++ b/src/initctl/initctl.c
+@@ -317,7 +317,7 @@ static int run(int argc, char *argv[]) {
+                 return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
+                                        "This program does not take arguments.");
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         umask(0022);
+ 
+diff --git a/src/journal-remote/journal-gatewayd.c b/src/journal-remote/journal-gatewayd.c
+index 534de51b0f..b61a077b9e 100644
+--- a/src/journal-remote/journal-gatewayd.c
++++ b/src/journal-remote/journal-gatewayd.c
+@@ -996,7 +996,7 @@ static int run(int argc, char *argv[]) {
+                 MHD_USE_THREAD_PER_CONNECTION;
+         int r, n;
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         r = parse_argv(argc, argv);
+         if (r <= 0)
+diff --git a/src/journal/cat.c b/src/journal/cat.c
+index bccf615189..5d350d47de 100644
+--- a/src/journal/cat.c
++++ b/src/journal/cat.c
+@@ -129,7 +129,7 @@ static int run(int argc, char *argv[]) {
+         _cleanup_close_ int outfd = -1, errfd = -1, saved_stderr = -1;
+         int r;
+ 
+-        log_setup_cli();
++        log_setup();
+ 
+         r = parse_argv(argc, argv);
+         if (r <= 0)
+diff --git a/src/journal/journalctl.c b/src/journal/journalctl.c
+index bcf2e01d5c..c63676f8da 100644
+--- a/src/journal/journalctl.c
++++ b/src/journal/journalctl.c
+@@ -2144,7 +2144,7 @@ int main(int argc, char *argv[]) {
+         int n_shown = 0, r, poll_fd = -1;
+ 
+         setlocale(LC_ALL, "");
+-        log_setup_cli();
++        log_setup();
+ 
+         /* Increase max number of open files if we can, we might needs this when browsing journal files, which might be
+          * split up into many files. */
+diff --git a/src/locale/localectl.c b/src/locale/localectl.c
+index 7d3d3f8c18..17c11f108a 100644
+--- a/src/locale/localectl.c
++++ b/src/locale/localectl.c
+@@ -507,7 +507,7 @@ static int run(int argc, char *argv[]) {
+         int r;
+ 
+         setlocale(LC_ALL, "");
+-        log_setup_cli();
++        log_setup();
+ 
+         r = parse_argv(argc, argv);
+         if (r <= 0)
+diff --git a/src/locale/localed.c b/src/locale/localed.c
+index 12073bd6f3..97d6592cb8 100644
+--- a/src/locale/localed.c
++++ b/src/locale/localed.c
+@@ -830,7 +830,7 @@ static int run(int argc, char *argv[]) {
+         _cleanup_(sd_bus_flush_close_unrefp) sd_bus *bus = NULL;
+         int r;
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         r = service_parse_argv("systemd-localed.service",
+                                "Manage system locale settings and key mappings.",
+diff --git a/src/login/loginctl.c b/src/login/loginctl.c
+index 695d18bba5..a3a5122baf 100644
+--- a/src/login/loginctl.c
++++ b/src/login/loginctl.c
+@@ -1465,7 +1465,7 @@ static int run(int argc, char *argv[]) {
+         int r;
+ 
+         setlocale(LC_ALL, "");
+-        log_setup_cli();
++        log_setup();
+ 
+         /* The journal merging logic potentially needs a lot of fds. */
+         (void) rlimit_nofile_bump(HIGH_RLIMIT_NOFILE);
+diff --git a/src/login/logind.c b/src/login/logind.c
+index 3ddc7a074a..3dae695554 100644
+--- a/src/login/logind.c
++++ b/src/login/logind.c
+@@ -1160,7 +1160,7 @@ static int run(int argc, char *argv[]) {
+         int r;
+ 
+         log_set_facility(LOG_AUTH);
+-        log_setup_service();
++        log_setup();
+ 
+         r = service_parse_argv("systemd-logind.service",
+                                "Manager for user logins and devices and privileged operations.",
+diff --git a/src/machine/machinectl.c b/src/machine/machinectl.c
+index 6eb6cbb35a..dc51de0a1a 100644
+--- a/src/machine/machinectl.c
++++ b/src/machine/machinectl.c
+@@ -2877,7 +2877,7 @@ static int run(int argc, char *argv[]) {
+         int r;
+ 
+         setlocale(LC_ALL, "");
+-        log_setup_cli();
++        log_setup();
+ 
+         /* The journal merging logic potentially needs a lot of fds. */
+         (void) rlimit_nofile_bump(HIGH_RLIMIT_NOFILE);
+diff --git a/src/machine/machined.c b/src/machine/machined.c
+index 6a5bf391e6..e9e6a6270a 100644
+--- a/src/machine/machined.c
++++ b/src/machine/machined.c
+@@ -324,7 +324,7 @@ static int run(int argc, char *argv[]) {
+         int r;
+ 
+         log_set_facility(LOG_AUTH);
+-        log_setup_service();
++        log_setup();
+ 
+         r = service_parse_argv("systemd-machined.service",
+                                "Manage registrations of local VMs and containers.",
+diff --git a/src/modules-load/modules-load.c b/src/modules-load/modules-load.c
+index 2f0cef5ff9..a4e1555203 100644
+--- a/src/modules-load/modules-load.c
++++ b/src/modules-load/modules-load.c
+@@ -166,7 +166,7 @@ static int run(int argc, char *argv[]) {
+         if (r <= 0)
+                 return r;
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         umask(0022);
+ 
+diff --git a/src/network/networkctl.c b/src/network/networkctl.c
+index a37618c8e0..886cca5408 100644
+--- a/src/network/networkctl.c
++++ b/src/network/networkctl.c
+@@ -2823,7 +2823,7 @@ static void warn_networkd_missing(void) {
+ static int run(int argc, char* argv[]) {
+         int r;
+ 
+-        log_setup_cli();
++        log_setup();
+ 
+         r = parse_argv(argc, argv);
+         if (r <= 0)
+diff --git a/src/network/networkd.c b/src/network/networkd.c
+index ac2bc90d97..24b3cb57af 100644
+--- a/src/network/networkd.c
++++ b/src/network/networkd.c
+@@ -22,7 +22,7 @@ static int run(int argc, char *argv[]) {
+         _cleanup_(notify_on_cleanup) const char *notify_message = NULL;
+         int r;
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         umask(0022);
+ 
+diff --git a/src/network/wait-online/wait-online.c b/src/network/wait-online/wait-online.c
+index d6716e1874..27c9f84929 100644
+--- a/src/network/wait-online/wait-online.c
++++ b/src/network/wait-online/wait-online.c
+@@ -185,7 +185,7 @@ static int run(int argc, char *argv[]) {
+         _cleanup_(notify_on_cleanup) const char *notify_message = NULL;
+         int r;
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         umask(0022);
+ 
+diff --git a/src/oom/oomd.c b/src/oom/oomd.c
+index 1fbcf41492..3981873122 100644
+--- a/src/oom/oomd.c
++++ b/src/oom/oomd.c
+@@ -123,7 +123,7 @@ static int run(int argc, char *argv[]) {
+         unsigned long long s = 0;
+         int r;
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         r = parse_argv(argc, argv);
+         if (r <= 0)
+diff --git a/src/partition/growfs.c b/src/partition/growfs.c
+index 9406ae8373..7129c7bfba 100644
+--- a/src/partition/growfs.c
++++ b/src/partition/growfs.c
+@@ -202,7 +202,7 @@ static int run(int argc, char *argv[]) {
+         dev_t devno;
+         int r;
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         r = parse_argv(argc, argv);
+         if (r <= 0)
+diff --git a/src/partition/makefs.c b/src/partition/makefs.c
+index fd924d2231..7c94fbfedb 100644
+--- a/src/partition/makefs.c
++++ b/src/partition/makefs.c
+@@ -24,7 +24,7 @@ static int run(int argc, char *argv[]) {
+         struct stat st;
+         int r;
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         if (argc != 3)
+                 return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
+diff --git a/src/portable/portablectl.c b/src/portable/portablectl.c
+index 457170e684..df8a1c73ba 100644
+--- a/src/portable/portablectl.c
++++ b/src/portable/portablectl.c
+@@ -1114,7 +1114,7 @@ static int run(int argc, char *argv[]) {
+ 
+         int r;
+ 
+-        log_setup_cli();
++        log_setup();
+ 
+         r = parse_argv(argc, argv);
+         if (r <= 0)
+diff --git a/src/portable/portabled.c b/src/portable/portabled.c
+index f008f84e53..8a17f09365 100644
+--- a/src/portable/portabled.c
++++ b/src/portable/portabled.c
+@@ -135,7 +135,7 @@ static int run(int argc, char *argv[]) {
+         _cleanup_(manager_unrefp) Manager *m = NULL;
+         int r;
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         umask(0022);
+ 
+diff --git a/src/pstore/pstore.c b/src/pstore/pstore.c
+index db8a71fbab..c642a3252c 100644
+--- a/src/pstore/pstore.c
++++ b/src/pstore/pstore.c
+@@ -367,7 +367,7 @@ static int run(int argc, char *argv[]) {
+         _cleanup_(pstore_entries_reset) PStoreList list = {};
+         int r;
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         if (argc == 3) {
+                 arg_sourcedir = argv[1];
+diff --git a/src/quotacheck/quotacheck.c b/src/quotacheck/quotacheck.c
+index d617b0bf3d..575965c470 100644
+--- a/src/quotacheck/quotacheck.c
++++ b/src/quotacheck/quotacheck.c
+@@ -58,7 +58,7 @@ static void test_files(void) {
+ static int run(int argc, char *argv[]) {
+         int r;
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         if (argc > 1)
+                 return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
+diff --git a/src/random-seed/random-seed.c b/src/random-seed/random-seed.c
+index 8f8766cdd7..4caf967807 100644
+--- a/src/random-seed/random-seed.c
++++ b/src/random-seed/random-seed.c
+@@ -110,7 +110,7 @@ static int run(int argc, char *argv[]) {
+         ssize_t k;
+         int r;
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         if (argc != 2)
+                 return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
+diff --git a/src/remount-fs/remount-fs.c b/src/remount-fs/remount-fs.c
+index 9668a49dc4..d747d60d5d 100644
+--- a/src/remount-fs/remount-fs.c
++++ b/src/remount-fs/remount-fs.c
+@@ -77,7 +77,7 @@ static int run(int argc, char *argv[]) {
+         struct mntent* me;
+         int r;
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         if (argc > 1)
+                 return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
+diff --git a/src/reply-password/reply-password.c b/src/reply-password/reply-password.c
+index a73334e2b8..a9aa4b832a 100644
+--- a/src/reply-password/reply-password.c
++++ b/src/reply-password/reply-password.c
+@@ -39,7 +39,7 @@ static int run(int argc, char *argv[]) {
+         size_t length = 0;
+         int r;
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         if (argc != 3)
+                 return log_error_errno(SYNTHETIC_ERRNO(EINVAL), "Wrong number of arguments.");
+diff --git a/src/resolve/resolvectl.c b/src/resolve/resolvectl.c
+index b479335769..fa5519dc45 100644
+--- a/src/resolve/resolvectl.c
++++ b/src/resolve/resolvectl.c
+@@ -3298,7 +3298,7 @@ static int run(int argc, char **argv) {
+         int r;
+ 
+         setlocale(LC_ALL, "");
+-        log_setup_cli();
++        log_setup();
+ 
+         if (streq(program_invocation_short_name, "resolvconf"))
+                 r = resolvconf_parse_argv(argc, argv);
+diff --git a/src/resolve/resolved.c b/src/resolve/resolved.c
+index 4c42b6591d..aabaa266e9 100644
+--- a/src/resolve/resolved.c
++++ b/src/resolve/resolved.c
+@@ -26,7 +26,7 @@ static int run(int argc, char *argv[]) {
+         _cleanup_(notify_on_cleanup) const char *notify_stop = NULL;
+         int r;
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         r = service_parse_argv("systemd-resolved.service",
+                                "Provide name resolution with caching using DNS, mDNS, LLMNR.",
+diff --git a/src/rfkill/rfkill.c b/src/rfkill/rfkill.c
+index c38716842b..91dc72f425 100644
+--- a/src/rfkill/rfkill.c
++++ b/src/rfkill/rfkill.c
+@@ -276,7 +276,7 @@ static int run(int argc, char *argv[]) {
+         if (argc > 1)
+                 return log_error_errno(SYNTHETIC_ERRNO(EINVAL), "This program requires no arguments.");
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         umask(0022);
+ 
+diff --git a/src/sleep/sleep.c b/src/sleep/sleep.c
+index 90bc90e982..a50cfc26af 100644
+--- a/src/sleep/sleep.c
++++ b/src/sleep/sleep.c
+@@ -369,7 +369,7 @@ static int run(int argc, char *argv[]) {
+         _cleanup_(free_sleep_configp) SleepConfig *sleep_config = NULL;
+         int r;
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         r = parse_argv(argc, argv);
+         if (r <= 0)
+diff --git a/src/sulogin-shell/sulogin-shell.c b/src/sulogin-shell/sulogin-shell.c
+index b0d71ff580..0207e85b7e 100644
+--- a/src/sulogin-shell/sulogin-shell.c
++++ b/src/sulogin-shell/sulogin-shell.c
+@@ -100,7 +100,7 @@ int main(int argc, char *argv[]) {
+         _cleanup_(sd_bus_flush_close_unrefp) sd_bus *bus = NULL;
+         int r;
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         print_mode(argc > 1 ? argv[1] : "");
+ 
+diff --git a/src/sysctl/sysctl.c b/src/sysctl/sysctl.c
+index e263d459a8..a172eb87b6 100644
+--- a/src/sysctl/sysctl.c
++++ b/src/sysctl/sysctl.c
+@@ -387,7 +387,7 @@ static int run(int argc, char *argv[]) {
+         if (r <= 0)
+                 return r;
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         umask(0022);
+ 
+diff --git a/src/sysext/sysext.c b/src/sysext/sysext.c
+index 81b3b29c08..a48719fdae 100644
+--- a/src/sysext/sysext.c
++++ b/src/sysext/sysext.c
+@@ -1026,7 +1026,7 @@ static int sysext_main(int argc, char *argv[]) {
+ static int run(int argc, char *argv[]) {
+         int r;
+ 
+-        log_setup_cli();
++        log_setup();
+ 
+         r = parse_argv(argc, argv);
+         if (r <= 0)
+diff --git a/src/sysusers/sysusers.c b/src/sysusers/sysusers.c
+index 648d192200..0697531818 100644
+--- a/src/sysusers/sysusers.c
++++ b/src/sysusers/sysusers.c
+@@ -1929,7 +1929,7 @@ static int run(int argc, char *argv[]) {
+         if (r <= 0)
+                 return r;
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         if (arg_cat_config)
+                 return cat_config();
+diff --git a/src/test/test-chase-symlinks.c b/src/test/test-chase-symlinks.c
+index d9b9b62dc5..892f8a073f 100644
+--- a/src/test/test-chase-symlinks.c
++++ b/src/test/test-chase-symlinks.c
+@@ -84,7 +84,7 @@ static int parse_argv(int argc, char *argv[]) {
+ static int run(int argc, char **argv) {
+         int r;
+ 
+-        log_setup_cli();
++        log_setup();
+ 
+         r = parse_argv(argc, argv);
+         if (r <= 0)
+diff --git a/src/timedate/timedatectl.c b/src/timedate/timedatectl.c
+index abc792a452..6fc61ca703 100644
+--- a/src/timedate/timedatectl.c
++++ b/src/timedate/timedatectl.c
+@@ -1052,7 +1052,7 @@ static int run(int argc, char *argv[]) {
+         int r;
+ 
+         setlocale(LC_ALL, "");
+-        log_setup_cli();
++        log_setup();
+ 
+         r = parse_argv(argc, argv);
+         if (r <= 0)
+diff --git a/src/timedate/timedated.c b/src/timedate/timedated.c
+index 8149facb34..563f470f54 100644
+--- a/src/timedate/timedated.c
++++ b/src/timedate/timedated.c
+@@ -1109,7 +1109,7 @@ static int run(int argc, char *argv[]) {
+         _cleanup_(sd_bus_flush_close_unrefp) sd_bus *bus = NULL;
+         int r;
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         r = service_parse_argv("systemd-timedated.service",
+                                "Manage the system clock and timezone and NTP enablement.",
+diff --git a/src/timesync/timesyncd.c b/src/timesync/timesyncd.c
+index 1f59bf14e1..e6a2b06687 100644
+--- a/src/timesync/timesyncd.c
++++ b/src/timesync/timesyncd.c
+@@ -97,7 +97,7 @@ static int run(int argc, char *argv[]) {
+         int r;
+ 
+         log_set_facility(LOG_CRON);
+-        log_setup_service();
++        log_setup();
+ 
+         umask(0022);
+ 
+diff --git a/src/tmpfiles/tmpfiles.c b/src/tmpfiles/tmpfiles.c
+index 955cf00ce4..3278a6a49b 100644
+--- a/src/tmpfiles/tmpfiles.c
++++ b/src/tmpfiles/tmpfiles.c
+@@ -3363,7 +3363,7 @@ static int run(int argc, char *argv[]) {
+         if (r <= 0)
+                 return r;
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         /* Descending down file system trees might take a lot of fds */
+         (void) rlimit_nofile_bump(HIGH_RLIMIT_NOFILE);
+diff --git a/src/tty-ask-password-agent/tty-ask-password-agent.c b/src/tty-ask-password-agent/tty-ask-password-agent.c
+index 1940792b9d..6097ca74a6 100644
+--- a/src/tty-ask-password-agent/tty-ask-password-agent.c
++++ b/src/tty-ask-password-agent/tty-ask-password-agent.c
+@@ -685,7 +685,7 @@ static int ask_on_consoles(char *argv[]) {
+ static int run(int argc, char *argv[]) {
+         int r;
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         umask(0022);
+ 
+diff --git a/src/update-done/update-done.c b/src/update-done/update-done.c
+index 212892527e..6518830717 100644
+--- a/src/update-done/update-done.c
++++ b/src/update-done/update-done.c
+@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
+         struct stat st;
+         int r, q = 0;
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         if (stat("/usr", &st) < 0) {
+                 log_error_errno(errno, "Failed to stat /usr: %m");
+diff --git a/src/update-utmp/update-utmp.c b/src/update-utmp/update-utmp.c
+index 59c49f2a80..1ec9066d34 100644
+--- a/src/update-utmp/update-utmp.c
++++ b/src/update-utmp/update-utmp.c
+@@ -224,7 +224,7 @@ static int run(int argc, char *argv[]) {
+                 return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
+                                        "This program requires one argument.");
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         umask(0022);
+ 
+diff --git a/src/user-sessions/user-sessions.c b/src/user-sessions/user-sessions.c
+index d1b8176714..6b7493fd88 100644
+--- a/src/user-sessions/user-sessions.c
++++ b/src/user-sessions/user-sessions.c
+@@ -21,7 +21,7 @@ static int run(int argc, char *argv[]) {
+                 return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
+                                        "This program requires one argument.");
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         umask(0022);
+ 
+diff --git a/src/userdb/userdbctl.c b/src/userdb/userdbctl.c
+index a0e22dff55..1056073e0a 100644
+--- a/src/userdb/userdbctl.c
++++ b/src/userdb/userdbctl.c
+@@ -763,7 +763,7 @@ static int run(int argc, char *argv[]) {
+ 
+         int r;
+ 
+-        log_setup_cli();
++        log_setup();
+ 
+         r = parse_argv(argc, argv);
+         if (r <= 0)
+diff --git a/src/userdb/userdbd.c b/src/userdb/userdbd.c
+index 6f2c807843..6b28dd0a08 100644
+--- a/src/userdb/userdbd.c
++++ b/src/userdb/userdbd.c
+@@ -24,7 +24,7 @@ static int run(int argc, char *argv[]) {
+         _cleanup_(notify_on_cleanup) const char *notify_stop = NULL;
+         int r;
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         umask(0022);
+ 
+diff --git a/src/userdb/userwork.c b/src/userdb/userwork.c
+index d525a6e05a..c62a21974a 100644
+--- a/src/userdb/userwork.c
++++ b/src/userdb/userwork.c
+@@ -662,7 +662,7 @@ static int run(int argc, char *argv[]) {
+         unsigned n_iterations = 0;
+         int m, listen_fd, r;
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         m = sd_listen_fds(false);
+         if (m < 0)
+diff --git a/src/vconsole/vconsole-setup.c b/src/vconsole/vconsole-setup.c
+index b28e2853e1..45915ef853 100644
+--- a/src/vconsole/vconsole-setup.c
++++ b/src/vconsole/vconsole-setup.c
+@@ -430,7 +430,7 @@ int main(int argc, char **argv) {
+         unsigned idx = 0;
+         int r;
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         umask(0022);
+ 
+diff --git a/src/veritysetup/veritysetup.c b/src/veritysetup/veritysetup.c
+index cd9f0e7f64..9233d9c5f0 100644
+--- a/src/veritysetup/veritysetup.c
++++ b/src/veritysetup/veritysetup.c
+@@ -137,7 +137,7 @@ static int run(int argc, char *argv[]) {
+         if (argc < 3)
+                 return log_error_errno(SYNTHETIC_ERRNO(EINVAL), "This program requires at least two arguments.");
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         umask(0022);
+ 
+diff --git a/src/volatile-root/volatile-root.c b/src/volatile-root/volatile-root.c
+index ee3532cc02..242ef81ecf 100644
+--- a/src/volatile-root/volatile-root.c
++++ b/src/volatile-root/volatile-root.c
+@@ -119,7 +119,7 @@ static int run(int argc, char *argv[]) {
+         dev_t devt;
+         int r;
+ 
+-        log_setup_service();
++        log_setup();
+ 
+         if (argc > 3)
+                 return log_error_errno(SYNTHETIC_ERRNO(EINVAL),

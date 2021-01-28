@@ -1,0 +1,108 @@
+From fa5a51b7f554ac9a13ffb38fd2f9099c0716d09e Mon Sep 17 00:00:00 2001
+From: Yu Watanabe <watanabe.yu+github@gmail.com>
+Date: Sun, 17 Jan 2021 14:52:22 +0900
+Subject: [PATCH] log: make tools also read the kernel command line when run as
+ a service
+
+This effectively reverts 41d1f469cf10f5f3e9cb4f4853ace9b0cfe5beae.
+
+Before this, e.g., `networkctl reload` invoked by `systemctl reload systemd-networkd.service`
+does not produce debugging logs even if systemd.log-level=debug is set. This fixes
+the issue.
+---
+ src/basic/log.c                          | 14 +++++---------
+ src/basic/log.h                          |  1 -
+ src/journal-remote/journal-remote-main.c |  2 +-
+ src/journal-remote/journal-upload.c      |  2 +-
+ src/systemctl/systemctl.c                |  2 +-
+ 5 files changed, 8 insertions(+), 13 deletions(-)
+
+diff --git a/src/basic/log.c b/src/basic/log.c
+index 59181910eb..4163f2e8d9 100644
+--- a/src/basic/log.c
++++ b/src/basic/log.c
+@@ -1158,20 +1158,16 @@ static int parse_proc_cmdline_item(const char *key, const char *value, void *dat
+ }
+ 
+ void log_parse_environment(void) {
++        const char *e;
++
++        /* Do not call from library code. */
++
+         if (getpid_cached() == 1 || get_ctty_devnr(0, NULL) < 0)
+                 /* Only try to read the command line in daemons. We assume that anything that has a
+                  * controlling tty is user stuff. For PID1 we do a special check in case it hasn't
+                  * closed the console yet. */
+                 (void) proc_cmdline_parse(parse_proc_cmdline_item, NULL, PROC_CMDLINE_STRIP_RD_PREFIX);
+ 
+-        log_parse_environment_cli();
+-}
+-
+-void log_parse_environment_cli(void) {
+-        /* Do not call from library code. */
+-
+-        const char *e;
+-
+         e = getenv("SYSTEMD_LOG_TARGET");
+         if (e && log_set_target_from_string(e) < 0)
+                 log_warning("Failed to parse log target '%s'. Ignoring.", e);
+@@ -1474,7 +1470,7 @@ void log_setup_cli(void) {
+         /* Sets up logging the way it is most appropriate for running a program as a CLI utility. */
+ 
+         log_set_target(LOG_TARGET_AUTO);
+-        log_parse_environment_cli();
++        log_parse_environment();
+         (void) log_open();
+         if (log_on_console() && show_color < 0)
+                 log_show_color(true);
+diff --git a/src/basic/log.h b/src/basic/log.h
+index 9b106c57d8..9421fc8b49 100644
+--- a/src/basic/log.h
++++ b/src/basic/log.h
+@@ -69,7 +69,6 @@ void log_close(void);
+ void log_forget_fds(void);
+ 
+ void log_parse_environment(void);
+-void log_parse_environment_cli(void);
+ 
+ int log_dispatch_internal(
+                 int level,
+diff --git a/src/journal-remote/journal-remote-main.c b/src/journal-remote/journal-remote-main.c
+index b00151c32e..418c217272 100644
+--- a/src/journal-remote/journal-remote-main.c
++++ b/src/journal-remote/journal-remote-main.c
+@@ -1122,7 +1122,7 @@ static int run(int argc, char **argv) {
+         int r;
+ 
+         log_show_color(true);
+-        log_parse_environment_cli();
++        log_parse_environment();
+ 
+         /* The journal merging logic potentially needs a lot of fds. */
+         (void) rlimit_nofile_bump(HIGH_RLIMIT_NOFILE);
+diff --git a/src/journal-remote/journal-upload.c b/src/journal-remote/journal-upload.c
+index bf362d0919..a6640153d3 100644
+--- a/src/journal-remote/journal-upload.c
++++ b/src/journal-remote/journal-upload.c
+@@ -821,7 +821,7 @@ static int run(int argc, char **argv) {
+         int r;
+ 
+         log_show_color(true);
+-        log_parse_environment_cli();
++        log_parse_environment();
+ 
+         /* The journal merging logic potentially needs a lot of fds. */
+         (void) rlimit_nofile_bump(HIGH_RLIMIT_NOFILE);
+diff --git a/src/systemctl/systemctl.c b/src/systemctl/systemctl.c
+index 4739faae39..f4a6605c3b 100644
+--- a/src/systemctl/systemctl.c
++++ b/src/systemctl/systemctl.c
+@@ -1084,7 +1084,7 @@ static int run(int argc, char *argv[]) {
+         int r;
+ 
+         setlocale(LC_ALL, "");
+-        log_parse_environment_cli();
++        log_parse_environment();
+         log_open();
+ 
+         /* The journal merging logic potentially needs a lot of fds. */

@@ -1,0 +1,57 @@
+From 124a9030aa1008a9ac186a49d0cba7ab6c4e5e11 Mon Sep 17 00:00:00 2001
+From: Yu Watanabe <watanabe.yu+github@gmail.com>
+Date: Tue, 26 Jan 2021 15:56:42 +0900
+Subject: [PATCH] core: set $SYSTEMD_EXEC_PID= environment variable for
+ executed commands
+
+It may be useful to detect a command is directly executed by systemd
+manager, or invoked through e.g. a script.
+---
+ docs/ENVIRONMENT.md | 8 ++++++++
+ src/core/execute.c  | 7 ++++++-
+ 2 files changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/docs/ENVIRONMENT.md b/docs/ENVIRONMENT.md
+index 7762713d44..1cccfd389d 100644
+--- a/docs/ENVIRONMENT.md
++++ b/docs/ENVIRONMENT.md
+@@ -254,6 +254,14 @@ systemd itself:
+   it is either set to `system` or `user` depending on whether the NSS/PAM
+   module is called by systemd in `--system` or `--user` mode.
+ 
++* `$SYSTEMD_EXEC_PID=…` — set for all invocations that are done by the service
++  manager on behalf of a specific unit, in child processes that are later
++  (after execve()) going to become unit processes (e.g. process invoked by
++  ExecStart=). Contains the process ID (PID) of the child process. The child
++  process can use this information to determine whether the process is directly
++  invoked by the service manager or indirectly through a script by comparing
++  this value with the current process ID.
++
+ systemd-remount-fs:
+ 
+ * `$SYSTEMD_REMOUNT_ROOT_RW=1` — if set and no entry for the root directory
+diff --git a/src/core/execute.c b/src/core/execute.c
+index 1a679da435..a136656f6b 100644
+--- a/src/core/execute.c
++++ b/src/core/execute.c
+@@ -1794,7 +1794,7 @@ static int build_environment(
+         assert(p);
+         assert(ret);
+ 
+-#define N_ENV_VARS 16
++#define N_ENV_VARS 17
+         our_env = new0(char*, N_ENV_VARS + _EXEC_DIRECTORY_TYPE_MAX);
+         if (!our_env)
+                 return -ENOMEM;
+@@ -1950,6 +1950,11 @@ static int build_environment(
+                 our_env[n_env++] = x;
+         }
+ 
++        if (asprintf(&x, "SYSTEMD_EXEC_PID=" PID_FMT, getpid_cached()) < 0)
++                return -ENOMEM;
++
++        our_env[n_env++] = x;
++
+         our_env[n_env++] = NULL;
+         assert(n_env <= N_ENV_VARS + _EXEC_DIRECTORY_TYPE_MAX);
+ #undef N_ENV_VARS
