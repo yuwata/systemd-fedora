@@ -68,15 +68,16 @@ i=1; for j in 00*patch; do printf "Patch%04d:      %s\n" $i $j; i=$((i+1));done|
 GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[67]* hwdb/parse_hwdb.py > hwdb.patch
 %endif
 
+# Backports of patches from upstream (0000–0499)
+Patch0001:      0001-test-login-skip-consistency-checks-when-logind-is-no.patch
+Patch0002:      https://github.com/systemd/systemd/pull/18062/commits/9cc6a94790eecfc808335b759355a4005d66f6e3.patch
+
+# Downstream-only patches (5000–9999)
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
-Patch0001:      use-bfq-scheduler.patch
+Patch0500:      use-bfq-scheduler.patch
 
-Patch0003:      0001-test-path-util-do-not-fail-if-the-fd_is_mount_point-.patch
-Patch0004:      0001-test-path-util-ignore-test-failure.patch
-Patch0005:      0001-test-login-skip-consistency-checks-when-logind-is-no.patch
-
-Patch0009:      https://github.com/systemd/systemd/pull/17050/commits/f58b96d3e8d1cb0dd3666bc74fa673918b586612.patch
-Patch0010:      https://github.com/systemd/systemd/pull/18062/commits/9cc6a94790eecfc808335b759355a4005d66f6e3.patch
+# https://github.com/systemd/systemd/pull/17050
+Patch0501:      https://github.com/systemd/systemd/pull/17050/commits/f58b96d3e8d1cb0dd3666bc74fa673918b586612.patch
 
 %ifarch %{ix86} x86_64 aarch64
 %global have_gnu_efi 1
