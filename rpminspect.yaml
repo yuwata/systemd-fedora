@@ -1,0 +1,13 @@
+ # Disable badfuncs check that has tons of false positives.
+badfuncs:
+  exclude_path: .*
+
+# don't report changed content of compiled files
+# that is expected with every update
+changedfiles:
+  exclude_path: .*
+
+# completely disabled inspections:
+inspections:
+  # we know about our patches, no need to report anything
+  patches: off
