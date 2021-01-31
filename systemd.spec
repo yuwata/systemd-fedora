@@ -822,15 +822,11 @@ getent group systemd-journal-remote &>/dev/null || groupadd -r systemd-journal-r
 getent passwd systemd-journal-remote &>/dev/null || useradd -r -l -g systemd-journal-remote -d %{_localstatedir}/log/journal/remote -s /sbin/nologin -c "Journal Remote" systemd-journal-remote &>/dev/null || :
 
 %post journal-remote
-%systemd_post systemd-journal-gatewayd.socket systemd-journal-gatewayd.service
-%systemd_post systemd-journal-remote.socket systemd-journal-remote.service
-%systemd_post systemd-journal-upload.service
+%systemd_post systemd-journal-gatewayd.socket systemd-journal-gatewayd.service systemd-journal-remote.socket systemd-journal-remote.service systemd-journal-upload.service
 %firewalld_reload
 
 %preun journal-remote
-%systemd_preun systemd-journal-gatewayd.socket systemd-journal-gatewayd.service
-%systemd_preun systemd-journal-remote.socket systemd-journal-remote.service
-%systemd_preun systemd-journal-upload.service
+%systemd_preun systemd-journal-gatewayd.socket systemd-journal-gatewayd.service systemd-journal-remote.socket systemd-journal-remote.service systemd-journal-upload.service
 if [ $1 -eq 1 ] ; then
     if [ -f %{_localstatedir}/lib/systemd/journal-upload/state -a ! -L %{_localstatedir}/lib/systemd/journal-upload ] ; then
         mkdir -p %{_localstatedir}/lib/private/systemd/journal-upload
@@ -840,9 +836,7 @@ if [ $1 -eq 1 ] ; then
 fi
 
 %postun journal-remote
-%systemd_postun_with_restart systemd-journal-gatewayd.service
-%systemd_postun_with_restart systemd-journal-remote.service
-%systemd_postun_with_restart systemd-journal-upload.service
+%systemd_postun_with_restart systemd-journal-gatewayd.service systemd-journal-remote.service systemd-journal-upload.service
 %firewalld_reload
 
 %pre networkd
