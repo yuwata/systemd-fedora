@@ -20,8 +20,8 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        247.2
-Release:        3%{?dist}
+Version:        247.3
+Release:        1%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -69,11 +69,6 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 %endif
 
 # Backports of patches from upstream (0000–0499)
-Patch0001:      0001-test-login-skip-consistency-checks-when-logind-is-no.patch
-Patch0002:      https://github.com/systemd/systemd/pull/18062/commits/9cc6a94790eecfc808335b759355a4005d66f6e3.patch
-# this was resolved in a different way upstream
-Patch0003:      0001-test-path-util-do-not-fail-if-the-fd_is_mount_point-.patch
-Patch0004:      0001-test-path-util-ignore-test-failure.patch
 
 # Downstream-only patches (5000–9999)
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
@@ -896,6 +891,10 @@ getent passwd systemd-network &>/dev/null || useradd -r -u 192 -l -g systemd-net
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Tue Feb  2 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 247.3-1
+- Minor stable release
+- Fixes #1895937, #1813219, #1903106.
+
 * Wed Jan 27 2021 Fedora Release Engineering <releng@fedoraproject.org>
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
 
