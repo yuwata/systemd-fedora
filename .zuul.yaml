@@ -1,0 +1,5 @@
+- project:
+    vars:
+      install_repo_exclude:
+        - systemd-standalone-tmpfiles
+        - systemd-standalone-sysuser
