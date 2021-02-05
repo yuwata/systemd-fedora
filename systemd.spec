@@ -21,7 +21,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        247.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -57,6 +57,10 @@ Source11:       20-grubby.install
 Source12:       systemd-user
 Source13:       libsystemd-shared.abignore
 
+Source14:       10-oomd-defaults.conf
+Source15:       10-oomd-root-slice-defaults.conf
+Source16:       10-oomd-user-service-defaults.conf
+
 Source21:       macros.sysusers
 Source22:       sysusers.attr
 Source23:       sysusers.prov
@@ -69,6 +73,12 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 %endif
 
 # Backports of patches from upstream (0000–0499)
+# systemd-oomd refinements for https://fedoraproject.org/wiki/Changes/EnableSystemdOomd
+Patch0000:      https://github.com/systemd/systemd/pull/17829.patch
+Patch0001:      https://github.com/systemd/systemd/pull/18361.patch
+Patch0002:      https://github.com/systemd/systemd/pull/18444.patch
+Patch0003:      https://github.com/systemd/systemd/pull/17732/commits/95ca39f04efa278ac93881e6e364a6ae520b03e7.patch
+Patch0004:      https://github.com/systemd/systemd/pull/18401.patch
 
 # Downstream-only patches (5000–9999)
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
@@ -342,6 +352,15 @@ systemd-networkd is a system service that manages networks. It detects
 and configures network devices as they appear, as well as creating virtual
 network devices.
 
+%package oomd-defaults
+Summary:        Configuration files for systemd-oomd
+Requires:       %{name}%{?_isa} = %{version}-%{release}
+License:        LGPLv2+
+
+%description oomd-defaults
+A set of drop-in files for systemd units to enable action from systemd-oomd,
+a userspace out-of-memory (OOM) killer.
+
 %package tests
 Summary:       Internal unit tests for systemd
 Requires:      %{name}%{?_isa} = %{version}-%{release}
@@ -553,6 +572,11 @@ install -Dm0644 -t %{buildroot}%{_prefix}/lib/systemd/ %{SOURCE13}
 
 install -D -t %{buildroot}/usr/lib/systemd/ %{SOURCE3}
 
+# systemd-oomd default configuration
+install -Dm0644 -t %{buildroot}%{_prefix}/lib/systemd/oomd.conf.d/ %{SOURCE14}
+install -Dm0644 -t %{buildroot}%{system_unit_dir}/-.slice.d/ %{SOURCE15}
+install -Dm0644 -t %{buildroot}%{system_unit_dir}/user@.service.d/ %{SOURCE16}
+
 sed -i 's|#!/usr/bin/env python3|#!%{__python3}|' %{buildroot}/usr/lib/systemd/tests/run-unit-tests.py
 
 install -m 0644 -D -t %{buildroot}%{_rpmconfigdir}/macros.d/ %{SOURCE21}
@@ -667,6 +691,8 @@ chmod g+s /{run,var}/log/journal/{,${machine_id}} &>/dev/null || :
 # Apply ACL to the journal directory
 setfacl -Rnm g:wheel:rx,d:g:wheel:rx,g:adm:rx,d:g:adm:rx /var/log/journal/ &>/dev/null || :
 
+%systemd_post systemd-oomd.service
+
 [ $1 -eq 1 ] || exit 0
 
 # We reset the enablement of all services upon initial installation
@@ -726,6 +752,9 @@ if systemctl -q is-enabled systemd-resolved.service &>/dev/null; then
 
   systemctl start systemd-resolved.service &>/dev/null || :
 fi
+
+%postun
+%systemd_postun_with_restart systemd-oomd.service
 
 %post libs
 %{?ldconfig}
@@ -887,6 +916,8 @@ getent passwd systemd-network &>/dev/null || useradd -r -u 192 -l -g systemd-net
 
 %files networkd -f .file-list-networkd
 
+%files oomd-defaults -f .file-list-oomd-defaults
+
 %files tests -f .file-list-tests
 
 %files standalone-tmpfiles -f .file-list-standalone-tmpfiles
@@ -894,6 +925,13 @@ getent passwd systemd-network &>/dev/null || useradd -r -u 192 -l -g systemd-net
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Fri Feb  5 2021 Anita Zhang <the.anitazha@gmail.com> - 247.3-2
+- Changes for https://fedoraproject.org/wiki/Changes/EnableSystemdOomd.
+- Backports consist primarily of PR #18361, #18444, and #18401 (plus some
+  additional ones to handle merge conflicts).
+- Create systemd-oomd-defaults subpackage to install unit drop-ins that will
+  configure systemd-oomd to monitor and act.
+
 * Tue Feb  2 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 247.3-1
 - Minor stable release
 - Fixes #1895937, #1813219, #1903106.

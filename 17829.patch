@@ -1,0 +1,60 @@
+From 14d044da23d6f2fa03066aedcc2600a479c1f731 Mon Sep 17 00:00:00 2001
+From: Anita Zhang <the.anitazha@gmail.com>
+Date: Wed, 2 Dec 2020 14:41:38 -0800
+Subject: [PATCH] test: fix TEST-56-OOMD thresholds for linux 5.9 changes
+
+Fixes #17533
+
+The memory pressure values of the units in TEST-56-OOMD seemed to be a
+lot lower after updating to linux 5.9. This is likely due to a fix from
+https://github.com/torvalds/linux/commit/e22c6ed90aa91abc08f107344428ebb8c2629e98.
+
+To account for this, I lowered memory.high on testbloat.service to
+throttle it even more. This was enough to generate the 50%+ value to trigger
+oomd for the test, but as an extra precaution I also lowered the oomd
+threshold to 1% so it's certain to try and kill testbloat.service.
+---
+ test/units/testsuite-56-testbloat.service | 6 +++---
+ test/units/testsuite-56-workload.slice    | 2 +-
+ test/units/testsuite-56.sh                | 2 +-
+ 3 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/test/units/testsuite-56-testbloat.service b/test/units/testsuite-56-testbloat.service
+index 40cf5a9f36f..6163aae1dba 100644
+--- a/test/units/testsuite-56-testbloat.service
++++ b/test/units/testsuite-56-testbloat.service
+@@ -2,8 +2,8 @@
+ Description=Create a lot of memory pressure
+ 
+ [Service]
+-# A very small memory.high will cause the script (trying to use a lot of memory)
+-# to throttle and be put under heavy pressure
+-MemoryHigh=2M
++# A VERY small memory.high will cause the script (trying to use a lot of memory)
++# to throttle and be put under heavy pressure.
++MemoryHigh=1M
+ Slice=testsuite-56-workload.slice
+ ExecStart=/usr/lib/systemd/tests/testdata/units/testsuite-56-slowgrowth.sh
+diff --git a/test/units/testsuite-56-workload.slice b/test/units/testsuite-56-workload.slice
+index 3d542ec2bae..45b04914c63 100644
+--- a/test/units/testsuite-56-workload.slice
++++ b/test/units/testsuite-56-workload.slice
+@@ -7,4 +7,4 @@ MemoryAccounting=true
+ IOAccounting=true
+ TasksAccounting=true
+ ManagedOOMMemoryPressure=kill
+-ManagedOOMMemoryPressureLimitPercent=50%
++ManagedOOMMemoryPressureLimitPercent=1%
+diff --git a/test/units/testsuite-56.sh b/test/units/testsuite-56.sh
+index 37d62d943c0..1846248855b 100755
+--- a/test/units/testsuite-56.sh
++++ b/test/units/testsuite-56.sh
+@@ -19,7 +19,7 @@ systemctl start testsuite-56-testchill.service
+ 
+ # Verify systemd-oomd is monitoring the expected units
+ oomctl | grep "/testsuite-56-workload.slice"
+-oomctl | grep "50%"
++oomctl | grep "1%"
+ 
+ # systemd-oomd watches for elevated pressure for 30 seconds before acting.
+ # It can take time to build up pressure so either wait 5 minutes or for the service to fail.

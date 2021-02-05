@@ -22,6 +22,7 @@ o_rpm_macros = open('.file-list-rpm-macros', 'w')
 o_devel = open('.file-list-devel', 'w')
 o_container = open('.file-list-container', 'w')
 o_networkd = open('.file-list-networkd', 'w')
+o_oomd_defaults = open('.file-list-oomd-defaults', 'w')
 o_remote = open('.file-list-remote', 'w')
 o_tests = open('.file-list-tests', 'w')
 o_standalone_tmpfiles = open('.file-list-standalone-tmpfiles', 'w')
@@ -117,6 +118,8 @@ for file in files(buildroot):
                        /modprobe.d
     ''', n, re.X):
         o = o_udev
+    elif re.search(r'10-oomd-.*defaults.conf|lib/systemd/oomd.conf.d', n, re.X):
+        o = o_oomd_defaults
     elif n.endswith('.standalone'):
         if 'tmpfiles' in n:
             o = o_standalone_tmpfiles
