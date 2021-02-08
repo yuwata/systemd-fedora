@@ -624,6 +624,9 @@ getent passwd systemd-coredump &>/dev/null || useradd -r -l -g systemd-coredump 
 getent group systemd-resolve &>/dev/null || groupadd -r -g 193 systemd-resolve 2>&1 || :
 getent passwd systemd-resolve &>/dev/null || useradd -r -u 193 -l -g systemd-resolve -d / -s /sbin/nologin -c "systemd Resolver" systemd-resolve &>/dev/null || :
 
+getent group systemd-oom &>/dev/null || groupadd -r systemd-oom 2>&1 || :
+getent passwd systemd-oom &>/dev/null || useradd -r -l -g systemd-oom -d / -s /sbin/nologin -c "systemd Userspace OOM Killer" systemd-oom &>/dev/null || :
+
 %post
 systemd-machine-id-setup &>/dev/null || :
 
