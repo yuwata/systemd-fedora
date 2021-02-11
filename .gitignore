@@ -1,4 +1,5 @@
 *~
+/.mail.list
 /systemd-*/
 /.build-*.log
 /x86_64/
