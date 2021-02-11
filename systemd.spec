@@ -654,6 +654,12 @@ getent passwd systemd-oom &>/dev/null || useradd -r -l -g systemd-oom -d / -s /s
 %post
 systemd-machine-id-setup &>/dev/null || :
 
+# FIXME: move to %postun. We want to restart systemd *after* removing
+# files from the old rpm. Right now we may still have bits the old
+# setup if the files are not present in the new version. But before
+# implement restarting of *other* services after the transaction, moving
+# this would make things worse, increasing the number of warnings we get
+# about needed daemon-reload.
 systemctl daemon-reexec &>/dev/null || {
   # systemd v239 had bug #9553 in D-Bus authentication of the private socket,
   # which was later fixed in v240 by #9625.
@@ -674,13 +680,13 @@ systemctl daemon-reexec &>/dev/null || {
   fi
 }
 
-journalctl --update-catalog &>/dev/null || :
-systemd-tmpfiles --create &>/dev/null || :
+if [ $1 -eq 1 ]; then
+   # create /var/log/journal only on initial installation,
+   # and only if it's writable (it won't be in rpm-ostree).
+   [ -w %{_localstatedir} ] && mkdir -p %{_localstatedir}/log/journal
 
-# create /var/log/journal only on initial installation,
-# and only if it's writable (it won't be in rpm-ostree).
-if [ $1 -eq 1 ] && [ -w %{_localstatedir} ]; then
-    mkdir -p %{_localstatedir}/log/journal
+   [ -w %{_localstatedir} ] && journalctl --update-catalog || :
+   systemd-tmpfiles --create &>/dev/null || :
 fi
 
 # Make sure new journal files will be owned by the "systemd-journal" group
@@ -690,8 +696,6 @@ chmod g+s /{run,var}/log/journal/{,${machine_id}} &>/dev/null || :
 
 # Apply ACL to the journal directory
 setfacl -Rnm g:wheel:rx,d:g:wheel:rx,g:adm:rx,d:g:adm:rx /var/log/journal/ &>/dev/null || :
-
-%systemd_post systemd-oomd.service
 
 [ $1 -eq 1 ] || exit 0
 
@@ -724,18 +728,16 @@ if test -d /run/systemd/system/ &&
   ln -fsv ../run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
 fi
 
-%preun
-if [ $1 -eq 0 ] ; then
-        systemctl disable --quiet \
-                remote-fs.target \
-                getty@.service \
-                serial-getty@.service \
-                console-getty.service \
-                debug-shell.service \
-                systemd-resolved.service \
-                systemd-homed.service \
-                >/dev/null || :
+%postun
+if [ $1 -eq 1 ]; then
+   [ -w %{_localstatedir} ] && journalctl --update-catalog || :
+   systemd-tmpfiles --create &>/dev/null || :
 fi
+
+%systemd_postun_with_restart systemd-timedated.service systemd-portabled.service systemd-homed.service systemd-hostnamed.service systemd-journald.service systemd-localed.service systemd-userdbd.service systemd-oomd.service
+
+# FIXME: systemd-logind.service is excluded (https://github.com/systemd/systemd/pull/17558)
+# FIXME: user@*.service needs to be restarted, but using systemctl --user daemon-reexec
 
 %triggerun -- systemd < 246.1-1
 # This is for upgrades from previous versions before systemd-resolved became the default.
@@ -752,9 +754,6 @@ if systemctl -q is-enabled systemd-resolved.service &>/dev/null; then
 
   systemctl start systemd-resolved.service &>/dev/null || :
 fi
-
-%postun
-%systemd_postun_with_restart systemd-oomd.service
 
 %post libs
 %{?ldconfig}
@@ -840,9 +839,9 @@ grep -q -E '^KEYMAP="?fi-latin[19]"?' /etc/vconsole.conf 2>/dev/null &&
 %systemd_preun %udev_services
 
 %postun udev
-# Only restart systemd-udev, to run the upgraded dameon.
+# Restart some services.
 # Others are either oneshot services, or sockets, and restarting them causes issues (#1378974)
-%systemd_postun_with_restart systemd-udevd.service
+%systemd_postun_with_restart systemd-udevd.service systemd-timesyncd.service
 
 %pre journal-remote
 getent group systemd-journal-remote &>/dev/null || groupadd -r systemd-journal-remote 2>&1 || :
