@@ -755,8 +755,10 @@ if systemctl -q is-enabled systemd-resolved.service &>/dev/null; then
   systemctl start systemd-resolved.service &>/dev/null || :
 fi
 
-%triggerun -- systemd < 247.3-2
-# This is for upgrades from previous versions before oomd-defaults is available
+%triggerpostun -- systemd < 247.3-2
+# This is for upgrades from previous versions before oomd-defaults is available.
+# We use %%triggerpostun here because rpm doesn't allow a second %%triggerun with
+# a different package version.
 systemctl --no-reload preset systemd-oomd.service &>/dev/null || :
 
 %post libs
