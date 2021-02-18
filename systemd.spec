@@ -21,7 +21,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        247.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -930,6 +930,9 @@ getent passwd systemd-network &>/dev/null || useradd -r -u 192 -l -g systemd-net
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Wed Feb 17 2021 Michel Alexandre Salim <salimma@fedoraproject.org> - 247.3-3
+- Increase oomd user memory pressure limit to 10% (#1929856)
+
 * Fri Feb  5 2021 Anita Zhang <the.anitazha@gmail.com> - 247.3-2
 - Changes for https://fedoraproject.org/wiki/Changes/EnableSystemdOomd.
 - Backports consist primarily of PR #18361, #18444, and #18401 (plus some
