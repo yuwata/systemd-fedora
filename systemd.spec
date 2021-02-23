@@ -26,16 +26,14 @@ Release:        3%{?dist}
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
 
-%global github_version %(c=%{version}; echo ${c}|tr '~' '-')
-
 # download tarballs with "spectool -g systemd.spec"
 %if %{defined commit}
 Source0:        https://github.com/systemd/systemd%{?stable:-stable}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 %if 0%{?stable}
-Source0:        https://github.com/systemd/systemd-stable/archive/v%{github_version}/%{name}-%{github_version}.tar.gz
+Source0:        https://github.com/systemd/systemd-stable/archive/v%{version_no_tilde}/%{name}-%{version_no_tilde}.tar.gz
 %else
-Source0:        https://github.com/systemd/systemd/archive/v%{github_version}/%{name}-%{github_version}.tar.gz
+Source0:        https://github.com/systemd/systemd/archive/v%{version_no_tilde}/%{name}-%{version_no_tilde}.tar.gz
 %endif
 %endif
 # This file must be available before %%prep.
@@ -389,7 +387,7 @@ or other libraries from systemd-libs. This package conflicts with the main
 systemd package and is meant for use in non-systemd systems.
 
 %prep
-%autosetup -n %{?commit:%{name}%{?stable:-stable}-%{commit}}%{!?commit:%{name}%{?stable:-stable}-%{github_version}} -p1
+%autosetup -n %{?commit:%{name}%{?stable:-stable}-%{commit}}%{!?commit:%{name}%{?stable:-stable}-%{version_no_tilde}} -p1
 
 %build
 %define ntpvendor %(source /etc/os-release; echo ${ID})
