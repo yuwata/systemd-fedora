@@ -1,7 +1,7 @@
 #global commit c4b843473a75fb38ed5bf54e9d3cfb1cb3719efa
 %{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
-%global stable 1
+#global stable 1
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
 # strip the automatically generated dep here and instead co-own the
@@ -20,8 +20,8 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        247.3
-Release:        3%{?dist}
+Version:        248~rc1
+Release:        1%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -69,14 +69,6 @@ GIT_DIR=../../src/systemd/.git git format-patch-ab --no-signature -M -N v235..v2
 i=1; for j in 00*patch; do printf "Patch%04d:      %s\n" $i $j; i=$((i+1));done|xclip
 GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[67]* hwdb/parse_hwdb.py > hwdb.patch
 %endif
-
-# Backports of patches from upstream (0000–0499)
-# systemd-oomd refinements for https://fedoraproject.org/wiki/Changes/EnableSystemdOomd
-Patch0000:      https://github.com/systemd/systemd/pull/17829.patch
-Patch0001:      https://github.com/systemd/systemd/pull/18361.patch
-Patch0002:      https://github.com/systemd/systemd/pull/18444.patch
-Patch0003:      https://github.com/systemd/systemd/pull/17732/commits/95ca39f04efa278ac93881e6e364a6ae520b03e7.patch
-Patch0004:      https://github.com/systemd/systemd/pull/18401.patch
 
 # Downstream-only patches (5000–9999)
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
@@ -928,6 +920,14 @@ getent passwd systemd-network &>/dev/null || useradd -r -u 192 -l -g systemd-net
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Tue Feb 23 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 248~rc1-1
+- Latest upstream prerelease, see
+  https://github.com/systemd/systemd/blob/v248-rc1/NEWS.
+- Fixes #1614751 by only restarting services at the end of transcation.
+  Various packages need to be rebuilt to have the updated macros.
+- Fixes #1879028, though probably not completely.
+- Fixes #1925805, #1928235.
+
 * Wed Feb 17 2021 Michel Alexandre Salim <salimma@fedoraproject.org> - 247.3-3
 - Increase oomd user memory pressure limit to 10% (#1929856)
 
