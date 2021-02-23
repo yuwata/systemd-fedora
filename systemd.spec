@@ -467,6 +467,14 @@ CONFIGURE_OPTS=(
 %endif
 
 %meson "${CONFIGURE_OPTS[@]}"
+
+new_triggers=%{_vpath_builddir}/src/rpm/triggers.systemd.sh
+if ! diff -u %{SOURCE1} ${new_triggers}; then
+   echo -e "\n\n\nWARNING: triggers.systemd in Source1 is different!"
+   echo -e "      cp $PWD/${new_triggers} %{SOURCE1}\n\n\n"
+   sleep 5
+fi
+
 %meson_build
 
 %install
