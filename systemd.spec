@@ -21,7 +21,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        248~rc2
-Release:        1%{?dist}
+Release:        2%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -454,7 +454,11 @@ CONFIGURE_OPTS=(
         -Db_ndebug=false
         -Dman=true
         -Dversion-tag=v%{version}-%{release}
+%if 0%{?fedora}
         -Dfallback-hostname=fedora
+%else
+        -Dfallback-hostname=localhost
+%endif
         -Ddefault-dnssec=no
         # https://bugzilla.redhat.com/show_bug.cgi?id=1867830
         -Ddefault-mdns=no
@@ -928,6 +932,9 @@ getent passwd systemd-network &>/dev/null || useradd -r -u 192 -l -g systemd-net
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Mon Mar 01 2021 Josh Boyer <jwboyer@fedoraproject.org> - 248~rc2-2
+- Don't set the fallback hostname to Fedora on non-Fedora OSes
+
 * Tue Feb 23 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 248~rc2-1
 - Latest upstream prelease, just a bunch of small fixes.
 - Fixes #1931957.
