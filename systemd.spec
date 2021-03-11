@@ -21,7 +21,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        248~rc2
-Release:        4%{?dist}
+Release:        5%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -670,6 +670,14 @@ systemd-machine-id-setup &>/dev/null || :
 # implement restarting of *other* services after the transaction, moving
 # this would make things worse, increasing the number of warnings we get
 # about needed daemon-reload.
+
+oomd_state=$(systemctl is-active systemd-oomd 2>/dev/null || :)
+
+# Work-around for #1931034. Remove after F34 is released.
+if [ "$oomd_state" == "active" ]; then
+   systemctl stop -q systemd-oomd 2>/dev/null || :
+fi
+
 systemctl daemon-reexec &>/dev/null || {
   # systemd v239 had bug #9553 in D-Bus authentication of the private socket,
   # which was later fixed in v240 by #9625.
@@ -689,6 +697,10 @@ systemctl daemon-reexec &>/dev/null || {
     kill -TERM 1 &>/dev/null || :
   fi
 }
+
+if [ "$oomd_state" == "active" ]; then
+   systemctl start -q systemd-oomd 2>/dev/null || :
+fi
 
 if [ $1 -eq 1 ]; then
    # create /var/log/journal only on initial installation,
@@ -940,7 +952,7 @@ getent passwd systemd-network &>/dev/null || useradd -r -u 192 -l -g systemd-net
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
-* Thu Mar 11 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 248~rc2-4
+* Thu Mar 11 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 248~rc2-5
 - Fix crash in pid1 during daemon-reexec (#1931034)
 
 * Fri Mar 05 2021 Adam Williamson <awilliam@redhat.com> - 248~rc2-3
