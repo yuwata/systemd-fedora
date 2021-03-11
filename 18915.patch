@@ -1,0 +1,154 @@
+From 8b0f54c9290564e8c27c9c8ac464cdcc2c659ad5 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Sat, 6 Mar 2021 19:06:08 +0100
+Subject: [PATCH 1/3] pid1: return varlink error on the right connection
+
+---
+ src/core/core-varlink.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/core/core-varlink.c b/src/core/core-varlink.c
+index d695106658b..b3df8cd893c 100644
+--- a/src/core/core-varlink.c
++++ b/src/core/core-varlink.c
+@@ -142,7 +142,7 @@ static int vl_method_subscribe_managed_oom_cgroups(
+         /* We only take one subscriber for this method so return an error if there's already an existing one.
+          * This shouldn't happen since systemd-oomd is the only client of this method. */
+         if (FLAGS_SET(flags, VARLINK_METHOD_MORE) && m->managed_oom_varlink_request)
+-                return varlink_error(m->managed_oom_varlink_request, VARLINK_ERROR_SUBSCRIPTION_TAKEN, NULL);
++                return varlink_error(link, VARLINK_ERROR_SUBSCRIPTION_TAKEN, NULL);
+ 
+         r = json_build(&arr, JSON_BUILD_EMPTY_ARRAY);
+         if (r < 0)
+@@ -188,6 +188,7 @@ static int vl_method_subscribe_managed_oom_cgroups(
+         if (!FLAGS_SET(flags, VARLINK_METHOD_MORE))
+                 return varlink_reply(link, v);
+ 
++        assert(!m->managed_oom_varlink_request);
+         m->managed_oom_varlink_request = varlink_ref(link);
+         return varlink_notify(m->managed_oom_varlink_request, v);
+ }
+@@ -475,8 +476,7 @@ void manager_varlink_done(Manager *m) {
+         assert(m);
+ 
+         /* Send the final message if we still have a subscribe request open. */
+-        if (m->managed_oom_varlink_request)
+-                m->managed_oom_varlink_request = varlink_close_unref(m->managed_oom_varlink_request);
++        m->managed_oom_varlink_request = varlink_close_unref(m->managed_oom_varlink_request);
+ 
+         m->varlink_server = varlink_server_unref(m->varlink_server);
+ }
+
+From 39ad3f1c092b5dffcbb4b1d12eb9ca407f010a3c Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Sun, 7 Mar 2021 16:42:35 +0100
+Subject: [PATCH 2/3] varlink: avoid using dangling ref in
+ varlink_close_unref()
+
+Fixes #18025, https://bugzilla.redhat.com/show_bug.cgi?id=1931034.
+
+We drop the reference stored in Manager.managed_oom_varlink_request in two code paths:
+vl_disconnect() which is installed as a disconnect callback, and in manager_varlink_done().
+But we also make a disconnect from manager_varlink_done(). So we end up with the following
+call stack:
+
+(gdb) bt
+ 0  vl_disconnect (s=0x112c7b0, link=0xea0070, userdata=0xe9bcc0) at ../src/core/core-varlink.c:414
+ 1  0x00007f1366e9d5ac in varlink_detach_server (v=0xea0070) at ../src/shared/varlink.c:1210
+ 2  0x00007f1366e9d664 in varlink_close (v=0xea0070) at ../src/shared/varlink.c:1228
+ 3  0x00007f1366e9d6b5 in varlink_close_unref (v=0xea0070) at ../src/shared/varlink.c:1240
+ 4  0x0000000000524629 in manager_varlink_done (m=0xe9bcc0) at ../src/core/core-varlink.c:479
+ 5  0x000000000048ef7b in manager_free (m=0xe9bcc0) at ../src/core/manager.c:1357
+ 6  0x000000000042602c in main (argc=5, argv=0x7fff439c43d8) at ../src/core/main.c:2909
+
+When we enter vl_disconnect(), m->managed_oom_varlink_request.n_ref==1.
+When we exit from vl_discconect(), m->managed_oom_varlink_request==NULL. But
+varlink_close_unref() has a copy of the pointer in *v. When we continue executing
+varlink_close_unref(), this pointer is dangling, and the call to varlink_unref()
+is done with an invalid pointer.
+---
+ src/shared/varlink.c | 33 +++++++++++++++++++++++++--------
+ 1 file changed, 25 insertions(+), 8 deletions(-)
+
+diff --git a/src/shared/varlink.c b/src/shared/varlink.c
+index 31128e02e06..6ed72075ba5 100644
+--- a/src/shared/varlink.c
++++ b/src/shared/varlink.c
+@@ -1206,8 +1206,9 @@ int varlink_close(Varlink *v) {
+ 
+         varlink_set_state(v, VARLINK_DISCONNECTED);
+ 
+-        /* Let's take a reference first, since varlink_detach_server() might drop the final (dangling) ref
+-         * which would destroy us before we can call varlink_clear() */
++        /* Let's take a reference first, since varlink_detach_server() might drop the final ref from the
++         * disconnect callback, which would invalidate the pointer we are holding before we can call
++         * varlink_clear(). */
+         varlink_ref(v);
+         varlink_detach_server(v);
+         varlink_clear(v);
+@@ -1220,17 +1221,33 @@ Varlink* varlink_close_unref(Varlink *v) {
+         if (!v)
+                 return NULL;
+ 
+-        (void) varlink_close(v);
++        /* A reference is given to us to be destroyed. But when calling varlink_close(), a callback might
++         * also drop a reference. We allow this, and will hold a temporary reference to the object to make
++         * sure that the object still exists when control returns to us. If there's just one reference
++         * remaining after varlink_close(), even though there were at least two right before, we'll handle
++         * that gracefully instead of crashing.
++         *
++         * In other words, this call drops the donated reference, but if the internal call to varlink_close()
++         * dropped a reference to, we don't drop the reference afain. This allows the caller to say:
++         *     global_object->varlink = varlink_close_unref(global_object->varlink);
++         * even though there is some callback which has access to global_object and may drop the reference
++         * stored in global_object->varlink. Without this step, the same code would have to be written as:
++         *     Varlink *t = TAKE_PTR(global_object->varlink);
++         *     varlink_close_unref(t);
++         */
++                                   /* n_ref >= 1 */
++        varlink_ref(v);            /* n_ref >= 2 */
++        varlink_close(v);          /* n_ref >= 1 */
++        if (v->n_ref > 1)
++                v->n_ref--;        /* n_ref >= 1 */
+         return varlink_unref(v);
+ }
+ 
+ Varlink* varlink_flush_close_unref(Varlink *v) {
+-        if (!v)
+-                return NULL;
++        if (v)
++                varlink_flush(v);
+ 
+-        (void) varlink_flush(v);
+-        (void) varlink_close(v);
+-        return varlink_unref(v);
++        return varlink_close_unref(v);
+ }
+ 
+ static int varlink_enqueue_json(Varlink *v, JsonVariant *m) {
+
+From a19c1a4baaa1dadc80885e3ad41f19a6c6c450fd Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Mon, 8 Mar 2021 09:21:25 +0100
+Subject: [PATCH 3/3] oomd: "downgrade" level of message
+
+PID1 already logs about the service being started, so this line isn't necessary
+in normal use. Also, by the time it is emitted, the service has already
+signalled readiness, so let's not say "starting" but "started".
+---
+ src/oom/oomd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/oom/oomd.c b/src/oom/oomd.c
+index 674d53fdcfe..6e2a5889d1e 100644
+--- a/src/oom/oomd.c
++++ b/src/oom/oomd.c
+@@ -170,7 +170,7 @@ static int run(int argc, char *argv[]) {
+ 
+         notify_msg = notify_start(NOTIFY_READY, NOTIFY_STOPPING);
+ 
+-        log_info("systemd-oomd starting%s!", arg_dry_run ? " in dry run mode" : "");
++        log_debug("systemd-oomd started%s.", arg_dry_run ? " in dry run mode" : "");
+ 
+         r = sd_event_loop(m->event);
+         if (r < 0)

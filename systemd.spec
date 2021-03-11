@@ -21,7 +21,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        248~rc2
-Release:        3%{?dist}
+Release:        4%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -70,10 +70,13 @@ i=1; for j in 00*patch; do printf "Patch%04d:      %s\n" $i $j; i=$((i+1));done|
 GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[67]* hwdb/parse_hwdb.py > hwdb.patch
 %endif
 
-# https://github.com/systemd/systemd/pull/18892
-# Fix stub resolver handling of CNAME chains
+# Backports of patches from upstream (0000–0499)
+
 # https://bugzilla.redhat.com/show_bug.cgi?id=1933433
-Patch0:         18892.patch
+Patch0000:      https://github.com/systemd/systemd/pull/18892.patch
+
+# https://bugzilla.redhat.com/show_bug.cgi?id=1931034
+Patch0001:      https://github.com/systemd/systemd/pull/18915.patch
 
 # Downstream-only patches (5000–9999)
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
@@ -937,8 +940,11 @@ getent passwd systemd-network &>/dev/null || useradd -r -u 192 -l -g systemd-net
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Thu Mar 11 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 248~rc2-4
+- Fix crash in pid1 during daemon-reexec (#1931034)
+
 * Fri Mar 05 2021 Adam Williamson <awilliam@redhat.com> - 248~rc2-3
-- Backport PR #18892 to fix stub resolver CNAME chain resolving (#1933433)
+- Fix stub resolver CNAME chain resolving (#1933433)
 
 * Mon Mar 01 2021 Josh Boyer <jwboyer@fedoraproject.org> - 248~rc2-2
 - Don't set the fallback hostname to Fedora on non-Fedora OSes

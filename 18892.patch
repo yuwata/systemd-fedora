@@ -1,4 +1,4 @@
-From 670a1ebe9aa0b6da5a3ae62bf5ad927721fc812b Mon Sep 17 00:00:00 2001
+From e0ae456a554d0fce250f9a009c561b97f20c41f8 Mon Sep 17 00:00:00 2001
 From: Lennart Poettering <lennart@poettering.net>
 Date: Fri, 5 Mar 2021 17:47:45 +0100
 Subject: [PATCH 1/6] dns-query: export CNAME_MAX, so that we can use it in
@@ -47,7 +47,7 @@ index ea296167b61..5d12171b0a1 100644
 +
 +#define CNAME_REDIRECT_MAX 16
 
-From 6fe1d507354710c62d735e5fbd48e014b547a76e Mon Sep 17 00:00:00 2001
+From d29958261a3df80f5cf0e98b1cd307790a92b13b Mon Sep 17 00:00:00 2001
 From: Lennart Poettering <lennart@poettering.net>
 Date: Fri, 5 Mar 2021 17:48:43 +0100
 Subject: [PATCH 2/6] resolved: tighten checks in
@@ -95,15 +95,15 @@ index 823117e5c92..7e76e0c6cc0 100644
                  r = dns_name_equal(dns_resource_key_name(key),
                                     dns_resource_key_name(cname->key));
 
-From 8fb7a20db536b992135a2654f08af0007f268b48 Mon Sep 17 00:00:00 2001
+From 4838dc4f2be1d29da9ce9a930c48717a4491d70e Mon Sep 17 00:00:00 2001
 From: Lennart Poettering <lennart@poettering.net>
 Date: Fri, 5 Mar 2021 17:53:31 +0100
 Subject: [PATCH 3/6] resolved: handle multiple CNAME redirects in a single
  reply from upstream
 
 www.netflix.com responds with a chain of CNAMEs in the same packet.
-Let's handle that properly (so far we only followed CNAMEs on step when
-in the same packet)
+Let's handle that properly (so far we only followed CNAMEs a single step
+when in the same packet)
 
 Fixes: #18819
 ---
@@ -111,7 +111,7 @@ Fixes: #18819
  1 file changed, 57 insertions(+), 48 deletions(-)
 
 diff --git a/src/resolve/resolved-dns-stub.c b/src/resolve/resolved-dns-stub.c
-index c2734e57b9b..098a86fca3f 100644
+index c2734e57b9b..c3a28d390a4 100644
 --- a/src/resolve/resolved-dns-stub.c
 +++ b/src/resolve/resolved-dns-stub.c
 @@ -162,79 +162,88 @@ static int dns_stub_collect_answer_by_question(
@@ -126,7 +126,7 @@ index c2734e57b9b..098a86fca3f 100644
  
 -        /* Copies all RRs from 'answer' into 'reply', if they match 'question'. */
 +        /* Copies all RRs from 'answer' into 'reply', if they match 'question'. There might be direct and
-+         * indirect matches (i.e. via CNAME/DNAME). If the have an indirect one, remember where we need to
++         * indirect matches (i.e. via CNAME/DNAME). If they have an indirect one, remember where we need to
 +         * go, and restart the loop */
 +
 +        for (;;) {
@@ -178,7 +178,7 @@ index c2734e57b9b..098a86fca3f 100644
 -                                dns_resource_key_unref(redirected_key);
 +                                /* Oh, wow, this is a redirect. Let's remember where this points, and store
 +                                 * it in 'next_redirected_key'. Once we finished iterating through the rest
-+                                 * of the RR's we'll start again, with the redirected RR. */
++                                 * of the RR's we'll start again, with the redirected RR key. */
 +
 +                                n_cname_redirects++;
 +                                if (n_cname_redirects > CNAME_REDIRECT_MAX) /* don't loop forever */
@@ -252,7 +252,7 @@ index c2734e57b9b..098a86fca3f 100644
  
          return 0;
 
-From b54de8231bd35f08af46b76dae1028397a19a31e Mon Sep 17 00:00:00 2001
+From 39005e187095062718621880e5d8ad707ac8fe8f Mon Sep 17 00:00:00 2001
 From: Lennart Poettering <lennart@poettering.net>
 Date: Fri, 5 Mar 2021 18:01:27 +0100
 Subject: [PATCH 4/6] resolved: split out helper that checks whether we shall
@@ -264,7 +264,7 @@ Just some refactoring, no actual code changes.
  1 file changed, 14 insertions(+), 8 deletions(-)
 
 diff --git a/src/resolve/resolved-dns-stub.c b/src/resolve/resolved-dns-stub.c
-index 098a86fca3f..67e38bea6ea 100644
+index c3a28d390a4..b4df5837aad 100644
 --- a/src/resolve/resolved-dns-stub.c
 +++ b/src/resolve/resolved-dns-stub.c
 @@ -561,6 +561,19 @@ static int dns_stub_send(
@@ -299,12 +299,12 @@ index 098a86fca3f..67e38bea6ea 100644
 -                (q->answer_dnssec_result >= 0 ||        /* we did proper DNSSEC validation … */
 -                 dns_query_fully_authenticated(q) ||    /* … or we considered it authentic otherwise … */
 -                 DNS_PACKET_CD(q->request_packet));     /* … or client set CD */
-+        edns0_do = dns_stub_reply_with_edns0_do(q); /* let' check if we shall reply with EDNS0 DO? */
++        edns0_do = dns_stub_reply_with_edns0_do(q); /* let's check if we shall reply with EDNS0 DO? */
  
          r = dns_stub_assign_sections(
                          q,
 
-From fd67ea0d9804b8aaea4bda7527afe287060d14db Mon Sep 17 00:00:00 2001
+From b97fc57178932689bdcb9030e1e2bf299d49ce0b Mon Sep 17 00:00:00 2001
 From: Lennart Poettering <lennart@poettering.net>
 Date: Fri, 5 Mar 2021 16:50:04 +0100
 Subject: [PATCH 5/6] resolved: fully follow CNAMEs in the DNS stub after all
@@ -322,12 +322,12 @@ like we do for the D-Bus/Varlink case, and collect replies as we go.
  1 file changed, 27 insertions(+), 11 deletions(-)
 
 diff --git a/src/resolve/resolved-dns-stub.c b/src/resolve/resolved-dns-stub.c
-index 67e38bea6ea..486b8146acf 100644
+index b4df5837aad..85c4eda469c 100644
 --- a/src/resolve/resolved-dns-stub.c
 +++ b/src/resolve/resolved-dns-stub.c
 @@ -586,13 +586,6 @@ static int dns_stub_send_reply(
  
-         edns0_do = dns_stub_reply_with_edns0_do(q); /* let' check if we shall reply with EDNS0 DO? */
+         edns0_do = dns_stub_reply_with_edns0_do(q); /* let's check if we shall reply with EDNS0 DO? */
  
 -        r = dns_stub_assign_sections(
 -                        q,
@@ -389,7 +389,7 @@ index 67e38bea6ea..486b8146acf 100644
                                    SD_RESOLVED_CLAMP_TTL);
          if (r < 0) {
 
-From 42a0086a3e8939ab58cc81409f54ac64a2358923 Mon Sep 17 00:00:00 2001
+From 5d7da51ee1d27e86a0487a4b2abc3cfb0ed44c23 Mon Sep 17 00:00:00 2001
 From: Lennart Poettering <lennart@poettering.net>
 Date: Fri, 5 Mar 2021 18:20:59 +0100
 Subject: [PATCH 6/6] resolved: when synthesizing stub replies from multiple
@@ -404,11 +404,11 @@ sections when they are already listed in a "higher-priority" section.
 ---
  src/resolve/resolved-dns-answer.c | 25 +++++++++++++++++++++++++
  src/resolve/resolved-dns-answer.h |  1 +
- src/resolve/resolved-dns-stub.c   | 18 ++++++++++++++++++
- 3 files changed, 44 insertions(+)
+ src/resolve/resolved-dns-stub.c   | 20 ++++++++++++++++++++
+ 3 files changed, 46 insertions(+)
 
 diff --git a/src/resolve/resolved-dns-answer.c b/src/resolve/resolved-dns-answer.c
-index ce3cbce308d..8db97dce567 100644
+index ce3cbce308d..a667ab5ede4 100644
 --- a/src/resolve/resolved-dns-answer.c
 +++ b/src/resolve/resolved-dns-answer.c
 @@ -640,6 +640,31 @@ int dns_answer_remove_by_rr(DnsAnswer **a, DnsResourceRecord *rm) {
@@ -431,8 +431,8 @@ index ce3cbce308d..8db97dce567 100644
 +                if (r < 0)
 +                        return r;
 +
-+                /* Let's remember this entrie's RR key, to optimize the loop a bit: if we have an RRset with
-+                 * more than one item then we don#t need to remove the key multiple times */
++                /* Let's remember this entry's RR key, to optimize the loop a bit: if we have an RRset with
++                 * more than one item then we don't need to remove the key multiple times */
 +                dns_resource_key_unref(prev);
 +                prev = dns_resource_key_ref(item->rr->key);
 +        }
@@ -456,23 +456,25 @@ index c2fd0c078f4..7d19eee4e2b 100644
  int dns_answer_copy_by_key(DnsAnswer **a, DnsAnswer *source, const DnsResourceKey *key, DnsAnswerFlags or_flags, DnsResourceRecord *rrsig);
  int dns_answer_move_by_key(DnsAnswer **to, DnsAnswer **from, const DnsResourceKey *key, DnsAnswerFlags or_flags, DnsResourceRecord *rrsig);
 diff --git a/src/resolve/resolved-dns-stub.c b/src/resolve/resolved-dns-stub.c
-index 486b8146acf..7fc8b4fdd4f 100644
+index 85c4eda469c..8e781dd7389 100644
 --- a/src/resolve/resolved-dns-stub.c
 +++ b/src/resolve/resolved-dns-stub.c
-@@ -574,6 +574,22 @@ static int dns_stub_reply_with_edns0_do(DnsQuery *q) {
+@@ -574,6 +574,24 @@ static int dns_stub_reply_with_edns0_do(DnsQuery *q) {
                    DNS_PACKET_CD(q->request_packet));     /* … or client set CD */
  }
  
 +static void dns_stub_suppress_duplicate_section_rrs(DnsQuery *q) {
 +        /* If we follow a CNAME/DNAME chain we might end up populating our sections with redundant RRs
 +         * because we built up the sections from multiple reply packets (one from each CNAME/DNAME chain
-+         * element). e.g. it could be that an RR that was included in the first reply's additional section
++         * element). E.g. it could be that an RR that was included in the first reply's additional section
 +         * ends up being relevant as main answer in a subsequent reply in the chain. Let's clean this up, and
-+         * remove everything from the "higher priority" sections from the "lower priority" sections if they
-+         * exists in both.
++         * remove everything in the "higher priority" sections from the "lower priority" sections.
 +         *
 +         * Note that this removal matches by RR keys instead of the full RRs. This is because RRsets should
-+         * always end up in one section fully or not at all, but never be split among sections. */
++         * always end up in one section fully or not at all, but never be split among sections.
++         *
++         * Specifically: we remove ANSWER section RRs from the AUTHORITATIVE and ADDITIONAL sections, as well
++         * as AUTHORITATIVE section RRs from the ADDITIONAL section. */
 +
 +        dns_answer_remove_by_answer_keys(&q->reply_authoritative, q->reply_answer);
 +        dns_answer_remove_by_answer_keys(&q->reply_additional, q->reply_answer);
@@ -482,7 +484,7 @@ index 486b8146acf..7fc8b4fdd4f 100644
  static int dns_stub_send_reply(
                  DnsQuery *q,
                  int rcode) {
-@@ -594,6 +610,8 @@ static int dns_stub_send_reply(
+@@ -594,6 +612,8 @@ static int dns_stub_send_reply(
          if (r < 0)
                  return log_debug_errno(r, "Failed to build reply packet: %m");
  
