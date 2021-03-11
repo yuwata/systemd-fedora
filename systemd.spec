@@ -20,8 +20,8 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        248~rc2
-Release:        5%{?dist}
+Version:        248~rc3
+Release:        1%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -71,12 +71,6 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 %endif
 
 # Backports of patches from upstream (0000–0499)
-
-# https://bugzilla.redhat.com/show_bug.cgi?id=1933433
-Patch0000:      https://github.com/systemd/systemd/pull/18892.patch
-
-# https://bugzilla.redhat.com/show_bug.cgi?id=1931034
-Patch0001:      https://github.com/systemd/systemd/pull/18915.patch
 
 # Downstream-only patches (5000–9999)
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
@@ -952,6 +946,13 @@ getent passwd systemd-network &>/dev/null || useradd -r -u 192 -l -g systemd-net
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Thu Mar 11 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 248~rc3-1
+- Latest upstream prerelease, see
+  https://github.com/systemd/systemd/blob/v248-rc3/NEWS.
+- A bunch of documentation updates, correctness fixes, and systemd-networkd
+  features.
+- Resolves #1933137, #1935084, #1933873, #1931181, #1933335, #1935062, #1927148.
+
 * Thu Mar 11 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 248~rc2-5
 - Fix crash in pid1 during daemon-reexec (#1931034)
 
