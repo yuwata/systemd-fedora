@@ -21,7 +21,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        248~rc4
-Release:        1%{?dist}
+Release:        2%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -63,6 +63,9 @@ Source21:       macros.sysusers
 Source22:       sysusers.attr
 Source23:       sysusers.prov
 Source24:       sysusers.generate-pre.sh
+
+# Disable resolved caching to workaround #1933433
+Source100:      nocache.conf
 
 %if 0
 GIT_DIR=../../src/systemd/.git git format-patch-ab --no-signature -M -N v235..v235-stable
@@ -554,6 +557,9 @@ touch %{buildroot}%{_localstatedir}/lib/private/systemd/journal-upload/state
 # Install yum protection fragment
 install -Dm0644 %{SOURCE4} %{buildroot}/etc/dnf/protected.d/systemd.conf
 
+# Install resolved cache disable fragment
+install -Dm0644 -t %{buildroot}%{pkgdir}/resolved.conf.d %{SOURCE100}
+
 install -Dm0644 -t %{buildroot}/usr/lib/firewalld/services/ %{SOURCE7} %{SOURCE8}
 
 # Restore systemd-user pam config from before "removal of Fedora-specific bits"
@@ -949,6 +955,9 @@ getent passwd systemd-network &>/dev/null || useradd -r -u 192 -l -g systemd-net
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Fri Mar 19 2021 Adam Williamson <awilliam@redhat.com> - 248~rc4-2
+- Disable resolved cache via config snippet (#1940715)
+
 * Thu Mar 18 2021 Yu Watanabe <yuwatana@redhat.com> - 248~rc4-1
 - Latest upstream prerelease, see
   https://github.com/systemd/systemd/blob/v248-rc4/NEWS.
