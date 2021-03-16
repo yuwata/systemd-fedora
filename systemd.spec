@@ -21,7 +21,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        248~rc3
-Release:        1%{?dist}
+Release:        2%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -72,6 +72,9 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 
 # Backports of patches from upstream (0000–0499)
 Patch0001:      0001-Revert-sd-event-make-use-of-epoll_pwait2-for-greater.patch
+# https://github.com/systemd/systemd/pull/19009
+# Fixes more CNAME issues in stub resolver (#1933433)
+Patch0002:      19009.patch
 
 # Downstream-only patches (5000–9999)
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
@@ -947,6 +950,9 @@ getent passwd systemd-network &>/dev/null || useradd -r -u 192 -l -g systemd-net
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Tue Mar 16 2021 Adam Williamson <awilliam@redhat.com> - 248~rc3-2
+- Backport PR #19009 to fix CNAME redirect resolving some more (#1933433)
+
 * Thu Mar 11 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 248~rc3-1
 - Latest upstream prerelease, see
   https://github.com/systemd/systemd/blob/v248-rc3/NEWS.
