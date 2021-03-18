@@ -71,8 +71,6 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 %endif
 
 # Backports of patches from upstream (0000–0499)
-# https://github.com/systemd/systemd/pull/19042
-Patch0502:      https://github.com/systemd/systemd/pull/19042/commits/2ad2a50a832140edfb49a95384e35bcf7a034acf.patch
 
 # Downstream-only patches (5000–9999)
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
@@ -80,6 +78,9 @@ Patch0500:      use-bfq-scheduler.patch
 
 # https://github.com/systemd/systemd/pull/17050
 Patch0501:      https://github.com/systemd/systemd/pull/17050/commits/f58b96d3e8d1cb0dd3666bc74fa673918b586612.patch
+
+# https://github.com/systemd/systemd/pull/18973
+Patch0502:      0001-sd-event-do-not-use-epoll_pwait2-tentatively.patch
 
 %ifarch %{ix86} x86_64 aarch64
 %global have_gnu_efi 1
