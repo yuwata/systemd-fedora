@@ -71,8 +71,8 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 %endif
 
 # Backports of patches from upstream (0000–0499)
-# https://github.com/systemd/systemd/pull/18975
-Patch0502:      https://github.com/systemd/systemd/pull/18975/commits/4cbb372cd734d9e3e125a42b12a9e71caf1632a6.patch
+# https://github.com/systemd/systemd/pull/19042
+Patch0502:      https://github.com/systemd/systemd/pull/19042/commits/2ad2a50a832140edfb49a95384e35bcf7a034acf.patch
 
 # Downstream-only patches (5000–9999)
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828

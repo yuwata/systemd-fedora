@@ -1,4 +1,4 @@
-From 4cbb372cd734d9e3e125a42b12a9e71caf1632a6 Mon Sep 17 00:00:00 2001
+From 2ad2a50a832140edfb49a95384e35bcf7a034acf Mon Sep 17 00:00:00 2001
 From: Lennart Poettering <lennart@poettering.net>
 Date: Thu, 11 Mar 2021 21:49:44 +0100
 Subject: [PATCH] syscall: disable epoll_pwait2() for now on 32bit
@@ -9,7 +9,7 @@ Alternative to #18973.
  1 file changed, 8 insertions(+)
 
 diff --git a/src/basic/missing_syscall.h b/src/basic/missing_syscall.h
-index 13843248045..8158a75a78d 100644
+index 13843248045..8bbe4d28847 100644
 --- a/src/basic/missing_syscall.h
 +++ b/src/basic/missing_syscall.h
 @@ -407,6 +407,13 @@ static inline int missing_epoll_pwait2(
@@ -17,9 +17,9 @@ index 13843248045..8158a75a78d 100644
  
  #  if defined(__NR_epoll_pwait2) && HAVE_LINUX_TIME_TYPES_H
 +#    if __SIZEOF_LONG__ == 4
-+// Someone with an interest in 32bit systems, please have a look at this, and figure out why this hangs on 32bit systems.
-+// My educated guess: might be because of issues with the __kernel_timespec translation or because of incorrectly sized sigset_t array.
-+#      pragma message "epoll_pwait2() appears to be broken on 32bit archs, someone please have a look!"
++        /* Someone with an interest in 32bit systems, please have a look at this, and figure out why
++         * this hangs on 32bit systems. My educated guess: might be because of issues with the
++         * __kernel_timespec translation or because of incorrectly sized sigset_t array. */
 +        errno = ENOSYS;
 +        return -1;
 +#    else
