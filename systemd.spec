@@ -21,7 +21,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        248~rc4
-Release:        2%{?dist}
+Release:        3%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -74,6 +74,20 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 %endif
 
 # Backports of patches from upstream (0000–0499)
+#
+# Any patches which are "in preparation" upstream should be listed
+# here, rather than in the next section. Packit CI will drop any
+# patches in this range before applying upstream pull requests.
+
+# https://bugzilla.redhat.com/show_bug.cgi?id=1941335
+Patch0001:      https://github.com/systemd/systemd/pull/19075.patch
+
+Patch0002:      https://github.com/systemd/systemd/pull/19079.patch
+Patch0003:      https://github.com/systemd/systemd/pull/19080.patch
+
+Patch0004:      https://github.com/systemd/systemd/commit/5cdb3f70ebe035323f4f079028a262669a2bbbf6.patch
+Patch0005:      https://github.com/systemd/systemd/commit/f9b3afae96c72564cd4cd766555845f17e3c12a9.patch
+Patch0006:      https://github.com/systemd/systemd/commit/0e557eef37c9ebcc8f5c19fc6fc44b6fd617cc5d.patch
 
 # Downstream-only patches (5000–9999)
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
@@ -81,9 +95,6 @@ Patch0500:      use-bfq-scheduler.patch
 
 # https://github.com/systemd/systemd/pull/17050
 Patch0501:      https://github.com/systemd/systemd/pull/17050/commits/f58b96d3e8d1cb0dd3666bc74fa673918b586612.patch
-
-# https://github.com/systemd/systemd/pull/18973
-Patch0502:      0001-sd-event-do-not-use-epoll_pwait2-tentatively.patch
 
 %ifarch %{ix86} x86_64 aarch64
 %global have_gnu_efi 1
@@ -955,6 +966,14 @@ getent passwd systemd-network &>/dev/null || useradd -r -u 192 -l -g systemd-net
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Mon Mar 22 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 248~rc4-3
+- Fix hang when processing timers during DST switch in Europe/Dublin timezone (#1941335)
+- Fix returning combined IPv4/IPv6 responses from systemd-resolved cache (#1940715)
+  (But note that the disablement of caching added previously is
+  retained until we can do more testing.)
+- Minor fix to interface naming by udev
+- Fix for systemd-repart --size
+
 * Fri Mar 19 2021 Adam Williamson <awilliam@redhat.com> - 248~rc4-2
 - Disable resolved cache via config snippet (#1940715)
 

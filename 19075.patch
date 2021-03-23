@@ -1,0 +1,415 @@
+From 169615c9a8cdc54d748d4dfc8279be9b3c2bec44 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Sun, 21 Mar 2021 20:59:32 +0100
+Subject: [PATCH 1/5] shared/calendarspec: abort calculation after 1000
+ iterations
+
+We have a bug where we seem to enter an infinite loop when running in the
+Europe/Dublin timezone. The timezone is "special" because it has negative SAVE
+values. The handling of this should obviously be fixed, but let's use a
+belt-and-suspenders approach, and gracefully fail if we fail to find an answer
+within a specific number of attempts. The code in this function is rather
+complex, and it's hard to rule out another bug in the future.
+---
+ src/shared/calendarspec.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/src/shared/calendarspec.c b/src/shared/calendarspec.c
+index 4f68a570b52..feb43efdcda 100644
+--- a/src/shared/calendarspec.c
++++ b/src/shared/calendarspec.c
+@@ -1210,6 +1210,10 @@ static bool matches_weekday(int weekdays_bits, const struct tm *tm, bool utc) {
+         return (weekdays_bits & (1 << k));
+ }
+ 
++/* A safety valve: if we get stuck in the calculation, return an error.
++ * C.f. https://bugzilla.redhat.com/show_bug.cgi?id=1941335. */
++#define MAX_CALENDAR_ITERATIONS 1000
++
+ static int find_next(const CalendarSpec *spec, struct tm *tm, usec_t *usec) {
+         struct tm c;
+         int tm_usec;
+@@ -1223,7 +1227,7 @@ static int find_next(const CalendarSpec *spec, struct tm *tm, usec_t *usec) {
+         c = *tm;
+         tm_usec = *usec;
+ 
+-        for (;;) {
++        for (unsigned iteration = 0; iteration < MAX_CALENDAR_ITERATIONS; iteration++) {
+                 /* Normalize the current date */
+                 (void) mktime_or_timegm(&c, spec->utc);
+                 c.tm_isdst = spec->dst;
+@@ -1320,6 +1324,14 @@ static int find_next(const CalendarSpec *spec, struct tm *tm, usec_t *usec) {
+                 *usec = tm_usec;
+                 return 0;
+         }
++
++        /* It seems we entered an infinite loop. Let's gracefully return an error instead of hanging or
++         * aborting. This code is also exercised when timers.target is brought up during early boot, so
++         * aborting here is problematic and hard to diagnose for users. */
++        _cleanup_free_ char *s = NULL;
++        (void) calendar_spec_to_string(spec, &s);
++        return log_warning_errno(SYNTHETIC_ERRNO(EDEADLK),
++                                 "Infinite loop in calendar calculation: %s", strna(s));
+ }
+ 
+ static int calendar_spec_next_usec_impl(const CalendarSpec *spec, usec_t usec, usec_t *ret_next) {
+
+From 462f15d92d35f812d7d77edd486ca63236cffe83 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Mon, 22 Mar 2021 09:20:47 +0100
+Subject: [PATCH 2/5] shared/calendarspec: constify parameter and simplify
+ assignments to variable
+
+The scope of start & stop is narrowed down, and they are assigned only once.
+No functional change, but I think the code is easier to read this way.
+Also add a comment to make the code easier to read.
+---
+ src/shared/calendarspec.c | 33 ++++++++++++++++++++++-----------
+ 1 file changed, 22 insertions(+), 11 deletions(-)
+
+diff --git a/src/shared/calendarspec.c b/src/shared/calendarspec.c
+index feb43efdcda..5c666412946 100644
+--- a/src/shared/calendarspec.c
++++ b/src/shared/calendarspec.c
+@@ -1101,7 +1101,7 @@ int calendar_spec_from_string(const char *p, CalendarSpec **spec) {
+         return 0;
+ }
+ 
+-static int find_end_of_month(struct tm *tm, bool utc, int day) {
++static int find_end_of_month(const struct tm *tm, bool utc, int day) {
+         struct tm t = *tm;
+ 
+         t.tm_mon++;
+@@ -1114,28 +1114,39 @@ static int find_end_of_month(struct tm *tm, bool utc, int day) {
+         return t.tm_mday;
+ }
+ 
+-static int find_matching_component(const CalendarSpec *spec, const CalendarComponent *c,
+-                                   struct tm *tm, int *val) {
+-        const CalendarComponent *p = c;
+-        int start, stop, d = -1;
++static int find_matching_component(
++                const CalendarSpec *spec,
++                const CalendarComponent *c,
++                const struct tm *tm,           /* tm is only used for end-of-month calculations */
++                int *val) {
++
++        int d = -1, r;
+         bool d_set = false;
+-        int r;
+ 
+         assert(val);
+ 
++        /* Finds the *earliest* matching time specified by one of the CalendarCompoment items in chain c.
++         * If no matches can be found, returns -ENOENT.
++         * Otherwise, updates *val to the matching time. 1 is returned if *val was changed, 0 otherwise.
++         */
++
+         if (!c)
+                 return 0;
+ 
++        bool end_of_month = spec->end_of_month && c == spec->day;
++
+         while (c) {
+-                start = c->start;
+-                stop = c->stop;
++                int start, stop;
+ 
+-                if (spec->end_of_month && p == spec->day) {
+-                        start = find_end_of_month(tm, spec->utc, start);
+-                        stop = find_end_of_month(tm, spec->utc, stop);
++                if (end_of_month) {
++                        start = find_end_of_month(tm, spec->utc, c->start);
++                        stop = find_end_of_month(tm, spec->utc, c->stop);
+ 
+                         if (stop > 0)
+                                 SWAP_TWO(start, stop);
++                } else {
++                        start = c->start;
++                        stop = c->stop;
+                 }
+ 
+                 if (start >= *val) {
+
+From f035bb1b7a5900439640f267db881c60d042e450 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Mon, 22 Mar 2021 11:10:22 +0100
+Subject: [PATCH 3/5] test-calendarspec: print offending line in output
+
+The output is rather long at this makes it easier to jump to the right place.
+Also use normal output routines and set_unset_env() to make things more
+compact.
+---
+ src/test/test-calendarspec.c | 48 +++++++++++++++++-------------------
+ 1 file changed, 22 insertions(+), 26 deletions(-)
+
+diff --git a/src/test/test-calendarspec.c b/src/test/test-calendarspec.c
+index 01ec7f87704..152ce879f8a 100644
+--- a/src/test/test-calendarspec.c
++++ b/src/test/test-calendarspec.c
+@@ -2,11 +2,11 @@
+ 
+ #include "alloc-util.h"
+ #include "calendarspec.h"
++#include "env-util.h"
+ #include "errno-util.h"
+ #include "string-util.h"
+-#include "util.h"
+ 
+-static void test_one(const char *input, const char *output) {
++static void _test_one(int line, const char *input, const char *output) {
+         CalendarSpec *c;
+         _cleanup_free_ char *p = NULL, *q = NULL;
+         usec_t u;
+@@ -16,13 +16,13 @@ static void test_one(const char *input, const char *output) {
+         assert_se(calendar_spec_from_string(input, &c) >= 0);
+ 
+         assert_se(calendar_spec_to_string(c, &p) >= 0);
+-        printf("\"%s\" → \"%s\"\n", input, p);
++        log_info("line %d: \"%s\" → \"%s\"", line, input, p);
+ 
+         assert_se(streq(p, output));
+ 
+         u = now(CLOCK_REALTIME);
+         r = calendar_spec_next_usec(c, u, &u);
+-        printf("Next: %s\n", r < 0 ? strerror_safe(r) : format_timestamp(buf, sizeof(buf), u));
++        log_info("Next: %s", r < 0 ? strerror_safe(r) : format_timestamp(buf, sizeof buf, u));
+         calendar_spec_free(c);
+ 
+         assert_se(calendar_spec_from_string(p, &c) >= 0);
+@@ -31,8 +31,9 @@ static void test_one(const char *input, const char *output) {
+ 
+         assert_se(streq(q, p));
+ }
++#define test_one(input, output) _test_one(__LINE__, input, output)
+ 
+-static void test_next(const char *input, const char *new_tz, usec_t after, usec_t expect) {
++static void _test_next(int line, const char *input, const char *new_tz, usec_t after, usec_t expect) {
+         CalendarSpec *c;
+         usec_t u;
+         char *old_tz;
+@@ -43,22 +44,19 @@ static void test_next(const char *input, const char *new_tz, usec_t after, usec_
+         if (old_tz)
+                 old_tz = strdupa(old_tz);
+ 
+-        if (new_tz) {
+-                char *colon_tz;
++        if (new_tz)
++                new_tz = strjoina(":", new_tz);
+ 
+-                colon_tz = strjoina(":", new_tz);
+-                assert_se(setenv("TZ", colon_tz, 1) >= 0);
+-        } else
+-                assert_se(unsetenv("TZ") >= 0);
++        assert_se(set_unset_env("TZ", new_tz, true) == 0);
+         tzset();
+ 
+         assert_se(calendar_spec_from_string(input, &c) >= 0);
+ 
+-        printf("\"%s\"\n", input);
++        log_info("line %d: \"%s\" new_tz=%s", line, input, strnull(new_tz));
+ 
+         u = after;
+         r = calendar_spec_next_usec(c, after, &u);
+-        printf("At: %s\n", r < 0 ? strerror_safe(r) : format_timestamp_style(buf, sizeof buf, u, TIMESTAMP_US));
++        log_info("At: %s", r < 0 ? strerror_safe(r) : format_timestamp_style(buf, sizeof buf, u, TIMESTAMP_US));
+         if (expect != USEC_INFINITY)
+                 assert_se(r >= 0 && u == expect);
+         else
+@@ -66,12 +64,10 @@ static void test_next(const char *input, const char *new_tz, usec_t after, usec_
+ 
+         calendar_spec_free(c);
+ 
+-        if (old_tz)
+-                assert_se(setenv("TZ", old_tz, 1) >= 0);
+-        else
+-                assert_se(unsetenv("TZ") >= 0);
++        assert_se(set_unset_env("TZ", old_tz, true) == 0);
+         tzset();
+ }
++#define test_next(input, new_tz, after, expect) _test_next(__LINE__, input,new_tz,after,expect)
+ 
+ static void test_timestamp(void) {
+         char buf[FORMAT_TIMESTAMP_MAX];
+@@ -83,12 +79,12 @@ static void test_timestamp(void) {
+ 
+         x = now(CLOCK_REALTIME);
+ 
+-        assert_se(format_timestamp_style(buf, sizeof(buf), x, TIMESTAMP_US));
+-        printf("%s\n", buf);
++        assert_se(format_timestamp_style(buf, sizeof buf, x, TIMESTAMP_US));
++        log_info("%s", buf);
+         assert_se(calendar_spec_from_string(buf, &c) >= 0);
+         assert_se(calendar_spec_to_string(c, &t) >= 0);
+         calendar_spec_free(c);
+-        printf("%s\n", t);
++        log_info("%s", t);
+ 
+         assert_se(parse_timestamp(t, &y) >= 0);
+         assert_se(y == x);
+@@ -104,11 +100,11 @@ static void test_hourly_bug_4031(void) {
+         n = now(CLOCK_REALTIME);
+         assert_se((r = calendar_spec_next_usec(c, n, &u)) >= 0);
+ 
+-        printf("Now: %s (%"PRIu64")\n", format_timestamp_style(buf, sizeof buf, n, TIMESTAMP_US), n);
+-        printf("Next hourly: %s (%"PRIu64")\n", r < 0 ? strerror_safe(r) : format_timestamp_style(buf, sizeof buf, u, TIMESTAMP_US), u);
++        log_info("Now: %s (%"PRIu64")", format_timestamp_style(buf, sizeof buf, n, TIMESTAMP_US), n);
++        log_info("Next hourly: %s (%"PRIu64")", r < 0 ? strerror_safe(r) : format_timestamp_style(buf, sizeof buf, u, TIMESTAMP_US), u);
+ 
+         assert_se((r = calendar_spec_next_usec(c, u, &w)) >= 0);
+-        printf("Next hourly: %s (%"PRIu64")\n", r < 0 ? strerror_safe(r) : format_timestamp_style(zaf, sizeof zaf, w, TIMESTAMP_US), w);
++        log_info("Next hourly: %s (%"PRIu64")", r < 0 ? strerror_safe(r) : format_timestamp_style(zaf, sizeof zaf, w, TIMESTAMP_US), w);
+ 
+         assert_se(n < u);
+         assert_se(u <= n + USEC_PER_HOUR);
+@@ -209,13 +205,13 @@ int main(int argc, char* argv[]) {
+         test_next("2017-08-06 9..17/2:00 UTC", "", 1502029800000000, 1502031600000000);
+         test_next("2016-12-* 3..21/6:00 UTC", "", 1482613200000001, 1482634800000000);
+         test_next("2017-09-24 03:30:00 Pacific/Auckland", "", 12345, 1506177000000000);
+-        // Due to daylight saving time - 2017-09-24 02:30:00 does not exist
++        /* Due to daylight saving time - 2017-09-24 02:30:00 does not exist */
+         test_next("2017-09-24 02:30:00 Pacific/Auckland", "", 12345, -1);
+         test_next("2017-04-02 02:30:00 Pacific/Auckland", "", 12345, 1491053400000000);
+-        // Confirm that even though it's a time change here (backward) 02:30 happens only once
++        /* Confirm that even though it's a time change here (backward) 02:30 happens only once */
+         test_next("2017-04-02 02:30:00 Pacific/Auckland", "", 1491053400000000, -1);
+         test_next("2017-04-02 03:30:00 Pacific/Auckland", "", 12345, 1491060600000000);
+-        // Confirm that timezones in the Spec work regardless of current timezone
++        /* Confirm that timezones in the Spec work regardless of current timezone */
+         test_next("2017-09-09 20:42:00 Pacific/Auckland", "", 12345, 1504946520000000);
+         test_next("2017-09-09 20:42:00 Pacific/Auckland", "EET", 12345, 1504946520000000);
+ 
+
+From 47b0b65766229a18921a3ce831ef708ef408a34c Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Mon, 22 Mar 2021 11:29:35 +0100
+Subject: [PATCH 4/5] test-calendarspec: do not convert timezone "" to ":"
+
+I *think* it doesn't actually make any difference, because ":" will be ignored.
+437f48a471f51ac9dd2697ee3b848a71b4f101df added prefixing with ":", but didn't
+take into account the fact that we also use "" with a different meaning than
+NULL here. But let's restore the original behaviour of specifying the empty
+string.
+---
+ src/test/test-calendarspec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/test/test-calendarspec.c b/src/test/test-calendarspec.c
+index 152ce879f8a..c62e6860cf9 100644
+--- a/src/test/test-calendarspec.c
++++ b/src/test/test-calendarspec.c
+@@ -44,7 +44,7 @@ static void _test_next(int line, const char *input, const char *new_tz, usec_t a
+         if (old_tz)
+                 old_tz = strdupa(old_tz);
+ 
+-        if (new_tz)
++        if (!isempty(new_tz))
+                 new_tz = strjoina(":", new_tz);
+ 
+         assert_se(set_unset_env("TZ", new_tz, true) == 0);
+
+From 129cb6e249bef30dc33e08f98f0b27a6de976f6f Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Mon, 22 Mar 2021 12:51:47 +0100
+Subject: [PATCH 5/5] shared/calendarspec: when mktime() moves us backwards,
+ jump forward
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+When trying to calculate the next firing of 'Sun *-*-* 01:00:00', we'd fall
+into an infinite loop, because mktime() moves us "backwards":
+
+Before this patch:
+tm_within_bounds: good=0 2021-03-29 01:00:00 → 2021-03-29 00:00:00
+tm_within_bounds: good=0 2021-03-29 01:00:00 → 2021-03-29 00:00:00
+tm_within_bounds: good=0 2021-03-29 01:00:00 → 2021-03-29 00:00:00
+...
+
+We rely on mktime() normalizing the time. The man page does not say that it'll
+move the time forward, but our algorithm relies on this. So let's catch this
+case explicitly.
+
+With this patch:
+$ TZ=Europe/Dublin faketime 2021-03-21 build/systemd-analyze calendar --iterations=5 'Sun *-*-* 01:00:00'
+Normalized form: Sun *-*-* 01:00:00
+    Next elapse: Sun 2021-03-21 01:00:00 GMT
+       (in UTC): Sun 2021-03-21 01:00:00 UTC
+       From now: 59min left
+       Iter. #2: Sun 2021-04-04 01:00:00 IST
+       (in UTC): Sun 2021-04-04 00:00:00 UTC
+       From now: 1 weeks 6 days left           <---- note the 2 week jump here
+       Iter. #3: Sun 2021-04-11 01:00:00 IST
+       (in UTC): Sun 2021-04-11 00:00:00 UTC
+       From now: 2 weeks 6 days left
+       Iter. #4: Sun 2021-04-18 01:00:00 IST
+       (in UTC): Sun 2021-04-18 00:00:00 UTC
+       From now: 3 weeks 6 days left
+       Iter. #5: Sun 2021-04-25 01:00:00 IST
+       (in UTC): Sun 2021-04-25 00:00:00 UTC
+       From now: 1 months 4 days left
+
+Fixes https://bugzilla.redhat.com/show_bug.cgi?id=1941335.
+---
+ src/shared/calendarspec.c    | 19 +++++++++++--------
+ src/test/test-calendarspec.c |  3 +++
+ test/test-functions          |  1 +
+ 3 files changed, 15 insertions(+), 8 deletions(-)
+
+diff --git a/src/shared/calendarspec.c b/src/shared/calendarspec.c
+index 5c666412946..bf24d8d5bbb 100644
+--- a/src/shared/calendarspec.c
++++ b/src/shared/calendarspec.c
+@@ -1195,15 +1195,18 @@ static int tm_within_bounds(struct tm *tm, bool utc) {
+                 return negative_errno();
+ 
+         /* Did any normalization take place? If so, it was out of bounds before */
+-        bool good = t.tm_year == tm->tm_year &&
+-                    t.tm_mon  == tm->tm_mon  &&
+-                    t.tm_mday == tm->tm_mday &&
+-                    t.tm_hour == tm->tm_hour &&
+-                    t.tm_min  == tm->tm_min  &&
+-                    t.tm_sec  == tm->tm_sec;
+-        if (!good)
++        int cmp = CMP(t.tm_year, tm->tm_year) ?:
++                  CMP(t.tm_mon, tm->tm_mon) ?:
++                  CMP(t.tm_mday, tm->tm_mday) ?:
++                  CMP(t.tm_hour, tm->tm_hour) ?:
++                  CMP(t.tm_min, tm->tm_min) ?:
++                  CMP(t.tm_sec, tm->tm_sec);
++
++        if (cmp < 0)
++                return -EDEADLK; /* Refuse to go backward */
++        if (cmp > 0)
+                 *tm = t;
+-        return good;
++        return cmp == 0;
+ }
+ 
+ static bool matches_weekday(int weekdays_bits, const struct tm *tm, bool utc) {
+diff --git a/src/test/test-calendarspec.c b/src/test/test-calendarspec.c
+index c62e6860cf9..4f1d0f64d57 100644
+--- a/src/test/test-calendarspec.c
++++ b/src/test/test-calendarspec.c
+@@ -214,6 +214,9 @@ int main(int argc, char* argv[]) {
+         /* Confirm that timezones in the Spec work regardless of current timezone */
+         test_next("2017-09-09 20:42:00 Pacific/Auckland", "", 12345, 1504946520000000);
+         test_next("2017-09-09 20:42:00 Pacific/Auckland", "EET", 12345, 1504946520000000);
++        /* Check that we don't start looping if mktime() moves us backwards */
++        test_next("Sun *-*-* 01:00:00 Europe/Dublin", "", 1616412478000000, 1617494400000000);
++        test_next("Sun *-*-* 01:00:00 Europe/Dublin", "IST", 1616412478000000, 1617494400000000);
+ 
+         assert_se(calendar_spec_from_string("test", &c) < 0);
+         assert_se(calendar_spec_from_string(" utc", &c) < 0);
+diff --git a/test/test-functions b/test/test-functions
+index d7f7967e2ff..6b94058fd36 100644
+--- a/test/test-functions
++++ b/test/test-functions
+@@ -1340,6 +1340,7 @@ install_zoneinfo() {
+     inst_any /usr/share/zoneinfo/Asia/Vladivostok
+     inst_any /usr/share/zoneinfo/Australia/Sydney
+     inst_any /usr/share/zoneinfo/Europe/Berlin
++    inst_any /usr/share/zoneinfo/Europe/Dublin
+     inst_any /usr/share/zoneinfo/Europe/Kiev
+     inst_any /usr/share/zoneinfo/Pacific/Auckland
+     inst_any /usr/share/zoneinfo/Pacific/Honolulu
