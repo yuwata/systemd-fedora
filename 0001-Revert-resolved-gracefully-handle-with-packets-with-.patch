@@ -1,0 +1,55 @@
+From 9ac47d37a59142a66ac13f58bef197117ff53141 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Wed, 24 Mar 2021 11:42:39 +0100
+Subject: [PATCH] Revert "resolved: gracefully handle with packets with too
+ large RR count"
+
+This reverts commit 18674159ebbf622a9e6e5a45cc36b38f74dae315.
+
+There are multiple reports that this breaks lookups for people, and reverting
+this commit, even on the main branch (approx. v248-rc4), fixes the issue.
+
+https://github.com/systemd/systemd/issues/18917#issuecomment-799421587
+https://bodhi.fedoraproject.org/updates/FEDORA-2021-1c1a870ceb
+---
+ src/resolve/resolved-dns-packet.c | 16 +---------------
+ 1 file changed, 1 insertion(+), 15 deletions(-)
+
+diff --git a/src/resolve/resolved-dns-packet.c b/src/resolve/resolved-dns-packet.c
+index abc978ab83..15c8123f6a 100644
+--- a/src/resolve/resolved-dns-packet.c
++++ b/src/resolve/resolved-dns-packet.c
+@@ -2271,18 +2271,6 @@ static int dns_packet_extract_answer(DnsPacket *p, DnsAnswer **ret_answer) {
+                 bool cache_flush = false;
+                 size_t start;
+ 
+-                if (p->rindex == p->size) {
+-                        /* If we reached the end of the packet already, but there are still more RRs
+-                         * declared, then that's a corrupt packet. Let's accept the packet anyway, since it's
+-                         * apparently a common bug in routers. Let's however suppress OPT support in this
+-                         * case, so that we force the rest of the logic into lowest DNS baseline support. Or
+-                         * to say this differently: if the DNS server doesn't even get the RR counts right,
+-                         * it's highly unlikely it gets EDNS right. */
+-                        log_debug("More resource records declared in packet than included, suppressing OPT.");
+-                        bad_opt = true;
+-                        break;
+-                }
+-
+                 r = dns_packet_read_rr(p, &rr, &cache_flush, &start);
+                 if (r < 0)
+                         return r;
+@@ -2382,10 +2370,8 @@ static int dns_packet_extract_answer(DnsPacket *p, DnsAnswer **ret_answer) {
+                 previous = dns_resource_record_ref(rr);
+         }
+ 
+-        if (bad_opt) {
++        if (bad_opt)
+                 p->opt = dns_resource_record_unref(p->opt);
+-                p->opt_start = p->opt_size = SIZE_MAX;
+-        }
+ 
+         *ret_answer = TAKE_PTR(answer);
+ 
+-- 
+2.30.2
+
