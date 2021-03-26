@@ -811,10 +811,16 @@ function mod_nss() {
                 ' "$1" &>/dev/null || :
 
         # Add nss-resolve to hosts
-        grep -E -q '^hosts:.* resolve' "$1" ||
-        sed -i.bak -r -e '
-                s/^(hosts):(.*) files( mdns4_minimal .NOTFOUND=return.)? dns myhostname/\1:\2 files\3 resolve [!UNAVAIL=return] myhostname dns/
+        if grep -E -q '^hosts:.* resolve' "$1"; then
+            sed -i.bak -r -e '
+                s/^(hosts):(.*) files( .*) myhostname dns/\1:\2 files myhostname\3 dns/
                 ' "$1" &>/dev/null || :
+
+        else
+            sed -i.bak -r -e '
+                s/^(hosts):(.*) files( mdns4_minimal .NOTFOUND=return.)? dns myhostname/\1:\2 files myhostname\3 resolve [!UNAVAIL=return] dns/
+                ' "$1" &>/dev/null || :
+        fi
     fi
 }
 
@@ -984,6 +990,7 @@ fi
 * Fri Mar 26 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 248~rc4-5
 - Do not preset systemd-networkd.service and systemd-networkd-wait-online.service
   on upgrades from before systemd-networkd was split out (#1943263)
+- In nsswitch.conf, move nss-myhostname to the front, before nss-mdns4 (#1943199)
 
 * Wed Mar 24 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 248~rc4-4
 - Revert patch that seems to cause problems with dns resolution
