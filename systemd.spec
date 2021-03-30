@@ -21,7 +21,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 Version:        248~rc4
-Release:        5%{?dist}
+Release:        6%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -987,6 +987,9 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Tue Mar 30 2021 Anita Zhang <the.anitazha@gmail.com> - 248~rc4-6
+- Increase oomd user memory pressure limit to 50% (#1941170)
+
 * Fri Mar 26 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 248~rc4-5
 - Do not preset systemd-networkd.service and systemd-networkd-wait-online.service
   on upgrades from before systemd-networkd was split out (#1943263)
