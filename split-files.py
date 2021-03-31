@@ -136,6 +136,8 @@ for file in files(buildroot):
             prefix += ' '
     elif file.is_dir() and not file.is_symlink():
         prefix = '%dir '
+    elif 'README' in n:
+        prefix = '%doc '
     elif n.startswith('/etc'):
         prefix = '%config(noreplace) '
     else:
