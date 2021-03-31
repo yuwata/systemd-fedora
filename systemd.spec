@@ -20,8 +20,8 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        248~rc4
-Release:        6%{?dist}
+Version:        248
+Release:        1%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -79,17 +79,6 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # here, rather than in the next section. Packit CI will drop any
 # patches in this range before applying upstream pull requests.
 
-# https://bugzilla.redhat.com/show_bug.cgi?id=1941335
-Patch0001:      https://github.com/systemd/systemd/pull/19075.patch
-
-Patch0002:      https://github.com/systemd/systemd/pull/19079.patch
-Patch0003:      https://github.com/systemd/systemd/pull/19080.patch
-
-Patch0004:      https://github.com/systemd/systemd/commit/5cdb3f70ebe035323f4f079028a262669a2bbbf6.patch
-Patch0005:      https://github.com/systemd/systemd/commit/f9b3afae96c72564cd4cd766555845f17e3c12a9.patch
-Patch0006:      https://github.com/systemd/systemd/commit/0e557eef37c9ebcc8f5c19fc6fc44b6fd617cc5d.patch
-
-Patch0007:      0001-Revert-resolved-gracefully-handle-with-packets-with-.patch
 
 # Downstream-only patches (5000–9999)
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
@@ -987,6 +976,13 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Wed Mar 31 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 248-1
+- Latest upstream release, see
+  https://github.com/systemd/systemd/blob/v248/NEWS.
+- The changes since -rc4 are rather small, various fixes all over the place.
+  A fix to how systemd-oomd selects a candidate to kill, and more debug logging
+  to make this more transparent.
+
 * Tue Mar 30 2021 Anita Zhang <the.anitazha@gmail.com> - 248~rc4-6
 - Increase oomd user memory pressure limit to 50% (#1941170)
 
