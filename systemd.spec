@@ -1,7 +1,7 @@
 #global commit c4b843473a75fb38ed5bf54e9d3cfb1cb3719efa
 %{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
-#global stable 1
+%global stable 1
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
 # strip the automatically generated dep here and instead co-own the
@@ -20,8 +20,8 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        248
-Release:        2%{?dist}
+Version:        248.1
+Release:        1%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -970,6 +970,10 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Thu May  6 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 248.1-1
+- Latest stable version: a long list of minor correctness fixes all around
+  (#1955475,#911766)
+
 * Tue Apr 06 2021 Adam Williamson <awilliam@redhat.com> - 248-2
 - Re-enable resolved caching, we hope all major bugs are resolved now
 
