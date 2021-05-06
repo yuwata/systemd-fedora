@@ -126,6 +126,9 @@ BuildRequires:  libmicrohttpd-devel
 BuildRequires:  libxkbcommon-devel
 BuildRequires:  iptables-devel
 BuildRequires:  pkgconfig(libfido2)
+BuildRequires:  pkgconfig(tss2-esys)
+BuildRequires:  pkgconfig(tss2-rc)
+BuildRequires:  pkgconfig(tss2-mu)
 BuildRequires:  libxslt
 BuildRequires:  docbook-style-xsl
 BuildRequires:  pkgconfig
@@ -440,6 +443,7 @@ CONFIGURE_OPTS=(
         -Defi=true
         -Dgnu-efi=%{?have_gnu_efi:true}%{?!have_gnu_efi:false}
         -Dtpm=true
+        -Dtpm2=true
         -Dhwdb=true
         -Dsysusers=true
         -Dstandalone-binaries=true
@@ -973,6 +977,7 @@ fi
 * Thu May  6 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 248.1-1
 - Latest stable version: a long list of minor correctness fixes all around
   (#1955475,#911766)
+- Enable tpm2-tss dependency (#1949505)
 
 * Tue Apr 06 2021 Adam Williamson <awilliam@redhat.com> - 248-2
 - Re-enable resolved caching, we hope all major bugs are resolved now
