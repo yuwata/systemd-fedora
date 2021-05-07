@@ -20,7 +20,7 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        248.1
+Version:        248.2
 Release:        1%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
@@ -974,12 +974,13 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
-* Fri May  7 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 248.1-1
+* Fri May  7 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 248.2-1
+- Pull in some more patches from upstream (#1944646, #1885090, #1941340)
 - Adjust modes of some %%ghost files (#1956059)
 
 * Thu May  6 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 248.1-1
 - Latest stable version: a long list of minor correctness fixes all around
-  (#1955475,#911766)
+  (#1955475, #911766, #1958167, #1952919)
 - Enable tpm2-tss dependency (#1949505)
 
 * Tue Apr 06 2021 Adam Williamson <awilliam@redhat.com> - 248-2
