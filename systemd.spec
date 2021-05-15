@@ -20,7 +20,7 @@
 
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
-Version:        248.2
+Version:        248.3
 Release:        1%{?dist}
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
@@ -974,6 +974,10 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Sat May 15 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 248.3-1
+- A fix for resolved crashes (#1946386, #1960227, #1950241)
+- Some minor fixes for documentation, systemd-networkd, systemd-run, bootctl.
+
 * Fri May  7 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 248.2-1
 - Pull in some more patches from upstream (#1944646, #1885090, #1941340)
 - Adjust modes of some %%ghost files (#1956059)
