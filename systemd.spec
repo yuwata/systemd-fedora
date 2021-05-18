@@ -191,8 +191,6 @@ Conflicts:      %{name}-standalone-sysusers < %{version}-%{release}^
 Obsoletes:      %{name}-standalone-sysusers < %{version}-%{release}^
 
 # Recommends to replace normal Requires deps for stuff that is dlopen()ed
-Recommends:     libcryptsetup.so.12()(64bit)
-Recommends:     libcryptsetup.so.12(CRYPTSETUP_2.0)(64bit)
 Recommends:     libidn2.so.0()(64bit)
 Recommends:     libidn2.so.0(IDN2_0.0.0)(64bit)
 Recommends:     libpcre2-8.so.0()(64bit)
@@ -292,10 +290,6 @@ Requires:       kbd
 # https://bugzilla.redhat.com/show_bug.cgi?id=1753381
 Provides:       u2f-hidraw-policy = 1.0.2-40
 Obsoletes:      u2f-hidraw-policy < 1.0.2-40
-
-# Recommends to replace normal Requires deps for stuff that is dlopen()ed
-Recommends:     libcryptsetup.so.12()(64bit)
-Recommends:     libcryptsetup.so.12(CRYPTSETUP_2.0)(64bit)
 
 %description udev
 This package contains systemd-udev and the rules and hardware database
