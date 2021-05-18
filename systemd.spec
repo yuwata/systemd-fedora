@@ -364,8 +364,9 @@ network devices.
 
 %package oomd-defaults
 Summary:        Configuration files for systemd-oomd
-Requires:       %{name}%{?_isa} = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 License:        LGPLv2+
+BuildArch:      noarch
 
 %description oomd-defaults
 A set of drop-in files for systemd units to enable action from systemd-oomd,
