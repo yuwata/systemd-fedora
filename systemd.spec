@@ -178,6 +178,7 @@ Provides:       system-setup-keyboard = 0.9
 Obsoletes:      systemd-sysv < 206
 # self-obsoletes so that dnf will install new subpackages on upgrade (#1260394)
 Obsoletes:      %{name} < 246.6-2
+Provides:       systemd-resolved = %{version}-%{release}
 Provides:       systemd-sysv = 206
 Conflicts:      initscripts < 9.56.1
 %if 0%{?fedora}
