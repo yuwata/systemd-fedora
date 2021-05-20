@@ -12,6 +12,11 @@
 %global system_unit_dir %{pkgdir}/system
 %global user_unit_dir %{pkgdir}/user
 
+%if 0%{?__isa_bits} == 64
+%global elf_bits (64bit)
+%global elf_suffix ()%{elf_bits}
+%endif
+
 # Bootstrap may be needed to break intercircular dependencies with
 # cryptsetup, e.g. when re-building cryptsetup on a json-c SONAME-bump.
 %bcond_with    bootstrap
@@ -192,12 +197,12 @@ Conflicts:      %{name}-standalone-sysusers < %{version}-%{release}^
 Obsoletes:      %{name}-standalone-sysusers < %{version}-%{release}^
 
 # Recommends to replace normal Requires deps for stuff that is dlopen()ed
-Recommends:     libidn2.so.0()(64bit)
-Recommends:     libidn2.so.0(IDN2_0.0.0)(64bit)
-Recommends:     libpcre2-8.so.0()(64bit)
-Recommends:     libpwquality.so.1()(64bit)
-Recommends:     libpwquality.so.1(LIBPWQUALITY_1.0)(64bit)
-Recommends:     libqrencode.so.4()(64bit)
+Recommends:     libidn2.so.0%{?elf_suffix}
+Recommends:     libidn2.so.0(IDN2_0.0.0)%{?elf_bits}
+Recommends:     libpcre2-8.so.0%{?elf_suffix}
+Recommends:     libpwquality.so.1%{?elf_suffix}
+Recommends:     libpwquality.so.1(LIBPWQUALITY_1.0)%{?elf_bits}
+Recommends:     libqrencode.so.4%{?elf_suffix}
 
 %description
 systemd is a system and service manager that runs as PID 1 and starts
