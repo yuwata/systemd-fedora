@@ -1,7 +1,7 @@
 #global commit c4b843473a75fb38ed5bf54e9d3cfb1cb3719efa
 %{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
-%global stable 1
+#global stable 1
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
 # strip the automatically generated dep here and instead co-own the
@@ -30,7 +30,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
-Version:        248.3
+Version:        249~rc1
 Release:        1%{?dist}
 %else
 # determine the build information from local checkout
@@ -145,6 +145,7 @@ BuildRequires:  pkgconfig(libfido2)
 BuildRequires:  pkgconfig(tss2-esys)
 BuildRequires:  pkgconfig(tss2-rc)
 BuildRequires:  pkgconfig(tss2-mu)
+BuildRequires:  systemtap-sdt-devel
 BuildRequires:  libxslt
 BuildRequires:  docbook-style-xsl
 BuildRequires:  pkgconfig
@@ -993,6 +994,11 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Wed Jun 16 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 249~rc1-1
+- Latest upstream prerelease, see
+  https://github.com/systemd/systemd/blob/v248-rc4/NEWS.
+  Fixes #1963428.
+
 * Sat May 15 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 248.3-1
 - A fix for resolved crashes (#1946386, #1960227, #1950241)
 - Some minor fixes for documentation, systemd-networkd, systemd-run, bootctl.
