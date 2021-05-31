@@ -12,17 +12,17 @@ user() {
     home="$5"
     shell="$6"
 
-[ "$desc" = '-' ] && desc=
-[ "$home" = '-' -o "$home" = '' ] && home=/
-[ "$shell" = '-' -o "$shell" = '' ] && shell=/sbin/nologin
+    [ "$desc" = '-' ] && desc=
+    [ "$home" = '-' -o "$home" = '' ] && home=/
+    [ "$shell" = '-' -o "$shell" = '' ] && shell=/sbin/nologin
 
-if [ "$uid" = '-' -o "$uid" = '' ]; then
-    cat <<EOF
+    if [ "$uid" = '-' -o "$uid" = '' ]; then
+        cat <<EOF
 getent passwd '$user' >/dev/null || \\
     useradd -r -g '$group' -d '$home' -s '$shell' -c '$desc' '$user'
 EOF
-else
-    cat <<EOF
+    else
+        cat <<EOF
 if ! getent passwd '$user' >/dev/null ; then
     if ! getent passwd '$uid' >/dev/null ; then
         useradd -r -u '$uid' -g '$group' -d '$home' -s /sbin/nologin -c '$desc' '$user'
@@ -32,21 +32,21 @@ if ! getent passwd '$user' >/dev/null ; then
 fi
 
 EOF
-fi
+    fi
 }
 
 group() {
     group="$1"
     gid="$2"
-if [ "$gid" = '-' ]; then
-    cat <<EOF
-getent group '$group' >/dev/null || groupadd -r '$group'
-EOF
-else
-    cat <<EOF
-getent group '$group' >/dev/null || groupadd -f -g '$gid' -r '$group'
-EOF
-fi
+    if [ "$gid" = '-' ]; then
+        cat <<-EOF
+	getent group '$group' >/dev/null || groupadd -r '$group'
+	EOF
+    else
+        cat <<-EOF
+	getent group '$group' >/dev/null || groupadd -f -g '$gid' -r '$group'
+	EOF
+    fi
 }
 
 parse() {
@@ -75,5 +75,5 @@ parse() {
 for fn in "$@"; do
     [ -e "$fn" ] || continue
     echo "# generated from $(basename $fn)"
-    parse < "$fn"
+    parse <"$fn"
 done
