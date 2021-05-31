@@ -13,10 +13,10 @@ user() {
     shell="$6"
 
     [ "$desc" = '-' ] && desc=
-    [ "$home" = '-' -o "$home" = '' ] && home=/
-    [ "$shell" = '-' -o "$shell" = '' ] && shell=/sbin/nologin
+    { [ "$home" = '-' ] || [ "$home" = '' ]; } && home=/
+    { [ "$shell" = '-' ] || [ "$shell" = '' ]; } && shell=/sbin/nologin
 
-    if [ "$uid" = '-' -o "$uid" = '' ]; then
+    if [ "$uid" = '-' ] || [ "$uid" = '' ]; then
         cat <<EOF
 getent passwd '$user' >/dev/null || \\
     useradd -r -g '$group' -d '$home' -s '$shell' -c '$desc' '$user'
@@ -50,11 +50,11 @@ group() {
 }
 
 parse() {
-    while read line || [ "$line" ]; do
-        [ "${line:0:1}" = '#' -o "${line:0:1}" = ';' ] && continue
+    while read -r line || [ -n "$line" ] ; do
+        { [ "${line:0:1}" = '#' ] || [ "${line:0:1}" = ';' ]; } && continue
         line="${line## *}"
         [ -z "$line" ] && continue
-        eval arr=( $line )
+        eval "arr=( $line )"
         case "${arr[0]}" in
             ('u')
                 group "${arr[1]}" "${arr[2]}"
@@ -74,6 +74,6 @@ parse() {
 
 for fn in "$@"; do
     [ -e "$fn" ] || continue
-    echo "# generated from $(basename $fn)"
+    echo "# generated from $(basename "$fn")"
     parse <"$fn"
 done
