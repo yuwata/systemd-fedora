@@ -23,10 +23,21 @@
 %bcond_without tests
 %bcond_without lto
 
+# Support for quick builds with rpmbuild --build-in-place.
+# See README.build-in-place.
+%bcond_with    inplace
+
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
+%if %{without inplace}
 Version:        248.3
 Release:        1%{?dist}
+%else
+# determine the build information from local checkout
+Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
+Release:        1
+%endif
+
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
 Summary:        System and Service Manager
@@ -481,7 +492,15 @@ CONFIGURE_OPTS=(
 %global _lto_cflags %nil
 %endif
 
-%meson "${CONFIGURE_OPTS[@]}"
+# Do configuration. If doing an inplace build, try to do
+# reconfiguration to pick up new options.
+%if %{with inplace}
+  command -v ccache 2>/dev/null && { CC="${CC:-ccache %__cc}"; CXX="${CXX:-ccache %__cxx}"; }
+
+  [ -e %{_vpath_builddir}/build.ninja ] &&
+  %__meson configure %{_vpath_builddir} "${CONFIGURE_OPTS[@]}" ||
+%endif
+{ %meson "${CONFIGURE_OPTS[@]}"; }
 
 new_triggers=%{_vpath_builddir}/src/rpm/triggers.systemd.sh
 if ! diff -u %{SOURCE1} ${new_triggers}; then

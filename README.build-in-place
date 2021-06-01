@@ -1,0 +1,14 @@
+== Building systemd rpms for local development using rpmbuild --build-in-place ==
+
+This approach is based on https://github.com/filbranden/git-rpmbuild
+and filbranden's talk during ASG2019 [https://cfp.all-systems-go.io/ASG2019/talk/JM7GDN/].
+
+```
+git clone https://github.com/systemd/systemd
+fedpkg clone systemd fedora-systemd
+cd systemd
+rpmbuild -bb --build-in-place --noprep --define "_sourcedir $PWD/../fedora-systemd" --define "_rpmdir $PWD/rpms" --with inplace ../systemd.spec
+sudo dnf upgrade --setopt install_weak_deps=False rpms/*/*.rpm
+```
+
+`--without lto` and `--without tests` may be useful to speed up the build.
