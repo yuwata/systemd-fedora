@@ -178,7 +178,7 @@ Requires(pre):  /usr/bin/getent
 Requires(pre):  /usr/sbin/groupadd
 Requires:       dbus >= 1.9.18
 Requires:       %{name}-pam = %{version}-%{release}
-Requires:       %{name}-rpm-macros = %{version}-%{release}
+Requires:       (%{name}-rpm-macros = %{version}-%{release} if rpm-build)
 Requires:       %{name}-libs = %{version}-%{release}
 %{?fedora:Recommends:     %{name}-networkd = %{version}-%{release}}
 Recommends:     diffutils
