@@ -182,7 +182,7 @@ Requires:       (%{name}-rpm-macros = %{version}-%{release} if rpm-build)
 Requires:       %{name}-libs = %{version}-%{release}
 %{?fedora:Recommends:     %{name}-networkd = %{version}-%{release}}
 Recommends:     diffutils
-Requires:       util-linux
+Requires:       (util-linux-core or util-linux)
 Recommends:     libxkbcommon%{?_isa}
 Provides:       /bin/systemctl
 Provides:       /sbin/shutdown
