@@ -91,7 +91,7 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # Any patches which are "in preparation" upstream should be listed
 # here, rather than in the next section. Packit CI will drop any
 # patches in this range before applying upstream pull requests.
-
+Patch0001:      https://github.com/systemd/systemd/pull/19950.patch
 
 # Downstream-only patches (5000–9999)
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
@@ -175,8 +175,6 @@ Requires(post): grep
 # systemd-machine-id-setup requires libssl
 Requires(post): openssl-libs
 Requires(pre):  coreutils
-Requires(pre):  /usr/bin/getent
-Requires(pre):  /usr/sbin/groupadd
 Requires:       dbus >= 1.9.18
 Requires:       %{name}-pam = %{version}-%{release}
 Requires:       (%{name}-rpm-macros = %{version}-%{release} if rpm-build)
@@ -487,6 +485,27 @@ CONFIGURE_OPTS=(
         -Ddefault-mdns=no
         -Ddefault-llmnr=resolve
         -Doomd=true
+        -Dadm-gid=4
+        -Daudio-gid=63
+        -Dcdrom-gid=11
+        -Ddialout-gid=18
+        -Ddisk-gid=6
+        -Dinput-gid=104   # https://pagure.io/setup/pull-request/27
+        -Dkmem-gid=9
+        -Dkvm-gid=36
+        -Dlp-gid=7
+        -Drender-gid=105  # https://pagure.io/setup/pull-request/27
+        -Dsgx-gid=106     # https://pagure.io/setup/pull-request/27
+        -Dtape-gid=33
+        -Dtty-gid=5
+        -Dusers-gid=100
+        -Dutmp-gid=22
+        -Dvideo-gid=39
+        -Dwheel-gid=10
+        -Dsystemd-journal-gid=190
+        -Dsystemd-network-uid=192
+        -Dsystemd-resolve-uid=193
+        # -Dsystemd-timesync-uid=, not set yet
 )
 
 %if %{without lto}
@@ -665,25 +684,6 @@ meson test -C %{_vpath_builddir} -t 6 --print-errorlogs
 
 %include %{SOURCE1}
 
-%pre
-getent group cdrom &>/dev/null || groupadd -r -g 11 cdrom &>/dev/null || :
-getent group utmp &>/dev/null || groupadd -r -g 22 utmp &>/dev/null || :
-getent group tape &>/dev/null || groupadd -r -g 33 tape &>/dev/null || :
-getent group dialout &>/dev/null || groupadd -r -g 18 dialout &>/dev/null || :
-getent group input &>/dev/null || groupadd -r input &>/dev/null || :
-getent group kvm &>/dev/null || groupadd -r -g 36 kvm &>/dev/null || :
-getent group render &>/dev/null || groupadd -r render &>/dev/null || :
-getent group systemd-journal &>/dev/null || groupadd -r -g 190 systemd-journal 2>&1 || :
-
-getent group systemd-coredump &>/dev/null || groupadd -r systemd-coredump 2>&1 || :
-getent passwd systemd-coredump &>/dev/null || useradd -r -l -g systemd-coredump -d / -s /sbin/nologin -c "systemd Core Dumper" systemd-coredump &>/dev/null || :
-
-getent group systemd-resolve &>/dev/null || groupadd -r -g 193 systemd-resolve 2>&1 || :
-getent passwd systemd-resolve &>/dev/null || useradd -r -u 193 -l -g systemd-resolve -d / -s /sbin/nologin -c "systemd Resolver" systemd-resolve &>/dev/null || :
-
-getent group systemd-oom &>/dev/null || groupadd -r systemd-oom 2>&1 || :
-getent passwd systemd-oom &>/dev/null || useradd -r -l -g systemd-oom -d / -s /sbin/nologin -c "systemd Userspace OOM Killer" systemd-oom &>/dev/null || :
-
 %post
 systemd-machine-id-setup &>/dev/null || :
 
@@ -725,24 +725,15 @@ if [ "$oomd_state" == "active" ]; then
    systemctl start -q systemd-oomd 2>/dev/null || :
 fi
 
-if [ $1 -eq 1 ]; then
-   # create /var/log/journal only on initial installation,
-   # and only if it's writable (it won't be in rpm-ostree).
-   [ -w %{_localstatedir} ] && mkdir -p %{_localstatedir}/log/journal
-
-   [ -w %{_localstatedir} ] && journalctl --update-catalog || :
-   systemd-tmpfiles --create &>/dev/null || :
-fi
-
-# Make sure new journal files will be owned by the "systemd-journal" group
-machine_id=$(cat /etc/machine-id 2>/dev/null)
-chgrp systemd-journal /{run,var}/log/journal/{,${machine_id}} &>/dev/null || :
-chmod g+s /{run,var}/log/journal/{,${machine_id}} &>/dev/null || :
-
-# Apply ACL to the journal directory
-setfacl -Rnm g:wheel:rx,d:g:wheel:rx,g:adm:rx,d:g:adm:rx /var/log/journal/ &>/dev/null || :
-
 [ $1 -eq 1 ] || exit 0
+
+# create /var/log/journal only on initial installation,
+# and only if it's writable (it won't be in rpm-ostree).
+[ -w %{_localstatedir} ] && mkdir -p %{_localstatedir}/log/journal
+
+[ -w %{_localstatedir} ] && journalctl --update-catalog || :
+systemd-sysusers || :
+systemd-tmpfiles --create &>/dev/null || :
 
 # We reset the enablement of all services upon initial installation
 # https://bugzilla.redhat.com/show_bug.cgi?id=1118740#c23
@@ -764,7 +755,7 @@ systemctl --global preset-all &>/dev/null || :
 # will immediately break DNS resolution, since systemd-resolved is
 # also not running (https://bugzilla.redhat.com/show_bug.cgi?id=1891847).
 #
-# Also don't creat the symlink to the stub when the stub is disabled (#1891847 again).
+# Also don't create the symlink to the stub when the stub is disabled (#1891847 again).
 if test -d /run/systemd/system/ &&
    systemctl -q is-enabled systemd-resolved.service &>/dev/null &&
    ! mountpoint /etc/resolv.conf &>/dev/null &&
@@ -862,10 +853,6 @@ fi
 
 %global udev_services systemd-udev{d,-settle,-trigger}.service systemd-udevd-{control,kernel}.socket systemd-timesyncd.service
 
-%pre udev
-getent group systemd-timesync &>/dev/null || groupadd -r systemd-timesync 2>&1 || :
-getent passwd systemd-timesync &>/dev/null || useradd -r -l -g systemd-timesync -d / -s /sbin/nologin -c "systemd Time Synchronization" systemd-timesync &>/dev/null || :
-
 %post udev
 # Move old stuff around in /var/lib
 mv %{_localstatedir}/lib/random-seed %{_localstatedir}/lib/systemd/random-seed &>/dev/null
@@ -900,16 +887,15 @@ grep -q -E '^KEYMAP="?fi-latin[19]"?' /etc/vconsole.conf 2>/dev/null &&
 # Others are either oneshot services, or sockets, and restarting them causes issues (#1378974)
 %systemd_postun_with_restart systemd-udevd.service systemd-timesyncd.service
 
-%pre journal-remote
-getent group systemd-journal-remote &>/dev/null || groupadd -r systemd-journal-remote 2>&1 || :
-getent passwd systemd-journal-remote &>/dev/null || useradd -r -l -g systemd-journal-remote -d %{_localstatedir}/log/journal/remote -s /sbin/nologin -c "Journal Remote" systemd-journal-remote &>/dev/null || :
 
+%global journal_remote_units_restart systemd-journal-gatewayd.service systemd-journal-remote.service systemd-journal-upload.service
+%global journal_remote_units_norestart systemd-journal-gatewayd.socket systemd-journal-remote.socket
 %post journal-remote
-%systemd_post systemd-journal-gatewayd.socket systemd-journal-gatewayd.service systemd-journal-remote.socket systemd-journal-remote.service systemd-journal-upload.service
+%systemd_post %journal_remote_units_restart %journal_remote_units_norestart
 %firewalld_reload
 
 %preun journal-remote
-%systemd_preun systemd-journal-gatewayd.socket systemd-journal-gatewayd.service systemd-journal-remote.socket systemd-journal-remote.service systemd-journal-upload.service
+%systemd_preun %journal_remote_units_restart %journal_remote_units_norestart
 if [ $1 -eq 1 ] ; then
     if [ -f %{_localstatedir}/lib/systemd/journal-upload/state -a ! -L %{_localstatedir}/lib/systemd/journal-upload ] ; then
         mkdir -p %{_localstatedir}/lib/private/systemd/journal-upload
@@ -919,12 +905,8 @@ if [ $1 -eq 1 ] ; then
 fi
 
 %postun journal-remote
-%systemd_postun_with_restart systemd-journal-gatewayd.service systemd-journal-remote.service systemd-journal-upload.service
+%systemd_postun_with_restart %journal_remote_units_restart
 %firewalld_reload
-
-%pre networkd
-getent group systemd-network &>/dev/null || groupadd -r -g 192 systemd-network 2>&1 || :
-getent passwd systemd-network &>/dev/null || useradd -r -u 192 -l -g systemd-network -d / -s /sbin/nologin -c "systemd Network Management" systemd-network &>/dev/null || :
 
 %post networkd
 # systemd-networkd was split out in systemd-246.6-2.
@@ -998,6 +980,7 @@ fi
 - Latest upstream prerelease, see
   https://github.com/systemd/systemd/blob/v248-rc4/NEWS.
   Fixes #1963428.
+- Use systemd-sysusers to create users (#1965815)
 
 * Sat May 15 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 248.3-1
 - A fix for resolved crashes (#1946386, #1960227, #1950241)
