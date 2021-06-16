@@ -436,11 +436,7 @@ CONFIGURE_OPTS=(
         -Dgcrypt=true
         -Daudit=true
         -Delfutils=true
-%if %{without bootstrap}
-        -Dlibcryptsetup=true
-%else
-        -Dlibcryptsetup=false
-%endif
+        -Dlibcryptsetup=%[%{with bootstrap}?"false":"true"]
         -Delfutils=true
         -Dpwquality=true
         -Dqrencode=true
@@ -451,7 +447,7 @@ CONFIGURE_OPTS=(
         -Dlibcurl=true
         -Dlibfido2=true
         -Defi=true
-        -Dgnu-efi=%{?have_gnu_efi:true}%{?!have_gnu_efi:false}
+        -Dgnu-efi=%[%{?have_gnu_efi}?"true":"false"]
         -Dtpm=true
         -Dtpm2=true
         -Dhwdb=true
@@ -467,19 +463,11 @@ CONFIGURE_OPTS=(
         -Dcompat-mutable-uid-boundaries=true
         -Dsplit-usr=false
         -Dsplit-bin=true
-%if %{with lto}
-        -Db_lto=true
-%else
-        -Db_lto=false
-%endif
+        -Db_lto=%[%{with lto}?"true":"false"]
         -Db_ndebug=false
         -Dman=true
         -Dversion-tag=v%{version}-%{release}
-%if 0%{?fedora}
-        -Dfallback-hostname=fedora
-%else
-        -Dfallback-hostname=localhost
-%endif
+        -Dfallback-hostname=%[0%{?fedora}?"fedora":"localhost"]
         -Ddefault-dnssec=no
         # https://bugzilla.redhat.com/show_bug.cgi?id=1867830
         -Ddefault-mdns=no
