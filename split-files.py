@@ -24,6 +24,7 @@ o_container = open('.file-list-container', 'w')
 o_networkd = open('.file-list-networkd', 'w')
 o_oomd_defaults = open('.file-list-oomd-defaults', 'w')
 o_remote = open('.file-list-remote', 'w')
+o_resolve = open('.file-list-resolve', 'w')
 o_tests = open('.file-list-tests', 'w')
 o_standalone_tmpfiles = open('.file-list-standalone-tmpfiles', 'w')
 o_standalone_sysusers = open('.file-list-standalone-sysusers', 'w')
@@ -118,6 +119,14 @@ for file in files(buildroot):
                        /modprobe.d
     ''', n, re.X):
         o = o_udev
+    elif re.search(r'''resolvectl|
+                       resolved|
+                       systemd-resolve|
+                       resolvconf|
+                       resolve1\.
+    ''', n, re.X):
+        # keep only nss-resolve in systemd
+        o = o_resolve
     elif re.search(r'10-oomd-.*defaults.conf|lib/systemd/oomd.conf.d', n, re.X):
         o = o_oomd_defaults
     elif n.endswith('.standalone'):

@@ -180,6 +180,7 @@ Requires:       %{name}-pam = %{version}-%{release}
 Requires:       (%{name}-rpm-macros = %{version}-%{release} if rpm-build)
 Requires:       %{name}-libs = %{version}-%{release}
 %{?fedora:Recommends:     %{name}-networkd = %{version}-%{release}}
+%{?fedora:Recommends:     %{name}-resolved = %{version}-%{release}}
 Recommends:     diffutils
 Requires:       (util-linux-core or util-linux)
 Recommends:     libxkbcommon%{?_isa}
@@ -192,7 +193,7 @@ Provides:       system-setup-keyboard = 0.9
 # systemd-sysv-convert was removed in f20: https://fedorahosted.org/fpc/ticket/308
 Obsoletes:      systemd-sysv < 206
 # self-obsoletes so that dnf will install new subpackages on upgrade (#1260394)
-Obsoletes:      %{name} < 246.6-2
+Obsoletes:      %{name} < 249~~
 Provides:       systemd-resolved = %{version}-%{release}
 Provides:       systemd-sysv = 206
 Conflicts:      initscripts < 9.56.1
@@ -361,6 +362,16 @@ Obsoletes:      systemd < 246.6-2
 systemd-networkd is a system service that manages networks. It detects
 and configures network devices as they appear, as well as creating virtual
 network devices.
+
+%package resolved
+Summary:        Network Name Resolution manager
+Requires:       %{name}%{?_isa} = %{version}-%{release}
+Obsoletes:      %{name} < 249~~
+
+%description resolved
+systemd-resolved is a system service that provides network name resolution
+to local applications. It implements a caching and validating DNS/DNSSEC
+stub resolver, as well as an LLMNR and MulticastDNS resolver and responder.
 
 %package oomd-defaults
 Summary:        Configuration files for systemd-oomd
@@ -734,25 +745,6 @@ systemd-tmpfiles --create &>/dev/null || :
 systemctl preset-all &>/dev/null || :
 systemctl --global preset-all &>/dev/null || :
 
-# Create /etc/resolv.conf symlink.
-# We would also create it using tmpfiles, but let's do this here
-# too before NetworkManager gets a chance. (systemd-tmpfiles invocation above
-# does not do this, because it's marked with ! and we don't specify --boot.)
-# https://bugzilla.redhat.com/show_bug.cgi?id=1873856
-#
-# If systemd is not running, don't overwrite the symlink because that
-# will immediately break DNS resolution, since systemd-resolved is
-# also not running (https://bugzilla.redhat.com/show_bug.cgi?id=1891847).
-#
-# Also don't create the symlink to the stub when the stub is disabled (#1891847 again).
-if test -d /run/systemd/system/ &&
-   systemctl -q is-enabled systemd-resolved.service &>/dev/null &&
-   ! mountpoint /etc/resolv.conf &>/dev/null &&
-   ! systemd-analyze cat-config systemd/resolved.conf 2>/dev/null | \
-        grep -qE '^DNSStubListener\s*=\s*([nN][oO]?|[fF]|[fF][aA][lL][sS][eE]|0|[oO][fF][fF])$'; then
-  ln -fsv ../run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
-fi
-
 %postun
 if [ $1 -eq 1 ]; then
    [ -w %{_localstatedir} ] && journalctl --update-catalog || :
@@ -764,7 +756,7 @@ fi
 # FIXME: systemd-logind.service is excluded (https://github.com/systemd/systemd/pull/17558)
 # FIXME: user@*.service needs to be restarted, but using systemctl --user daemon-reexec
 
-%triggerun -- systemd < 246.1-1
+%triggerun resolved -- systemd < 246.1-1
 # This is for upgrades from previous versions before systemd-resolved became the default.
 systemctl --no-reload preset systemd-resolved.service &>/dev/null || :
 
@@ -916,6 +908,39 @@ fi
 %preun networkd
 %systemd_preun systemd-networkd.service systemd-networkd-wait-online.service
 
+%preun resolved
+if [ $1 -eq 0 ] ; then
+        systemctl disable --quiet \
+                systemd-resolved.service \
+                >/dev/null || :
+fi
+
+%post resolved
+# Related to https://bugzilla.redhat.com/show_bug.cgi?id=1943263
+if [ $1 -eq 1 ] && ls /usr/lib/systemd/libsystemd-shared-24[0-7].so &>/dev/null; then
+    echo "Skipping presets for systemd-resolved.service, seems we are upgrading from old systemd."
+else
+    %systemd_post systemd-resolved.service
+fi
+# Create /etc/resolv.conf symlink.
+# We would also create it using tmpfiles, but let's do this here
+# too before NetworkManager gets a chance. (systemd-tmpfiles invocation above
+# does not do this, because it's marked with ! and we don't specify --boot.)
+# https://bugzilla.redhat.com/show_bug.cgi?id=1873856
+#
+# If systemd is not running, don't overwrite the symlink because that
+# will immediately break DNS resolution, since systemd-resolved is
+# also not running (https://bugzilla.redhat.com/show_bug.cgi?id=1891847).
+#
+# Also don't create the symlink to the stub when the stub is disabled (#1891847 again).
+if test -d /run/systemd/system/ &&
+   systemctl -q is-enabled systemd-resolved.service &>/dev/null &&
+   ! mountpoint /etc/resolv.conf &>/dev/null &&
+   ! systemd-analyze cat-config systemd/resolved.conf 2>/dev/null | \
+        grep -qE '^DNSStubListener\s*=\s*([nN][oO]?|[fF]|[fF][aA][lL][sS][eE]|0|[oO][fF][fF])$'; then
+  ln -fsv ../run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+fi
+
 %global _docdir_fmt %{name}
 
 %files -f %{name}.lang -f .file-list-rest
@@ -946,6 +971,8 @@ fi
 
 %files rpm-macros -f .file-list-rpm-macros
 
+%files resolved -f .file-list-resolve
+
 %files devel -f .file-list-devel
 
 %files udev -f .file-list-udev
@@ -970,6 +997,8 @@ fi
   https://github.com/systemd/systemd/blob/v248-rc4/NEWS.
   Fixes #1963428.
 - Use systemd-sysusers to create users (#1965815)
+- Move systemd-resolved into systemd-resolved subpackage (#1923727)
+  [patch from Petr Menšík]
 
 * Sat May 15 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 248.3-1
 - A fix for resolved crashes (#1946386, #1960227, #1950241)
