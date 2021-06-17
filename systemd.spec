@@ -31,7 +31,7 @@ Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
 Version:        249~rc1
-Release:        1%{?dist}
+Release:        2%{?dist}
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
@@ -194,7 +194,6 @@ Provides:       system-setup-keyboard = 0.9
 Obsoletes:      systemd-sysv < 206
 # self-obsoletes so that dnf will install new subpackages on upgrade (#1260394)
 Obsoletes:      %{name} < 249~~
-Provides:       systemd-resolved = %{version}-%{release}
 Provides:       systemd-sysv = 206
 Conflicts:      initscripts < 9.56.1
 %if 0%{?fedora}
@@ -996,6 +995,9 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Thu Jun 17 2021 Adam Williamson <awilliam@redhat.com> - 249~rc1-2
+- Stop systemd providing systemd-resolved, now the subpackage exists (#1973462)
+
 * Wed Jun 16 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 249~rc1-1
 - Latest upstream prerelease, see
   https://github.com/systemd/systemd/blob/v248-rc4/NEWS.
