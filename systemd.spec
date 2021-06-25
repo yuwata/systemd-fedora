@@ -30,8 +30,8 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
-Version:        249~rc1
-Release:        2%{?dist}
+Version:        249~rc2
+Release:        1%{?dist}
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
@@ -91,7 +91,7 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # Any patches which are "in preparation" upstream should be listed
 # here, rather than in the next section. Packit CI will drop any
 # patches in this range before applying upstream pull requests.
-Patch0001:      https://github.com/systemd/systemd/pull/19950.patch
+
 
 # Downstream-only patches (5000–9999)
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
@@ -995,12 +995,17 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Fri Jun 25 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 249~rc2-1
+- Latest upstream prerelease with various bugfixes, see
+  https://github.com/systemd/systemd/blob/v248-rc2/NEWS.
+- Ignore FORCERENEW DHCP packets (TALOS-2020-1142, CVE-2020-13529, #1959398)
+
 * Thu Jun 17 2021 Adam Williamson <awilliam@redhat.com> - 249~rc1-2
 - Stop systemd providing systemd-resolved, now the subpackage exists (#1973462)
 
 * Wed Jun 16 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 249~rc1-1
 - Latest upstream prerelease, see
-  https://github.com/systemd/systemd/blob/v248-rc4/NEWS.
+  https://github.com/systemd/systemd/blob/v249-rc1/NEWS.
   Fixes #1963428.
 - Use systemd-sysusers to create users (#1965815)
 - Move systemd-resolved into systemd-resolved subpackage (#1923727)
