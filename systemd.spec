@@ -30,7 +30,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
-Version:        249~rc2
+Version:        249~rc3
 Release:        1%{?dist}
 %else
 # determine the build information from local checkout
@@ -995,6 +995,10 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Thu Jul  1 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 249~rc3-1
+- Latest upstream prerelease with various bugfixes, see
+  https://github.com/systemd/systemd/blob/v248-rc3/NEWS.
+
 * Fri Jun 25 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 249~rc2-1
 - Latest upstream prerelease with various bugfixes, see
   https://github.com/systemd/systemd/blob/v248-rc2/NEWS.
