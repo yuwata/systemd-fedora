@@ -35,7 +35,7 @@ Release:        1%{?dist}
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
-Release:        1
+Release:        0
 %endif
 
 # For a breakdown of the licensing, see README
