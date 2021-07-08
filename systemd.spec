@@ -31,7 +31,7 @@ Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
 Version:        249
-Release:        1%{?dist}
+Release:        2%{?dist}
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
@@ -995,18 +995,21 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Wed Jul  7 2021 Neal Gompa <ngompa13@gmail.com> - 249-2
+- Use correct NEWS URLs for systemd 249 releases in changelog entries
+
 * Wed Jul  7 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 249-1
 - Latest upstream release with minor bugfixes, see
-  https://github.com/systemd/systemd/blob/v248/NEWS.
+  https://github.com/systemd/systemd/blob/v249/NEWS.
 - systemd-oomd cpu usage is reduced (#1944646)
 
 * Thu Jul  1 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 249~rc3-1
 - Latest upstream prerelease with various bugfixes, see
-  https://github.com/systemd/systemd/blob/v248-rc3/NEWS.
+  https://github.com/systemd/systemd/blob/v249-rc3/NEWS.
 
 * Fri Jun 25 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 249~rc2-1
 - Latest upstream prerelease with various bugfixes, see
-  https://github.com/systemd/systemd/blob/v248-rc2/NEWS.
+  https://github.com/systemd/systemd/blob/v249-rc2/NEWS.
 - Ignore FORCERENEW DHCP packets (TALOS-2020-1142, CVE-2020-13529, #1959398)
 
 * Thu Jun 17 2021 Adam Williamson <awilliam@redhat.com> - 249~rc1-2
