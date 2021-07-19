@@ -481,6 +481,7 @@ CONFIGURE_OPTS=(
         -Dversion-tag=v%{version}-%{release}
         -Dfallback-hostname=%[0%{?fedora}?"fedora":"localhost"]
         -Ddefault-dnssec=no
+        -Ddefault-dns-over-tls=opportunistic
         # https://bugzilla.redhat.com/show_bug.cgi?id=1867830
         -Ddefault-mdns=no
         -Ddefault-llmnr=resolve
@@ -996,6 +997,9 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Fri Jul 23 2021 Michael Catanzaro <mcatanzaro@redhat.com> - 249.2-1
+- Build with -Ddefault-dns-over-tls=opportunistic
+
 * Tue Jul 20 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 249.1-1
 - Various minor documentation and correctness fixes.
 - CVE-2021-33910, #1984020: an unchecked stack allocation could be used to
