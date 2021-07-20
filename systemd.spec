@@ -118,8 +118,9 @@ BuildRequires:  audit-libs-devel
 BuildRequires:  cryptsetup-devel
 %endif
 BuildRequires:  dbus-devel
+BuildRequires:  /usr/sbin/sfdisk
 # /usr/bin/getfacl is needed by test-acl-util
-BuildRequires:  acl
+BuildRequires:  /usr/bin/getfacl
 BuildRequires:  libacl-devel
 BuildRequires:  gobject-introspection-devel
 BuildRequires:  libblkid-devel
