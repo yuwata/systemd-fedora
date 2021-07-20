@@ -1,7 +1,7 @@
 #global commit c4b843473a75fb38ed5bf54e9d3cfb1cb3719efa
 %{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
-#global stable 1
+%global stable 1
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
 # strip the automatically generated dep here and instead co-own the
@@ -30,8 +30,8 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
-Version:        249
-Release:        2%{?dist}
+Version:        249.1
+Release:        1%{?dist}
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
@@ -996,6 +996,12 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Tue Jul 20 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 249.1-1
+- Various minor documentation and correctness fixes.
+- CVE-2021-33910, #1984020: an unchecked stack allocation could be used to
+  crash systemd and cause the system to reboot by creating a very long
+  fuse mountpoint path.
+
 * Wed Jul  7 2021 Neal Gompa <ngompa13@gmail.com> - 249-2
 - Use correct NEWS URLs for systemd 249 releases in changelog entries
 
