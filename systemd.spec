@@ -30,7 +30,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
-Version:        249.1
+Version:        249.2
 Release:        1%{?dist}
 %else
 # determine the build information from local checkout
@@ -997,8 +997,13 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Fri Jul 23 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 249.2-1
+- Latest bugfix release (a minor hwdb regression bugfix, and correction
+  to kernel commandline handling when reexecuting PID 1 in a container)
+
 * Fri Jul 23 2021 Michael Catanzaro <mcatanzaro@redhat.com> - 249.2-1
 - Build with -Ddefault-dns-over-tls=opportunistic
+  (https://fedoraproject.org/wiki/Changes/DNS_Over_TLS, #1889901)
 
 * Tue Jul 20 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 249.1-1
 - Various minor documentation and correctness fixes.
