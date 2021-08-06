@@ -30,7 +30,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
-Version:        249.2
+Version:        249.3
 Release:        1%{?dist}
 %else
 # determine the build information from local checkout
@@ -997,6 +997,12 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Fri Aug  6 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 249.3-1
+- Latest bugfix release: improved compatibility with latest glibc,
+  various small documentation fixes, and fixes for systemd-networkd bridging,
+  other minor fixes.
+- systemctl set-property accepts glob patterns now (#1986258)
+
 * Fri Jul 23 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 249.2-1
 - Latest bugfix release (a minor hwdb regression bugfix, and correction
   to kernel commandline handling when reexecuting PID 1 in a container)
