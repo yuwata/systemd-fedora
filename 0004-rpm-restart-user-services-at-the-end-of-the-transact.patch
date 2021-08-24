@@ -1,0 +1,259 @@
+From a63d5d320f81c1cbae07897a401ed5cc5374e0bf Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Wed, 7 Jul 2021 14:37:57 +0200
+Subject: [PATCH 4/5] rpm: restart user services at the end of the transaction
+
+This closes an important gap: so far we would reexecute the system manager and
+restart system services that were configured to do so, but we wouldn't do the
+same for user managers or user services.
+
+The scheme used for user managers is very similar to the system one, except
+that there can be multiple user managers running, so we query the system
+manager to get a list of them, and then tell each one to do the equivalent
+operations: daemon-reload, disable --now, set-property Markers=+needs-restart,
+reload-or-restart --marked.
+
+The total time that can be spend on this is bounded: we execute the commands in
+parallel over user managers and units, and additionally set SYSTEMD_BUS_TIMEOUT
+to a lower value (15 s by default). User managers should not have too many
+units running, and they should be able to do all those operations very
+quickly (<< 1s). The final restart operation may take longer, but it's done
+asynchronously, so we only wait for the queuing to happen.
+
+The advantage of doing this synchronously is that we can wait for each step to
+happen, and for example daemon-reloads can finish before we execute the service
+restarts, etc. We can also order various steps wrt. to the phases in the rpm
+transaction.
+
+When this was initially proposed, we discussed a more relaxed scheme with bus
+property notifications. Such an approach would be more complex because a bunch
+of infrastructure would have to be added to system manager to propagate
+appropriate notifications to the user managers, and then the user managers
+would have to wait for them. Instead, now there is no new code in the managers,
+all new functionality is contained in src/rpm/. The ability to call 'systemctl
+--user user@' makes this approach very easy. Also, it would be very hard to
+order the user manager steps and the rpm transaction steps.
+
+Note: 'systemctl --user disable' is only called for a user managers that are
+running. I don't see a nice way around this, and it shouldn't matter too much:
+we'll just leave a dangling symlink in the case where the user enabled the
+service manually.
+
+A follow-up for https://bugzilla.redhat.com/show_bug.cgi?id=1792468 and
+fa97d2fcf64e0558054bee673f734f523373b146.
+
+(cherry picked from commit 36d55958ccc75fa3c91bdd7354d74c910f2f6cc7)
+---
+ meson.build                      |  1 +
+ meson_options.txt                |  2 ++
+ src/rpm/macros.systemd.in        |  6 +++-
+ src/rpm/systemd-update-helper.in | 47 ++++++++++++++++++++++++++++++++
+ src/rpm/triggers.systemd.in      | 28 ++++++++++++++++++-
+ src/rpm/triggers.systemd.sh.in   | 13 ++++++++-
+ 6 files changed, 94 insertions(+), 3 deletions(-)
+
+diff --git a/meson.build b/meson.build
+index fb986e84f7..d898d9ccd0 100644
+--- a/meson.build
++++ b/meson.build
+@@ -270,6 +270,7 @@ conf.set_quoted('TMPFILES_DIR',                               tmpfilesdir)
+ conf.set_quoted('UDEVLIBEXECDIR',                             udevlibexecdir)
+ conf.set_quoted('UDEV_HWDB_DIR',                              udevhwdbdir)
+ conf.set_quoted('UDEV_RULES_DIR',                             udevrulesdir)
++conf.set_quoted('UPDATE_HELPER_USER_TIMEOUT',                 get_option('update-helper-user-timeout'))
+ conf.set_quoted('USER_CONFIG_UNIT_DIR',                       join_paths(pkgsysconfdir, 'user'))
+ conf.set_quoted('USER_DATA_UNIT_DIR',                         userunitdir)
+ conf.set_quoted('USER_ENV_GENERATOR_DIR',                     userenvgeneratordir)
+diff --git a/meson_options.txt b/meson_options.txt
+index 163c8df87d..9383c7da6a 100644
+--- a/meson_options.txt
++++ b/meson_options.txt
+@@ -182,6 +182,8 @@ option('xinitrcdir', type : 'string', value : '',
+        description : 'directory for xinitrc files')
+ option('rpmmacrosdir', type : 'string', value : 'lib/rpm/macros.d',
+        description : 'directory for rpm macros ["no" disables]')
++option('update-helper-user-timeout', type : 'string', value : '15s',
++       description : 'how long to wait for user manager operations')
+ option('pamlibdir', type : 'string',
+        description : 'directory for PAM modules')
+ option('pamconfdir', type : 'string',
+diff --git a/src/rpm/macros.systemd.in b/src/rpm/macros.systemd.in
+index bbdf036da7..caa2e45595 100644
+--- a/src/rpm/macros.systemd.in
++++ b/src/rpm/macros.systemd.in
+@@ -93,7 +93,11 @@ fi \
+ %{nil}
+ 
+ %systemd_user_postun_with_restart() \
+-%{expand:%%{?__systemd_someargs_%#:%%__systemd_someargs_%# systemd_postun_with_restart}} \
++%{expand:%%{?__systemd_someargs_%#:%%__systemd_someargs_%# systemd_user_postun_with_restart}} \
++if [ $1 -ge 1 ] && [ -x "{{SYSTEMD_UPDATE_HELPER_PATH}}" ]; then \
++    # Package upgrade, not uninstall \
++    {{SYSTEMD_UPDATE_HELPER_PATH}} mark-restart-user-units %{?*} || : \
++fi \
+ %{nil}
+ 
+ %udev_hwdb_update() %{nil}
+diff --git a/src/rpm/systemd-update-helper.in b/src/rpm/systemd-update-helper.in
+index f3c75b75fa..f3466ab3c0 100755
+--- a/src/rpm/systemd-update-helper.in
++++ b/src/rpm/systemd-update-helper.in
+@@ -26,6 +26,15 @@ case "$command" in
+ 
+     remove-user-units)
+         systemctl --global disable "$@"
++
++        [ -d /run/systemd/system ] || exit 0
++
++        users=$(systemctl list-units 'user@*' --legend=no | sed -n -r 's/.*user@([0-9]+).service.*/\1/p')
++        for user in $users; do
++            SYSTEMD_BUS_TIMEOUT={{UPDATE_HELPER_USER_TIMEOUT}} \
++                    systemctl --user -M "$user@" disable --now "$@" &
++        done
++        wait
+         ;;
+ 
+     mark-restart-system-units)
+@@ -37,6 +46,17 @@ case "$command" in
+         wait
+         ;;
+ 
++    mark-restart-user-units)
++        [ -d /run/systemd/system ] || exit 0
++
++        users=$(systemctl list-units 'user@*' --legend=no | sed -n -r 's/.*user@([0-9]+).service.*/\1/p')
++        for user in $users; do
++            SYSTEMD_BUS_TIMEOUT={{UPDATE_HELPER_USER_TIMEOUT}} \
++                    systemctl --user -M "$user@" set-property "$unit" Markers=+needs-restart &
++        done
++        wait
++        ;;
++
+     system-reload-restart|system-reload|system-restart)
+         if [ -n "$*" ]; then
+             echo "Unexpected arguments for '$command': $*"
+@@ -54,6 +74,33 @@ case "$command" in
+         fi
+         ;;
+ 
++    user-reload-restart|user-reload|user-restart)
++        if [ -n "$*" ]; then
++            echo "Unexpected arguments for '$command': $*"
++            exit 2
++        fi
++
++        [ -d /run/systemd/system ] || exit 0
++
++        users=$(systemctl list-units 'user@*' --legend=no | sed -n -r 's/.*user@([0-9]+).service.*/\1/p')
++
++        if [[ "$command" =~ reload ]]; then
++            for user in $users; do
++                SYSTEMD_BUS_TIMEOUT={{UPDATE_HELPER_USER_TIMEOUT}} \
++                        systemctl --user -M "$user@" daemon-reload &
++            done
++            wait
++        fi
++
++        if [[ "$command" =~ restart ]]; then
++            for user in $users; do
++                SYSTEMD_BUS_TIMEOUT={{UPDATE_HELPER_USER_TIMEOUT}} \
++                        systemctl --user -M "$user@" reload-or-restart --marked &
++            done
++            wait
++        fi
++        ;;
++
+     *)
+         echo "Unknown verb '$command'"
+         exit 3
+diff --git a/src/rpm/triggers.systemd.in b/src/rpm/triggers.systemd.in
+index d29cc33dfd..8aeb2049c1 100644
+--- a/src/rpm/triggers.systemd.in
++++ b/src/rpm/triggers.systemd.in
+@@ -20,6 +20,14 @@ elseif pid > 0 then
+     posix.wait(pid)
+ end
+ 
++%transfiletriggerin -P 900899 -p <lua> -- {{USER_DATA_UNIT_DIR}} /etc/systemd/user
++pid = posix.fork()
++if pid == 0 then
++    assert(posix.exec("{{SYSTEMD_UPDATE_HELPER_PATH}}", "user-reload-restart"))
++elseif pid > 0 then
++    posix.wait(pid)
++end
++
+ %transfiletriggerpostun -P 1000100 -p <lua> -- {{SYSTEM_DATA_UNIT_DIR}} /etc/systemd/system
+ -- On removal, we need to run daemon-reload after any units have been
+ -- removed.
+@@ -33,8 +41,17 @@ elseif pid > 0 then
+     posix.wait(pid)
+ end
+ 
++%transfiletriggerpostun -P 1000100 -p <lua> -- {{SYSTEM_DATA_UNIT_DIR}} /etc/systemd/system
++-- Execute daemon-reload in user managers.
++pid = posix.fork()
++if pid == 0 then
++    assert(posix.exec("{{SYSTEMD_UPDATE_HELPER_PATH}}", "user-reload"))
++elseif pid > 0 then
++    posix.wait(pid)
++end
++
+ %transfiletriggerpostun -P 10000 -p <lua> -- {{SYSTEM_DATA_UNIT_DIR}} /etc/systemd/system
+--- We restart remaining services that should be restarted here.
++-- We restart remaining system services that should be restarted here.
+ pid = posix.fork()
+ if pid == 0 then
+     assert(posix.exec("{{SYSTEMD_UPDATE_HELPER_PATH}}", "system-restart"))
+@@ -42,6 +59,15 @@ elseif pid > 0 then
+     posix.wait(pid)
+ end
+ 
++%transfiletriggerpostun -P 9999 -p <lua> -- {{USER_DATA_UNIT_DIR}} /etc/systemd/user
++-- We restart remaining user services that should be restarted here.
++pid = posix.fork()
++if pid == 0 then
++    assert(posix.exec("{{SYSTEMD_UPDATE_HELPER_PATH}}", "user-restart"))
++elseif pid > 0 then
++    posix.wait(pid)
++end
++
+ %transfiletriggerin -P 100700 -p <lua> -- {{SYSUSERS_DIR}}
+ -- This script will process files installed in {{SYSUSERS_DIR}} to create
+ -- specified users automatically. The priority is set such that it
+diff --git a/src/rpm/triggers.systemd.sh.in b/src/rpm/triggers.systemd.sh.in
+index 83cd7617f8..694cd94e8d 100644
+--- a/src/rpm/triggers.systemd.sh.in
++++ b/src/rpm/triggers.systemd.sh.in
+@@ -16,6 +16,9 @@
+ # so sometimes we will reload needlessly.
+ {{SYSTEMD_UPDATE_HELPER_PATH}} system-reload-restart || :
+ 
++%transfiletriggerin -P 900899 -- {{USER_DATA_UNIT_DIR}} /etc/systemd/user
++{{SYSTEMD_UPDATE_HELPER_PATH}} user-reload-restart || :
++
+ %transfiletriggerpostun -P 1000100 -- {{SYSTEM_DATA_UNIT_DIR}} /etc/systemd/system
+ # On removal, we need to run daemon-reload after any units have been
+ # removed.
+@@ -24,10 +27,18 @@
+ # executed.
+ {{SYSTEMD_UPDATE_HELPER_PATH}} system-reload || :
+ 
++%transfiletriggerpostun -P 1000099 -- {{USER_DATA_UNIT_DIR}} /etc/systemd/user
++# Execute daemon-reload in user managers.
++{{SYSTEMD_UPDATE_HELPER_PATH}} user-reload || :
++
+ %transfiletriggerpostun -P 10000 -- {{SYSTEM_DATA_UNIT_DIR}} /etc/systemd/system
+-# We restart remaining services that should be restarted here.
++# We restart remaining system services that should be restarted here.
+ {{SYSTEMD_UPDATE_HELPER_PATH}} system-restart || :
+ 
++%transfiletriggerpostun -P  9999 -- {{USER_DATA_UNIT_DIR}} /etc/systemd/user
++# We restart remaining user services that should be restarted here.
++{{SYSTEMD_UPDATE_HELPER_PATH}} user-restart || :
++
+ %transfiletriggerin -P 1000700 -- {{SYSUSERS_DIR}}
+ # This script will process files installed in {{SYSUSERS_DIR}} to create
+ # specified users automatically. The priority is set such that it
+-- 
+2.31.1
+

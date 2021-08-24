@@ -1,0 +1,47 @@
+From 37cd6c0fad847e5fffd9d107358a36e767c7ca42 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Fri, 23 Jul 2021 15:35:23 +0200
+Subject: [PATCH 5/5] update-helper: also add "user-reexec" verb
+
+This is not called from the systemd.triggers or systemd.macros files. Instead,
+it would be called from the scriptlets in systemd rpm package itself, at the
+place where we call systemctl daemon-reexec.
+
+See https://github.com/systemd/systemd/pull/20289#issuecomment-885622200 .
+
+(cherry picked from commit 1262e824a4d638e347ae0d39c973f1f750962533)
+---
+ src/rpm/systemd-update-helper.in | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/src/rpm/systemd-update-helper.in b/src/rpm/systemd-update-helper.in
+index f3466ab3c0..0c6675a9db 100755
+--- a/src/rpm/systemd-update-helper.in
++++ b/src/rpm/systemd-update-helper.in
+@@ -74,7 +74,7 @@ case "$command" in
+         fi
+         ;;
+ 
+-    user-reload-restart|user-reload|user-restart)
++    user-reload-restart|user-reload|user-restart|user-reexec)
+         if [ -n "$*" ]; then
+             echo "Unexpected arguments for '$command': $*"
+             exit 2
+@@ -84,6 +84,14 @@ case "$command" in
+ 
+         users=$(systemctl list-units 'user@*' --legend=no | sed -n -r 's/.*user@([0-9]+).service.*/\1/p')
+ 
++        if [[ "$command" =~ reexec ]]; then
++            for user in $users; do
++                SYSTEMD_BUS_TIMEOUT={{UPDATE_HELPER_USER_TIMEOUT}} \
++                        systemctl --user -M "$user@" daemon-reexec &
++            done
++            wait
++        fi
++
+         if [[ "$command" =~ reload ]]; then
+             for user in $users; do
+                 SYSTEMD_BUS_TIMEOUT={{UPDATE_HELPER_USER_TIMEOUT}} \
+-- 
+2.31.1
+

@@ -30,7 +30,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
-Version:        249.3
+Version:        249.4
 Release:        1%{?dist}
 %else
 # determine the build information from local checkout
@@ -91,6 +91,11 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # Any patches which are "in preparation" upstream should be listed
 # here, rather than in the next section. Packit CI will drop any
 # patches in this range before applying upstream pull requests.
+Patch0001:      0001-rpm-don-t-specify-the-full-path-for-systemctl-and-ot.patch
+Patch0002:      0002-rpm-use-a-helper-script-to-actually-invoke-systemctl.patch
+Patch0003:      0003-rpm-call-needs-restart-in-parallel.patch
+Patch0004:      0004-rpm-restart-user-services-at-the-end-of-the-transact.patch
+Patch0005:      0005-update-helper-also-add-user-reexec-verb.patch
 
 
 # Downstream-only patches (5000–9999)
@@ -997,6 +1002,11 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Tue Aug 24 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 249.4-1
+- Latest bugfix release: various fixes for systemd-networkd,
+  systemd-resolved, systemd, systemd-boot.
+- Backport of macros to restart systemd user units (#1993244)
+
 * Fri Aug  6 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 249.3-1
 - Latest bugfix release: improved compatibility with latest glibc,
   various small documentation fixes, and fixes for systemd-networkd bridging,

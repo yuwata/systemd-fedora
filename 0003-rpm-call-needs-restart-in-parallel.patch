@@ -1,0 +1,35 @@
+From 0a2e691b6b1fdceb4b7504870c4b792a66b5080f Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Thu, 22 Jul 2021 11:28:36 +0200
+Subject: [PATCH 3/5] rpm: call +needs-restart in parallel
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Some rpms install a bunch of units… It seems nicer to invoke them all in
+parallel. In particular, timeouts in systemctl also run in parallel, so if
+there's some communication mishap, we will wait less.
+
+(cherry picked from commit 3598aff4d963b2e51ac74d206161da47bfde785c)
+---
+ src/rpm/systemd-update-helper.in | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/rpm/systemd-update-helper.in b/src/rpm/systemd-update-helper.in
+index 9fa49fa131..f3c75b75fa 100755
+--- a/src/rpm/systemd-update-helper.in
++++ b/src/rpm/systemd-update-helper.in
+@@ -32,8 +32,9 @@ case "$command" in
+         [ -d /run/systemd/system ] || exit 0
+ 
+         for unit in "$@"; do
+-            systemctl set-property "$unit" Markers=+needs-restart || :
++            systemctl set-property "$unit" Markers=+needs-restart &
+         done
++        wait
+         ;;
+ 
+     system-reload-restart|system-reload|system-restart)
+-- 
+2.31.1
+

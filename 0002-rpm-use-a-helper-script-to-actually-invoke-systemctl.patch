@@ -1,0 +1,337 @@
+From 09e8c6aa71ee4b5ff3ee85fc4855e2c1a246a079 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Thu, 22 Jul 2021 11:22:33 +0200
+Subject: [PATCH 2/5] rpm: use a helper script to actually invoke systemctl
+ commands
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Instead of embedding the commands to invoke directly in the macros,
+let's use a helper script as indirection. This has a couple of advantages:
+
+- the macro language is awkward, we need to suffix most commands by "|| :"
+  and "\", which is easy to get wrong. In the new scheme, the macro becomes
+  a single simple command.
+- in the script we can use normal syntax highlighting, shellcheck, etc.
+- it's also easier to test the invoked commands by invoking the helper
+  manually.
+- most importantly, the logic is contained in the helper, i.e. we can
+  update systemd rpm and everything uses the new helper. Before, we would
+  have to rebuild all packages to update the macro definition.
+
+This raises the question whether it makes sense to use the lua scriptlets when
+the real work is done in a bash script. I think it's OK: we still have the
+efficient lua scripts that do the short scripts, and we use a single shared
+implementation in bash to do the more complex stuff.
+
+The meson version is raised to 0.47 because that's needed for install_mode.
+We were planning to raise the required version anyway…
+
+(cherry picked from commit 6d825ab2d42d3219e49a192bf99f9c09134a0df4)
+---
+ README                           |  2 +-
+ meson.build                      |  3 +-
+ src/rpm/macros.systemd.in        | 30 ++++++++--------
+ src/rpm/meson.build              | 13 ++++---
+ src/rpm/systemd-update-helper.in | 60 ++++++++++++++++++++++++++++++++
+ src/rpm/triggers.systemd.in      | 43 ++++++++---------------
+ src/rpm/triggers.systemd.sh.in   | 13 ++-----
+ 7 files changed, 105 insertions(+), 59 deletions(-)
+ create mode 100755 src/rpm/systemd-update-helper.in
+
+diff --git a/README b/README
+index 0e5c326deb..a8f23a0d5b 100644
+--- a/README
++++ b/README
+@@ -193,7 +193,7 @@ REQUIREMENTS:
+         python-jinja2
+         python-lxml (optional, required to build the indices)
+         python >= 3.5
+-        meson >= 0.46 (>= 0.49 is required to build position-independent executables)
++        meson >= 0.47 (>= 0.49 is required to build position-independent executables)
+         ninja
+         gcc, awk, sed, grep, and similar tools
+         clang >= 10.0, llvm >= 10.0 (optional, required to build BPF programs
+diff --git a/meson.build b/meson.build
+index 738879eb21..fb986e84f7 100644
+--- a/meson.build
++++ b/meson.build
+@@ -10,7 +10,7 @@ project('systemd', 'c',
+                 'localstatedir=/var',
+                 'warning_level=2',
+         ],
+-        meson_version : '>= 0.46',
++        meson_version : '>= 0.47',
+        )
+ 
+ libsystemd_version = '0.32.0'
+@@ -253,6 +253,7 @@ conf.set_quoted('SYSTEMD_SHUTDOWN_BINARY_PATH',               join_paths(rootlib
+ conf.set_quoted('SYSTEMD_STDIO_BRIDGE_BINARY_PATH',           join_paths(bindir, 'systemd-stdio-bridge'))
+ conf.set_quoted('SYSTEMD_TEST_DATA',                          join_paths(testsdir, 'testdata'))
+ conf.set_quoted('SYSTEMD_TTY_ASK_PASSWORD_AGENT_BINARY_PATH', join_paths(rootbindir, 'systemd-tty-ask-password-agent'))
++conf.set_quoted('SYSTEMD_UPDATE_HELPER_PATH',                 join_paths(rootlibexecdir, 'systemd-update-helper'))
+ conf.set_quoted('SYSTEMD_USERWORK_PATH',                      join_paths(rootlibexecdir, 'systemd-userwork'))
+ conf.set_quoted('SYSTEMD_VERITYSETUP_PATH',                   join_paths(rootlibexecdir, 'systemd-veritysetup'))
+ conf.set_quoted('SYSTEM_CONFIG_UNIT_DIR',                     join_paths(pkgsysconfdir, 'system'))
+diff --git a/src/rpm/macros.systemd.in b/src/rpm/macros.systemd.in
+index 3129ab2d61..bbdf036da7 100644
+--- a/src/rpm/macros.systemd.in
++++ b/src/rpm/macros.systemd.in
+@@ -46,31 +46,33 @@ OrderWithRequires(postun): systemd \
+ 
+ %systemd_post() \
+ %{expand:%%{?__systemd_someargs_%#:%%__systemd_someargs_%# systemd_post}} \
+-if [ $1 -eq 1 ] && command -v systemctl >/dev/null; then \
++if [ $1 -eq 1 ] && [ -x "{{SYSTEMD_UPDATE_HELPER_PATH}}" ]; then \
+     # Initial installation \
+-    systemctl --no-reload preset %{?*} || : \
++    {{SYSTEMD_UPDATE_HELPER_PATH}} install-system-units %{?*} || : \
+ fi \
+ %{nil}
+ 
+-%systemd_user_post() %{expand:%systemd_post \\--global %%{?*}}
++%systemd_user_post() \
++%{expand:%%{?__systemd_someargs_%#:%%__systemd_someargs_%# systemd_user_post}} \
++if [ $1 -eq 1 ] && [ -x "{{SYSTEMD_UPDATE_HELPER_PATH}}" ]; then \
++    # Initial installation \
++    {{SYSTEMD_UPDATE_HELPER_PATH}} install-user-units %{?*} || : \
++fi \
++%{nil}
+ 
+ %systemd_preun() \
+ %{expand:%%{?__systemd_someargs_%#:%%__systemd_someargs_%# systemd_preun}} \
+-if [ $1 -eq 0 ] && command -v systemctl >/dev/null; then \
++if [ $1 -eq 0 ] && [ -x "{{SYSTEMD_UPDATE_HELPER_PATH}}" ]; then \
+     # Package removal, not upgrade \
+-    if [ -d /run/systemd/system ]; then \
+-          systemctl --no-reload disable --now %{?*} || : \
+-    else \
+-          systemctl --no-reload disable %{?*} || : \
+-    fi \
++    {{SYSTEMD_UPDATE_HELPER_PATH}} remove-system-units %{?*} || : \
+ fi \
+ %{nil}
+ 
+ %systemd_user_preun() \
+ %{expand:%%{?__systemd_someargs_%#:%%__systemd_someargs_%# systemd_user_preun}} \
+-if [ $1 -eq 0 ] && command -v systemctl >/dev/null; then \
++if [ $1 -eq 0 ] && [ -x "{{SYSTEMD_UPDATE_HELPER_PATH}}" ]; then \
+     # Package removal, not upgrade \
+-    systemctl --global disable %{?*} || : \
++    {{SYSTEMD_UPDATE_HELPER_PATH}} remove-user-units %{?*} || : \
+ fi \
+ %{nil}
+ 
+@@ -84,11 +86,9 @@ fi \
+ 
+ %systemd_postun_with_restart() \
+ %{expand:%%{?__systemd_someargs_%#:%%__systemd_someargs_%# systemd_postun_with_restart}} \
+-if [ $1 -ge 1 ] && command -v systemctl >/dev/null; then \
++if [ $1 -ge 1 ] && [ -x "{{SYSTEMD_UPDATE_HELPER_PATH}}" ]; then \
+     # Package upgrade, not uninstall \
+-    for unit in %{?*}; do \
+-        systemctl set-property $unit Markers=+needs-restart || : \
+-    done \
++    {{SYSTEMD_UPDATE_HELPER_PATH}} mark-restart-system-units %{?*} || : \
+ fi \
+ %{nil}
+ 
+diff --git a/src/rpm/meson.build b/src/rpm/meson.build
+index fc72fee73c..2ad3308cc1 100644
+--- a/src/rpm/meson.build
++++ b/src/rpm/meson.build
+@@ -1,9 +1,13 @@
+ # SPDX-License-Identifier: LGPL-2.1-or-later
+ 
+ in_files = [
+-        ['macros.systemd',      rpmmacrosdir != 'no'],
+-        ['triggers.systemd',    false],
+-        ['triggers.systemd.sh', false]]
++        ['macros.systemd',        rpmmacrosdir != 'no', rpmmacrosdir],
++
++        # we conditionalize on rpmmacrosdir, but install into rootlibexecdir
++        ['systemd-update-helper', rpmmacrosdir != 'no', rootlibexecdir, 'rwxr-xr-x'],
++
++        ['triggers.systemd',      false],
++        ['triggers.systemd.sh',   false]]
+ 
+ # The last two don't get installed anywhere, one of them needs to included in
+ # the rpm spec file definition instead.
+@@ -17,6 +21,7 @@ foreach tuple : in_files
+                 command : [meson_render_jinja2, config_h, '@INPUT@'],
+                 capture : true,
+                 install : tuple[1],
+-                install_dir : rpmmacrosdir,
++                install_dir : tuple.length() > 2 ? tuple[2] : '',
++                install_mode : tuple.length() > 3 ? tuple[3] : false,
+                 build_by_default : true)
+ endforeach
+diff --git a/src/rpm/systemd-update-helper.in b/src/rpm/systemd-update-helper.in
+new file mode 100755
+index 0000000000..9fa49fa131
+--- /dev/null
++++ b/src/rpm/systemd-update-helper.in
+@@ -0,0 +1,60 @@
++#!/bin/bash
++set -eu
++set -o pipefail
++
++command="${1:?}"
++shift
++
++command -v systemctl >/dev/null || exit 0
++
++case "$command" in
++    install-system-units)
++        systemctl --no-reload preset "$@"
++        ;;
++
++    install-user-units)
++        systemctl --no-reload preset --global "$@"
++        ;;
++
++    remove-system-units)
++        if [ -d /run/systemd/system ]; then
++            systemctl --no-reload disable --now "$@"
++        else
++            systemctl --no-reload disable "$@"
++        fi
++        ;;
++
++    remove-user-units)
++        systemctl --global disable "$@"
++        ;;
++
++    mark-restart-system-units)
++        [ -d /run/systemd/system ] || exit 0
++
++        for unit in "$@"; do
++            systemctl set-property "$unit" Markers=+needs-restart || :
++        done
++        ;;
++
++    system-reload-restart|system-reload|system-restart)
++        if [ -n "$*" ]; then
++            echo "Unexpected arguments for '$command': $*"
++            exit 2
++        fi
++
++        [ -d /run/systemd/system ] || exit 0
++
++        if [[ "$command" =~ reload ]]; then
++            systemctl daemon-reload
++        fi
++
++        if [[ "$command" =~ restart ]]; then
++            systemctl reload-or-restart --marked
++        fi
++        ;;
++
++    *)
++        echo "Unknown verb '$command'"
++        exit 3
++        ;;
++esac
+diff --git a/src/rpm/triggers.systemd.in b/src/rpm/triggers.systemd.in
+index 247358008a..d29cc33dfd 100644
+--- a/src/rpm/triggers.systemd.in
++++ b/src/rpm/triggers.systemd.in
+@@ -13,20 +13,11 @@
+ -- upgraded. We care about the case where a package is initially
+ -- installed, because other cases are covered by the *un scriptlets,
+ -- so sometimes we will reload needlessly.
+-if posix.access("/run/systemd/system") then
+-    pid = posix.fork()
+-    if pid == 0 then
+-        assert(posix.execp("systemctl", "daemon-reload"))
+-    elseif pid > 0 then
+-        posix.wait(pid)
+-    end
+-
+-    pid = posix.fork()
+-    if pid == 0 then
+-        assert(posix.execp("systemctl", "reload-or-restart", "--marked"))
+-    elseif pid > 0 then
+-        posix.wait(pid)
+-    end
++pid = posix.fork()
++if pid == 0 then
++    assert(posix.exec("{{SYSTEMD_UPDATE_HELPER_PATH}}", "system-reload-restart"))
++elseif pid > 0 then
++    posix.wait(pid)
+ end
+ 
+ %transfiletriggerpostun -P 1000100 -p <lua> -- {{SYSTEM_DATA_UNIT_DIR}} /etc/systemd/system
+@@ -35,24 +26,20 @@ end
+ -- On upgrade, we need to run daemon-reload after any new unit files
+ -- have been installed, but before %postun scripts in packages get
+ -- executed.
+-if posix.access("/run/systemd/system") then
+-    pid = posix.fork()
+-    if pid == 0 then
+-        assert(posix.execp("systemctl", "daemon-reload"))
+-    elseif pid > 0 then
+-        posix.wait(pid)
+-    end
++pid = posix.fork()
++if pid == 0 then
++    assert(posix.exec("{{SYSTEMD_UPDATE_HELPER_PATH}}", "system-reload"))
++elseif pid > 0 then
++    posix.wait(pid)
+ end
+ 
+ %transfiletriggerpostun -P 10000 -p <lua> -- {{SYSTEM_DATA_UNIT_DIR}} /etc/systemd/system
+ -- We restart remaining services that should be restarted here.
+-if posix.access("/run/systemd/system") then
+-    pid = posix.fork()
+-    if pid == 0 then
+-        assert(posix.execp("systemctl", "reload-or-restart", "--marked"))
+-    elseif pid > 0 then
+-        posix.wait(pid)
+-    end
++pid = posix.fork()
++if pid == 0 then
++    assert(posix.exec("{{SYSTEMD_UPDATE_HELPER_PATH}}", "system-restart"))
++elseif pid > 0 then
++    posix.wait(pid)
+ end
+ 
+ %transfiletriggerin -P 100700 -p <lua> -- {{SYSUSERS_DIR}}
+diff --git a/src/rpm/triggers.systemd.sh.in b/src/rpm/triggers.systemd.sh.in
+index 1631be18c9..83cd7617f8 100644
+--- a/src/rpm/triggers.systemd.sh.in
++++ b/src/rpm/triggers.systemd.sh.in
+@@ -14,10 +14,7 @@
+ # upgraded. We care about the case where a package is initially
+ # installed, because other cases are covered by the *un scriptlets,
+ # so sometimes we will reload needlessly.
+-if test -d "/run/systemd/system"; then
+-  systemctl daemon-reload || :
+-  systemctl reload-or-restart --marked || :
+-fi
++{{SYSTEMD_UPDATE_HELPER_PATH}} system-reload-restart || :
+ 
+ %transfiletriggerpostun -P 1000100 -- {{SYSTEM_DATA_UNIT_DIR}} /etc/systemd/system
+ # On removal, we need to run daemon-reload after any units have been
+@@ -25,15 +22,11 @@ fi
+ # On upgrade, we need to run daemon-reload after any new unit files
+ # have been installed, but before %postun scripts in packages get
+ # executed.
+-if test -d "/run/systemd/system"; then
+-  systemctl daemon-reload || :
+-fi
++{{SYSTEMD_UPDATE_HELPER_PATH}} system-reload || :
+ 
+ %transfiletriggerpostun -P 10000 -- {{SYSTEM_DATA_UNIT_DIR}} /etc/systemd/system
+ # We restart remaining services that should be restarted here.
+-if test -d "/run/systemd/system"; then
+-  systemctl reload-or-restart --marked || :
+-fi
++{{SYSTEMD_UPDATE_HELPER_PATH}} system-restart || :
+ 
+ %transfiletriggerin -P 1000700 -- {{SYSUSERS_DIR}}
+ # This script will process files installed in {{SYSUSERS_DIR}} to create
+-- 
+2.31.1
+
