@@ -31,11 +31,11 @@ Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
 Version:        249.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
-Release:        0
+Release:        1
 %endif
 
 # For a breakdown of the licensing, see README
@@ -1002,6 +1002,9 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Tue Sep 14 2021 Sahana Prasad <sahana@redhat.com>
+- Rebuilt with OpenSSL 3.0.0
+
 * Tue Aug 24 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 249.4-1
 - Latest bugfix release: various fixes for systemd-networkd,
   systemd-resolved, systemd, systemd-boot.
