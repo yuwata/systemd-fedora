@@ -97,6 +97,7 @@ Patch0003:      0003-rpm-call-needs-restart-in-parallel.patch
 Patch0004:      0004-rpm-restart-user-services-at-the-end-of-the-transact.patch
 Patch0005:      0005-update-helper-also-add-user-reexec-verb.patch
 
+Patch0006:      https://github.com/systemd/systemd/pull/20695.patch
 
 # Downstream-only patches (5000–9999)
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
