@@ -222,19 +222,17 @@ Recommends:     libpwquality.so.1(LIBPWQUALITY_1.0)%{?elf_bits}
 Recommends:     libqrencode.so.4%{?elf_suffix}
 
 %description
-systemd is a system and service manager that runs as PID 1 and starts
-the rest of the system. It provides aggressive parallelization
-capabilities, uses socket and D-Bus activation for starting services,
-offers on-demand starting of daemons, keeps track of processes using
-Linux control groups, maintains mount and automount points, and
-implements an elaborate transactional dependency-based service control
-logic. systemd supports SysV and LSB init scripts and works as a
+systemd is a system and service manager that runs as PID 1 and starts the rest
+of the system. It provides aggressive parallelization capabilities, uses socket
+and D-Bus activation for starting services, offers on-demand starting of
+daemons, keeps track of processes using Linux control groups, maintains mount
+and automount points, and implements an elaborate transactional dependency-based
+service control logic. systemd supports SysV and LSB init scripts and works as a
 replacement for sysvinit. Other parts of this package are a logging daemon,
-utilities to control basic system configuration like the hostname,
-date, locale, maintain a list of logged-in users, system accounts,
-runtime directories and settings, and daemons to manage simple network
-configuration, network time synchronization, log forwarding, and name
-resolution.
+utilities to control basic system configuration like the hostname, date, locale,
+maintain a list of logged-in users, system accounts, runtime directories and
+settings, and daemons to manage simple network configuration, network time
+synchronization, log forwarding, and name resolution.
 %if 0%{?stable}
 This package was built from the %{version}-stable branch of systemd.
 %endif
@@ -315,9 +313,9 @@ Provides:       u2f-hidraw-policy = 1.0.2-40
 Obsoletes:      u2f-hidraw-policy < 1.0.2-40
 
 %description udev
-This package contains systemd-udev and the rules and hardware database
-needed to manage device nodes. This package is necessary on physical
-machines and in virtual machines, but not in containers.
+This package contains systemd-udev and the rules and hardware database needed to
+manage device nodes. This package is necessary on physical machines and in
+virtual machines, but not in containers.
 
 %package container
 # Name is the same as in Debian
@@ -333,8 +331,8 @@ License:        LGPLv2+
 %description container
 Systemd tools to spawn and manage containers and virtual machines.
 
-This package contains systemd-nspawn, machinectl, systemd-machined,
-and systemd-importd.
+This package contains systemd-nspawn, machinectl, systemd-machined, and
+systemd-importd.
 
 %package journal-remote
 # Name is the same as in Debian
@@ -351,11 +349,11 @@ Provides:       %{name}-journal-gateway%{_isa} = %{version}-%{release}
 Obsoletes:      %{name}-journal-gateway < 227-7
 
 %description journal-remote
-Programs to forward journal entries over the network, using encrypted HTTP,
-and to write journal files from serialized journal contents.
+Programs to forward journal entries over the network, using encrypted HTTP, and
+to write journal files from serialized journal contents.
 
-This package contains systemd-journal-gatewayd,
-systemd-journal-remote, and systemd-journal-upload.
+This package contains systemd-journal-gatewayd, systemd-journal-remote, and
+systemd-journal-upload.
 
 %package networkd
 Summary:        System daemon that manages network configurations
@@ -365,9 +363,9 @@ License:        LGPLv2+
 Obsoletes:      systemd < 246.6-2
 
 %description networkd
-systemd-networkd is a system service that manages networks. It detects
-and configures network devices as they appear, as well as creating virtual
-network devices.
+systemd-networkd is a system service that manages networks. It detects and
+configures network devices as they appear, as well as creating virtual network
+devices.
 
 %package resolved
 Summary:        Network Name Resolution manager
@@ -375,9 +373,9 @@ Requires:       %{name}%{?_isa} = %{version}-%{release}
 Obsoletes:      %{name} < 249~~
 
 %description resolved
-systemd-resolved is a system service that provides network name resolution
-to local applications. It implements a caching and validating DNS/DNSSEC
-stub resolver, as well as an LLMNR and MulticastDNS resolver and responder.
+systemd-resolved is a system service that provides network name resolution to
+local applications. It implements a caching and validating DNS/DNSSEC stub
+resolver, as well as an LLMNR and MulticastDNS resolver and responder.
 
 %package oomd-defaults
 Summary:        Configuration files for systemd-oomd
@@ -395,26 +393,26 @@ Requires:      %{name}%{?_isa} = %{version}-%{release}
 License:       LGPLv2+
 
 %description tests
-"Installed tests" that are usually run as part of the build system.
-They can be useful to test systemd internals.
+"Installed tests" that are usually run as part of the build system. They can be
+useful to test systemd internals.
 
 %package standalone-tmpfiles
 Summary:       Standalone tmpfiles binary for use in non-systemd systems
 RemovePathPostfixes: .standalone
 
 %description standalone-tmpfiles
-Standalone tmpfiles binary with no dependencies on the systemd-shared library
-or other libraries from systemd-libs. This package conflicts with the main
-systemd package and is meant for use in non-systemd systems.
+Standalone tmpfiles binary with no dependencies on the systemd-shared library or
+other libraries from systemd-libs. This package conflicts with the main systemd
+package and is meant for use in non-systemd systems.
 
 %package standalone-sysusers
 Summary:       Standalone sysusers binary for use in non-systemd systems
 RemovePathPostfixes: .standalone
 
 %description standalone-sysusers
-Standalone sysusers binary with no dependencies on the systemd-shared library
-or other libraries from systemd-libs. This package conflicts with the main
-systemd package and is meant for use in non-systemd systems.
+Standalone sysusers binary with no dependencies on the systemd-shared library or
+other libraries from systemd-libs. This package conflicts with the main systemd
+package and is meant for use in non-systemd systems.
 
 %prep
 %autosetup -n %{?commit:%{name}%{?stable:-stable}-%{commit}}%{!?commit:%{name}%{?stable:-stable}-%{version_no_tilde}} -p1
