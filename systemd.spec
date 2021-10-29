@@ -31,7 +31,7 @@ Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
 Version:        249.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
@@ -96,6 +96,8 @@ Patch0002:      0002-rpm-use-a-helper-script-to-actually-invoke-systemctl.patch
 Patch0003:      0003-rpm-call-needs-restart-in-parallel.patch
 Patch0004:      0004-rpm-restart-user-services-at-the-end-of-the-transact.patch
 Patch0005:      0005-update-helper-also-add-user-reexec-verb.patch
+# Backport https://github.com/systemd/systemd-stable/pull/133 to fix boot
+Patch0006:      0006-Revert-core-Check-unit-start-rate-limiting-earlier.patch
 
 # Downstream-only patches (5000–9999)
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
@@ -999,6 +1001,9 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Fri Oct 29 2021 Adam Williamson <awilliam@redhat.com> - 249.5-2
+- Backport PR #133 to fix boot
+
 * Tue Oct 12 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 249.5-1
 - Latest bugfix release (various fixes in systemd-networkd,
   --timesyncd, -journald, -udev, homed, -resolved, -repart, -oomd,
