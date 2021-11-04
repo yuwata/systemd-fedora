@@ -1,7 +1,7 @@
-From a63d5d320f81c1cbae07897a401ed5cc5374e0bf Mon Sep 17 00:00:00 2001
+From 36d55958ccc75fa3c91bdd7354d74c910f2f6cc7 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
 Date: Wed, 7 Jul 2021 14:37:57 +0200
-Subject: [PATCH 4/5] rpm: restart user services at the end of the transaction
+Subject: [PATCH] rpm: restart user services at the end of the transaction
 
 This closes an important gap: so far we would reexecute the system manager and
 restart system services that were configured to do so, but we wouldn't do the
@@ -41,8 +41,6 @@ service manually.
 
 A follow-up for https://bugzilla.redhat.com/show_bug.cgi?id=1792468 and
 fa97d2fcf64e0558054bee673f734f523373b146.
-
-(cherry picked from commit 36d55958ccc75fa3c91bdd7354d74c910f2f6cc7)
 ---
  meson.build                      |  1 +
  meson_options.txt                |  2 ++
@@ -53,7 +51,7 @@ fa97d2fcf64e0558054bee673f734f523373b146.
  6 files changed, 94 insertions(+), 3 deletions(-)
 
 diff --git a/meson.build b/meson.build
-index fb986e84f7..d898d9ccd0 100644
+index c6b3e72d23..cafce977c2 100644
 --- a/meson.build
 +++ b/meson.build
 @@ -270,6 +270,7 @@ conf.set_quoted('TMPFILES_DIR',                               tmpfilesdir)
@@ -65,7 +63,7 @@ index fb986e84f7..d898d9ccd0 100644
  conf.set_quoted('USER_DATA_UNIT_DIR',                         userunitdir)
  conf.set_quoted('USER_ENV_GENERATOR_DIR',                     userenvgeneratordir)
 diff --git a/meson_options.txt b/meson_options.txt
-index 163c8df87d..9383c7da6a 100644
+index b60261ac24..50f2b7b5e9 100644
 --- a/meson_options.txt
 +++ b/meson_options.txt
 @@ -182,6 +182,8 @@ option('xinitrcdir', type : 'string', value : '',
@@ -254,6 +252,3 @@ index 83cd7617f8..694cd94e8d 100644
  %transfiletriggerin -P 1000700 -- {{SYSUSERS_DIR}}
  # This script will process files installed in {{SYSUSERS_DIR}} to create
  # specified users automatically. The priority is set such that it
--- 
-2.31.1
-

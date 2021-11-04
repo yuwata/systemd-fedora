@@ -1,7 +1,7 @@
-From 09e8c6aa71ee4b5ff3ee85fc4855e2c1a246a079 Mon Sep 17 00:00:00 2001
+From 6d825ab2d42d3219e49a192bf99f9c09134a0df4 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
 Date: Thu, 22 Jul 2021 11:22:33 +0200
-Subject: [PATCH 2/5] rpm: use a helper script to actually invoke systemctl
+Subject: [PATCH] rpm: use a helper script to actually invoke systemctl
  commands
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -27,8 +27,6 @@ implementation in bash to do the more complex stuff.
 
 The meson version is raised to 0.47 because that's needed for install_mode.
 We were planning to raise the required version anyway…
-
-(cherry picked from commit 6d825ab2d42d3219e49a192bf99f9c09134a0df4)
 ---
  README                           |  2 +-
  meson.build                      |  3 +-
@@ -54,7 +52,7 @@ index 0e5c326deb..a8f23a0d5b 100644
          gcc, awk, sed, grep, and similar tools
          clang >= 10.0, llvm >= 10.0 (optional, required to build BPF programs
 diff --git a/meson.build b/meson.build
-index 738879eb21..fb986e84f7 100644
+index a2ee15bf32..c6b3e72d23 100644
 --- a/meson.build
 +++ b/meson.build
 @@ -10,7 +10,7 @@ project('systemd', 'c',
@@ -332,6 +330,3 @@ index 1631be18c9..83cd7617f8 100644
  
  %transfiletriggerin -P 1000700 -- {{SYSUSERS_DIR}}
  # This script will process files installed in {{SYSUSERS_DIR}} to create
--- 
-2.31.1
-

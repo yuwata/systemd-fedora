@@ -1,0 +1,30 @@
+From a4eba5d8cfaabbd87687c651fcdd06df9e267931 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Thu, 4 Nov 2021 09:49:18 +0100
+Subject: [PATCH] update-helper: add missing loop over user units
+
+Noticed by Luca.
+
+shellcheck doens't catch this, and somehow it was missed in review
+and testing ;(
+---
+ src/rpm/systemd-update-helper.in | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/src/rpm/systemd-update-helper.in b/src/rpm/systemd-update-helper.in
+index fa35e7ba90..7e007d4806 100755
+--- a/src/rpm/systemd-update-helper.in
++++ b/src/rpm/systemd-update-helper.in
+@@ -52,8 +52,10 @@ case "$command" in
+ 
+         users=$(systemctl list-units 'user@*' --legend=no | sed -n -r 's/.*user@([0-9]+).service.*/\1/p')
+         for user in $users; do
+-            SYSTEMD_BUS_TIMEOUT={{UPDATE_HELPER_USER_TIMEOUT}} \
+-                    systemctl --user -M "$user@" set-property "$unit" Markers=+needs-restart &
++            for unit in "$@"; do
++                SYSTEMD_BUS_TIMEOUT={{UPDATE_HELPER_USER_TIMEOUT}} \
++                        systemctl --user -M "$user@" set-property "$unit" Markers=+needs-restart &
++            done
+         done
+         wait
+         ;;

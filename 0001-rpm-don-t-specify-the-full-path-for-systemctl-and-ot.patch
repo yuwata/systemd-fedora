@@ -1,7 +1,7 @@
-From d4bd8777a483ea834e687c1ee35dee32efe6e49f Mon Sep 17 00:00:00 2001
+From 7d9ee15d0fc2af87481ee371b278dbe7e68165ef Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
 Date: Wed, 7 Jul 2021 14:02:36 +0200
-Subject: [PATCH 1/5] rpm: don't specify the full path for systemctl and other
+Subject: [PATCH] rpm: don't specify the full path for systemctl and other
  commands
 
 We can make things a bit simpler and more readable by not specifying the path.
@@ -10,8 +10,6 @@ recursively by anythign we invoke), this didn't really privide any security or
 robustness benefits. I guess that full paths were used because this style of
 rpm packagnig was popular in the past, with macros used for everything
 possible, with special macros for common commands like %{__ln} and %{__mkdir}.
-
-(cherry picked from commit 7d9ee15d0fc2af87481ee371b278dbe7e68165ef)
 ---
  src/rpm/macros.systemd.in      | 24 ++++++++++++------------
  src/rpm/triggers.systemd.in    | 18 +++++++++---------
@@ -252,6 +250,3 @@ index 22abad9812..1631be18c9 100644
  fi
  
  %transfiletriggerin -P 1000500 -- {{SYSCTL_DIR}}
--- 
-2.31.1
-
