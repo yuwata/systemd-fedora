@@ -920,6 +920,14 @@ if [ $1 -eq 0 ] ; then
         systemctl disable --quiet \
                 systemd-resolved.service \
                 >/dev/null || :
+        if [ -L %{_sysconfdir}/resolv.conf ] && \
+            realpath %{_sysconfdir}/resolv.conf | grep ^/run/systemd/resolve/; then
+                rm -f %{_sysconfdir}/resolv.conf # no longer useful
+                # if network manager is enabled, move to it instead
+                [ -f /run/NetworkManager/resolv.conf ] && \
+                systemctl -q is-enabled NetworkManager.service &>/dev/null && \
+                    ln -fsv ../run/NetworkManager/resolv.conf %{_sysconfdir}/resolv.conf
+        fi
 fi
 
 %post resolved
