@@ -31,7 +31,7 @@ Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
 Version:        249.6
-Release:        3%{?dist}
+Release:        4%{?dist}
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
@@ -99,6 +99,7 @@ Patch0005:      0005-update-helper-also-add-user-reexec-verb.patch
 Patch0006:      0006-update-helper-add-missing-loop-over-user-units.patch
 
 Patch0007:      https://github.com/systemd/systemd/commit/2da7d0bc92.patch
+Patch0008:      https://github.com/systemd/systemd/commit/d35551d8c6.patch
 
 # Downstream-only patches (5000–9999)
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
@@ -1002,6 +1003,9 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Wed Nov 10 2021 Kir Kolyshkin <kolyshkin@gmail.com> - 249.6-4
+- Fix scope activation from a user instance (#2022041)
+
 * Mon Nov  8 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 249.6-3
 - Fix helper to restart user units with older systemd (#2020415)
 
