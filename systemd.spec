@@ -31,7 +31,7 @@ Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
 Version:        249.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
@@ -1010,6 +1010,9 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Mon Nov 15 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 249.7-2
+- Supress errors from update-helper when selinux is enabled (see #2023332)
+
 * Sun Nov 14 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 249.7-1
 - Latest bugfix release (better erofs detection, sd-event memory
   corruption bugfix, logind, documentation)
