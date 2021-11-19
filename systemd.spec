@@ -31,7 +31,7 @@ Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
 Version:        249.7
-Release:        2%{?dist}
+Release:        3%{?dist}
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
@@ -460,7 +460,7 @@ CONFIGURE_OPTS=(
         -Dgnutls=true
         -Dmicrohttpd=true
         -Dlibidn2=true
-        -Dlibiptc=true
+        -Dlibiptc=false
         -Dlibcurl=true
         -Dlibfido2=true
         -Defi=true
@@ -1010,6 +1010,9 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Fri Nov 19 2021 Davide Cavalca <dcavalca@fedoraproject.org> - 249.7-3
+- Disable legacy iptables support
+
 * Mon Nov 15 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 249.7-2
 - Supress errors from update-helper when selinux is enabled (see #2023332)
 
