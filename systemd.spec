@@ -980,6 +980,7 @@ fi
 %ghost %dir %attr(0755,-,-) /etc/systemd/system/sysinit.target.wants
 %ghost %dir %attr(0755,-,-) /etc/systemd/system/system-update.target.wants
 %ghost %dir %attr(0755,-,-) /etc/systemd/system/timers.target.wants
+%ghost %dir %attr(0700,-,-) /var/lib/portables
 %ghost %dir %attr(0755,-,-) /var/lib/rpm-state/systemd
 
 %files libs -f .file-list-libs
@@ -996,6 +997,7 @@ fi
 %files udev -f .file-list-udev
 
 %files container -f .file-list-container
+%ghost %dir %attr(0700,-,-) /var/lib/machines
 
 %files journal-remote -f .file-list-remote
 
