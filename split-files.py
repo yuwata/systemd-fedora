@@ -101,6 +101,7 @@ for file in files(buildroot):
                        modules-load|
                        timesync|
                        crypttab|
+                       cryptenroll|
                        cryptsetup|
                        libcryptsetup-token-systemd|
                        kmod|
