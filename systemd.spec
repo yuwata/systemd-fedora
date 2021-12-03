@@ -1,7 +1,7 @@
 #global commit c4b843473a75fb38ed5bf54e9d3cfb1cb3719efa
 %{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
-%global stable 1
+#global stable 1
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
 # strip the automatically generated dep here and instead co-own the
@@ -30,8 +30,8 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
-Version:        249.7
-Release:        3%{?dist}
+Version:        250~rc1
+Release:        1%{?dist}
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
@@ -91,14 +91,7 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # Any patches which are "in preparation" upstream should be listed
 # here, rather than in the next section. Packit CI will drop any
 # patches in this range before applying upstream pull requests.
-Patch0001:      0001-rpm-don-t-specify-the-full-path-for-systemctl-and-ot.patch
-Patch0002:      0002-rpm-use-a-helper-script-to-actually-invoke-systemctl.patch
-Patch0003:      0003-rpm-call-needs-restart-in-parallel.patch
-Patch0004:      0004-rpm-restart-user-services-at-the-end-of-the-transact.patch
-Patch0005:      0005-update-helper-also-add-user-reexec-verb.patch
-Patch0006:      0006-update-helper-add-missing-loop-over-user-units.patch
 
-Patch0007:      https://github.com/systemd/systemd/commit/2da7d0bc92.patch
 
 # Downstream-only patches (5000–9999)
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
@@ -153,6 +146,7 @@ BuildRequires:  pkgconfig(libfido2)
 BuildRequires:  pkgconfig(tss2-esys)
 BuildRequires:  pkgconfig(tss2-rc)
 BuildRequires:  pkgconfig(tss2-mu)
+BuildRequires:  pkgconfig(libbpf)
 BuildRequires:  systemtap-sdt-devel
 BuildRequires:  libxslt
 BuildRequires:  docbook-style-xsl
@@ -449,6 +443,7 @@ CONFIGURE_OPTS=(
         -Dacl=true
         -Dsmack=true
         -Dopenssl=true
+        -Dcryptolib=openssl
         -Dp11kit=true
         -Dgcrypt=true
         -Daudit=true
