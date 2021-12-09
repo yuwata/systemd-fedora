@@ -783,6 +783,39 @@ systemctl --no-reload preset systemd-oomd.service &>/dev/null || :
 %post libs
 %{?ldconfig}
 
+function mod_nss() {
+    if [ -f "$1" ] ; then
+        # Add nss-systemd to passwd and group
+        grep -E -q '^(passwd|group):.* systemd' "$1" ||
+        sed -i.bak -r -e '
+                s/^(passwd|group):(.*)/\1:\2 systemd/
+                ' "$1" &>/dev/null || :
+
+        # Add nss-resolve to hosts
+        if grep -E -q '^hosts:.* resolve' "$1"; then
+            sed -i.bak -r -e '
+                s/^(hosts):(.*) files( .*) myhostname dns/\1:\2 files myhostname\3 dns/
+                ' "$1" &>/dev/null || :
+
+        else
+            sed -i.bak -r -e '
+                s/^(hosts):(.*) files( mdns4_minimal .NOTFOUND=return.)? dns myhostname/\1:\2 files myhostname\3 resolve [!UNAVAIL=return] dns/
+                ' "$1" &>/dev/null || :
+        fi
+    fi
+}
+
+FILE="$(readlink /etc/nsswitch.conf || echo /etc/nsswitch.conf)"
+if [ "$FILE" = "/etc/authselect/nsswitch.conf" ] && authselect check &>/dev/null; then
+        mod_nss "/etc/authselect/user-nsswitch.conf"
+        authselect apply-changes &> /dev/null || :
+else
+        mod_nss "$FILE"
+        # also apply the same changes to user-nsswitch.conf to affect
+        # possible future authselect configuration
+        mod_nss "/etc/authselect/user-nsswitch.conf"
+fi
+
 # check if nobody or nfsnobody is defined
 export SYSTEMD_NSS_BYPASS_SYNTHETIC=1
 if getent passwd nfsnobody &>/dev/null; then
@@ -975,9 +1008,6 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
-* Thu Dec  9 2021 Pavel Březina <pbrezina@redhat.com> - 250~rc1-2
-- Remove nsswitch.conf scriptlets (#2023743)
-
 * Thu Dec  9 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250~rc1-1
 - Version 250-rc1,
   see https://raw.githubusercontent.com/systemd/systemd/v250-rc1/NEWS for
