@@ -92,6 +92,7 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # here, rather than in the next section. Packit CI will drop any
 # patches in this range before applying upstream pull requests.
 
+Patch0001:      https://github.com/systemd/systemd/pull/21705.patch
 
 # Downstream-only patches (5000–9999)
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
