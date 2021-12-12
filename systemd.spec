@@ -31,7 +31,7 @@ Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
 Version:        250~rc1
-Release:        3%{?dist}
+Release:        4%{?dist}
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
@@ -835,7 +835,7 @@ fi
 
 %{?ldconfig:%postun libs -p %ldconfig}
 
-%global udev_services systemd-udev{d,-settle,-trigger}.service systemd-udevd-{control,kernel}.socket systemd-timesyncd.service
+%global udev_services systemd-udev{d,-settle,-trigger}.service systemd-udevd-{control,kernel}.socket systemd-timesyncd.service systemd-boot-update.service
 
 %post udev
 # Move old stuff around in /var/lib
@@ -1009,6 +1009,10 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Sun Dec 12 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250~rc1-4
+- Move systemd-boot-update.service to -udev subpackage
+  and add it the the installation scriptlets (#2031400)
+
 * Fri Dec 10 2021 Pavel Březina <pbrezina@redhat.com> - 250~rc1-3
 - Remove nsswitch.conf scriptlets (#2023743)
 

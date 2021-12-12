@@ -89,6 +89,7 @@ for file in files(buildroot):
     elif re.search(r'''udev(?!\.pc)|
                        hwdb|
                        bootctl|
+                       boot-update|
                        sd-boot|systemd-boot\.|loader.conf|
                        bless-boot|
                        boot-system-token|
