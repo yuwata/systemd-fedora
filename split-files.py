@@ -102,6 +102,7 @@ for file in files(buildroot):
                        timesync|
                        crypttab|
                        cryptsetup|
+                       libcryptsetup-token-systemd|
                        kmod|
                        quota|
                        pstore|

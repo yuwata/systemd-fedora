@@ -1012,6 +1012,7 @@ fi
 * Sun Dec 12 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250~rc1-4
 - Move systemd-boot-update.service to -udev subpackage
   and add it the the installation scriptlets (#2031400)
+- Move libcryptsetup-token-systemd plugins to -udev (#2031873)
 
 * Fri Dec 10 2021 Pavel Březina <pbrezina@redhat.com> - 250~rc1-3
 - Remove nsswitch.conf scriptlets (#2023743)
