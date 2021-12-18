@@ -397,6 +397,8 @@ devices.
 
 %package resolved
 Summary:        Network Name Resolution manager
+Requires(post): %{name}
+Requires(post): grep
 Requires:       %{name}%{?_isa} = %{version}-%{release}
 Obsoletes:      %{name} < 249~~
 Requires:       libidn2.so.0%{?elf_suffix}
@@ -916,13 +918,13 @@ if [ $1 -eq 0 ] ; then
         systemctl disable --quiet \
                 systemd-resolved.service \
                 >/dev/null || :
-        if [ -L %{_sysconfdir}/resolv.conf ] && \
-            realpath %{_sysconfdir}/resolv.conf | grep ^/run/systemd/resolve/; then
-                rm -f %{_sysconfdir}/resolv.conf # no longer useful
+        if [ -L /etc/resolv.conf ] && \
+            realpath /etc/resolv.conf | grep ^/run/systemd/resolve/; then
+                rm -f /etc/resolv.conf # no longer useful
                 # if network manager is enabled, move to it instead
                 [ -f /run/NetworkManager/resolv.conf ] && \
                 systemctl -q is-enabled NetworkManager.service &>/dev/null && \
-                    ln -fsv ../run/NetworkManager/resolv.conf %{_sysconfdir}/resolv.conf
+                    ln -fsv ../run/NetworkManager/resolv.conf /etc/resolv.conf
         fi
 fi
 
@@ -943,17 +945,25 @@ fi
 # does not do this, because it's marked with ! and we don't specify --boot.)
 # https://bugzilla.redhat.com/show_bug.cgi?id=1873856
 #
-# If systemd is not running, don't overwrite the symlink because that
-# will immediately break DNS resolution, since systemd-resolved is
-# also not running (https://bugzilla.redhat.com/show_bug.cgi?id=1891847).
+# *Create* the symlink if nothing is present yet.
+# (https://bugzilla.redhat.com/show_bug.cgi?id=2032085)
+#
+# *Override* the symlink if systemd is running. Don't do it if systemd
+# is not running, because that will immediately break DNS resolution,
+# since systemd-resolved is also not running
+# (https://bugzilla.redhat.com/show_bug.cgi?id=1891847).
 #
 # Also don't create the symlink to the stub when the stub is disabled (#1891847 again).
-if test -d /run/systemd/system/ &&
-   systemctl -q is-enabled systemd-resolved.service &>/dev/null &&
-   ! mountpoint /etc/resolv.conf &>/dev/null &&
-   ! systemd-analyze cat-config systemd/resolved.conf 2>/dev/null | \
-        grep -qE '^DNSStubListener\s*=\s*([nN][oO]?|[fF]|[fF][aA][lL][sS][eE]|0|[oO][fF][fF])$'; then
-  ln -fsv ../run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+if systemctl -q is-enabled systemd-resolved.service &>/dev/null &&
+   ! systemd-analyze cat-config systemd/resolved.conf 2>/dev/null |
+        grep -iqE '^DNSStubListener\s*=\s*(no?|false|0|off)\s*$'; then
+
+  if ! test -e /etc/resolv.conf; then
+    ln -sv ../run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+  elif test -d /run/systemd/system/ &&
+     ! mountpoint /etc/resolv.conf &>/dev/null; then
+    ln -fsv ../run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+  fi
 fi
 
 %global _docdir_fmt %{name}
@@ -1013,6 +1023,7 @@ fi
 - Move systemd-boot-update.service to -udev subpackage
   and add it the the installation scriptlets (#2031400)
 - Move libcryptsetup-token-systemd plugins to -udev (#2031873)
+- Create /etc/resolv.conf symlink if nothing is present yet (#2032085)
 
 * Fri Dec 10 2021 Pavel Březina <pbrezina@redhat.com> - 250~rc1-3
 - Remove nsswitch.conf scriptlets (#2023743)
