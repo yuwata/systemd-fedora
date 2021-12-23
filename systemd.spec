@@ -30,7 +30,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
-Version:        250~rc3
+Version:        250
 Release:        1%{?dist}
 %else
 # determine the build information from local checkout
@@ -1020,7 +1020,8 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
-* Thu Dec 23 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250~rc3-1
+* Thu Dec 23 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250-1
+- Version 250, only some very small changes since -rc3.
 - Switch unit status name format to 'combined' (#2028169)
 
 * Mon Dec 20 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250~rc3-1
