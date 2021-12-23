@@ -521,6 +521,8 @@ CONFIGURE_OPTS=(
         # https://bugzilla.redhat.com/show_bug.cgi?id=1867830
         -Ddefault-mdns=no
         -Ddefault-llmnr=resolve
+        # https://bugzilla.redhat.com/show_bug.cgi?id=2028169
+        -Dstatus-unit-format-default=combined
         -Doomd=true
         -Dadm-gid=4
         -Daudio-gid=63
@@ -1018,6 +1020,9 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Thu Dec 23 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250~rc3-1
+- Switch unit status name format to 'combined' (#2028169)
+
 * Mon Dec 20 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250~rc3-1
 - Latest prerelease, see
   https://raw.githubusercontent.com/systemd/systemd/v250-rc3/NEWS for
