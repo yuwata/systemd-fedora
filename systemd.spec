@@ -838,7 +838,7 @@ fi
 
 %{?ldconfig:%postun libs -p %ldconfig}
 
-%global udev_services systemd-udev{d,-settle,-trigger}.service systemd-udevd-{control,kernel}.socket systemd-timesyncd.service systemd-boot-update.service
+%global udev_services systemd-udev{d,-settle,-trigger}.service systemd-udevd-{control,kernel}.socket systemd-timesyncd.service %{?have_gnu_efi:systemd-boot-update.service}
 
 %post udev
 # Move old stuff around in /var/lib
