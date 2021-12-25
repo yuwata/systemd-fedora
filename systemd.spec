@@ -31,7 +31,7 @@ Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
 Version:        250
-Release:        1%{?dist}
+Release:        2%{?dist}
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
@@ -106,6 +106,7 @@ Patch0501:      https://github.com/systemd/systemd/pull/17050/commits/f58b96d3e8
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
+BuildRequires:  clang
 BuildRequires:  coreutils
 BuildRequires:  libcap-devel
 BuildRequires:  libmount-devel
@@ -147,6 +148,7 @@ BuildRequires:  pkgconfig(tss2-esys)
 BuildRequires:  pkgconfig(tss2-rc)
 BuildRequires:  pkgconfig(tss2-mu)
 BuildRequires:  pkgconfig(libbpf)
+BuildRequires:  bpftool
 BuildRequires:  systemtap-sdt-devel
 BuildRequires:  libxslt
 BuildRequires:  docbook-style-xsl
@@ -468,6 +470,7 @@ CONFIGURE_OPTS=(
         -Dseccomp=true
         -Dima=true
         -Dselinux=true
+        -Dbpf-framework=true
         -Dapparmor=false
         -Dpolkit=true
         -Dxz=true
@@ -1020,6 +1023,11 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Sat Dec 25 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250-2
+- Fix warning about systemd-boot-update.service not existing on
+  non-uefi architectures
+- Enable all bpf features (#2035608)
+
 * Thu Dec 23 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250-1
 - Version 250, only some very small changes since -rc3.
 - Switch unit status name format to 'combined' (#2028169)
