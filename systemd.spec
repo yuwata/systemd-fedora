@@ -104,6 +104,13 @@ Patch0501:      https://github.com/systemd/systemd/pull/17050/commits/f58b96d3e8
 %global have_gnu_efi 1
 %endif
 
+# bpf build fails on arm32 and ppc64el:
+# https://bugzilla.redhat.com/show_bug.cgi?id=2035608
+# https://github.com/systemd/systemd/issues/21900
+%ifnarch ppc64le %{arm}
+%global want_bpf_framework 1
+%endif
+
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  clang
@@ -470,7 +477,7 @@ CONFIGURE_OPTS=(
         -Dseccomp=true
         -Dima=true
         -Dselinux=true
-        -Dbpf-framework=true
+        -Dbpf-framework=%[0%{?want_bpf_framework}?"true":"false"]
         -Dapparmor=false
         -Dpolkit=true
         -Dxz=true
