@@ -31,7 +31,7 @@ Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
 Version:        250
-Release:        2%{?dist}
+Release:        3%{?dist}
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
@@ -107,7 +107,10 @@ Patch0501:      https://github.com/systemd/systemd/pull/17050/commits/f58b96d3e8
 # bpf build fails on arm32 and ppc64el:
 # https://bugzilla.redhat.com/show_bug.cgi?id=2035608
 # https://github.com/systemd/systemd/issues/21900
-%ifnarch ppc64le %{arm}
+#
+# Also disable on arm64:
+# https://bugzilla.redhat.com/show_bug.cgi?id=2036145
+%ifnarch ppc64le %{arm} aarch64
 %global want_bpf_framework 1
 %endif
 
@@ -1030,6 +1033,9 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Thu Dec 30 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250-3
+- Disable bpf filters on arm64 (#2036145)
+
 * Sat Dec 25 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250-2
 - Fix warning about systemd-boot-update.service not existing on
   non-uefi architectures
