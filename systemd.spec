@@ -984,8 +984,10 @@ fi
 
 %files -f %{name}.lang -f .file-list-rest
 %doc %{_pkgdocdir}
-%exclude %{_pkgdocdir}/LICENSE.*
+%exclude %{_pkgdocdir}/LICENSE*
+# Only the licenses texts for the licenses in License line are included.
 %license LICENSE.GPL2 LICENSE.LGPL2.1
+%license LICENSES/MIT.txt
 %ghost %dir %attr(0755,-,-) /etc/systemd/system/basic.target.wants
 %ghost %dir %attr(0755,-,-) /etc/systemd/system/bluetooth.target.wants
 %ghost %dir %attr(0755,-,-) /etc/systemd/system/default.target.wants
