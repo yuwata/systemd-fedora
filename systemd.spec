@@ -104,13 +104,9 @@ Patch0501:      https://github.com/systemd/systemd/pull/17050/commits/f58b96d3e8
 %global have_gnu_efi 1
 %endif
 
-# bpf build fails on arm32 and ppc64el:
-# https://bugzilla.redhat.com/show_bug.cgi?id=2035608
-# https://github.com/systemd/systemd/issues/21900
-#
-# Also disable on arm64:
+# Disable on arm64, s390x, ppc64el, and arm where it either is not supported or does't work.
 # https://bugzilla.redhat.com/show_bug.cgi?id=2036145
-%ifnarch ppc64le %{arm} aarch64
+%ifnarch ppc64le %{arm} aarch64 s390x
 %global want_bpf_framework 1
 %endif
 
