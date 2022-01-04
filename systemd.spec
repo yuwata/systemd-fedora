@@ -1,7 +1,7 @@
 #global commit c4b843473a75fb38ed5bf54e9d3cfb1cb3719efa
 %{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
-#global stable 1
+%global stable 1
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
 # strip the automatically generated dep here and instead co-own the
@@ -30,8 +30,8 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
-Version:        250
-Release:        3%{?dist}
+Version:        250.1
+Release:        1%{?dist}
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
@@ -250,8 +250,7 @@ service control logic. systemd supports SysV and LSB init scripts and works as a
 replacement for sysvinit. Other parts of this package are a logging daemon,
 utilities to control basic system configuration like the hostname, date, locale,
 maintain a list of logged-in users, system accounts, runtime directories and
-settings, and daemons to manage simple network configuration, network time
-synchronization, log forwarding, and name resolution.
+settings, and a logging daemons.
 %if 0%{?stable}
 This package was built from the %{version}-stable branch of systemd.
 %endif
@@ -353,8 +352,10 @@ This package contains systemd-udev and the rules and hardware database needed to
 manage device nodes. This package is necessary on physical machines and in
 virtual machines, but not in containers.
 
+This package also provides systemd-timesyncd, a network time protocol daemon.
+
 It also contains tools to manage encrypted home areas and secrets bound to the
-machine.
+machine, and to create or grow partitions and make file systems automatically.
 
 %package container
 # Name is the same as in Debian
@@ -1035,6 +1036,11 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Tue Jan  4 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250.1-1
+- First stable version after v250: various bugfixes, in particular for
+  sd-boot, systemd-networkd, and various build issues.
+- Fixes #2036517, #2035608, #2036217.
+
 * Thu Dec 30 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250-3
 - Disable bpf filters on arm64 (#2036145)
 
