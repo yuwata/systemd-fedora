@@ -17,8 +17,8 @@
 %global elf_suffix ()%{elf_bits}
 %endif
 
-# Bootstrap may be needed to break intercircular dependencies with
-# cryptsetup, e.g. when re-building cryptsetup on a json-c SONAME-bump.
+# Bootstrap may be needed to break circular dependencies with cryptsetup,
+# e.g. when re-building cryptsetup on a json-c SONAME-bump.
 %bcond_with    bootstrap
 %bcond_without tests
 %bcond_without lto
@@ -30,7 +30,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
-Version:        250.1
+Version:        250.2
 Release:        1%{?dist}
 %else
 # determine the build information from local checkout
@@ -102,12 +102,6 @@ Patch0501:      https://github.com/systemd/systemd/pull/17050/commits/f58b96d3e8
 
 %ifarch %{ix86} x86_64 aarch64
 %global have_gnu_efi 1
-%endif
-
-# Disable on arm64, s390x, ppc64el, and arm where it either is not supported or does't work.
-# https://bugzilla.redhat.com/show_bug.cgi?id=2036145
-%ifnarch ppc64le %{arm} aarch64 s390x
-%global want_bpf_framework 1
 %endif
 
 BuildRequires:  gcc
@@ -477,7 +471,7 @@ CONFIGURE_OPTS=(
         -Dseccomp=true
         -Dima=true
         -Dselinux=true
-        -Dbpf-framework=%[0%{?want_bpf_framework}?"true":"false"]
+        -Dbpf-framework=true
         -Dapparmor=false
         -Dpolkit=true
         -Dxz=true
@@ -1032,6 +1026,19 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Fri Jan  7 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250.2-1
+- Second stable release after v250: various bugfixes
+  (systemd-resolved, systemd-journald, userdbctl, homed).
+- The manager should now gracefully handle the case where BPF LSM
+  cannot be initialized (#2036145). The BPF filters are enabled again
+  on all architectures, so *other* filter should also work on the
+  affected architectures.
+- kernel-install now checks paths used by grub2 before sd-boot paths again
+  (#2036199)
+- fstab-generator now ignores root-on-nfs/cifs/iscsi and live (#2037233)
+- CVE-2021-3997, #2024639: systemd-tmpfiles would exhaust the stack and crash
+  during excessive recursion on a very deeply nested directory structure.
+
 * Tue Jan  4 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250.1-1
 - First stable version after v250: various bugfixes, in particular for
   sd-boot, systemd-networkd, and various build issues.
