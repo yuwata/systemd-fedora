@@ -31,7 +31,7 @@ Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
 Version:        250.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
@@ -599,6 +599,7 @@ mkdir -p %{buildroot}%{system_unit_dir}/dbus.target.wants
 mkdir -p %{buildroot}%{system_unit_dir}/syslog.target.wants
 mkdir -p %{buildroot}/run
 mkdir -p %{buildroot}%{_localstatedir}/log
+install -d %{buildroot}%{_localstatedir}/log -m 0664 -g utmp
 touch %{buildroot}/run/utmp
 touch %{buildroot}%{_localstatedir}/log/{w,b}tmp
 
@@ -694,6 +695,7 @@ python3 %{SOURCE2} %buildroot <<EOF
 %ghost %attr(0664,root,utmp) /run/utmp
 %ghost %attr(0664,root,utmp) /var/log/wtmp
 %ghost %attr(0660,root,utmp) /var/log/btmp
+%ghost %attr(0664,root,utmp) /var/log/lastlog
 %ghost %config(noreplace) /etc/hostname
 %ghost %config(noreplace) /etc/localtime
 %ghost %config(noreplace) /etc/locale.conf
@@ -1026,6 +1028,9 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Tue Jan 18 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250.3-2
+- Take ghost ownership of /var/log/lastlog (#1798685)
+
 * Tue Jan 18 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250.3-1
 - Third stable release after v250: fixes for sd-boot on fringe hardware (e.g. VirtualBox),
   various man page updates, sd-journal file verification is now stricter,
