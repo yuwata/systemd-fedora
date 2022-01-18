@@ -30,7 +30,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
-Version:        250.2
+Version:        250.3
 Release:        1%{?dist}
 %else
 # determine the build information from local checkout
@@ -1026,6 +1026,15 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Tue Jan 18 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250.3-1
+- Third stable release after v250: fixes for sd-boot on fringe hardware (e.g. VirtualBox),
+  various man page updates, sd-journal file verification is now stricter,
+  systemd-networkd by default will not add routes for wireguard AllowedIPs=
+  systemd nss modules shouldn't try to read kernel command line
+- Don't do sd-boot updates when not installed (#2038289)
+- xdg-autostart-service will ignore ExecCondition= when the helper binary is missing
+- kernel-install does cleanup better (#2016630)
+
 * Fri Jan  7 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250.2-1
 - Second stable release after v250: various bugfixes
   (systemd-resolved, systemd-journald, userdbctl, homed).
