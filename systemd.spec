@@ -599,7 +599,8 @@ mkdir -p %{buildroot}%{system_unit_dir}/dbus.target.wants
 mkdir -p %{buildroot}%{system_unit_dir}/syslog.target.wants
 mkdir -p %{buildroot}/run
 mkdir -p %{buildroot}%{_localstatedir}/log
-install -d %{buildroot}%{_localstatedir}/log -m 0664 -g utmp
+touch %{buildroot}%{_localstatedir}/log/lastlog
+chmod 0664 %{buildroot}%{_localstatedir}/log/lastlog
 touch %{buildroot}/run/utmp
 touch %{buildroot}%{_localstatedir}/log/{w,b}tmp
 
@@ -695,7 +696,7 @@ python3 %{SOURCE2} %buildroot <<EOF
 %ghost %attr(0664,root,utmp) /run/utmp
 %ghost %attr(0664,root,utmp) /var/log/wtmp
 %ghost %attr(0660,root,utmp) /var/log/btmp
-%ghost %attr(0664,root,utmp) /var/log/lastlog
+%ghost %attr(0664,root,utmp) %verify(not md5 size mtime) /var/log/lastlog
 %ghost %config(noreplace) /etc/hostname
 %ghost %config(noreplace) /etc/localtime
 %ghost %config(noreplace) /etc/locale.conf
