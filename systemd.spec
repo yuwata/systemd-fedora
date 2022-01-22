@@ -31,11 +31,11 @@ Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
 Version:        250.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
-Release:        1
+Release:        2
 %endif
 
 # For a breakdown of the licensing, see README
@@ -1029,6 +1029,9 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Sat Jan 22 2022 Fedora Release Engineering <releng@fedoraproject.org>
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
+
 * Tue Jan 18 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250.3-2
 - Take ghost ownership of /var/log/lastlog (#1798685)
 
