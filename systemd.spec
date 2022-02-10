@@ -67,7 +67,6 @@ Source7:        systemd-journal-remote.xml
 Source8:        systemd-journal-gatewayd.xml
 Source9:        20-yama-ptrace.conf
 Source10:       systemd-udev-trigger-no-reload.conf
-Source11:       20-grubby.install
 Source12:       systemd-user
 Source13:       libsystemd-shared.abignore
 
@@ -665,8 +664,6 @@ cat >%{buildroot}%{system_unit_dir}/systemd-hostnamed.service.d/disable-privated
 PrivateDevices=no
 EOF
 
-install -Dm0755 -t %{buildroot}%{_prefix}/lib/kernel/install.d/ %{SOURCE11}
-
 install -Dm0644 -t %{buildroot}%{_prefix}/lib/systemd/ %{SOURCE13}
 
 install -D -t %{buildroot}/usr/lib/systemd/ %{SOURCE3}
@@ -1033,6 +1030,7 @@ fi
 %changelog
 * Thu Feb 10 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250.3-3
 - Add pam_namespace to systemd-user pam config (rhbz#2053098)
+- Drop 20-grubby.install plugin for kernel-install (rhbz#2033646)
 
 * Sat Jan 22 2022 Fedora Release Engineering <releng@fedoraproject.org>
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
