@@ -83,7 +83,7 @@ Source24:       sysusers.generate-pre.sh
 %if 0
 GIT_DIR=../../src/systemd/.git git format-patch-ab --no-signature -M -N v235..v235-stable
 i=1; for j in 00*patch; do printf "Patch%04d:      %s\n" $i $j; i=$((i+1));done|xclip
-GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[67]* hwdb/parse_hwdb.py > hwdb.patch
+GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[67]* hwdb/parse_hwdb.py >hwdb.patch
 %endif
 
 # Backports of patches from upstream (0000–0499)
@@ -451,6 +451,11 @@ package and is meant for use in non-systemd systems.
 %prep
 %autosetup -n %{?commit:%{name}%{?stable:-stable}-%{commit}}%{!?commit:%{name}%{?stable:-stable}-%{version_no_tilde}} -p1
 
+test -f src/login/systemd-user.in
+# Restore systemd-user pam config from before "removal of Fedora-specific bits".
+# We'll systemd process it and install in the right place.
+cp %{SOURCE12} src/login/systemd-user.in
+
 %build
 %define ntpvendor %(source /etc/os-release; echo ${ID})
 %{!?ntpvendor: echo 'NTP vendor zone is not set!'; exit 1}
@@ -645,9 +650,6 @@ touch %{buildroot}%{_localstatedir}/lib/private/systemd/journal-upload/state
 install -Dm0644 %{SOURCE4} %{buildroot}/etc/dnf/protected.d/systemd.conf
 
 install -Dm0644 -t %{buildroot}/usr/lib/firewalld/services/ %{SOURCE7} %{SOURCE8}
-
-# Restore systemd-user pam config from before "removal of Fedora-specific bits"
-install -Dm0644 -t %{buildroot}/etc/pam.d/ %{SOURCE12}
 
 # Install additional docs
 # https://bugzilla.redhat.com/show_bug.cgi?id=1234951
