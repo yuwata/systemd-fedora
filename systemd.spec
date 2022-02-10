@@ -355,6 +355,8 @@ Requires(preun):  systemd
 Requires(postun): systemd
 # obsolete parent package so that dnf will install new subpackage on upgrade (#1260394)
 Obsoletes:      %{name} < 229-5
+# Bias the system towards libcurl-minimal if nothing pulls in full libcurl (#1997040)
+Suggests:       libcurl-minimal
 License:        LGPLv2+
 
 %description container
@@ -376,6 +378,8 @@ Requires:       firewalld-filesystem
 Provides:       %{name}-journal-gateway = %{version}-%{release}
 Provides:       %{name}-journal-gateway%{_isa} = %{version}-%{release}
 Obsoletes:      %{name}-journal-gateway < 227-7
+# Bias the system towards libcurl-minimal if nothing pulls in full libcurl (#1997040)
+Suggests:       libcurl-minimal
 
 %description journal-remote
 Programs to forward journal entries over the network, using encrypted HTTP, and
