@@ -715,7 +715,7 @@ python3 %{SOURCE2} %buildroot <<EOF
 %ghost %dir /var/lib/systemd/linger
 %ghost /var/lib/systemd/random-seed
 %ghost %dir /var/lib/systemd/rfkill
-%ghost %dir %attr(2755, root, systemd-journal) %verify(not mode) /var/log/journal
+%ghost %dir %verify(not mode group) /var/log/journal
 %ghost %dir /var/log/journal/remote
 %ghost %attr(0700,root,root) %dir /var/log/private
 EOF
@@ -1009,6 +1009,7 @@ fi
 %changelog
 * Wed Feb 16 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250.3-3
 - Drop scriptlet for handling nobody user upgrades from Fedora <28
+- Specify owner of /var/log/journal as root in the rpm listing (#2018913)
 
 * Thu Feb 10 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250.3-3
 - Add pam_namespace to systemd-user pam config (rhbz#2053098)
