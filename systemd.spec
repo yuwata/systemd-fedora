@@ -172,12 +172,9 @@ BuildRequires:  perl
 BuildRequires:  perl(IPC::SysV)
 
 Requires(post): coreutils
-Requires(post): sed
-Requires(post): acl
 Requires(post): grep
 # systemd-machine-id-setup requires libssl
 Requires(post): openssl-libs
-Requires(pre):  coreutils
 Requires:       dbus >= 1.9.18
 Requires:       %{name}-pam = %{version}-%{release}
 Requires:       (%{name}-rpm-macros = %{version}-%{release} if rpm-build)
