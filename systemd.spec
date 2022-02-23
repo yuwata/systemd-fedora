@@ -688,10 +688,10 @@ python3 %{SOURCE2} %buildroot <<EOF
 /usr/lib/systemd/purge-nobody-user
 %ghost %config(noreplace) /etc/vconsole.conf
 %ghost %config(noreplace) /etc/X11/xorg.conf.d/00-keyboard.conf
-%ghost %attr(0664,root,utmp) /run/utmp
-%ghost %attr(0664,root,utmp) /var/log/wtmp
-%ghost %attr(0660,root,utmp) /var/log/btmp
-%ghost %attr(0664,root,utmp) %verify(not md5 size mtime) /var/log/lastlog
+%ghost %attr(0664,root,root) %verify(not group) /run/utmp
+%ghost %attr(0664,root,root) %verify(not group) /var/log/wtmp
+%ghost %attr(0660,root,root) %verify(not group) /var/log/btmp
+%ghost %attr(0664,root,root) %verify(not md5 size mtime group) /var/log/lastlog
 %ghost %config(noreplace) /etc/hostname
 %ghost %config(noreplace) /etc/localtime
 %ghost %config(noreplace) /etc/locale.conf
@@ -1006,6 +1006,7 @@ fi
 %changelog
 * Wed Feb 23 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250.3-5
 - Move part of %%post scriptlet for resolved to %%posttrans (#2018913)
+- Specify owner of utmp/wtmp/btmp/lastlog as root in the rpm listing
 
 * Wed Feb 16 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250.3-4
 - Drop scriptlet for handling nobody user upgrades from Fedora <28
