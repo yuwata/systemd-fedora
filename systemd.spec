@@ -31,7 +31,7 @@ Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
 Version:        250.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
@@ -395,12 +395,11 @@ devices.
 
 %package resolved
 Summary:        Network Name Resolution manager
-Requires(post): %{name}
-Requires(post): grep
 Requires:       %{name}%{?_isa} = %{version}-%{release}
 Obsoletes:      %{name} < 249~~
 Requires:       libidn2.so.0%{?elf_suffix}
 Requires:       libidn2.so.0(IDN2_0.0.0)%{?elf_bits}
+Requires(posttrans): grep
 
 %description resolved
 systemd-resolved is a system service that provides network name resolution to
@@ -922,6 +921,7 @@ fi
 
 %systemd_post systemd-resolved.service
 
+%posttrans resolved
 # Create /etc/resolv.conf symlink.
 # We would also create it using tmpfiles, but let's do this here
 # too before NetworkManager gets a chance. (systemd-tmpfiles invocation above
@@ -1004,6 +1004,9 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Wed Feb 23 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250.3-5
+- Move part of %%post scriptlet for resolved to %%posttrans (#2018913)
+
 * Wed Feb 16 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250.3-4
 - Drop scriptlet for handling nobody user upgrades from Fedora <28
 - Specify owner of /var/log/journal as root in the rpm listing (#2018913)
