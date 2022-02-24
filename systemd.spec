@@ -177,7 +177,7 @@ Requires(post): grep
 Requires(post): openssl-libs
 Requires:       dbus >= 1.9.18
 Requires:       %{name}-pam = %{version}-%{release}
-Requires:       (%{name}-rpm-macros = %{version}-%{release} if rpm-build)
+Requires(meta): (%{name}-rpm-macros = %{version}-%{release} if rpm-build)
 Requires:       %{name}-libs = %{version}-%{release}
 %{?fedora:Recommends:     %{name}-networkd = %{version}-%{release}}
 %{?fedora:Recommends:     %{name}-resolved = %{version}-%{release}}
@@ -363,10 +363,6 @@ systemd-importd.
 Summary:        Tools to send journal events over the network
 Requires:       %{name}%{?_isa} = %{version}-%{release}
 License:        LGPLv2+
-Requires(pre):    /usr/bin/getent
-Requires(post):   systemd
-Requires(preun):  systemd
-Requires(postun): systemd
 Requires:       firewalld-filesystem
 Provides:       %{name}-journal-gateway = %{version}-%{release}
 Provides:       %{name}-journal-gateway%{_isa} = %{version}-%{release}
@@ -452,7 +448,7 @@ test -f src/login/systemd-user.in
 cp %{SOURCE12} src/login/systemd-user.in
 
 %build
-%define ntpvendor %(source /etc/os-release; echo ${ID})
+%global ntpvendor %(source /etc/os-release; echo ${ID})
 %{!?ntpvendor: echo 'NTP vendor zone is not set!'; exit 1}
 
 CONFIGURE_OPTS=(
