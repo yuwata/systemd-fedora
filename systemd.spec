@@ -31,7 +31,7 @@ Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
 Version:        250.3
-Release:        5%{?dist}
+Release:        6%{?dist}
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
@@ -941,11 +941,11 @@ if systemctl -q is-enabled systemd-resolved.service &>/dev/null &&
    ! systemd-analyze cat-config systemd/resolved.conf 2>/dev/null |
         grep -iqE '^DNSStubListener\s*=\s*(no?|false|0|off)\s*$'; then
 
-  if ! test -e /etc/resolv.conf; then
-    ln -sv ../run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+  if ! test -e /etc/resolv.conf && ! test -L /etc/resolv.conf; then
+    ln -sv ../run/systemd/resolve/stub-resolv.conf /etc/resolv.conf || :
   elif test -d /run/systemd/system/ &&
      ! mountpoint /etc/resolv.conf &>/dev/null; then
-    ln -fsv ../run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+    ln -fsv ../run/systemd/resolve/stub-resolv.conf /etc/resolv.conf || :
   fi
 fi
 
@@ -1004,6 +1004,10 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Thu Feb 24 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250.3-6
+- Avoid trying to create the symlink if there's a dangling symlink already in
+  place (#2058388)
+
 * Wed Feb 23 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250.3-5
 - Move part of %%post scriptlet for resolved to %%posttrans (#2018913)
 - Specify owner of utmp/wtmp/btmp/lastlog as root in the rpm listing
