@@ -31,7 +31,7 @@ Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
 Version:        250.3
-Release:        6%{?dist}
+Release:        7%{?dist}
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
@@ -521,7 +521,7 @@ CONFIGURE_OPTS=(
         -Dversion-tag=v%{version}-%{release}
         -Dfallback-hostname=%[0%{?fedora}?"fedora":"localhost"]
         -Ddefault-dnssec=no
-        -Ddefault-dns-over-tls=opportunistic
+        -Ddefault-dns-over-tls=no
         # https://bugzilla.redhat.com/show_bug.cgi?id=1867830
         -Ddefault-mdns=no
         -Ddefault-llmnr=resolve
@@ -1004,6 +1004,9 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Mon Mar 14 2022 Michael Catanzaro <mcatanzaro@redhat.com> - 250.3-7
+- Disable default DNS over TLS (#1889901)
+
 * Thu Feb 24 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250.3-6
 - Avoid trying to create the symlink if there's a dangling symlink already in
   place (#2058388)
