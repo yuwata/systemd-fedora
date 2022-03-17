@@ -30,8 +30,8 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
-Version:        250.3
-Release:        7%{?dist}
+Version:        250.4
+Release:        1%{?dist}
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
@@ -90,7 +90,7 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # Any patches which are "in preparation" upstream should be listed
 # here, rather than in the next section. Packit CI will drop any
 # patches in this range before applying upstream pull requests.
-Patch:          https://github.com/systemd/systemd/commit/bbe53713455be38c0a587626439fd171f28c77fc.patch
+
 
 # Downstream-only patches (5000–9999)
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
@@ -1004,11 +1004,10 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
-* Thu Mar 17 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250.3-7
+* Thu Mar 17 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250.4-1
 - Move libcryptsetup plugins to -udev (#2031873)
-
-* Mon Mar 14 2022 Michael Catanzaro <mcatanzaro@redhat.com> - 250.3-7
-- Disable default DNS over TLS (#1889901)
+- Move systemd-cryptenroll to -udev (David Tardon)
+- Disable default DNS over TLS (#1889901) (Michael Catanzaro)
 
 * Thu Feb 24 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250.3-6
 - Avoid trying to create the symlink if there's a dangling symlink already in
