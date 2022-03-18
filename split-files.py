@@ -58,9 +58,9 @@ for file in files(buildroot):
         o = o_rpm_macros
     elif '/usr/lib/systemd/tests' in n:
         o = o_tests
-    elif re.match(r'/libsystemd-shared-*.so$', n):
+    elif re.search(r'/libsystemd-shared-.*\.so$', n):
         o = o_main
-    elif re.match(r'/libcryptsetup-token-systemd-.*\.so$', n):
+    elif re.search(r'/libcryptsetup-token-systemd-.*\.so$', n):
         o = o_udev
     elif re.search(r'/lib.*\.pc|/man3/|/usr/include|\.so$', n):
         o = o_devel

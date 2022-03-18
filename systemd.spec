@@ -31,7 +31,7 @@ Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
 Version:        250.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
@@ -1004,6 +1004,9 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Fri Mar 18 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250.4-2
+- Fix the wrong file assignment done in previous version
+
 * Thu Mar 17 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250.4-1
 - Move libcryptsetup plugins to -udev (#2031873)
 - Move systemd-cryptenroll to -udev (David Tardon)
