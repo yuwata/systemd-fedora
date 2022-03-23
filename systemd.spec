@@ -658,13 +658,6 @@ install -Dm0644 -t %{buildroot}%{_pkgdocdir}/ %{SOURCE9}
 # https://bugzilla.redhat.com/show_bug.cgi?id=1378974
 install -Dm0644 -t %{buildroot}%{system_unit_dir}/systemd-udev-trigger.service.d/ %{SOURCE10}
 
-# A temporary work-around for https://bugzilla.redhat.com/show_bug.cgi?id=1663040
-mkdir -p %{buildroot}%{system_unit_dir}/systemd-hostnamed.service.d/
-cat >%{buildroot}%{system_unit_dir}/systemd-hostnamed.service.d/disable-privatedevices.conf <<EOF
-[Service]
-PrivateDevices=no
-EOF
-
 install -Dm0644 -t %{buildroot}%{_prefix}/lib/systemd/ %{SOURCE13}
 
 install -D -t %{buildroot}/usr/lib/systemd/ %{SOURCE3}
@@ -1013,6 +1006,9 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Wed Jul 13 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 251.2-2
+- Drop forgotten "temporary" workaround for #1663040
+
 * Wed Jun 29 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 251.2-2
 - Drop forward-secure-sealing code from sd-journal and tools
 
