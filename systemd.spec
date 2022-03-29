@@ -1,7 +1,7 @@
 #global commit c4b843473a75fb38ed5bf54e9d3cfb1cb3719efa
 %{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
-%global stable 1
+#global stable 1
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
 # strip the automatically generated dep here and instead co-own the
@@ -30,8 +30,8 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
-Version:        250.4
-Release:        2%{?dist}
+Version:        251~rc1
+Release:        1%{?dist}
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
@@ -518,7 +518,9 @@ CONFIGURE_OPTS=(
         -Db_lto=%[%{with lto}?"true":"false"]
         -Db_ndebug=false
         -Dman=true
-        -Dversion-tag=v%{version}-%{release}
+        -Dversion-tag=v%{version_no_tilde}-%{release}
+        # https://bugzilla.redhat.com/show_bug.cgi?id=1906010
+        -Dshared-lib-tag=%{version_no_tilde}-%{release}
         -Dfallback-hostname=%[0%{?fedora}?"fedora":"localhost"]
         -Ddefault-dnssec=no
         -Ddefault-dns-over-tls=no
@@ -1004,6 +1006,10 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Tue Mar 29 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 251~rc1-1
+- First release candidate in the new cycle
+- Fixes rhbz#1449751, rhbz#1906010
+
 * Fri Mar 18 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250.4-2
 - Fix the wrong file assignment done in previous version
 
