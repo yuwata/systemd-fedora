@@ -31,7 +31,7 @@ Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
 Version:        251~rc1
-Release:        1%{?dist}
+Release:        2%{?dist}
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
@@ -98,6 +98,9 @@ Patch0500:      use-bfq-scheduler.patch
 
 # https://github.com/systemd/systemd/pull/17050
 Patch0501:      https://github.com/systemd/systemd/pull/17050/commits/f58b96d3e8d1cb0dd3666bc74fa673918b586612.patch
+
+# https://bugzilla.redhat.com/show_bug.cgi?id=2071069
+Patch9999:      0001-Revert-meson-create-new-libsystemd-core.so-private-s.patch
 
 %ifarch %{ix86} x86_64 aarch64
 %global have_gnu_efi 1
@@ -520,7 +523,7 @@ CONFIGURE_OPTS=(
         -Dman=true
         -Dversion-tag=v%{version_no_tilde}-%{release}
         # https://bugzilla.redhat.com/show_bug.cgi?id=1906010
-        -Dshared-lib-tag=%{version_no_tilde}-%{release}
+        # -Dshared-lib-tag=%{version_no_tilde}-%{release}
         -Dfallback-hostname=%[0%{?fedora}?"fedora":"localhost"]
         -Ddefault-dnssec=no
         -Ddefault-dns-over-tls=no
@@ -1006,6 +1009,11 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Mon Apr  4 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 251~rc1-2
+- Merge libsystemd-core back into individual binaries and drop the
+  private shared library suffix (this should server as a work-around
+  for rhbz#2071069)
+
 * Tue Mar 29 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 251~rc1-1
 - First release candidate in the new cycle
 - Fixes rhbz#1449751, rhbz#1906010

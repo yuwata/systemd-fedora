@@ -1,0 +1,134 @@
+From 71e6efb1569853948d001854f040dd5a077df131 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Mon, 4 Apr 2022 11:31:04 +0200
+Subject: [PATCH] Revert "meson: create new libsystemd-core.so private shared
+ library"
+
+This reverts commit 4287c855893b6a2666fbe0422a1e738c47fa3ef5.
+
+https://bugzilla.redhat.com/show_bug.cgi?id=2071069
+---
+ meson.build            | 14 ++++++++++++--
+ src/core/meson.build   | 14 +++-----------
+ src/shared/meson.build |  2 +-
+ src/test/meson.build   |  3 +--
+ tools/oss-fuzz.sh      |  4 +---
+ 5 files changed, 18 insertions(+), 19 deletions(-)
+
+diff --git a/meson.build b/meson.build
+index e68791b8b4..b80589d095 100644
+--- a/meson.build
++++ b/meson.build
+@@ -2117,7 +2117,12 @@ dbus_programs += executable(
+         link_with : [libcore,
+                      libshared],
+         dependencies : [versiondep,
+-                        libseccomp],
++                        threads,
++                        librt,
++                        libseccomp,
++                        libselinux,
++                        libmount,
++                        libblkid],
+         install_rpath : rootlibexecdir,
+         install : true,
+         install_dir : rootlibexecdir)
+@@ -2133,7 +2138,12 @@ public_programs += executable(
+         link_with : [libcore,
+                      libshared],
+         dependencies : [versiondep,
+-                        libseccomp],
++                        threads,
++                        librt,
++                        libseccomp,
++                        libselinux,
++                        libmount,
++                        libblkid],
+         install_rpath : rootlibexecdir,
+         install : conf.get('ENABLE_ANALYZE'))
+ 
+diff --git a/src/core/meson.build b/src/core/meson.build
+index f5e04b37ca..fa0dcb69ad 100644
+--- a/src/core/meson.build
++++ b/src/core/meson.build
+@@ -167,18 +167,12 @@ load_fragment_gperf_nulstr_c = custom_target(
+         command : [awk, '-f', '@INPUT0@', '@INPUT1@'],
+         capture : true)
+ 
+-libcore_name = 'systemd-core-@0@'.format(shared_lib_tag)
+-
+-libcore = shared_library(
+-        libcore_name,
++libcore = static_library(
++        'core',
+         libcore_sources,
+         load_fragment_gperf_c,
+         load_fragment_gperf_nulstr_c,
+         include_directories : includes,
+-        c_args : ['-fvisibility=default'],
+-        link_args : ['-shared',
+-                     '-Wl,--version-script=' + libshared_sym_path],
+-        link_with : libshared,
+         dependencies : [versiondep,
+                         threads,
+                         libdl,
+@@ -190,10 +184,8 @@ libcore = shared_library(
+                         libapparmor,
+                         libselinux,
+                         libmount,
+-                        libblkid,
+                         libacl],
+-        install : true,
+-        install_dir : rootlibexecdir)
++        build_by_default : false)
+ 
+ core_includes = [includes, include_directories('.')]
+ 
+diff --git a/src/shared/meson.build b/src/shared/meson.build
+index 4333c9a0a9..54cd8b17d2 100644
+--- a/src/shared/meson.build
++++ b/src/shared/meson.build
+@@ -474,13 +474,13 @@ libshared_static = static_library(
+ libshared = shared_library(
+         libshared_name,
+         include_directories : includes,
+-        c_args : ['-fvisibility=default'],
+         link_args : ['-shared',
+                      '-Wl,--version-script=' + libshared_sym_path],
+         link_whole : [libshared_static,
+                       libbasic,
+                       libbasic_gcrypt,
+                       libsystemd_static],
++        c_args : ['-fvisibility=default'],
+         dependencies : libshared_deps,
+         install : true,
+         install_dir : rootlibexecdir)
+diff --git a/src/test/meson.build b/src/test/meson.build
+index 297a65d9af..9f09ff959c 100644
+--- a/src/test/meson.build
++++ b/src/test/meson.build
+@@ -421,8 +421,7 @@ tests += [
+           libmount,
+           libxz,
+           liblz4,
+-          libblkid,
+-          libselinux],
++          libblkid],
+          [core_includes, journal_includes, udev_includes]],
+ 
+         [files('test-prioq.c')],
+diff --git a/tools/oss-fuzz.sh b/tools/oss-fuzz.sh
+index 8ff3abefb7..109046da24 100755
+--- a/tools/oss-fuzz.sh
++++ b/tools/oss-fuzz.sh
+@@ -89,9 +89,7 @@ df="$build/dns-fuzzing"
+ git clone --depth 1 https://github.com/CZ-NIC/dns-fuzzing "$df"
+ zip -jqr "$OUT/fuzz-dns-packet_seed_corpus.zip" "$df/packet"
+ 
+-install -Dt "$OUT/src/shared/" \
+-        "$build"/src/shared/libsystemd-shared-*.so \
+-        "$build"/src/core/libsystemd-core-*.so
++install -Dt "$OUT/src/shared/" "$build"/src/shared/libsystemd-shared-*.so
+ 
+ wget -O "$OUT/fuzz-json.dict" https://raw.githubusercontent.com/rc0r/afl-fuzz/master/dictionaries/json.dict
+ 
