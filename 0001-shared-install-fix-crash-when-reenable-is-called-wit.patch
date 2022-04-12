@@ -1,0 +1,23 @@
+From f4574dc080b0bd9ef6898d954dc9e0e2b056b9c5 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Tue, 12 Apr 2022 20:42:32 +0200
+Subject: [PATCH 1/2] shared/install: fix crash when reenable is called without
+ --root
+
+---
+ src/shared/install.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/shared/install.c b/src/shared/install.c
+index 58bccdcaa8..f7257c5ceb 100644
+--- a/src/shared/install.c
++++ b/src/shared/install.c
+@@ -2825,7 +2825,7 @@ static int normalize_linked_files(
+                         return r;
+ 
+                 const char *p = NULL;
+-                if (i && i->path)
++                if (i && i->path && i->root)
+                         /* Use startswith here, because we know that paths are normalized, and
+                          * path_startswith() would give us a relative path, but we need an absolute path
+                          * relative to i->root.
