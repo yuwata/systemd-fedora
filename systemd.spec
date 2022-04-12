@@ -150,7 +150,6 @@ BuildRequires:  pkgconfig(tss2-esys)
 BuildRequires:  pkgconfig(tss2-rc)
 BuildRequires:  pkgconfig(tss2-mu)
 BuildRequires:  pkgconfig(libbpf)
-BuildRequires:  bpftool
 BuildRequires:  systemtap-sdt-devel
 BuildRequires:  libxslt
 BuildRequires:  docbook-style-xsl
@@ -173,6 +172,12 @@ BuildRequires:  valgrind-devel
 BuildRequires:  pkgconfig(bash-completion)
 BuildRequires:  perl
 BuildRequires:  perl(IPC::SysV)
+
+%ifnarch %ix86
+# bpftool is not built for i368
+BuildRequires:  bpftool
+%global have_bpf 1
+%endif
 
 Requires(post): coreutils
 Requires(post): grep
@@ -474,7 +479,7 @@ CONFIGURE_OPTS=(
         -Dseccomp=true
         -Dima=true
         -Dselinux=true
-        -Dbpf-framework=true
+        -Dbpf-framework=%[0%{?have_bpf}?"true":"false"]
         -Dapparmor=false
         -Dpolkit=true
         -Dxz=true
