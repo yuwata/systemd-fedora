@@ -921,7 +921,8 @@ if [ $1 -eq 0 ] ; then
 fi
 
 %post resolved
-[ $1 -gt 1 ] && exit 0
+[ $1 -eq 1 ] || exit 0
+# Initial installation
 
 # Related to https://bugzilla.redhat.com/show_bug.cgi?id=1943263
 if ls /usr/lib/systemd/libsystemd-shared-24[0-8].so &>/dev/null; then
@@ -932,6 +933,9 @@ fi
 %systemd_post systemd-resolved.service
 
 %posttrans resolved
+[ $1 -eq 1 ] || exit 0
+# Initial installation
+
 # Create /etc/resolv.conf symlink.
 # We would also create it using tmpfiles, but let's do this here
 # too before NetworkManager gets a chance. (systemd-tmpfiles invocation above
@@ -1014,6 +1018,9 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Tue Apr 12 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 251~rc1-2
+- Do not touch /etc/resolv.conf on upgrades (#2074122)
+
 * Mon Apr  4 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 251~rc1-2
 - Merge libsystemd-core back into individual binaries and drop the
   private shared library suffix (this should server as a work-around
