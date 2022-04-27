@@ -28,7 +28,7 @@
 %bcond_with    inplace
 
 Name:           systemd
-Url:            https://www.freedesktop.org/wiki/Software/systemd
+Url:            https://systemd.io
 %if %{without inplace}
 Version:        252.2
 %else
@@ -331,6 +331,9 @@ Requires:       kbd
 Provides:       u2f-hidraw-policy = 1.0.2-40
 Obsoletes:      u2f-hidraw-policy < 1.0.2-40
 
+# self-obsoletes to install both packages after split of systemd-boot
+Obsoletes:      systemd-udev < 252.2^
+
 %description udev
 This package contains systemd-udev and the rules and hardware database needed to
 manage device nodes. This package is necessary on physical machines and in
@@ -340,6 +343,22 @@ This package also provides systemd-timesyncd, a network time protocol daemon.
 
 It also contains tools to manage encrypted home areas and secrets bound to the
 machine, and to create or grow partitions and make file systems automatically.
+
+%package boot-unsigned
+Summary: UEFI boot manager (unsigned version)
+
+Provides: systemd-boot-unsigned-%{efi_arch} = %version-%release
+
+# self-obsoletes to install both packages after split of systemd-boot
+Obsoletes:      systemd-udev < 252.2^
+
+%description boot-unsigned
+systemd-boot (short: sd-boot) is a simple UEFI boot manager. It provides a
+graphical menu to select the entry to boot and an editor for the kernel command
+line. systemd-boot supports systems with UEFI firmware only.
+
+This package contains the unsigned version. Install systemd-boot instead to get
+the version that works with Secure Boot.
 
 %package container
 # Name is the same as in Debian
@@ -993,6 +1012,8 @@ fi
 %files devel -f .file-list-devel
 
 %files udev -f .file-list-udev
+
+%files boot-unsigned -f .file-list-boot
 
 %files container -f .file-list-container
 %ghost %dir %attr(0700,-,-) /var/lib/machines
