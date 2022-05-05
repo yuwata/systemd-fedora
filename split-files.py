@@ -86,7 +86,8 @@ for file in files(buildroot):
     elif re.search(r'''/usr/lib/systemd/network/80-|
                        networkd|
                        networkctl|
-                       org.freedesktop.network1
+                       org.freedesktop.network1|
+                       tmpfiles\.d/systemd-network.conf
     ''', n, re.X):
         o = o_networkd
 

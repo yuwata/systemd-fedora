@@ -30,8 +30,8 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
-Version:        251~rc1
-Release:        3%{?dist}
+Version:        251~rc2
+Release:        1%{?dist}
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
@@ -90,8 +90,6 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # Any patches which are "in preparation" upstream should be listed
 # here, rather than in the next section. Packit CI will drop any
 # patches in this range before applying upstream pull requests.
-Patch:          0001-shared-install-fix-crash-when-reenable-is-called-wit.patch
-Patch:          0002-Revert-shared-install-create-relative-symlinks-for-e.patch
 
 
 # Downstream-only patches (5000–9999)
@@ -1020,6 +1018,10 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Thu May  5 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 251~rc2-1
+- New upstream prerelease, for details see
+  https://raw.githubusercontent.com/systemd/systemd/v251-rc2/NEWS.
+
 * Tue Apr 12 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 251~rc1-3
 - Do not touch /etc/resolv.conf on upgrades (#2074122)
 - Add bugfix patch and revert one patch which might be causing
