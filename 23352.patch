@@ -1,0 +1,34 @@
+From 8b0ebe3aa21fc343e435b7ff72cbf8565149ef00 Mon Sep 17 00:00:00 2001
+From: Yu Watanabe <watanabe.yu+github@gmail.com>
+Date: Thu, 12 May 2022 04:11:37 +0900
+Subject: [PATCH] sd-device-enumerator: fix inverted return value of
+ match_initialized()
+
+Fixes a bug introduced by d8b50e5df7e01983279e70c6d970fb60d053df97.
+
+Fixes https://github.com/systemd/systemd/pull/22662#issuecomment-1124163773.
+Fixes RHBZ#2083374 (https://bugzilla.redhat.com/show_bug.cgi?id=2083374).
+---
+ src/libsystemd/sd-device/device-enumerator.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/libsystemd/sd-device/device-enumerator.c b/src/libsystemd/sd-device/device-enumerator.c
+index 3af9e36a5a52..39f769c35cf6 100644
+--- a/src/libsystemd/sd-device/device-enumerator.c
++++ b/src/libsystemd/sd-device/device-enumerator.c
+@@ -537,12 +537,12 @@ static int match_initialized(sd_device_enumerator *enumerator, sd_device *device
+                         return true;
+ 
+                 if (sd_device_get_devnum(device, NULL) >= 0)
+-                        return true;
++                        return false;
+ 
+                 if (sd_device_get_ifindex(device, NULL) >= 0)
+-                        return true;
++                        return false;
+ 
+-                return false;
++                return true;
+         }
+ 
+         return (enumerator->match_initialized == MATCH_INITIALIZED_NO) == (r == 0);

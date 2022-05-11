@@ -31,7 +31,7 @@ Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
 Version:        251~rc2
-Release:        1%{?dist}
+Release:        2%{?dist}
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
@@ -90,6 +90,11 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # Any patches which are "in preparation" upstream should be listed here, rather
 # than in the next section. Packit CI will drop any patches in this range before
 # applying upstream pull requests.
+
+# https://bugzilla.redhat.com/show_bug.cgi?id=2083374
+# https://github.com/systemd/systemd/pull/23352
+# udev: don't report network devices before interface rename
+Patch0001:      23352.patch
 
 # This is a downstream-only patch, but we don't want it in packit builds.
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
@@ -1018,6 +1023,9 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Wed May 11 2022 Adam Williamson <awilliam@redhat.com> - 251~rc2-2
+- Backport #23352 to fix RHBZ #2083374
+
 * Thu May  5 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 251~rc2-1
 - New upstream prerelease, for details see
   https://raw.githubusercontent.com/systemd/systemd/v251-rc2/NEWS.
