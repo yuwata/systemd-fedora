@@ -1,4 +1,4 @@
-From e0af3560ca9b1515e0680919733a09914d3325ab Mon Sep 17 00:00:00 2001
+From 8a38bc402c8f7c656c7e356c37c432c7b3a8cd6f Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
 Date: Wed, 14 Aug 2019 15:57:42 +0200
 Subject: [PATCH] udev: use bfq as the default scheduler
@@ -27,14 +27,14 @@ index 0000000000..480b941761
 +  KERNEL=="mmcblk*[0-9]|msblk*[0-9]|mspblk*[0-9]|sd*[!0-9]|sr*", \
 +  ATTR{queue/scheduler}="bfq"
 diff --git a/rules.d/meson.build b/rules.d/meson.build
-index e6533e001a..bfa26904d0 100644
+index a582e4e922..d300c382fc 100644
 --- a/rules.d/meson.build
 +++ b/rules.d/meson.build
-@@ -7,6 +7,7 @@ install_data(
- rules = files(
-         '60-autosuspend.rules',
-         '60-block.rules',
-+        '60-block-scheduler.rules',
-         '60-cdrom_id.rules',
-         '60-drm.rules',
-         '60-evdev.rules',
+@@ -8,6 +8,7 @@ rules = [
+         [files('60-autosuspend.rules',
+                '60-block.rules',
+                '60-cdrom_id.rules',
++               '60-block-scheduler.rules',
+                '60-drm.rules',
+                '60-evdev.rules',
+                '60-fido-id.rules',
