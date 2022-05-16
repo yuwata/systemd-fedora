@@ -1022,6 +1022,8 @@ fi
 * Mon May 16 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 251~rc3-1
 - Update to latest upstream prerelease (just various bugfixes)
 - Udev rule processing should be now fixed (#2076459)
+- Run sysusers and hwdb and catalog updates also if systemd is not running
+  (#2085481)
 
 * Wed May 11 2022 Adam Williamson <awilliam@redhat.com> - 251~rc2-2
 - Backport #23352 to fix RHBZ #2083374

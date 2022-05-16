@@ -55,23 +55,17 @@ fi
 # This script will process files installed in /usr/lib/sysusers.d to create
 # specified users automatically. The priority is set such that it
 # will run before the tmpfiles file trigger.
-if test -d "/run/systemd/system"; then
-  systemd-sysusers || :
-fi
+systemd-sysusers || :
 
 %transfiletriggerin -P 1000700 udev -- /usr/lib/udev/hwdb.d
 # This script will automatically invoke hwdb update if files have been
 # installed or updated in /usr/lib/udev/hwdb.d.
-if test -d "/run/systemd/system"; then
-  systemd-hwdb update || :
-fi
+systemd-hwdb update || :
 
 %transfiletriggerin -P 1000700 -- /usr/lib/systemd/catalog
 # This script will automatically invoke journal catalog update if files
 # have been installed or updated in /usr/lib/systemd/catalog.
-if test -d "/run/systemd/system"; then
-  journalctl --update-catalog || :
-fi
+journalctl --update-catalog || :
 
 %transfiletriggerin -P 1000700 -- /usr/lib/binfmt.d
 # This script will automatically apply binfmt rules if files have been
