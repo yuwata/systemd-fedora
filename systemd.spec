@@ -92,16 +92,15 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # applying upstream pull requests.
 
 
-# This is a downstream-only patch, but we don't want it in packit builds.
+# Those are downstream-only patches, but we don't want them in packit builds:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
-Patch0499:      use-bfq-scheduler.patch
+Patch0490:      use-bfq-scheduler.patch
+# https://bugzilla.redhat.com/show_bug.cgi?id=2071069
+Patch0491:      0001-Revert-meson-create-new-libsystemd-core.so-private-s.patch
 
 # Other downstream-only patches (5000–9999)
 # https://github.com/systemd/systemd/pull/17050
 Patch0501:      https://github.com/systemd/systemd/pull/17050/commits/f58b96d3e8d1cb0dd3666bc74fa673918b586612.patch
-
-# https://bugzilla.redhat.com/show_bug.cgi?id=2071069
-Patch9999:      0001-Revert-meson-create-new-libsystemd-core.so-private-s.patch
 
 %ifarch %{ix86} x86_64 aarch64
 %global have_gnu_efi 1
