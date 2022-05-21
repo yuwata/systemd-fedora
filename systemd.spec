@@ -30,7 +30,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
-Version:        251~rc3
+Version:        251
 Release:        1%{?dist}
 %else
 # determine the build information from local checkout
@@ -1018,6 +1018,11 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Sat May 21 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 251-1
+- Latest upstream release, for details see
+  https://raw.githubusercontent.com/systemd/systemd/v251/NEWS.
+- Fixes for #2071034, #2084955, #2086166.
+
 * Mon May 16 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 251~rc3-1
 - Update to latest upstream prerelease (just various bugfixes)
 - Udev rule processing should be now fixed (#2076459)
