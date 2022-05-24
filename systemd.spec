@@ -1,7 +1,7 @@
 #global commit c4b843473a75fb38ed5bf54e9d3cfb1cb3719efa
 %{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
-#global stable 1
+%global stable 1
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
 # strip the automatically generated dep here and instead co-own the
@@ -30,7 +30,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
-Version:        251
+Version:        251.1
 Release:        1%{?dist}
 %else
 # determine the build information from local checkout
@@ -1018,6 +1018,10 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Tue May 24 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 251.1-1
+- First bugfix release for 250
+- Two fixes for kernel-install and a revert for #2087225, #2088788.
+
 * Sat May 21 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 251-1
 - Latest upstream release, for details see
   https://raw.githubusercontent.com/systemd/systemd/v251/NEWS.
