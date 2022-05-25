@@ -97,7 +97,8 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 Patch0490:      use-bfq-scheduler.patch
 
 # Other downstream-only patches (5000–9999)
-
+# https://github.com/systemd/systemd/pull/17050
+Patch0501:      https://github.com/systemd/systemd/pull/17050/commits/f58b96d3e8d1cb0dd3666bc74fa673918b586612.patch
 
 %ifarch %{ix86} x86_64 aarch64
 %global have_gnu_efi 1
