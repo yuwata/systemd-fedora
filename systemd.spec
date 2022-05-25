@@ -526,7 +526,7 @@ CONFIGURE_OPTS=(
         -Db_lto=%[%{with lto}?"true":"false"]
         -Db_ndebug=false
         -Dman=true
-        -Dversion-tag=v%{version_no_tilde}-%{release}
+        -Dversion-tag=%{version}-%{release}
         # https://bugzilla.redhat.com/show_bug.cgi?id=1906010
         # -Dshared-lib-tag=%{version_no_tilde}-%{release}
         -Dfallback-hostname=%[0%{?fedora}?"fedora":"localhost"]
@@ -1020,6 +1020,7 @@ fi
 %changelog
 * Wed May 25 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 251.1-2
 - Supress errors from useradd/groupadd (#2090129)
+- Drop "v" from the version tag, add tilde back
 
 * Tue May 24 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 251.1-1
 - First bugfix release for 250
