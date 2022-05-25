@@ -19,15 +19,15 @@ user() {
     if [ "$uid" = '-' ] || [ "$uid" = '' ]; then
         cat <<EOF
 getent passwd '$user' >/dev/null || \\
-    useradd -r -g '$group' -d '$home' -s '$shell' -c '$desc' '$user'
+    useradd -r -g '$group' -d '$home' -s '$shell' -c '$desc' '$user' || :
 EOF
     else
         cat <<EOF
-if ! getent passwd '$user' >/dev/null ; then
-    if ! getent passwd '$uid' >/dev/null ; then
-        useradd -r -u '$uid' -g '$group' -d '$home' -s /sbin/nologin -c '$desc' '$user'
+if ! getent passwd '$user' >/dev/null; then
+    if ! getent passwd '$uid' >/dev/null; then
+        useradd -r -u '$uid' -g '$group' -d '$home' -s /sbin/nologin -c '$desc' '$user' || :
     else
-        useradd -r -g '$group' -d '$home' -s /sbin/nologin -c '$desc' '$user'
+        useradd -r -g '$group' -d '$home' -s /sbin/nologin -c '$desc' '$user' || :
     fi
 fi
 
@@ -40,11 +40,11 @@ group() {
     gid="$2"
     if [ "$gid" = '-' ]; then
         cat <<-EOF
-	getent group '$group' >/dev/null || groupadd -r '$group'
+	getent group '$group' >/dev/null || groupadd -r '$group' || :
 	EOF
     else
         cat <<-EOF
-	getent group '$group' >/dev/null || groupadd -f -g '$gid' -r '$group'
+	getent group '$group' >/dev/null || groupadd -f -g '$gid' -r '$group' || :
 	EOF
     fi
 }

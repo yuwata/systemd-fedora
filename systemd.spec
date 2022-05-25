@@ -1018,6 +1018,9 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Wed May 25 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 251.1-2
+- Supress errors from useradd/groupadd (#2090129)
+
 * Tue May 24 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 251.1-1
 - First bugfix release for 250
 - Two fixes for kernel-install and a revert for #2087225, #2088788.
