@@ -95,8 +95,6 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # Those are downstream-only patches, but we don't want them in packit builds:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
 Patch0490:      use-bfq-scheduler.patch
-# https://bugzilla.redhat.com/show_bug.cgi?id=2071069
-Patch0491:      0001-Revert-meson-create-new-libsystemd-core.so-private-s.patch
 
 # Other downstream-only patches (5000–9999)
 # https://github.com/systemd/systemd/pull/17050
@@ -528,7 +526,7 @@ CONFIGURE_OPTS=(
         -Dman=true
         -Dversion-tag=%{version}-%{release}
         # https://bugzilla.redhat.com/show_bug.cgi?id=1906010
-        # -Dshared-lib-tag=%{version_no_tilde}-%{release}
+        -Dshared-lib-tag=%{version_no_tilde}-%{release}
         -Dfallback-hostname=%[0%{?fedora}?"fedora":"localhost"]
         -Ddefault-dnssec=no
         -Ddefault-dns-over-tls=no
@@ -1021,6 +1019,7 @@ fi
 * Wed May 25 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 251.1-2
 - Supress errors from useradd/groupadd (#2090129)
 - Drop "v" from the version tag, add tilde back
+- The tag for shared-libraries is reintroduced (#1906010)
 
 * Tue May 24 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 251.1-1
 - First bugfix release for 250
