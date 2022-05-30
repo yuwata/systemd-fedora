@@ -1,7 +1,7 @@
-== Building systemd rpms for local development using rpmbuild --build-in-place ==
+# Building systemd rpms for local development using rpmbuild --build-in-place
 
-This approach is based on https://github.com/filbranden/git-rpmbuild
-and filbranden's talk during ASG2019 [https://www.youtube.com/watch?v=fVM1kJrymRM].
+This approach is based on filbranden's [git-rpmbuild](https://github.com/filbranden/git-rpmbuild)
+and his [talk during ASG2019](https://www.youtube.com/watch?v=fVM1kJrymRM).
 
 ```
 git clone https://github.com/systemd/systemd
