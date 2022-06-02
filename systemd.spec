@@ -30,8 +30,8 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
-Version:        251.1
-Release:        2%{?dist}
+Version:        251.2
+Release:        1%{?dist}
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
@@ -1016,6 +1016,11 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Thu Jun  2 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 251.2-1
+- A bunch of man page fixes, a few memory-access correctness fixes,
+  remove excessive messages to utmp sessions, suppress messages about
+  bpf setup in the user manager (#2084955)
+
 * Wed May 25 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 251.1-2
 - Supress errors from useradd/groupadd (#2090129)
 - Drop "v" from the version tag, add tilde back
