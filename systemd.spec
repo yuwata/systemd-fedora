@@ -90,6 +90,7 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # Any patches which are "in preparation" upstream should be listed here, rather
 # than in the next section. Packit CI will drop any patches in this range before
 # applying upstream pull requests.
+Patch0000:      0001-sha256-fix-compilation-on-efi-ia32.patch
 
 
 # Those are downstream-only patches, but we don't want them in packit builds:
