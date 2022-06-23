@@ -15,6 +15,13 @@
 %global elf_suffix ()%{elf_bits}
 %endif
 
+%bcond bzip2  1
+%bcond gnutls 1
+%bcond lz4    1
+%bcond xz     1
+%bcond zlib   1
+%bcond zstd   1
+
 # Bootstrap may be needed to break circular dependencies with cryptsetup,
 # e.g. when re-building cryptsetup on a json-c SONAME-bump.
 %bcond_with    bootstrap
@@ -129,18 +136,28 @@ BuildRequires:  /usr/bin/getfacl
 BuildRequires:  libacl-devel
 BuildRequires:  gobject-introspection-devel
 BuildRequires:  libblkid-devel
+%if %{with xz}
 BuildRequires:  xz-devel
 BuildRequires:  xz
+%endif
+%if %{with lz4}
 BuildRequires:  lz4-devel
 BuildRequires:  lz4
+%endif
+%if %{with bzip2}
 BuildRequires:  bzip2-devel
+%endif
+%if %{with zstd}
 BuildRequires:  libzstd-devel
+%endif
 BuildRequires:  libidn2-devel
 BuildRequires:  libcurl-devel
 BuildRequires:  kmod-devel
 BuildRequires:  elfutils-devel
 BuildRequires:  openssl-devel
+%if %{with gnutls}
 BuildRequires:  gnutls-devel
+%endif
 %if %{undefined rhel}
 BuildRequires:  qrencode-devel
 %endif
@@ -578,11 +595,11 @@ CONFIGURE_OPTS=(
         -Dbpf-framework=%[0%{?have_bpf}?"true":"false"]
         -Dapparmor=false
         -Dpolkit=true
-        -Dxz=true
-        -Dzlib=true
-        -Dbzip2=true
-        -Dlz4=true
-        -Dzstd=true
+        -Dxz=%[%{with xz}?"true":"false"]
+        -Dzlib=%[%{with zlib}?"true":"false"]
+        -Dbzip2=%[%{with bzip2}?"true":"false"]
+        -Dlz4=%[%{with lz4}?"true":"false"]
+        -Dzstd=%[%{with zstd}?"true":"false"]
         -Dpam=true
         -Dacl=true
         -Dsmack=true
@@ -596,7 +613,7 @@ CONFIGURE_OPTS=(
         -Delfutils=true
         -Dpwquality=true
         -Dqrencode=%[%{defined rhel}?"false":"true"]
-        -Dgnutls=true
+        -Dgnutls=%[%{with gnutls}?"true":"false"]
         -Dmicrohttpd=true
         -Dlibidn2=true
         -Dlibiptc=false
