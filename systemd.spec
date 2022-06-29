@@ -454,10 +454,6 @@ test -f src/login/systemd-user.in
 # We'll systemd process it and install in the right place.
 cp %{SOURCE12} src/login/systemd-user.in
 
-# Workaround for https://bugzilla.redhat.com/show_bug.cgi?id=2057735
-cp /usr/include/linux/audit.h src/systemd/
-sed -r -i "s|generate_audit_type_list, cpp|& + ' -I/usr/include/linux'|" src/libsystemd/meson.build
-
 %build
 %global ntpvendor %(source /etc/os-release; echo ${ID})
 %{!?ntpvendor: echo 'NTP vendor zone is not set!'; exit 1}
