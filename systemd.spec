@@ -31,7 +31,7 @@ Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
 Version:        251.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
@@ -137,8 +137,6 @@ BuildRequires:  libcurl-devel
 BuildRequires:  kmod-devel
 BuildRequires:  elfutils-devel
 BuildRequires:  openssl-devel
-BuildRequires:  libgcrypt-devel
-BuildRequires:  libgpg-error-devel
 BuildRequires:  gnutls-devel
 BuildRequires:  qrencode-devel
 BuildRequires:  libmicrohttpd-devel
@@ -488,7 +486,7 @@ CONFIGURE_OPTS=(
         -Dopenssl=true
         -Dcryptolib=openssl
         -Dp11kit=true
-        -Dgcrypt=true
+        -Dgcrypt=false
         -Daudit=true
         -Delfutils=true
         -Dlibcryptsetup=%[%{with bootstrap}?"false":"true"]
@@ -1013,6 +1011,9 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Wed Jun 29 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 251.2-2
+- Drop forward-secure-sealing code from sd-journal and tools
+
 * Thu Jun  2 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 251.2-1
 - A bunch of man page fixes, a few memory-access correctness fixes,
   remove excessive messages to utmp sessions, suppress messages about
