@@ -207,9 +207,9 @@ Conflicts:      fedora-release < 23-0.12
 Obsoletes:      timedatex < 0.6-3
 Provides:       timedatex = 0.6-3
 Conflicts:      %{name}-standalone-tmpfiles < %{version}-%{release}^
-Obsoletes:      %{name}-standalone-tmpfiles < %{version}-%{release}^
+Provides:       %{name}-tmpfiles = %{version}-%{release}
 Conflicts:      %{name}-standalone-sysusers < %{version}-%{release}^
-Obsoletes:      %{name}-standalone-sysusers < %{version}-%{release}^
+Provides:       %{name}-sysusers = %{version}-%{release}
 
 # Recommends to replace normal Requires deps for stuff that is dlopen()ed
 Recommends:     libidn2.so.0%{?elf_suffix}
@@ -428,6 +428,7 @@ useful to test systemd internals.
 
 %package standalone-tmpfiles
 Summary:       Standalone tmpfiles binary for use in non-systemd systems
+Provides:      %{name}-tmpfiles = %{version}-%{release}
 RemovePathPostfixes: .standalone
 
 %description standalone-tmpfiles
@@ -437,6 +438,7 @@ package and is meant for use in non-systemd systems.
 
 %package standalone-sysusers
 Summary:       Standalone sysusers binary for use in non-systemd systems
+Provides:      %{name}-sysusers = %{version}-%{release}
 RemovePathPostfixes: .standalone
 
 %description standalone-sysusers
