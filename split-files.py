@@ -87,7 +87,9 @@ for file in files(buildroot):
                        networkd|
                        networkctl|
                        org.freedesktop.network1|
-                       tmpfiles\.d/systemd-network.conf
+                       tmpfiles\.d/systemd-network.conf|
+                       systemd\.network|
+                       systemd\.netdev
     ''', n, re.X):
         o = o_networkd
 
