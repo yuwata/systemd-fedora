@@ -30,8 +30,8 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
-Version:        251.2
-Release:        2%{?dist}
+Version:        251.3
+Release:        1%{?dist}
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
@@ -90,7 +90,6 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # Any patches which are "in preparation" upstream should be listed here, rather
 # than in the next section. Packit CI will drop any patches in this range before
 # applying upstream pull requests.
-Patch0000:      0001-sha256-fix-compilation-on-efi-ia32.patch
 
 
 # Those are downstream-only patches, but we don't want them in packit builds:
@@ -1006,7 +1005,8 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
-* Wed Jul 13 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 251.2-2
+* Wed Jul 13 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 251.3-1
+- Update to latest bugfix release
 - Drop forgotten "temporary" workaround for #1663040
 
 * Wed Jun 29 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 251.2-2
