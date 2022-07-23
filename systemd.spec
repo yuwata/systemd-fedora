@@ -31,11 +31,11 @@ Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
 Version:        251.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
-Release:        2
+Release:        3
 %endif
 
 # For a breakdown of the licensing, see README
@@ -1005,6 +1005,9 @@ fi
 %files standalone-sysusers -f .file-list-standalone-sysusers
 
 %changelog
+* Sat Jul 23 2022 Fedora Release Engineering <releng@fedoraproject.org>
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild
+
 * Wed Jul 13 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 251.3-1
 - Update to latest bugfix release
 - Drop forgotten "temporary" workaround for #1663040
