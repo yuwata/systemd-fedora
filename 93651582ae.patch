@@ -1,0 +1,98 @@
+From 93651582aef1ee626dc6f8d032195acd73bc9372 Mon Sep 17 00:00:00 2001
+From: Jonathan Lebon <jonathan@jlebon.com>
+Date: Mon, 23 Mar 2020 12:25:19 -0400
+Subject: [PATCH] manager: optionally, do a full preset on first boot
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+A compile time option is added to select behaviour: by default
+UNIT_FILE_PRESET_ENABLE_ONLY is still used, but the intent is to change to
+UNIT_FILE_PRESET_FULL at some point in the future. Distros that want to
+opt-in can use the config option to change the behaviour.
+
+(The option is just a boolean: it would be possible to make it multi-valued,
+and allow full, enable-only, disable-only, none. But so far nobody has asked
+for this, and it's better not to complicate things needlessly.)
+
+With the configuration option flipped, instead of only doing enablements,
+perform a full preset on first boot. The reason is that although
+`/etc/machine-id` might be missing, there may be other files provisioned in
+`/etc` (in fact, this use case is mentioned in `log_execution_mode`). Some of
+those possible files include enablement symlinks even if presets dictate it
+should be disabled.
+
+Such a seemingly contradictory situation occurs in {RHEL,Fedora} CoreOS,
+where we ship `/etc` as if `preset-all` were called. However, we want to
+allow users to disable default-enabled services via Ignition, which does
+this by creating preset dropins before switchroot. (For why we do
+`preset-all` at compose time, see:
+https://github.com/coreos/fedora-coreos-config/pull/77).
+
+For example, the composed FCOS image has a `enable zincati.service`
+preset and an enablement for that in `/etc`, while at boot time when we
+switch root, there may be a `disable zincati.service` preset with higher
+precedence. In that case, we want systemd to disable the service.
+
+This is essentially a revert of 304b3079a203. It seems like systemd
+*used* to do this, but it was changed to try to make the container
+workflow a bit faster.
+
+Resolves: https://github.com/coreos/fedora-coreos-tracker/issues/392
+
+Co-authored-by: Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl>
+---
+ meson.build        | 3 +++
+ meson_options.txt  | 2 ++
+ src/core/manager.c | 4 +++-
+ 3 files changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/meson.build b/meson.build
+index 582e33c9a73d..72e586aa97c7 100644
+--- a/meson.build
++++ b/meson.build
+@@ -285,6 +285,8 @@ conf.set10('MEMORY_ACCOUNTING_DEFAULT',                       memory_accounting_
+ conf.set('STATUS_UNIT_FORMAT_DEFAULT',                        'STATUS_UNIT_FORMAT_' + status_unit_format_default.to_upper())
+ conf.set_quoted('STATUS_UNIT_FORMAT_DEFAULT_STR',             status_unit_format_default)
+ 
++conf.set10('FIRST_BOOT_FULL_PRESET',                          get_option('first-boot-full-preset'))
++
+ #####################################################################
+ 
+ cc = meson.get_compiler('c')
+@@ -4271,6 +4273,7 @@ foreach tuple : [
+         ['link-networkd-shared',  get_option('link-networkd-shared')],
+         ['link-timesyncd-shared', get_option('link-timesyncd-shared')],
+         ['link-boot-shared',      get_option('link-boot-shared')],
++        ['first-boot-full-preset'],
+         ['fexecve'],
+         ['standalone-binaries',   get_option('standalone-binaries')],
+         ['coverage',              get_option('b_coverage')],
+diff --git a/meson_options.txt b/meson_options.txt
+index 2a030ac28ec0..28765f900e87 100644
+--- a/meson_options.txt
++++ b/meson_options.txt
+@@ -27,6 +27,8 @@ option('link-timesyncd-shared', type: 'boolean',
+        description : 'link systemd-timesyncd and its helpers to libsystemd-shared.so')
+ option('link-boot-shared', type: 'boolean',
+        description : 'link bootctl and systemd-bless-boot against libsystemd-shared.so')
++option('first-boot-full-preset', type: 'boolean', value: false,
++       description : 'during first boot, do full preset-all (default will be changed to true later)')
+ 
+ option('static-libsystemd', type : 'combo',
+        choices : ['false', 'true', 'pic', 'no-pic'],
+diff --git a/src/core/manager.c b/src/core/manager.c
+index 18daff66c780..f4dacef1005d 100644
+--- a/src/core/manager.c
++++ b/src/core/manager.c
+@@ -1728,7 +1728,9 @@ static void manager_preset_all(Manager *m) {
+                 return;
+ 
+         /* If this is the first boot, and we are in the host system, then preset everything */
+-        r = unit_file_preset_all(LOOKUP_SCOPE_SYSTEM, 0, NULL, UNIT_FILE_PRESET_ENABLE_ONLY, NULL, 0);
++        UnitFilePresetMode mode = FIRST_BOOT_FULL_PRESET ? UNIT_FILE_PRESET_FULL : UNIT_FILE_PRESET_ENABLE_ONLY;
++
++        r = unit_file_preset_all(LOOKUP_SCOPE_SYSTEM, 0, NULL, mode, NULL, 0);
+         if (r < 0)
+                 log_full_errno(r == -EEXIST ? LOG_NOTICE : LOG_WARNING, r,
+                                "Failed to populate /etc with preset unit settings, ignoring: %m");

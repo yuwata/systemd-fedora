@@ -90,6 +90,8 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # than in the next section. Packit CI will drop any patches in this range before
 # applying upstream pull requests.
 
+# https://fedoraproject.org/wiki/Changes/Preset_All_Systemd_Units_on_First_Boot
+Patch0001:      https://github.com/systemd/systemd/commit/93651582ae.patch
 
 # Those are downstream-only patches, but we don't want them in packit builds:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
@@ -507,6 +509,7 @@ CONFIGURE_OPTS=(
         -Dsysusers=true
         -Dstandalone-binaries=true
         -Ddefault-kill-user-processes=false
+        -Dfirst-boot-full-preset=true
         -Dtests=unsafe
         -Dinstall-tests=true
         -Dtty-gid=5
