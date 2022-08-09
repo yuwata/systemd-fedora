@@ -14,7 +14,7 @@ user() {
 
     [ "$desc" = '-' ] && desc=
     { [ "$home" = '-' ] || [ "$home" = '' ]; } && home=/
-    { [ "$shell" = '-' ] || [ "$shell" = '' ]; } && shell=/sbin/nologin
+    { [ "$shell" = '-' ] || [ "$shell" = '' ]; } && shell=/usr/sbin/nologin
 
     if [ "$uid" = '-' ] || [ "$uid" = '' ]; then
         cat <<EOF
@@ -25,9 +25,9 @@ EOF
         cat <<EOF
 if ! getent passwd '$user' >/dev/null; then
     if ! getent passwd '$uid' >/dev/null; then
-        useradd -r -u '$uid' -g '$group' -d '$home' -s /sbin/nologin -c '$desc' '$user' || :
+        useradd -r -u '$uid' -g '$group' -d '$home' -s '$shell' -c '$desc' '$user' || :
     else
-        useradd -r -g '$group' -d '$home' -s /sbin/nologin -c '$desc' '$user' || :
+        useradd -r -g '$group' -d '$home' -s '$shell' -c '$desc' '$user' || :
     fi
 fi
 
