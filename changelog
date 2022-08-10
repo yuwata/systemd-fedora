@@ -1,4 +1,19 @@
-* Sat Jul 23 2022 Fedora Release Engineering <releng@fedoraproject.org>
+* Tue Aug 09 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 251.4-51
+- Manually bump release version for rpmautospec
+
+* Tue Aug 09 2022 Luca BRUNO <lucab@lucabruno.net> - 251.4-26
+- Align sysusers-generated shell value with upstream systemd default
+
+* Tue Aug 09 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 251.4-2
+- Backport patches and do a full preset on first boot (#2114065,
+  https://fedoraproject.org/wiki/Changes/Preset_All_Systemd_Units_on_First_Boot)
+
+* Mon Aug 08 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 251.4-1
+- Version 251.4 (fixes rhbz#2112551)
+- A bunch of fixes to documentation, crashes in systemd-resolved,
+  systemd-networkd, systemd itself, and other smaller fixes.
+
+* Sat Jul 23 2022 Fedora Release Engineering <releng@fedoraproject.org> - 251.3-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild
 
 * Wed Jul 13 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 251.3-1
@@ -74,11 +89,11 @@
 - Drop scriptlet for handling nobody user upgrades from Fedora <28
 - Specify owner of /var/log/journal as root in the rpm listing (#2018913)
 
-* Thu Feb 10 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250.3-3
+* Thu Feb 10 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250.3-4
 - Add pam_namespace to systemd-user pam config (rhbz#2053098)
 - Drop 20-grubby.install plugin for kernel-install (rhbz#2033646)
 
-* Sat Jan 22 2022 Fedora Release Engineering <releng@fedoraproject.org>
+* Sat Jan 22 2022 Fedora Release Engineering <releng@fedoraproject.org> - 250.3-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
 
 * Tue Jan 18 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 250.3-2
@@ -179,7 +194,7 @@
   -documentation, sd-event, sd-journal, journalctl, and nss-systemd).
 - Fixes #1976445.
 
-* Tue Sep 14 2021 Sahana Prasad <sahana@redhat.com>
+* Tue Sep 14 2021 Sahana Prasad <sahana@redhat.com> - 249.4-2
 - Rebuilt with OpenSSL 3.0.0
 
 * Tue Aug 24 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 249.4-1
@@ -334,7 +349,7 @@
 - Minor stable release
 - Fixes #1895937, #1813219, #1903106.
 
-* Wed Jan 27 2021 Fedora Release Engineering <releng@fedoraproject.org>
+* Wed Jan 27 2021 Fedora Release Engineering <releng@fedoraproject.org> - 247.2-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
 
 * Wed Jan 13 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 247.2-2
@@ -544,7 +559,7 @@
 
 - Fixes #1774242, #1787089, #1798414/CVE-2020-1712.
 
-* Fri Jan 31 2020 Fedora Release Engineering <releng@fedoraproject.org>
+* Fri Jan 31 2020 Fedora Release Engineering <releng@fedoraproject.org> - 244.1-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
 
 * Sat Dec 21 2019  <zbyszek@nano-f31> - 244.1-2
@@ -620,7 +635,7 @@
 * Tue Jul 30 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 243~rc1-1
 - Update to latest version (#1715699, #1696373, #1711065, #1718192)
 
-* Sat Jul 27 2019 Fedora Release Engineering <releng@fedoraproject.org>
+* Sat Jul 27 2019 Fedora Release Engineering <releng@fedoraproject.org> - 242-7.git9d34e79
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
 
 * Sat Jul 20 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 242-6.git9d34e79
@@ -679,7 +694,7 @@
 * Tue Feb  5 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 241~rc2-1
 - Update to latest release -rc2
 
-* Sun Feb 03 2019 Fedora Release Engineering <releng@fedoraproject.org>
+* Sun Feb 03 2019 Fedora Release Engineering <releng@fedoraproject.org> - 241~rc1-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
 
 * Sun Jan 27 2019 Yu Watanabe <watanabe.yu@gmail.com> - 241~rc1-2
@@ -691,7 +706,7 @@
 * Tue Jan 15 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 240-6.gitf02b547
 - Add a work-around for #1663040
 
-* Mon Jan 14 2019 Björn Esser <besser82@fedoraproject.org>
+* Mon Jan 14 2019 Björn Esser <besser82@fedoraproject.org> - 240-5.gitf02b547
 - Rebuilt for libcrypt.so.2 (#1666033)
 
 * Fri Jan 11 2019 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 240-4.gitf02b547
@@ -786,13 +801,13 @@
 * Wed Jul 18 2018 Terje Rosten <terje.rosten@ntnu.no> - 239-3
 - Ignore return value from systemd-binfmt in scriptlet (#1565425)
 
-* Sun Jul 15 2018 Filipe Brandenburger <filbranden@gmail.com>
+* Sun Jul 15 2018 Filipe Brandenburger <filbranden@gmail.com> - 239-3
 - Override systemd-user PAM config in install and not prep
 
-* Sat Jul 14 2018 Fedora Release Engineering <releng@fedoraproject.org>
+* Sat Jul 14 2018 Fedora Release Engineering <releng@fedoraproject.org> - 239-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
 
-* Mon Jun 25 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl>
+* Mon Jun 25 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 239-2
 - Rebuild for Python 3.7 again
 
 * Fri Jun 22 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 239-1
@@ -800,7 +815,7 @@
   very little breaking changes. See
   https://github.com/systemd/systemd/blob/v239/NEWS for details.
 
-* Tue Jun 19 2018 Miro Hrončok <mhroncok@redhat.com>
+* Tue Jun 19 2018 Miro Hrončok <mhroncok@redhat.com> - 238-9.git0e0aa59
 - Rebuilt for Python 3.7
 
 * Fri May 11 2018 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 238-8.git0e0aa59
@@ -915,7 +930,7 @@
 * Mon Jul 31 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 234-5
 - Backport more patches (#1476005, hopefully #1462378)
 
-* Thu Jul 27 2017 Fedora Release Engineering <releng@fedoraproject.org>
+* Thu Jul 27 2017 Fedora Release Engineering <releng@fedoraproject.org> - 234-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Mass_Rebuild
 
 * Mon Jul 17 2017 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 234-3
@@ -2439,3 +2454,4 @@ Resolves: rhbz#974132
 
 * Tue Jun 01 2010 Rahul Sundaram <sundaram@fedoraproject.org> - 0-0.0.git2010-06-02
 - Initial spec (adopted from Kay Sievers)
+
