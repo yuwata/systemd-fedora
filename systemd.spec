@@ -285,8 +285,6 @@ Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
 Provides:       libudev-devel = %{version}
 Provides:       libudev-devel%{_isa} = %{version}
 Obsoletes:      libudev-devel < 183
-# Fake dependency to make sure systemd-pam is pulled into multilib (#1414153)
-Requires:       %{name}-pam = %{version}-%{release}
 
 %description devel
 Development headers and auxiliary files for developing applications linking
