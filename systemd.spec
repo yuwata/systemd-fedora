@@ -35,7 +35,7 @@ Version:        251.4
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
 %endif
-Release:        %autorelease -b 26
+Release:        %autorelease -b 27
 
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+

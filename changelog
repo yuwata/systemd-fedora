@@ -1,3 +1,6 @@
+* Thu Aug 18 2022 Kalev Lember <klember@redhat.com> - 251.4-52
+- Avoid requiring systemd-pam from -devel subpackage
+
 * Tue Aug 09 2022 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 251.4-51
 - Manually bump release version for rpmautospec
 
