@@ -1,3 +1,7 @@
+* Fri Aug 19 2022 Neal Gompa <ngompa@fedoraproject.org> - 251.4-53
+- Set compile-time fallback hostname to "localhost"
+  https://fedoraproject.org/wiki/Changes/FallbackHostname
+
 * Thu Aug 18 2022 Kalev Lember <klember@redhat.com> - 251.4-52
 - Avoid requiring systemd-pam from -devel subpackage
 
