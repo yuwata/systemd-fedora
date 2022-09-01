@@ -38,6 +38,7 @@ EOF
 group() {
     group="$1"
     gid="$2"
+
     if [ "$gid" = '-' ]; then
         cat <<-EOF
 	getent group '$group' >/dev/null || groupadd -r '$group' || :
@@ -47,6 +48,17 @@ group() {
 	getent group '$group' >/dev/null || groupadd -f -g '$gid' -r '$group' || :
 	EOF
     fi
+}
+
+usermod() {
+    user="$1"
+    group="$2"
+
+    cat <<-EOF
+if getent group '$group' >/dev/null; then
+    usermod -a -G '$group' '$user' || :
+fi
+    EOF
 }
 
 parse() {
@@ -66,7 +78,8 @@ parse() {
                 ;;
             ('m')
                 group "${arr[2]}" "-"
-                user "${arr[1]}" "-" "" "${arr[2]}"
+                user "${arr[1]}" "-" "" "${arr[1]}" "" ""
+                usermod "${arr[1]}" "${arr[2]}"
                 ;;
         esac
     done
