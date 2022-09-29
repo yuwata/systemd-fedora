@@ -282,6 +282,7 @@ for information how to use those macros.
 Summary:        Development headers for systemd
 License:        LGPLv2+ and MIT
 Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
+Requires(meta): (%{name}-rpm-macros = %{version}-%{release} if rpm-build)
 Provides:       libudev-devel = %{version}
 Provides:       libudev-devel%{_isa} = %{version}
 Obsoletes:      libudev-devel < 183
