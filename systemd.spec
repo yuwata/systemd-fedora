@@ -677,7 +677,7 @@ install -m 0755 -D -t %{buildroot}%{_rpmconfigdir}/ %{SOURCE24}
 # here.
 python3 %{SOURCE2} %buildroot <<EOF
 %ghost %config(noreplace) /etc/crypttab
-%ghost /etc/udev/hwdb.bin
+%ghost %attr(0444,root,root) /etc/udev/hwdb.bin
 /etc/inittab
 /usr/lib/systemd/purge-nobody-user
 %ghost %config(noreplace) /etc/vconsole.conf
@@ -703,7 +703,7 @@ python3 %{SOURCE2} %buildroot <<EOF
 %ghost %dir /var/lib/systemd/coredump
 %ghost /var/lib/systemd/journal-upload
 %ghost %dir /var/lib/systemd/linger
-%ghost /var/lib/systemd/random-seed
+%ghost %attr(0600,root,root) /var/lib/systemd/random-seed
 %ghost %dir /var/lib/systemd/rfkill
 %ghost %dir %verify(not mode group) /var/log/journal
 %ghost %dir /var/log/journal/remote
