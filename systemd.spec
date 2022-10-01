@@ -30,7 +30,7 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
-Version:        251.4
+Version:        251.5
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
@@ -88,9 +88,6 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # Any patches which are "in preparation" upstream should be listed here, rather
 # than in the next section. Packit CI will drop any patches in this range before
 # applying upstream pull requests.
-
-# https://fedoraproject.org/wiki/Changes/Preset_All_Systemd_Units_on_First_Boot
-Patch0001:      https://github.com/systemd/systemd/commit/93651582ae.patch
 
 # PR https://github.com/systemd/systemd/pull/24639
 Patch0002:      0002-test-mountpoint-util-support-running-on-a-mount-name.patch
