@@ -129,6 +129,8 @@ for file in files(buildroot):
                        integritysetup|
                        integritytab|
                        remount-fs|
+                       /initrd|
+                       systemd-pcrphase|
                        /boot$|
                        /boot/efi|
                        /kernel/|
