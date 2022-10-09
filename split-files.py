@@ -131,6 +131,7 @@ for file in files(buildroot):
                        remount-fs|
                        /initrd|
                        systemd-pcrphase|
+                       systemd-measure|
                        /boot$|
                        /boot/efi|
                        /kernel/|
