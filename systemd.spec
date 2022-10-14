@@ -906,6 +906,8 @@ fi
 [ $1 -eq 1 ] || exit 0
 # Initial installation
 
+touch %{_localstatedir}/lib/rpm-state/systemd-resolved.initial-installation
+
 # Related to https://bugzilla.redhat.com/show_bug.cgi?id=1943263
 if ls /usr/lib/systemd/libsystemd-shared-24[0-8].so &>/dev/null; then
     echo "Skipping presets for systemd-resolved.service, seems we are upgrading from old systemd."
@@ -915,14 +917,17 @@ fi
 %systemd_post systemd-resolved.service
 
 %posttrans resolved
-[ $1 -eq 1 ] || exit 0
+[ -e %{_localstatedir}/lib/rpm-state/systemd-resolved.initial-installation ] || exit 0
+rm %{_localstatedir}/lib/rpm-state/systemd-resolved.initial-installation
 # Initial installation
 
 # Create /etc/resolv.conf symlink.
-# We would also create it using tmpfiles, but let's do this here
-# too before NetworkManager gets a chance. (systemd-tmpfiles invocation above
-# does not do this, because it's marked with ! and we don't specify --boot.)
-# https://bugzilla.redhat.com/show_bug.cgi?id=1873856
+# (https://bugzilla.redhat.com/show_bug.cgi?id=1873856)
+#
+# We would also create it using tmpfiles, but let's do this here too
+# before NetworkManager gets a chance. (systemd-tmpfiles invocation
+# above does not do this, because the line is marked with ! and
+# tmpfiles is invoked without --boot in the scriptlet.)
 #
 # *Create* the symlink if nothing is present yet.
 # (https://bugzilla.redhat.com/show_bug.cgi?id=2032085)
