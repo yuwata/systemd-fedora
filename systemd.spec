@@ -30,12 +30,12 @@
 Name:           systemd
 Url:            https://www.freedesktop.org/wiki/Software/systemd
 %if %{without inplace}
-Version:        252~rc2
+Version:        252~rc3
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
 %endif
-Release:        %autorelease -b 28
+Release:        %autorelease
 
 # For a breakdown of the licensing, see README
 License:        LGPLv2+ and MIT and GPLv2+
