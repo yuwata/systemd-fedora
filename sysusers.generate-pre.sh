@@ -70,9 +70,12 @@ parse() {
 		eval "arr=( $line )"
 		case "${arr[0]}" in
 			('u')
-				group "${arr[1]}" "${arr[2]}"
-				user "${arr[1]}" "${arr[2]}" "${arr[3]}" "${arr[1]}" "${arr[4]}" "${arr[5]}"
-				# TODO: user:group support
+				if [[ "${arr[2]}" == *":"* ]]; then
+					user "${arr[1]}" "${arr[2]%:*}" "${arr[3]}" "${arr[2]#*:}" "${arr[4]}" "${arr[5]}"
+				else
+					group "${arr[1]}" "${arr[2]}"
+					user "${arr[1]}" "${arr[2]}" "${arr[3]}" "${arr[1]}" "${arr[4]}" "${arr[5]}"
+				fi
 				;;
 			('g')
 				group "${arr[1]}" "${arr[2]}"
