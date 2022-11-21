@@ -169,6 +169,11 @@ BuildRequires:  bpftool
 %global have_bpf 1
 %endif
 
+%ifarch x86_64 aarch64
+# That package is only built for those two architectures
+BuildRequires:  xen-devel
+%endif
+
 Requires(post): coreutils
 Requires(post): grep
 # systemd-machine-id-setup requires libssl
