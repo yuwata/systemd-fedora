@@ -344,6 +344,7 @@ This package also provides systemd-timesyncd, a network time protocol daemon.
 It also contains tools to manage encrypted home areas and secrets bound to the
 machine, and to create or grow partitions and make file systems automatically.
 
+%if 0%{?have_gnu_efi}
 %package boot-unsigned
 Summary: UEFI boot manager (unsigned version)
 
@@ -359,6 +360,7 @@ line. systemd-boot supports systems with UEFI firmware only.
 
 This package contains the unsigned version. Install systemd-boot instead to get
 the version that works with Secure Boot.
+%endif
 
 %package container
 # Name is the same as in Debian
@@ -1013,7 +1015,9 @@ fi
 
 %files udev -f .file-list-udev
 
+%if 0%{?have_gnu_efi}
 %files boot-unsigned -f .file-list-boot
+%endif
 
 %files container -f .file-list-container
 %ghost %dir %attr(0700,-,-) /var/lib/machines
