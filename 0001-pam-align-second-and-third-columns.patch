@@ -1,0 +1,48 @@
+From 9efb224443d819b7d64ec76cb94c8aa625a8abf2 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Wed, 23 Nov 2022 16:05:48 +0100
+Subject: [PATCH 1/2] pam: align second and third columns
+
+In our template file, we have jinja2 template markers, so the file
+looks fairly messy. But once it's rendered, it looks pretty clean, except
+that the columns are unaligned becuase of "-" in some lines in the first
+column. Let's make them aligned.
+---
+ src/login/systemd-user.in | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/src/login/systemd-user.in b/src/login/systemd-user.in
+index 39bcbd71fe..d5597d28cb 100644
+--- a/src/login/systemd-user.in
++++ b/src/login/systemd-user.in
+@@ -4,18 +4,18 @@
+ # Used by systemd --user instances.
+ 
+ {% if ENABLE_HOMED %}
+--account sufficient pam_systemd_home.so
++-account  sufficient pam_systemd_home.so
+ {% endif %}
+-account sufficient pam_unix.so no_pass_expiry
+-account required pam_permit.so
++account  sufficient pam_unix.so no_pass_expiry
++account  required pam_permit.so
+ 
+ {% if HAVE_SELINUX %}
+-session required pam_selinux.so close
+-session required pam_selinux.so nottys open
++session  required pam_selinux.so close
++session  required pam_selinux.so nottys open
+ {% endif %}
+-session required pam_loginuid.so
+-session optional pam_keyinit.so force revoke
++session  required pam_loginuid.so
++session  optional pam_keyinit.so force revoke
+ {% if ENABLE_HOMED %}
+--session optional pam_systemd_home.so
++-session  optional pam_systemd_home.so
+ {% endif %}
+-session optional pam_systemd.so
++session  optional pam_systemd.so
+-- 
+2.38.1
+

@@ -89,10 +89,16 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # than in the next section. Packit CI will drop any patches in this range before
 # applying upstream pull requests.
 
+Patch0001:      0001-pam-align-second-and-third-columns.patch
+Patch0002:      0002-pam-add-a-call-to-pam_namespace.patch
+Patch0003:      0003-pam-actually-align-the-columns.patch
 
 # Those are downstream-only patches, but we don't want them in packit builds:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
 Patch0490:      use-bfq-scheduler.patch
+
+# Adjust upstream config to use our shared stack
+Patch0491:      fedora-use-system-auth-in-pam-systemd-user.patch
 
 %ifarch %{ix86} x86_64 aarch64
 %global have_gnu_efi 1
