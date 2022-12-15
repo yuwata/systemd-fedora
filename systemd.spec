@@ -66,7 +66,6 @@ Source7:        systemd-journal-remote.xml
 Source8:        systemd-journal-gatewayd.xml
 Source9:        20-yama-ptrace.conf
 Source10:       systemd-udev-trigger-no-reload.conf
-Source12:       systemd-user
 Source13:       libsystemd-shared.abignore
 
 Source14:       10-oomd-defaults.conf
@@ -472,11 +471,6 @@ package and is meant for use in non-systemd systems.
 
 %prep
 %autosetup -n %{?commit:%{name}%{?stable:-stable}-%{commit}}%{!?commit:%{name}%{?stable:-stable}-%{version_no_tilde}} -p1
-
-test -f src/login/systemd-user.in
-# Restore systemd-user pam config from before "removal of Fedora-specific bits".
-# We'll systemd process it and install in the right place.
-cp %{SOURCE12} src/login/systemd-user.in
 
 %build
 %global ntpvendor %(source /etc/os-release; echo ${ID})
