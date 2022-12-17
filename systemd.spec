@@ -191,7 +191,7 @@ Requires:       %{name}-libs = %{version}-%{release}
 %{?fedora:Recommends:     %{name}-resolved = %{version}-%{release}}
 Recommends:     diffutils
 Requires:       (util-linux-core or util-linux)
-Recommends:     libxkbcommon%{?_isa}
+Recommends:     libxkbcommon%{_isa}
 Provides:       /bin/systemctl
 Provides:       /sbin/shutdown
 Provides:       syslog
@@ -284,7 +284,7 @@ for information how to use those macros.
 %package devel
 Summary:        Development headers for systemd
 License:        LGPLv2+ and MIT
-Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
+Requires:       %{name}-libs%{_isa} = %{version}-%{release}
 Requires(meta): (%{name}-rpm-macros = %{version}-%{release} if rpm-build)
 Provides:       libudev-devel = %{version}
 Provides:       libudev-devel%{_isa} = %{version}
@@ -298,7 +298,7 @@ to libudev or libsystemd.
 Summary: Rule-based device node and kernel event manager
 License:        LGPLv2+
 
-Requires:       systemd%{?_isa} = %{version}-%{release}
+Requires:       systemd%{_isa} = %{version}-%{release}
 Requires(post):   systemd
 Requires(preun):  systemd
 Requires(postun): systemd
@@ -354,6 +354,8 @@ machine, and to create or grow partitions and make file systems automatically.
 Summary: UEFI boot manager (unsigned version)
 
 Provides: systemd-boot-unsigned-%{efi_arch} = %version-%release
+Provides: systemd-boot = %version-%release
+Provides: systemd-boot%{_isa} = %version-%release
 
 # self-obsoletes to install both packages after split of systemd-boot
 Obsoletes:      systemd-udev < 252.2^
@@ -370,7 +372,7 @@ the version that works with Secure Boot.
 %package container
 # Name is the same as in Debian
 Summary: Tools for containers and VMs
-Requires:       %{name}%{?_isa} = %{version}-%{release}
+Requires:       %{name}%{_isa} = %{version}-%{release}
 Requires(post):   systemd
 Requires(preun):  systemd
 Requires(postun): systemd
@@ -389,7 +391,7 @@ systemd-importd.
 %package journal-remote
 # Name is the same as in Debian
 Summary:        Tools to send journal events over the network
-Requires:       %{name}%{?_isa} = %{version}-%{release}
+Requires:       %{name}%{_isa} = %{version}-%{release}
 License:        LGPLv2+
 Requires:       firewalld-filesystem
 Provides:       %{name}-journal-gateway = %{version}-%{release}
@@ -407,7 +409,7 @@ systemd-journal-upload.
 
 %package networkd
 Summary:        System daemon that manages network configurations
-Requires:       %{name}%{?_isa} = %{version}-%{release}
+Requires:       %{name}%{_isa} = %{version}-%{release}
 License:        LGPLv2+
 # https://src.fedoraproject.org/rpms/systemd/pull-request/34
 Obsoletes:      systemd < 246.6-2
@@ -419,7 +421,7 @@ devices.
 
 %package resolved
 Summary:        Network Name Resolution manager
-Requires:       %{name}%{?_isa} = %{version}-%{release}
+Requires:       %{name}%{_isa} = %{version}-%{release}
 Obsoletes:      %{name} < 249~~
 Requires:       libidn2.so.0%{?elf_suffix}
 Requires:       libidn2.so.0(IDN2_0.0.0)%{?elf_bits}
@@ -442,7 +444,7 @@ a userspace out-of-memory (OOM) killer.
 
 %package tests
 Summary:       Internal unit tests for systemd
-Requires:      %{name}%{?_isa} = %{version}-%{release}
+Requires:      %{name}%{_isa} = %{version}-%{release}
 License:       LGPLv2+
 
 %description tests
