@@ -153,6 +153,7 @@ BuildRequires:  gperf
 BuildRequires:  gawk
 BuildRequires:  tree
 BuildRequires:  hostname
+BuildRequires:  python3
 BuildRequires:  python3dist(lxml)
 BuildRequires:  python3dist(jinja2)
 BuildRequires:  firewalld-filesystem
