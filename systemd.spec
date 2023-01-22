@@ -92,6 +92,12 @@ Patch0001:      0001-pam-align-second-and-third-columns.patch
 Patch0002:      0002-pam-add-a-call-to-pam_namespace.patch
 Patch0003:      0003-pam-actually-align-the-columns.patch
 
+Patch0011:      0001-shared-install-Use-InstallChangeType-consistently.patch
+Patch0012:      0002-journal-remote-code-is-of-type-enum-MHD_RequestTermi.patch
+Patch0013:      0003-resolve-dns_server_feature_level_-_string-type-is-Dn.patch
+Patch0014:      0004-Use-dummy-allocator-to-make-accesses-defined-as-per-.patch
+Patch0015:      0005-alloc-util-Disallow-inlining-of-expand_to_usable.patch
+
 # Those are downstream-only patches, but we don't want them in packit builds:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
 Patch0490:      use-bfq-scheduler.patch
