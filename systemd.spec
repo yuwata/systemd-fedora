@@ -1,7 +1,7 @@
 #global commit c4b843473a75fb38ed5bf54e9d3cfb1cb3719efa
 %{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
-%global stable 1
+#global stable 1
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
 # strip the automatically generated dep here and instead co-own the
@@ -30,7 +30,7 @@
 Name:           systemd
 Url:            https://systemd.io
 %if %{without inplace}
-Version:        252.4
+Version:        253~rc1
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
@@ -88,15 +88,6 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # than in the next section. Packit CI will drop any patches in this range before
 # applying upstream pull requests.
 
-Patch0001:      0001-pam-align-second-and-third-columns.patch
-Patch0002:      0002-pam-add-a-call-to-pam_namespace.patch
-Patch0003:      0003-pam-actually-align-the-columns.patch
-
-Patch0011:      0001-shared-install-Use-InstallChangeType-consistently.patch
-Patch0012:      0002-journal-remote-code-is-of-type-enum-MHD_RequestTermi.patch
-Patch0013:      0003-resolve-dns_server_feature_level_-_string-type-is-Dn.patch
-Patch0014:      0004-Use-dummy-allocator-to-make-accesses-defined-as-per-.patch
-Patch0015:      0005-alloc-util-Disallow-inlining-of-expand_to_usable.patch
 
 # Those are downstream-only patches, but we don't want them in packit builds:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
@@ -160,8 +151,13 @@ BuildRequires:  gawk
 BuildRequires:  tree
 BuildRequires:  hostname
 BuildRequires:  python3
-BuildRequires:  python3dist(lxml)
+BuildRequires:  python3-devel
 BuildRequires:  python3dist(jinja2)
+BuildRequires:  python3dist(lxml)
+BuildRequires:  python3dist(pefile)
+BuildRequires:  python3dist(pillow)
+BuildRequires:  python3dist(zstd)
+# gzip and lzma are provided by the stdlib
 BuildRequires:  firewalld-filesystem
 %if 0%{?have_gnu_efi}
 BuildRequires:  gnu-efi gnu-efi-devel
@@ -357,6 +353,16 @@ It also contains tools to manage encrypted home areas and secrets bound to the
 machine, and to create or grow partitions and make file systems automatically.
 
 %if 0%{?have_gnu_efi}
+%package ukify
+Summary:        Tool to build Unified Kernel Images
+Requires:       %{name} = %{version}-%{release}
+BuildArch:      noarch
+
+%description ukify
+This package provides ukify, a script that combines a kernel image, an initrd,
+with a command line, and possibly PCR measurements and other metadata, into a
+Unified Kernel Image (UKI).
+
 %package boot-unsigned
 Summary: UEFI boot manager (unsigned version)
 
@@ -458,25 +464,45 @@ License:       LGPLv2+
 "Installed tests" that are usually run as part of the build system. They can be
 useful to test systemd internals.
 
+%package standalone-repart
+Summary:       Standalone systemd-repart binary for use on systems without systemd
+Provides:      %{name}-tmpfiles = %{version}-%{release}
+RemovePathPostfixes: .standalone
+
+%description standalone-repart
+Standalone systemd-repart binary with no dependencies on the systemd-shared library or
+other libraries from systemd-libs. This package conflicts with the main systemd
+package and is meant for use on systems without systemd.
+
 %package standalone-tmpfiles
-Summary:       Standalone tmpfiles binary for use in non-systemd systems
+Summary:       Standalone systemd-tmpfiles binary for use on systems without systemd
 Provides:      %{name}-tmpfiles = %{version}-%{release}
 RemovePathPostfixes: .standalone
 
 %description standalone-tmpfiles
-Standalone tmpfiles binary with no dependencies on the systemd-shared library or
+Standalone systemd-tmpfiles binary with no dependencies on the systemd-shared library or
 other libraries from systemd-libs. This package conflicts with the main systemd
-package and is meant for use in non-systemd systems.
+package and is meant for use on systems without systemd.
 
 %package standalone-sysusers
-Summary:       Standalone sysusers binary for use in non-systemd systems
+Summary:       Standalone systemd-sysusers binary for use on systems without systemd
 Provides:      %{name}-sysusers = %{version}-%{release}
 RemovePathPostfixes: .standalone
 
 %description standalone-sysusers
-Standalone sysusers binary with no dependencies on the systemd-shared library or
+Standalone systemd-sysusers binary with no dependencies on the systemd-shared library or
 other libraries from systemd-libs. This package conflicts with the main systemd
-package and is meant for use in non-systemd systems.
+package and is meant for use on systems without systemd.
+
+%package standalone-shutdown
+Summary:       Standalone systemd-shutdown binary for use on systems without systemd
+Provides:      %{name}-sysusers = %{version}-%{release}
+RemovePathPostfixes: .standalone
+
+%description standalone-shutdown
+Standalone systemd-shutdown binary with no dependencies on the systemd-shared library or
+other libraries from systemd-libs. This package conflicts with the main systemd
+package and is meant for use in exitrds.
 
 %prep
 %autosetup -n %{?commit:%{name}%{?stable:-stable}-%{commit}}%{!?commit:%{name}%{?stable:-stable}-%{version_no_tilde}} -p1
@@ -1025,6 +1051,7 @@ fi
 %files udev -f .file-list-udev
 
 %if 0%{?have_gnu_efi}
+%files ukify -f .file-list-ukify
 %files boot-unsigned -f .file-list-boot
 %endif
 
@@ -1039,9 +1066,13 @@ fi
 
 %files tests -f .file-list-tests
 
+%files standalone-repart -f .file-list-standalone-repart
+
 %files standalone-tmpfiles -f .file-list-standalone-tmpfiles
 
 %files standalone-sysusers -f .file-list-standalone-sysusers
+
+%files standalone-shutdown -f .file-list-standalone-shutdown
 
 %changelog
 %autochangelog

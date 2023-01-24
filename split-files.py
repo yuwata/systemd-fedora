@@ -17,6 +17,7 @@ def files(root):
 
 o_libs = open('.file-list-libs', 'w')
 o_udev = open('.file-list-udev', 'w')
+o_ukify = open('.file-list-ukify', 'w')
 o_boot = open('.file-list-boot', 'w')
 o_pam = open('.file-list-pam', 'w')
 o_rpm_macros = open('.file-list-rpm-macros', 'w')
@@ -27,8 +28,10 @@ o_oomd_defaults = open('.file-list-oomd-defaults', 'w')
 o_remote = open('.file-list-remote', 'w')
 o_resolve = open('.file-list-resolve', 'w')
 o_tests = open('.file-list-tests', 'w')
+o_standalone_repart = open('.file-list-standalone-repart', 'w')
 o_standalone_tmpfiles = open('.file-list-standalone-tmpfiles', 'w')
 o_standalone_sysusers = open('.file-list-standalone-sysusers', 'w')
+o_standalone_shutdown = open('.file-list-standalone-shutdown', 'w')
 o_main = open('.file-list-main', 'w')
 for file in files(buildroot):
     n = file.path[1:]
@@ -53,12 +56,27 @@ for file in files(buildroot):
                     /var(/cache|/log|/lib|/run|)$
     ''', n, re.X):
         continue
-    if '/security/pam_' in n or '/man8/pam_' in n:
+
+    if n.endswith('.standalone'):
+        if 'repart' in n:
+            o = o_standalone_repart
+        elif 'tmpfiles' in n:
+            o = o_standalone_tmpfiles
+        elif 'sysusers' in n:
+            o = o_standalone_sysusers
+        elif 'shutdown' in n:
+            o = o_standalone_shutdown
+        else:
+            assert False, 'Found .standalone not belonging to known packages'
+
+    elif '/security/pam_' in n or '/man8/pam_' in n:
         o = o_pam
     elif '/rpm/' in n:
         o = o_rpm_macros
     elif '/usr/lib/systemd/tests' in n:
         o = o_tests
+    elif 'ukify' in n:
+        o = o_ukify
     elif re.search(r'/libsystemd-(shared|core)-.*\.so$', n):
         o = o_main
     elif re.search(r'/libcryptsetup-token-systemd-.*\.so$', n):
@@ -159,14 +177,6 @@ for file in files(buildroot):
 
     elif re.search(r'10-oomd-.*defaults.conf|lib/systemd/oomd.conf.d', n, re.X):
         o = o_oomd_defaults
-
-    elif n.endswith('.standalone'):
-        if 'tmpfiles' in n:
-            o = o_standalone_tmpfiles
-        elif 'sysusers' in n:
-            o = o_standalone_sysusers
-        else:
-            assert False, 'Found .standalone not belonging to known packages'
 
     else:
         o = o_main
