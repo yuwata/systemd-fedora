@@ -324,8 +324,9 @@ Recommends:     libdw.so.1(ELFUTILS_0.186)%{?elf_bits}
 Recommends:     libelf.so.1%{?elf_suffix}
 Recommends:     libelf.so.1(ELFUTILS_1.7)%{?elf_bits}
 
-# used by home, cryptsetup, cryptenroll
+# used by home, cryptsetup, cryptenroll, logind
 Recommends:     libfido2.so.1%{?elf_suffix}
+Recommends:     libp11-kit.so.0%{?elf_suffix}
 Recommends:     libtss2-esys.so.0%{?elf_suffix}
 Recommends:     libtss2-mu.so.0%{?elf_suffix}
 Recommends:     libtss2-rc.so.0%{?elf_suffix}
@@ -356,6 +357,15 @@ machine, and to create or grow partitions and make file systems automatically.
 %package ukify
 Summary:        Tool to build Unified Kernel Images
 Requires:       %{name} = %{version}-%{release}
+
+# We prefer llvm-objcopy over objcopy.
+Requires:       (llvm or binutils)
+Recommends:     llvm
+
+Requires:       python3dist(pefile)
+Requires:       python3dist(zstd)
+Recommends:     python3dist(pillow)
+
 BuildArch:      noarch
 
 %description ukify
