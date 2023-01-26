@@ -876,11 +876,17 @@ if systemctl -q is-enabled systemd-resolved.service &>/dev/null; then
   systemctl start systemd-resolved.service &>/dev/null || :
 fi
 
-%triggerpostun -- systemd < 247.3-2
+%triggerun -- systemd < 247.3-2
 # This is for upgrades from previous versions before oomd-defaults is available.
+systemctl --no-reload preset systemd-oomd.service &>/dev/null || :
+
+%triggerpostun -- systemd < 253~rc1-2
+# This is for upgrades from previous versions where systemd-journald-audit.socket
+# had a static enablement symlink.
 # We use %%triggerpostun here because rpm doesn't allow a second %%triggerun with
 # a different package version.
-systemctl --no-reload preset systemd-oomd.service &>/dev/null || :
+systemctl --no-reload preset systemd-journald-audit.socket &>/dev/null || :
+
 
 %global udev_services systemd-udev{d,-settle,-trigger}.service systemd-udevd-{control,kernel}.socket systemd-timesyncd.service %{?have_gnu_efi:systemd-boot-update.service}
 
