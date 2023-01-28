@@ -156,6 +156,7 @@ BuildRequires:  python3dist(jinja2)
 BuildRequires:  python3dist(lxml)
 BuildRequires:  python3dist(pefile)
 BuildRequires:  python3dist(pillow)
+BuildRequires:  python3dist(pytest)
 BuildRequires:  python3dist(zstd)
 # gzip and lzma are provided by the stdlib
 BuildRequires:  firewalld-filesystem
