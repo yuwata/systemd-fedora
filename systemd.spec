@@ -602,6 +602,9 @@ CONFIGURE_OPTS=(
         -Ddefault-llmnr=resolve
         # https://bugzilla.redhat.com/show_bug.cgi?id=2028169
         -Dstatus-unit-format-default=combined
+        # https://fedoraproject.org/wiki/Changes/Shorter_Shutdown_Timer
+        -Ddefault-timeout-sec=45
+        -Ddefault-user-timeout-sec=45
         -Doomd=true
         -Dadm-gid=4
         -Daudio-gid=63
