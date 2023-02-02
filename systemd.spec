@@ -177,9 +177,11 @@ BuildRequires:  bpftool
 %global have_bpf 1
 %endif
 
+%if 0%{?fedora}
 %ifarch x86_64 aarch64
 # That package is only built for those two architectures
 BuildRequires:  xen-devel
+%endif
 %endif
 
 Requires(post): coreutils
