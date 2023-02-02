@@ -76,6 +76,8 @@ Source22:       sysusers.attr
 Source23:       sysusers.prov
 Source24:       sysusers.generate-pre.sh
 
+Source25:       98-default-mac-none.link
+
 %if 0
 GIT_DIR=../../src/systemd/.git git format-patch-ab --no-signature -M -N v235..v235-stable
 i=1; for j in 00*patch; do printf "Patch%04d:      %s\n" $i $j; i=$((i+1));done|xclip
@@ -740,6 +742,9 @@ install -Dm0644 -t %{buildroot}%{_prefix}/lib/systemd/oomd.conf.d/ %{SOURCE14}
 install -Dm0644 -t %{buildroot}%{system_unit_dir}/user-.slice.d/ %{SOURCE15}
 install -Dm0644 -t %{buildroot}%{system_unit_dir}/system.slice.d/ %{SOURCE15}
 install -Dm0644 -t %{buildroot}%{user_unit_dir}/slice.d/ %{SOURCE15}
+
+# https://bugzilla.redhat.com/show_bug.cgi?id=2107754
+install -Dm0664 -t %{buildroot}%{_prefix}/lib/systemd/network/ %{SOURCE25}
 
 sed -i 's|#!/usr/bin/env python3|#!%{__python3}|' %{buildroot}/usr/lib/systemd/tests/run-unit-tests.py
 

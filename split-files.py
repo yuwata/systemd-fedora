@@ -138,6 +138,7 @@ for file in files(buildroot):
                        pstore|
                        sleep|suspend|hibernate|
                        systemd-tmpfiles-setup-dev|
+                       network/98-default-mac-none.link|
                        network/99-default.link|
                        growfs|makefs|makeswap|mkswap|
                        fsck|
