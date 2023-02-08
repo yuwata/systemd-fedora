@@ -38,7 +38,7 @@ Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-
 Release:        %autorelease
 
 # For a breakdown of the licensing, see README
-License:        LGPLv2+ and MIT and GPLv2+
+License:        LGPL-2.1-or-later and MIT and GPL-2.0-or-later
 Summary:        System and Service Manager
 
 # download tarballs with "spectool -g systemd.spec"
@@ -259,7 +259,7 @@ This package was built from the %{version}-stable branch of systemd.
 
 %package libs
 Summary:        systemd libraries
-License:        LGPLv2+ and MIT
+License:        LGPL-2.1-or-later and MIT
 Obsoletes:      libudev < 183
 Obsoletes:      systemd < 185-4
 Conflicts:      systemd < 185-4
@@ -291,7 +291,7 @@ for information how to use those macros.
 
 %package devel
 Summary:        Development headers for systemd
-License:        LGPLv2+ and MIT
+License:        LGPL-2.1-or-later and MIT
 Requires:       %{name}-libs%{_isa} = %{version}-%{release}
 Requires(meta): (%{name}-rpm-macros = %{version}-%{release} if rpm-build)
 Provides:       libudev-devel = %{version}
@@ -304,7 +304,7 @@ to libudev or libsystemd.
 
 %package udev
 Summary: Rule-based device node and kernel event manager
-License:        LGPLv2+
+License:        LGPL-2.1-or-later
 
 Requires:       systemd%{_isa} = %{version}-%{release}
 Requires(post):   systemd
@@ -411,7 +411,7 @@ Requires(postun): systemd
 Obsoletes:      %{name} < 229-5
 # Bias the system towards libcurl-minimal if nothing pulls in full libcurl (#1997040)
 Suggests:       libcurl-minimal
-License:        LGPLv2+
+License:        LGPL-2.1-or-later
 
 %description container
 Systemd tools to spawn and manage containers and virtual machines.
@@ -423,7 +423,7 @@ systemd-importd.
 # Name is the same as in Debian
 Summary:        Tools to send journal events over the network
 Requires:       %{name}%{_isa} = %{version}-%{release}
-License:        LGPLv2+
+License:        LGPL-2.1-or-later
 Requires:       firewalld-filesystem
 Provides:       %{name}-journal-gateway = %{version}-%{release}
 Provides:       %{name}-journal-gateway%{_isa} = %{version}-%{release}
@@ -441,7 +441,7 @@ systemd-journal-upload.
 %package networkd
 Summary:        System daemon that manages network configurations
 Requires:       %{name}%{_isa} = %{version}-%{release}
-License:        LGPLv2+
+License:        LGPL-2.1-or-later
 # https://src.fedoraproject.org/rpms/systemd/pull-request/34
 Obsoletes:      systemd < 246.6-2
 
@@ -466,7 +466,7 @@ resolver, as well as an LLMNR and MulticastDNS resolver and responder.
 %package oomd-defaults
 Summary:        Configuration files for systemd-oomd
 Requires:       %{name} = %{version}-%{release}
-License:        LGPLv2+
+License:        LGPL-2.1-or-later
 BuildArch:      noarch
 
 %description oomd-defaults
@@ -476,7 +476,7 @@ a userspace out-of-memory (OOM) killer.
 %package tests
 Summary:       Internal unit tests for systemd
 Requires:      %{name}%{_isa} = %{version}-%{release}
-License:       LGPLv2+
+License:       LGPL-2.1-or-later
 
 %description tests
 "Installed tests" that are usually run as part of the build system. They can be
