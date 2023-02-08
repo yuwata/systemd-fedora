@@ -38,7 +38,7 @@ Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-
 Release:        %autorelease
 
 # For a breakdown of the licensing, see README
-License:        LGPL-2.1-or-later and MIT and GPL-2.0-or-later
+License:        LGPL-2.1-or-later AND MIT AND GPL-2.0-or-later
 Summary:        System and Service Manager
 
 # download tarballs with "spectool -g systemd.spec"
@@ -259,7 +259,7 @@ This package was built from the %{version}-stable branch of systemd.
 
 %package libs
 Summary:        systemd libraries
-License:        LGPL-2.1-or-later and MIT
+License:        LGPL-2.1-or-later AND MIT
 Obsoletes:      libudev < 183
 Obsoletes:      systemd < 185-4
 Conflicts:      systemd < 185-4
@@ -291,7 +291,7 @@ for information how to use those macros.
 
 %package devel
 Summary:        Development headers for systemd
-License:        LGPL-2.1-or-later and MIT
+License:        LGPL-2.1-or-later AND MIT
 Requires:       %{name}-libs%{_isa} = %{version}-%{release}
 Requires(meta): (%{name}-rpm-macros = %{version}-%{release} if rpm-build)
 Provides:       libudev-devel = %{version}
