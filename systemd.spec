@@ -94,6 +94,10 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # https://bugzilla.redhat.com/show_bug.cgi?id=2164404
 Patch0001:      https://patch-diff.githubusercontent.com/raw/systemd/systemd/pull/26494.patch
 
+# https://github.com/systemd/systemd/issues/26474
+# https://bugzilla.redhat.com/show_bug.cgi?id=2165004
+Patch0002:      https://patch-diff.githubusercontent.com/raw/systemd/systemd/pull/26478.patch
+
 # Those are downstream-only patches, but we don't want them in packit builds:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
 Patch0490:      use-bfq-scheduler.patch
