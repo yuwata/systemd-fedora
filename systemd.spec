@@ -755,7 +755,7 @@ install -Dm0644 -t %{buildroot}%{system_unit_dir}/system.slice.d/ %{SOURCE15}
 install -Dm0644 -t %{buildroot}%{user_unit_dir}/slice.d/ %{SOURCE15}
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=2107754
-install -Dm0664 -t %{buildroot}%{_prefix}/lib/systemd/network/ %{SOURCE25}
+install -Dm0644 -t %{buildroot}%{_prefix}/lib/systemd/network/ %{SOURCE25}
 
 sed -i 's|#!/usr/bin/env python3|#!%{__python3}|' %{buildroot}/usr/lib/systemd/tests/run-unit-tests.py
 
