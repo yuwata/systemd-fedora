@@ -120,7 +120,6 @@ for file in files(buildroot):
                        hwdb|
                        bootctl|
                        boot-update|
-                       sd-boot|systemd-boot\.|loader.conf|
                        bless-boot|
                        boot-system-token|
                        kernel-install|
@@ -166,7 +165,9 @@ for file in files(buildroot):
                        # confused if those user-facing binaries are not available.
         o = o_udev
 
-    elif re.search(r'''/boot/efi''', n, re.X):
+    elif re.search(r'''/boot/efi|
+                       sd-boot|systemd-boot\.|loader.conf
+    ''', n, re.X):
         o = o_boot
 
     elif re.search(r'''resolved|resolve1|
