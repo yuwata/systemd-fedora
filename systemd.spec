@@ -1,8 +1,6 @@
 #global commit c4b843473a75fb38ed5bf54e9d3cfb1cb3719efa
 %{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
-#global stable 1
-
 # We ship a .pc file but don't want to have a dep on pkg-config. We
 # strip the automatically generated dep here and instead co-own the
 # directory.
@@ -30,12 +28,14 @@
 Name:           systemd
 Url:            https://systemd.io
 %if %{without inplace}
-Version:        253
+Version:        253.1
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
 %endif
 Release:        %autorelease
+
+%global stable %(c="%version"; [ "$c" = "${c#*.*}" ]; echo $?)
 
 # For a breakdown of the licensing, see README
 License:        LGPL-2.1-or-later AND MIT AND GPL-2.0-or-later
@@ -94,10 +94,6 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # https://github.com/systemd/systemd/issues/26488
 # https://bugzilla.redhat.com/show_bug.cgi?id=2164404
 Patch0001:      https://patch-diff.githubusercontent.com/raw/systemd/systemd/pull/26494.patch
-
-# https://github.com/systemd/systemd/issues/26474
-# https://bugzilla.redhat.com/show_bug.cgi?id=2165004
-Patch0002:      https://patch-diff.githubusercontent.com/raw/systemd/systemd/pull/26478.patch
 
 # Those are downstream-only patches, but we don't want them in packit builds:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
@@ -262,7 +258,7 @@ utilities to control basic system configuration like the hostname, date, locale,
 maintain a list of logged-in users, system accounts, runtime directories and
 settings, and a logging daemons.
 %if 0%{?stable}
-This package was built from the %{version}-stable branch of systemd.
+This package was built from the %(c=%version; echo "v${c%.*}-stable") branch of systemd.
 %endif
 
 %package libs
