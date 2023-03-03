@@ -1,0 +1,36 @@
+From 465d48dfa23ef01ce1888e440f24b3d22d633a60 Mon Sep 17 00:00:00 2001
+From: Samanta Navarro <ferivoz@riseup.net>
+Date: Thu, 16 Feb 2023 11:59:05 +0000
+Subject: [PATCH] bootctl: Fix debug messages
+
+Remove duplicate KERNEL_INSTALL_MACHINE_ID from message and also
+specify the correct origin of layout variable.
+
+Signed-off-by: Samanta Navarro <ferivoz@riseup.net>
+(cherry picked from commit 2d5ccb0818a7c9fdc280eb84478a6b89cd46b6fe)
+---
+ src/boot/bootctl-install.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/boot/bootctl-install.c b/src/boot/bootctl-install.c
+index c795e75bc3..ebb0d486c9 100644
+--- a/src/boot/bootctl-install.c
++++ b/src/boot/bootctl-install.c
+@@ -67,7 +67,7 @@ static int load_etc_machine_info(void) {
+                 if (r < 0)
+                         return log_error_errno(r, "Failed to parse KERNEL_INSTALL_MACHINE_ID=%s in /etc/machine-info: %m", s);
+ 
+-                log_debug("Loaded KERNEL_INSTALL_MACHINE_ID=%s from KERNEL_INSTALL_MACHINE_ID in /etc/machine-info.",
++                log_debug("Loaded KERNEL_INSTALL_MACHINE_ID=%s from /etc/machine-info.",
+                           SD_ID128_TO_STRING(arg_machine_id));
+         }
+ 
+@@ -98,7 +98,7 @@ static int load_etc_kernel_install_conf(void) {
+                 return log_error_errno(r, "Failed to parse %s: %m", p);
+ 
+         if (!isempty(layout)) {
+-                log_debug("layout=%s is specified in /etc/machine-info.", layout);
++                log_debug("layout=%s is specified in %s.", layout, p);
+                 free_and_replace(arg_install_layout, layout);
+         }
+ 
