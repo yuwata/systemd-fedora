@@ -172,9 +172,6 @@ BuildRequires:  python3dist(pytest)
 BuildRequires:  python3dist(zstd)
 # gzip and lzma are provided by the stdlib
 BuildRequires:  firewalld-filesystem
-%if 0%{?have_gnu_efi}
-BuildRequires:  gnu-efi gnu-efi-devel
-%endif
 BuildRequires:  libseccomp-devel
 BuildRequires:  meson >= 0.43
 BuildRequires:  gettext
@@ -541,6 +538,16 @@ sed -r -i '/^enable systemd-boot-update.service/d' presets/90-systemd.preset
 
 sed -r 's|/system/|/user/|g' %{SOURCE16} >10-timeout-abort.conf.user
 
+%generate_buildrequires
+%if 0%{?have_gnu_efi}
+if grep -q gnu-efi meson_options.txt; then
+  echo 'gnu-efi'
+  echo 'gnu-efi-devel'
+else
+  echo 'python3dist(pyelftools)'
+fi
+%endif
+
 %build
 %global ntpvendor %(source /etc/os-release; echo ${ID})
 %{!?ntpvendor: echo 'NTP vendor zone is not set!'; exit 1}
@@ -589,7 +596,6 @@ CONFIGURE_OPTS=(
         -Dlibcurl=true
         -Dlibfido2=true
         -Defi=true
-        -Dgnu-efi=%[%{?have_gnu_efi}?"true":"false"]
         -Dtpm=true
         -Dtpm2=true
         -Dhwdb=true
@@ -646,6 +652,15 @@ CONFIGURE_OPTS=(
         -Dsystemd-resolve-uid=193
         # -Dsystemd-timesync-uid=, not set yet
 )
+
+if grep gnu-efi meson_options.txt; then
+  CONFIGURE_OPTS+=( -Dgnu-efi=%[%{?have_gnu_efi}?"true":"false"] )
+else
+  # For now, let's build the bootloader in the same places where we
+  # built with gnu-efi. Later on, we might want to extend coverage, but
+  # considering that that support is untested, let's not do this now.
+  CONFIGURE_OPTS+=( -Dbootloader=%[%{?have_gnu_efi}?"true":"false"] )
+fi
 
 %if %{without lto}
 %global _lto_cflags %nil
