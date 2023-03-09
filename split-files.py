@@ -166,6 +166,7 @@ for file in files(buildroot):
         o = o_udev
 
     elif re.search(r'''/boot/efi|
+                       /usr/lib/systemd/boot|
                        sd-boot|systemd-boot\.|loader.conf
     ''', n, re.X):
         o = o_boot
