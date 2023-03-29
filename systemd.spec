@@ -770,7 +770,6 @@ install -D -t %{buildroot}/usr/lib/systemd/ %{SOURCE3}
 
 # systemd-oomd default configuration
 install -Dm0644 -t %{buildroot}%{_prefix}/lib/systemd/oomd.conf.d/ %{SOURCE14}
-install -Dm0644 -t %{buildroot}%{system_unit_dir}/user-.slice.d/ %{SOURCE15}
 install -Dm0644 -t %{buildroot}%{system_unit_dir}/system.slice.d/ %{SOURCE15}
 install -Dm0644 -t %{buildroot}%{user_unit_dir}/slice.d/ %{SOURCE15}
 # https://fedoraproject.org/wiki/Changes/Shorter_Shutdown_Timer
