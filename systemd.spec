@@ -28,7 +28,7 @@
 Name:           systemd
 Url:            https://systemd.io
 %if %{without inplace}
-Version:        253.1
+Version:        253.2
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
@@ -95,11 +95,6 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # https://bugzilla.redhat.com/show_bug.cgi?id=2164404
 Patch0001:      https://github.com/systemd/systemd/pull/26494.patch
 
-# Fix build with gnu-efi-3.0.11-13.fc39
-Patch0002:      https://github.com/systemd/systemd-stable/pull/265.patch
-
-Patch0003:      https://github.com/systemd/systemd-stable/commit/fef2e88b92287aa97ce21eee22aca0c74dfa6570.patch
-Patch0004:      https://github.com/systemd/systemd-stable/commit/465d48dfa23ef01ce1888e440f24b3d22d633a60.patch
 
 # Those are downstream-only patches, but we don't want them in packit builds:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
