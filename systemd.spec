@@ -220,10 +220,14 @@ Conflicts:      fedora-release < 23-0.12
 %endif
 Obsoletes:      timedatex < 0.6-3
 Provides:       timedatex = 0.6-3
+Conflicts:      %{name}-standalone-repart < %{version}-%{release}^
+Provides:       %{name}-repart = %{version}-%{release}
 Conflicts:      %{name}-standalone-tmpfiles < %{version}-%{release}^
 Provides:       %{name}-tmpfiles = %{version}-%{release}
 Conflicts:      %{name}-standalone-sysusers < %{version}-%{release}^
 Provides:       %{name}-sysusers = %{version}-%{release}
+Conflicts:      %{name}-standalone-shutdown < %{version}-%{release}^
+Provides:       %{name}-shutdown = %{version}-%{release}
 
 # Recommends to replace normal Requires deps for stuff that is dlopen()ed
 Recommends:     libidn2.so.0%{?elf_suffix}
