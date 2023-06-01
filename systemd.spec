@@ -71,6 +71,7 @@ Source13:       libsystemd-shared.abignore
 Source14:       10-oomd-defaults.conf
 Source15:       10-oomd-per-slice-defaults.conf
 Source16:       10-timeout-abort.conf
+Source17:       10-map-count.conf
 
 Source21:       macros.sysusers
 Source22:       sysusers.attr
@@ -775,6 +776,9 @@ install -Dm0644 -t %{buildroot}%{user_unit_dir}/slice.d/ %{SOURCE15}
 # https://fedoraproject.org/wiki/Changes/Shorter_Shutdown_Timer
 install -Dm0644 -t %{buildroot}%{system_unit_dir}/service.d/ %{SOURCE16}
 install -Dm0644 10-timeout-abort.conf.user %{buildroot}%{user_unit_dir}/service.d/10-timeout-abort.conf
+
+# https://fedoraproject.org/wiki/Changes/IncreaseVmMaxMapCount
+install -Dm0644 -t %{buildroot}%{_prefix}/lib/sysctl.d/ %{SOURCE17}
 
 sed -i 's|#!/usr/bin/env python3|#!%{__python3}|' %{buildroot}/usr/lib/systemd/tests/run-unit-tests.py
 
