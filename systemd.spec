@@ -498,7 +498,7 @@ useful to test systemd internals.
 
 %package standalone-repart
 Summary:       Standalone systemd-repart binary for use on systems without systemd
-Provides:      %{name}-tmpfiles = %{version}-%{release}
+Provides:      %{name}-repart = %{version}-%{release}
 RemovePathPostfixes: .standalone
 
 %description standalone-repart
@@ -528,7 +528,7 @@ package and is meant for use on systems without systemd.
 
 %package standalone-shutdown
 Summary:       Standalone systemd-shutdown binary for use on systems without systemd
-Provides:      %{name}-sysusers = %{version}-%{release}
+Provides:      %{name}-shutdown = %{version}-%{release}
 RemovePathPostfixes: .standalone
 
 %description standalone-shutdown
