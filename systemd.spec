@@ -790,7 +790,7 @@ sed -i 's|#!/usr/bin/env python3|#!%{__python3}|' %{buildroot}/usr/lib/systemd/t
 
 install -m 0644 -D -t %{buildroot}%{_rpmconfigdir}/macros.d/ %{SOURCE21}
 # Use rpm's own sysusers provides where available
-%if 0%{?fedora} < 39
+%if ! (0%{?fedora} >= 39 || 0%{?rhel} >= 10)
 install -m 0644 -D -t %{buildroot}%{_rpmconfigdir}/fileattrs/ %{SOURCE22}
 install -m 0755 -D -t %{buildroot}%{_rpmconfigdir}/ %{SOURCE23}
 %endif
