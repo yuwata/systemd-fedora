@@ -27,17 +27,17 @@ index 0000000000..850b64540e
 +  KERNEL=="mmcblk*[0-9]|msblk*[0-9]|mspblk*[0-9]|sd*[!0-9]|sr*", \
 +  ATTR{queue/scheduler}="bfq"
 diff --git a/rules.d/meson.build b/rules.d/meson.build
-index 8d2878a36d..a3b395c9ce 100644
+index 20fca222da..94fee9d7c0 100644
 --- a/rules.d/meson.build
 +++ b/rules.d/meson.build
-@@ -8,6 +8,7 @@ rules = [
+@@ -7,6 +7,7 @@ install_data(
+ rules = [
          [files('60-autosuspend.rules',
                 '60-block.rules',
-                '60-cdrom_id.rules',
 +               '60-block-scheduler.rules',
+                '60-cdrom_id.rules',
+                '60-dmi-id.rules',
                 '60-drm.rules',
-                '60-evdev.rules',
-                '60-fido-id.rules',
 -- 
-2.37.2
+2.41.0
 

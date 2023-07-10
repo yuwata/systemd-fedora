@@ -28,7 +28,7 @@
 Name:           systemd
 Url:            https://systemd.io
 %if %{without inplace}
-Version:        253.5
+Version:        254~rc1
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
@@ -537,7 +537,7 @@ other libraries from systemd-libs. This package conflicts with the main systemd
 package and is meant for use in exitrds.
 
 %prep
-%autosetup -n %{?commit:%{name}%{?stable:-stable}-%{commit}}%{!?commit:%{name}%{?stable:-stable}-%{version_no_tilde}} -p1
+%autosetup -n %{?commit:%{name}%[%stable?"-stable":""]-%{commit}}%{!?commit:%{name}%[%stable?"-stable":""]-%{version_no_tilde}} -p1
 
 # We want to update sd-boot from packaging scriptlets after package update.
 # Let's disable the service.
