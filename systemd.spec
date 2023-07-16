@@ -24,13 +24,13 @@
 
 # Bootstrap may be needed to break circular dependencies with cryptsetup,
 # e.g. when re-building cryptsetup on a json-c SONAME-bump.
-%bcond_with    bootstrap
-%bcond_without tests
-%bcond_without lto
+%bcond bootstrap 0
+%bcond tests     1
+%bcond lto       1
 
 # Support for quick builds with rpmbuild --build-in-place.
 # See README.build-in-place.
-%bcond_with    inplace
+%bcond inplace 0
 
 Name:           systemd
 Url:            https://systemd.io
