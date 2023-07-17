@@ -932,7 +932,7 @@ if [ $1 -eq 1 ]; then
    systemd-tmpfiles --create &>/dev/null || :
 fi
 
-%systemd_postun_with_restart systemd-timedated.service systemd-portabled.service systemd-homed.service systemd-hostnamed.service systemd-journald.service systemd-localed.service systemd-userdbd.service systemd-oomd.service
+%systemd_postun_with_restart systemd-timedated.service systemd-hostnamed.service systemd-journald.service systemd-localed.service systemd-userdbd.service systemd-oomd.service
 
 # FIXME: systemd-logind.service is excluded (https://github.com/systemd/systemd/pull/17558)
 # FIXME: user@*.service needs to be restarted, but using systemctl --user daemon-reexec
@@ -964,8 +964,7 @@ systemctl --no-reload preset systemd-oomd.service &>/dev/null || :
 # a different package version.
 systemctl --no-reload preset systemd-journald-audit.socket &>/dev/null || :
 
-
-%global udev_services systemd-udev{d,-settle,-trigger}.service systemd-udevd-{control,kernel}.socket systemd-timesyncd.service %{?have_gnu_efi:systemd-boot-update.service}
+%global udev_services systemd-udev{d,-settle,-trigger}.service systemd-udevd-{control,kernel}.socket systemd-homed.service systemd-timesyncd.service %{?have_gnu_efi:systemd-boot-update.service} systemd-portabled.service systemd-pstore.service remote-cryptsetup.target
 
 %post udev
 # Move old stuff around in /var/lib
