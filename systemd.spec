@@ -935,7 +935,8 @@ fi
 %systemd_postun_with_restart systemd-timedated.service systemd-hostnamed.service systemd-journald.service systemd-localed.service systemd-userdbd.service systemd-oomd.service
 
 # FIXME: systemd-logind.service is excluded (https://github.com/systemd/systemd/pull/17558)
-# FIXME: user@*.service needs to be restarted, but using systemctl --user daemon-reexec
+
+%systemd_user_daemon_reexec
 
 %triggerun resolved -- systemd < 246.1-1
 # This is for upgrades from previous versions before systemd-resolved became the default.
