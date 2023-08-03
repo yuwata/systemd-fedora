@@ -1166,5 +1166,11 @@ fi
 
 %files standalone-shutdown -f .file-list-standalone-shutdown
 
+%clean
+rm -rf $RPM_BUILD_ROOT
+rm -f 10-timeout-abort.conf.user
+rm -f .file-list-*
+rm -f %{name}.lang
+
 %changelog
 %autochangelog
