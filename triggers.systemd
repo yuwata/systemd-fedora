@@ -17,11 +17,7 @@
 /usr/lib/systemd/systemd-update-helper system-reload-restart || :
 
 %transfiletriggerin -P 900899 -- /usr/lib/systemd/user /etc/systemd/user
-if selinuxenabled &>/dev/null; then
-  /usr/lib/systemd/systemd-update-helper user-reload-restart 2>/dev/null || :
-else
-  /usr/lib/systemd/systemd-update-helper user-reload-restart || :
-fi
+/usr/lib/systemd/systemd-update-helper user-reload-restart || :
 
 %transfiletriggerpostun -P 1000100 -- /usr/lib/systemd/system /etc/systemd/system
 # On removal, we need to run daemon-reload after any units have been
@@ -33,11 +29,7 @@ fi
 
 %transfiletriggerpostun -P 1000099 -- /usr/lib/systemd/user /etc/systemd/user
 # Execute daemon-reload in user managers.
-if selinuxenabled &>/dev/null; then
-  /usr/lib/systemd/systemd-update-helper user-reload 2>/dev/null || :
-else
-  /usr/lib/systemd/systemd-update-helper user-reload || :
-fi
+/usr/lib/systemd/systemd-update-helper user-reload || :
 
 %transfiletriggerpostun -P 10000 -- /usr/lib/systemd/system /etc/systemd/system
 # We restart remaining system services that should be restarted here.
@@ -45,11 +37,7 @@ fi
 
 %transfiletriggerpostun -P  9999 -- /usr/lib/systemd/user /etc/systemd/user
 # We restart remaining user services that should be restarted here.
-if selinuxenabled &>/dev/null; then
-  /usr/lib/systemd/systemd-update-helper user-restart 2>/dev/null || :
-else
-  /usr/lib/systemd/systemd-update-helper user-restart || :
-fi
+/usr/lib/systemd/systemd-update-helper user-restart || :
 
 %transfiletriggerin -P 1000700 -- /usr/lib/sysusers.d
 # This script will process files installed in /usr/lib/sysusers.d to create
