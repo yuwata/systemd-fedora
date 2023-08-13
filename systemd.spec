@@ -207,6 +207,7 @@ BuildRequires:  bpftool
 
 %if 0%{?fedora}
 %ifarch x86_64 aarch64
+%global have_xen 1
 # That package is only built for those two architectures
 BuildRequires:  xen-devel
 %endif
@@ -619,6 +620,7 @@ CONFIGURE_OPTS=(
         -Dlibiptc=false
         -Dlibcurl=true
         -Dlibfido2=true
+        -Dxenctrl=%[0%{?have_xen}?"true":"false"]
         -Defi=true
         -Dtpm=true
         -Dtpm2=true
