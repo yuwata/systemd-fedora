@@ -685,7 +685,12 @@ else
   # For now, let's build the bootloader in the same places where we
   # built with gnu-efi. Later on, we might want to extend coverage, but
   # considering that that support is untested, let's not do this now.
-  CONFIGURE_OPTS+=( -Dbootloader=%[%{?have_gnu_efi}?"true":"false"] )
+  # Note, ukify requires bootloader, let's also explicitly enable/disable it
+  # here for https://github.com/systemd/systemd/pull/24175.
+  CONFIGURE_OPTS+=(
+        -Dbootloader=%[%{?have_gnu_efi}?"true":"false"]
+        -Dukify=%[%{?have_gnu_efi}?"true":"false"]
+  )
 fi
 
 %if %{without lto}
