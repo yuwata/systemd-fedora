@@ -99,10 +99,12 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # than in the next section. Packit CI will drop any patches in this range before
 # applying upstream pull requests.
 
-# https://github.com/systemd/systemd/issues/26488
+# Work-around for dracut issue: run generators directly when we are in initrd
 # https://bugzilla.redhat.com/show_bug.cgi?id=2164404
 Patch0001:      https://github.com/systemd/systemd/pull/26494.patch
 
+# Backport of patches that allow reloading of units
+Patch0002:      https://github.com/systemd/systemd/pull/28521/commits/631d2b05ec5195d1f8f8fbff8a2dfcbf23d0b7aa.patch
 
 # Those are downstream-only patches, but we don't want them in packit builds:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
@@ -940,7 +942,12 @@ fi
 
 # FIXME: systemd-logind.service is excluded (https://github.com/systemd/systemd/pull/17558)
 
-%systemd_user_daemon_reexec
+# This is the explanded form of %%systemd_user_daemon_reexec. We
+# can't use the macro because we define it ourselves.
+if [ $1 -ge 1 ] && [ -x "/usr/lib/systemd/systemd-update-helper" ]; then
+    # Package upgrade, not uninstall
+    /usr/lib/systemd/systemd-update-helper user-reexec || :
+fi
 
 %triggerun resolved -- systemd < 246.1-1
 # This is for upgrades from previous versions before systemd-resolved became the default.

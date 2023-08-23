@@ -1,0 +1,94 @@
+From 631d2b05ec5195d1f8f8fbff8a2dfcbf23d0b7aa Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Wed, 26 Jul 2023 09:02:04 +0200
+Subject: [PATCH] rpm: add %systemd_postun_with_reload and
+ %systemd_user_postun_with_reload
+
+For some units, the package would like to issue a reload. The machinery was
+already in place since c9615f73521986b3607b852c139036d58973043c:
+
+  systemctl reload-or-restart --marked
+
+  Enqueues restart jobs for all units that have the 'needs-restart'
+  mark, and reload jobs for units that have the 'needs-reload' mark.
+  When a unit marked for reload does not support reload, restart will
+  be queued.
+
+The new macros allow a reload to be issued instead of a restart.
+
+Based on the discussion on fedora-devel:
+https://lists.fedoraproject.org/archives/list/devel@lists.fedoraproject.org/message/IJSUGIEJNYZZRE53FF4YFUEBRHRAVIXR/
+
+Tested using dummy package https://github.com/keszybz/rpm-test-reload.
+---
+ src/rpm/macros.systemd.in        | 16 ++++++++++++++++
+ src/rpm/systemd-update-helper.in | 22 ++++++++++++++++++++++
+ 2 files changed, 38 insertions(+)
+
+diff --git a/src/rpm/macros.systemd.in b/src/rpm/macros.systemd.in
+index c07541c7286c..f05553f557e9 100644
+--- a/src/rpm/macros.systemd.in
++++ b/src/rpm/macros.systemd.in
+@@ -101,6 +101,22 @@ if [ $1 -ge 1 ] && [ -x "{{SYSTEMD_UPDATE_HELPER_PATH}}" ]; then \
+ fi \
+ %{nil}
+ 
++%systemd_postun_with_reload() \
++%{expand:%%{?__systemd_someargs_%#:%%__systemd_someargs_%# systemd_postun_with_reload}} \
++if [ $1 -ge 1 ] && [ -x "{{SYSTEMD_UPDATE_HELPER_PATH}}" ]; then \
++    # Package upgrade, not uninstall \
++    {{SYSTEMD_UPDATE_HELPER_PATH}} mark-reload-system-units %{?*} || : \
++fi \
++%{nil}
++
++%systemd_user_postun_with_reload() \
++%{expand:%%{?__systemd_someargs_%#:%%__systemd_someargs_%# systemd_user_postun_with_reload}} \
++if [ $1 -ge 1 ] && [ -x "{{SYSTEMD_UPDATE_HELPER_PATH}}" ]; then \
++    # Package upgrade, not uninstall \
++    {{SYSTEMD_UPDATE_HELPER_PATH}} mark-reload-user-units %{?*} || : \
++fi \
++%{nil}
++
+ %udev_hwdb_update() %{nil}
+ 
+ %udev_rules_update() %{nil}
+diff --git a/src/rpm/systemd-update-helper.in b/src/rpm/systemd-update-helper.in
+index c623a5ea1722..c81e16c3d3ff 100755
+--- a/src/rpm/systemd-update-helper.in
++++ b/src/rpm/systemd-update-helper.in
+@@ -47,6 +47,15 @@ case "$command" in
+         wait
+         ;;
+ 
++    mark-reload-system-units)
++        [ -d /run/systemd/system ] || exit 0
++
++        for unit in "$@"; do
++            systemctl set-property "$unit" Markers=+needs-reload &
++        done
++        wait
++        ;;
++
+     mark-restart-user-units)
+         [ -d /run/systemd/system ] || exit 0
+ 
+@@ -60,6 +69,19 @@ case "$command" in
+         wait
+         ;;
+ 
++    mark-reload-user-units)
++        [ -d /run/systemd/system ] || exit 0
++
++        users=$(systemctl list-units 'user@*' --legend=no | sed -n -r 's/.*user@([0-9]+).service.*/\1/p')
++        for user in $users; do
++            for unit in "$@"; do
++                SYSTEMD_BUS_TIMEOUT={{UPDATE_HELPER_USER_TIMEOUT_SEC}}s \
++                        systemctl --user -M "$user@" set-property "$unit" Markers=+needs-reload &
++            done
++        done
++        wait
++        ;;
++
+     system-reload-restart|system-reload|system-restart)
+         if [ -n "$*" ]; then
+             echo "Unexpected arguments for '$command': $*"
