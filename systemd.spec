@@ -395,10 +395,6 @@ machine, and to create or grow partitions and make file systems automatically.
 Summary:        Tool to build Unified Kernel Images
 Requires:       %{name} = %{version}-%{release}
 
-# We prefer llvm-objcopy over objcopy.
-Requires:       (llvm or binutils)
-Recommends:     llvm
-
 Requires:       python3dist(pefile)
 Requires:       python3dist(zstd)
 Requires:       python3dist(cryptography)
