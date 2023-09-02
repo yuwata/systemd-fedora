@@ -401,6 +401,7 @@ Recommends:     llvm
 
 Requires:       python3dist(pefile)
 Requires:       python3dist(zstd)
+Requires:       python3dist(cryptography)
 Recommends:     python3dist(pillow)
 
 BuildArch:      noarch
