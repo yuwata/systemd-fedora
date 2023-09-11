@@ -556,10 +556,6 @@ package and is meant for use in exitrds.
 %prep
 %autosetup -n %{?commit:%{name}%[%stable?"-stable":""]-%{commit}}%{!?commit:%{name}%[%stable?"-stable":""]-%{version_no_tilde}} -p1
 
-# We want to update sd-boot from packaging scriptlets after package update.
-# Let's disable the service.
-sed -r -i '/^enable systemd-boot-update.service/d' presets/90-systemd.preset
-
 sed -r 's|/system/|/user/|g' %{SOURCE16} >10-timeout-abort.conf.user
 
 %generate_buildrequires
