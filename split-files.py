@@ -123,6 +123,7 @@ for file in files(buildroot):
                        bless-boot|
                        boot-system-token|
                        kernel-install|
+                       installkernel|
                        vconsole|
                        backlight|
                        rfkill|
