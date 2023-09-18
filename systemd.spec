@@ -820,7 +820,7 @@ install -m 0755 -D -t %{buildroot}%{_rpmconfigdir}/ %{SOURCE24}
 # https://bugzilla.redhat.com/show_bug.cgi?id=2107754
 install -Dm0644 -t %{buildroot}%{_prefix}/lib/systemd/network/ %{SOURCE25}
 
-ln -s --relative kernel-install %{buildroot}%{_sbindir}/installkernel
+ln -s --relative %{buildroot}%{_bindir}/kernel-install %{buildroot}%{_sbindir}/installkernel
 
 %find_lang %{name}
 
