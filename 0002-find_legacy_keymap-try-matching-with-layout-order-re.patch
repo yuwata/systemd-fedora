@@ -1,0 +1,117 @@
+From cf649cc21bf997b90606db664d74726fcaf002de Mon Sep 17 00:00:00 2001
+From: Adam Williamson <awilliam@redhat.com>
+Date: Fri, 15 Sep 2023 16:02:29 -0700
+Subject: [PATCH 2/2] find_legacy_keymap: try matching with layout order
+ reversed
+
+The lines in kbd-model-map date back to ye olde times (RH's old
+system-config-keyboard), and I think predate this bug:
+
+https://bugzilla.redhat.com/show_bug.cgi?id=1039185
+
+where we got strong feedback that, for 'switched' layout setups
+like Russian, US English should be the *first* layout and the
+native layout the *second* one. This is how anaconda and, as of
+recently, gnome-initial-setup configure such cases - but that
+means, if we try to use localed to convert these configurations
+using kbd-model-map, we get the wrong result (we get "us" as the
+console layout). See also:
+
+https://bugzilla.redhat.com/show_bug.cgi?id=1912609
+
+where we first noticed this wasn't working right, but sadly, we
+'fixed' it with a not-really-correct bodge in anaconda instead
+of doing it properly.
+
+Signed-off-by: Adam Williamson <awilliam@redhat.com>
+---
+ src/locale/localed-util.c      | 44 ++++++++++++++++++++++------------
+ src/locale/test-localed-util.c |  5 +++-
+ 2 files changed, 33 insertions(+), 16 deletions(-)
+
+diff --git a/src/locale/localed-util.c b/src/locale/localed-util.c
+index 6a05b50a31..eba13a2ac3 100644
+--- a/src/locale/localed-util.c
++++ b/src/locale/localed-util.c
+@@ -803,21 +803,35 @@ int find_legacy_keymap(const X11Context *xc, char **ret) {
+                         /* If we got an exact match, this is the best */
+                         matching = 10;
+                 else {
+-                        /* We have multiple X layouts, look for an
+-                         * entry that matches our key with everything
+-                         * but the first layout stripped off. */
+-                        if (startswith_comma(xc->layout, a[1]))
+-                                matching = 5;
++                        /* see if we get an exact match with the order reversed */
++                        _cleanup_strv_free_ char **b = NULL;
++                        _cleanup_free_ char *c = NULL;
++                        r = strv_split_full(&b, a[1], ",", 0);
++                        if (r < 0)
++                                return r;
++                        strv_reverse(b);
++                        c = strv_join(b, ",");
++                        if (!c)
++                                return log_oom();
++                        if (streq(xc->layout, c))
++                                matching = 9;
+                         else {
+-                                _cleanup_free_ char *x = NULL;
+-
+-                                /* If that didn't work, strip off the
+-                                 * other layouts from the entry, too */
+-                                x = strdupcspn(a[1], ",");
+-                                if (!x)
+-                                        return -ENOMEM;
+-                                if (startswith_comma(xc->layout, x))
+-                                        matching = 1;
++                                /* We have multiple X layouts, look for an
++                                 * entry that matches our key with everything
++                                 * but the first layout stripped off. */
++                                if (startswith_comma(xc->layout, a[1]))
++                                        matching = 5;
++                                else {
++                                        _cleanup_free_ char *x = NULL;
++
++                                        /* If that didn't work, strip off the
++                                         * other layouts from the entry, too */
++                                        x = strdupcspn(a[1], ",");
++                                        if (!x)
++                                                return -ENOMEM;
++                                        if (startswith_comma(xc->layout, x))
++                                                matching = 1;
++                                }
+                         }
+                 }
+ 
+@@ -848,7 +862,7 @@ int find_legacy_keymap(const X11Context *xc, char **ret) {
+                 }
+         }
+ 
+-        if (best_matching < 10 && !isempty(xc->layout)) {
++        if (best_matching < 9 && !isempty(xc->layout)) {
+                 _cleanup_free_ char *l = NULL, *v = NULL, *converted = NULL;
+ 
+                 /* The best match is only the first part of the X11
+diff --git a/src/locale/test-localed-util.c b/src/locale/test-localed-util.c
+index a19d80a967..f702ff29b0 100644
+--- a/src/locale/test-localed-util.c
++++ b/src/locale/test-localed-util.c
+@@ -192,11 +192,14 @@ TEST(x11_convert_to_vconsole) {
+         assert_se(streq(vc.keymap, "fr-latin9"));
+         vc_context_clear(&vc);
+ 
++        /* https://bugzilla.redhat.com/show_bug.cgi?id=1039185 */
++        /* us,ru is the x config users want, but they still want ru
++        as the console layout in this case */
+         log_info("/* test with a compound mapping (us,ru:) */");
+         assert_se(free_and_strdup(&xc.layout, "us,ru") >= 0);
+         assert_se(free_and_strdup(&xc.variant, NULL) >= 0);
+         assert_se(x11_convert_to_vconsole(&xc, &vc) >= 0);
+-        assert_se(streq(vc.keymap, "us"));
++        assert_se(streq(vc.keymap, "ru"));
+         vc_context_clear(&vc);
+ 
+         log_info("/* test with a compound mapping (ru,us:) */");
+-- 
+2.41.0
+

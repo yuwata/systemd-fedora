@@ -1,0 +1,58 @@
+From a30ae31351ffa701ca860779495d4f52db4c462c Mon Sep 17 00:00:00 2001
+From: Adam Williamson <awilliam@redhat.com>
+Date: Fri, 15 Sep 2023 15:35:36 -0700
+Subject: [PATCH 1/2] find_legacy_keymap: fix empty variant matching
+
+We should give a match bonus if the X context variant is empty
+and the xvariant column in kbd-model-map is "-" (which means
+none). Currently, we don't, which means that if you call this
+on a context with layouts bg,us and no variant, you get the
+console layout bg_pho-utf8 instead of bg_bds-utf8 (because both
+score the same, and the bg_pho-utf8 row comes first). You should
+get bg_bds-utf8 in this case.
+
+Signed-off-by: Adam Williamson <awilliam@redhat.com>
+---
+ src/locale/localed-util.c      |  2 +-
+ src/locale/test-localed-util.c | 12 ++++++++++++
+ 2 files changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/src/locale/localed-util.c b/src/locale/localed-util.c
+index 02fac9786b..6a05b50a31 100644
+--- a/src/locale/localed-util.c
++++ b/src/locale/localed-util.c
+@@ -825,7 +825,7 @@ int find_legacy_keymap(const X11Context *xc, char **ret) {
+                         if (isempty(xc->model) || streq_ptr(xc->model, a[2])) {
+                                 matching++;
+ 
+-                                if (streq_ptr(xc->variant, a[3])) {
++                                if (streq_ptr(xc->variant, a[3]) || (isempty(xc->variant) && streq(a[3], "-"))) {
+                                         matching++;
+ 
+                                         if (streq_ptr(xc->options, a[4]))
+diff --git a/src/locale/test-localed-util.c b/src/locale/test-localed-util.c
+index cb66dffd48..a19d80a967 100644
+--- a/src/locale/test-localed-util.c
++++ b/src/locale/test-localed-util.c
+@@ -173,6 +173,18 @@ TEST(x11_convert_to_vconsole) {
+         assert_se(streq(vc.keymap, "es-dvorak"));
+         vc_context_clear(&vc);
+ 
++        /* es no-variant test is not very good as the desired match
++        comes first in the list so will win if both candidates score
++        the same. in this case the desired match comes second so will
++        not win unless we correctly give the no-variant match a bonus
++        */
++        log_info("/* test without variant, desired match second (bg,us:) */");
++        assert_se(free_and_strdup(&xc.layout, "bg,us") >= 0);
++        assert_se(free_and_strdup(&xc.variant, NULL) >= 0);
++        assert_se(x11_convert_to_vconsole(&xc, &vc) >= 0);
++        assert_se(streq(vc.keymap, "bg_bds-utf8"));
++        vc_context_clear(&vc);
++
+         log_info("/* test with old mapping (fr:latin9) */");
+         assert_se(free_and_strdup(&xc.layout, "fr") >= 0);
+         assert_se(free_and_strdup(&xc.variant, "latin9") >= 0);
+-- 
+2.41.0
+

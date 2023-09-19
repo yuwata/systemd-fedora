@@ -107,6 +107,12 @@ Patch0001:      https://github.com/systemd/systemd/pull/26494.patch
 # Backport of patches that allow reloading of units
 Patch0002:      https://github.com/systemd/systemd/pull/28521/commits/631d2b05ec5195d1f8f8fbff8a2dfcbf23d0b7aa.patch
 
+# Backport of improvements to console keyboard layout guessing
+# https://github.com/systemd/systemd/pull/29215
+# https://bugzilla.redhat.com/show_bug.cgi?id=1912609
+Patch0003:      0001-find_legacy_keymap-fix-empty-variant-matching.patch
+Patch0004:      0002-find_legacy_keymap-try-matching-with-layout-order-re.patch
+
 # Those are downstream-only patches, but we don't want them in packit builds:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
 Patch0490:      use-bfq-scheduler.patch
