@@ -73,7 +73,8 @@ Source7:        systemd-journal-remote.xml
 Source8:        systemd-journal-gatewayd.xml
 Source9:        20-yama-ptrace.conf
 Source10:       systemd-udev-trigger-no-reload.conf
-Source13:       libsystemd-shared.abignore
+# https://fedoraproject.org/wiki/How_to_filter_libabigail_reports
+Source13:       .abignore
 
 Source14:       10-oomd-defaults.conf
 Source15:       10-oomd-per-slice-defaults.conf
