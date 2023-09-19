@@ -4,6 +4,9 @@ badfuncs:
     /usr/lib/systemd/tests/unit-tests/*:
        - inet_addr
        - inet_aton
+    /usr/bin/networkctl:
+       - inet_addr
+       - inet_aton
 
 # don't report changed content of compiled files
 # that is expected with every update
