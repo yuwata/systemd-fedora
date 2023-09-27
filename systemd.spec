@@ -112,11 +112,13 @@ Patch0002:      https://github.com/systemd/systemd/pull/28521/commits/631d2b05ec
 # https://bugzilla.redhat.com/show_bug.cgi?id=1912609
 Patch0003:      0001-find_legacy_keymap-fix-empty-variant-matching.patch
 Patch0004:      0002-find_legacy_keymap-try-matching-with-layout-order-re.patch
+Patch0005:      0001-find_legacy_keymap-extend-variant-match-bonus-again.patch
+Patch0006:      0001-keyboard-model-map-correct-sk-qwerty-entry.patch
 
 # Requested as an alternative to https://fedoraproject.org/wiki/Changes/Drop_Sshd_Socket
-Patch0005:      0001-core-add-new-PollLimit-settings-to-.socket-units.patch
-Patch0006:      0002-man-document-the-new-PollLimitIntervalSec-PollLimitB.patch
-Patch0007:      0003-ci-add-test-for-poll-limit.patch
+Patch0010:      0001-core-add-new-PollLimit-settings-to-.socket-units.patch
+Patch0011:      0002-man-document-the-new-PollLimitIntervalSec-PollLimitB.patch
+Patch0012:      0003-ci-add-test-for-poll-limit.patch
 
 # Those are downstream-only patches, but we don't want them in packit builds:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828

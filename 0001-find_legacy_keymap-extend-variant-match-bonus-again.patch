@@ -1,0 +1,50 @@
+From 537c00c984910f417a2f2d4aad997f822060d4d1 Mon Sep 17 00:00:00 2001
+From: Adam Williamson <awilliam@redhat.com>
+Date: Tue, 19 Sep 2023 16:06:26 -0700
+Subject: [PATCH] find_legacy_keymap: extend variant match bonus again
+
+If the column is "-" and the X context variant specifer only
+contains commas, we should also give the match bonus. The variant
+string is supposed to be a comma-separated list as long as the
+list of layouts, so it's quite natural for consumers to be written
+in such a way that they pass a string only containing commas if
+there are multiple layouts and no variants. anaconda is a real
+world case that does this.
+
+Signed-off-by: Adam Williamson <awilliam@redhat.com>
+---
+ src/locale/localed-util.c      | 2 +-
+ src/locale/test-localed-util.c | 7 +++++++
+ 2 files changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/src/locale/localed-util.c b/src/locale/localed-util.c
+index eba13a2ac3..9b6949e14d 100644
+--- a/src/locale/localed-util.c
++++ b/src/locale/localed-util.c
+@@ -839,7 +839,7 @@ int find_legacy_keymap(const X11Context *xc, char **ret) {
+                         if (isempty(xc->model) || streq_ptr(xc->model, a[2])) {
+                                 matching++;
+ 
+-                                if (streq_ptr(xc->variant, a[3]) || (isempty(xc->variant) && streq(a[3], "-"))) {
++                                if (streq_ptr(xc->variant, a[3]) || ((isempty(xc->variant) || streq_skip_trailing_chars(xc->variant, "", ",")) && streq(a[3], "-"))) {
+                                         matching++;
+ 
+                                         if (streq_ptr(xc->options, a[4]))
+diff --git a/src/locale/test-localed-util.c b/src/locale/test-localed-util.c
+index f702ff29b0..e92c178a98 100644
+--- a/src/locale/test-localed-util.c
++++ b/src/locale/test-localed-util.c
+@@ -185,6 +185,13 @@ TEST(x11_convert_to_vconsole) {
+         assert_se(streq(vc.keymap, "bg_bds-utf8"));
+         vc_context_clear(&vc);
+ 
++        /* same, but with variant specified as "," */
++        log_info("/* test with variant as ',', desired match second (bg,us:) */");
++        assert_se(free_and_strdup(&xc.variant, ",") >= 0);
++        assert_se(x11_convert_to_vconsole(&xc, &vc) >= 0);
++        assert_se(streq(vc.keymap, "bg_bds-utf8"));
++        vc_context_clear(&vc);
++
+         log_info("/* test with old mapping (fr:latin9) */");
+         assert_se(free_and_strdup(&xc.layout, "fr") >= 0);
+         assert_se(free_and_strdup(&xc.variant, "latin9") >= 0);

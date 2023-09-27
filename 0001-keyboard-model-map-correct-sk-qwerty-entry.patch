@@ -1,0 +1,25 @@
+From ca831de1704f4e28241df513aa89ac465a7c8ab2 Mon Sep 17 00:00:00 2001
+From: Adam Williamson <awilliam@redhat.com>
+Date: Wed, 20 Sep 2023 15:14:31 -0700
+Subject: [PATCH] keyboard-model-map: correct sk-qwerty entry
+
+qwerty here is a variant, not an option.
+
+Signed-off-by: Adam Williamson <awilliam@redhat.com>
+---
+ src/locale/kbd-model-map | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/locale/kbd-model-map b/src/locale/kbd-model-map
+index a145e13ecd..279d1a36d8 100644
+--- a/src/locale/kbd-model-map
++++ b/src/locale/kbd-model-map
+@@ -52,7 +52,7 @@ es			es	pc105		-		terminate:ctrl_alt_bksp
+ ro-cedilla		ro	pc105		cedilla		terminate:ctrl_alt_bksp
+ ie			ie	pc105		-		terminate:ctrl_alt_bksp
+ et			ee	pc105		-		terminate:ctrl_alt_bksp
+-sk-qwerty		sk	pc105		-		terminate:ctrl_alt_bksp,qwerty
++sk-qwerty		sk	pc105		qwerty		terminate:ctrl_alt_bksp
+ sk-qwertz		sk	pc105		-		terminate:ctrl_alt_bksp
+ fr-latin9		fr	pc105		latin9		terminate:ctrl_alt_bksp
+ fr_CH-latin1		ch	pc105		fr		terminate:ctrl_alt_bksp
