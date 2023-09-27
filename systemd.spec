@@ -358,8 +358,8 @@ Obsoletes:      systemd < 245.6-1
 Provides:       udev = %{version}
 Provides:       udev%{_isa} = %{version}
 Obsoletes:      udev < 183
-Conflicts:      grubby < 8.40-72
-Conflicts:      sdubby < 1.0-3
+Requires:       (grubby > 8.40-72 if grubby)
+Requires:       (sdubby > 1.0-3 if sdubby)
 
 # Recommends to replace normal Requires deps for stuff that is dlopen()ed
 # used by dissect, integritysetup, veritysetyp, growfs, repart, cryptenroll, home
