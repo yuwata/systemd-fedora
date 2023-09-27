@@ -1,0 +1,79 @@
+From ae92a9714744bbf92fe69ffe276a668b031a6d26 Mon Sep 17 00:00:00 2001
+From: Lennart Poettering <lennart@poettering.net>
+Date: Mon, 18 Sep 2023 18:05:27 +0200
+Subject: [PATCH 3/3] ci: add test for poll limit
+
+(cherry picked from commit 065e478a4a8cc8e41a6e87756c081396f253e853)
+---
+ test/TEST-07-PID1/test.sh             |  2 ++
+ test/units/testsuite-07.poll-limit.sh | 48 +++++++++++++++++++++++++++
+ 2 files changed, 50 insertions(+)
+ create mode 100755 test/units/testsuite-07.poll-limit.sh
+
+diff --git a/test/TEST-07-PID1/test.sh b/test/TEST-07-PID1/test.sh
+index 1c3d7137fe..d0e35d870f 100755
+--- a/test/TEST-07-PID1/test.sh
++++ b/test/TEST-07-PID1/test.sh
+@@ -32,6 +32,8 @@ Alias=issue2730-alias.mount
+ EOF
+     "${SYSTEMCTL:?}" enable --root="$workspace" issue2730.mount
+     ln -svrf "$workspace/etc/systemd/system/issue2730.mount" "$workspace/etc/systemd/system/issue2730-alias.mount"
++
++    image_install logger
+ }
+ 
+ do_test "$@"
+diff --git a/test/units/testsuite-07.poll-limit.sh b/test/units/testsuite-07.poll-limit.sh
+new file mode 100755
+index 0000000000..480d7ee8df
+--- /dev/null
++++ b/test/units/testsuite-07.poll-limit.sh
+@@ -0,0 +1,48 @@
++#!/usr/bin/env bash
++# SPDX-License-Identifier: LGPL-2.1-or-later
++set -eux
++set -o pipefail
++
++systemd-analyze log-level debug
++
++cat > /run/systemd/system/floodme@.service <<EOF
++[Service]
++ExecStart=/bin/true
++EOF
++
++cat > /run/systemd/system/floodme.socket <<EOF
++[Socket]
++ListenStream=/tmp/floodme
++PollLimitIntervalSec=10s
++Accept=yes
++PollLimitBurst=3
++EOF
++
++systemctl daemon-reload
++systemctl start floodme.socket
++
++START=$(date +%s%N)
++
++# Trigger this 100 times in a flood
++for (( i=0 ; i < 100; i++ )) ; do
++    logger -u /tmp/floodme foo &
++done
++
++# Let some time pass
++sleep 5
++
++END=$(date +%s%N)
++
++PASSED=$((END-START))
++
++# Calculate (round up) how many trigger events could have happened in the passed time
++MAXCOUNT=$(((PASSED+10000000000)*3/10000000000))
++
++# We started 100 connection attempts, but only 3 should have gone through, as per limit
++test "$(systemctl show -P NAccepted floodme.socket)" -le "$MAXCOUNT"
++
++systemctl stop floodme.socket floodme@*.service
++
++rm /run/systemd/system/floodme@.service /run/systemd/system/floodme.socket /tmp/floodme
++
++systemctl daemon-reload
