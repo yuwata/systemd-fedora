@@ -35,7 +35,7 @@
 Name:           systemd
 Url:            https://systemd.io
 %if %{without inplace}
-Version:        254.5
+Version:        255~rc1
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
@@ -104,21 +104,6 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # https://bugzilla.redhat.com/show_bug.cgi?id=2164404
 Patch0001:      https://github.com/systemd/systemd/pull/26494.patch
 
-# Backport of patches that allow reloading of units
-Patch0002:      https://github.com/systemd/systemd/pull/28521/commits/631d2b05ec5195d1f8f8fbff8a2dfcbf23d0b7aa.patch
-
-# Backport of improvements to console keyboard layout guessing
-# https://github.com/systemd/systemd/pull/29215
-# https://bugzilla.redhat.com/show_bug.cgi?id=1912609
-Patch0003:      0001-find_legacy_keymap-fix-empty-variant-matching.patch
-Patch0004:      0002-find_legacy_keymap-try-matching-with-layout-order-re.patch
-Patch0005:      0001-find_legacy_keymap-extend-variant-match-bonus-again.patch
-Patch0006:      0001-keyboard-model-map-correct-sk-qwerty-entry.patch
-
-# Requested as an alternative to https://fedoraproject.org/wiki/Changes/Drop_Sshd_Socket
-Patch0010:      0001-core-add-new-PollLimit-settings-to-.socket-units.patch
-Patch0011:      0002-man-document-the-new-PollLimitIntervalSec-PollLimitB.patch
-Patch0012:      0003-ci-add-test-for-poll-limit.patch
 
 # Those are downstream-only patches, but we don't want them in packit builds:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
@@ -128,7 +113,7 @@ Patch0490:      use-bfq-scheduler.patch
 Patch0491:      fedora-use-system-auth-in-pam-systemd-user.patch
 
 %ifarch %{ix86} x86_64 aarch64
-%global have_gnu_efi 1
+%global want_bootloader 1
 %endif
 
 BuildRequires:  gcc
@@ -204,6 +189,9 @@ BuildRequires:  python3dist(pytest-flakes)
 %endif
 BuildRequires:  python3dist(pytest)
 BuildRequires:  python3dist(zstd)
+%if 0%{?want_bootloader}
+BuildRequires:  python3dist(pyelftools)
+%endif
 # gzip and lzma are provided by the stdlib
 BuildRequires:  firewalld-filesystem
 BuildRequires:  libseccomp-devel
@@ -408,7 +396,7 @@ This package also provides systemd-timesyncd, a network time protocol daemon.
 It also contains tools to manage encrypted home areas and secrets bound to the
 machine, and to create or grow partitions and make file systems automatically.
 
-%if 0%{?have_gnu_efi}
+%if 0%{?want_bootloader}
 %package ukify
 Summary:        Tool to build Unified Kernel Images
 Requires:       %{name} = %{version}-%{release}
@@ -576,16 +564,6 @@ package and is meant for use in exitrds.
 %prep
 %autosetup -n %{?commit:%{name}%[%stable?"-stable":""]-%{commit}}%{!?commit:%{name}%[%stable?"-stable":""]-%{version_no_tilde}} -p1
 
-%generate_buildrequires
-%if 0%{?have_gnu_efi}
-if grep -q gnu-efi meson_options.txt; then
-  echo 'gnu-efi'
-  echo 'gnu-efi-devel'
-else
-  echo 'python3dist(pyelftools)'
-fi
-%endif
-
 %build
 %global ntpvendor %(source /etc/os-release; echo ${ID})
 %{!?ntpvendor: echo 'NTP vendor zone is not set!'; exit 1}
@@ -599,44 +577,44 @@ CONFIGURE_OPTS=(
         -Duser-path=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin
         -Dservice-watchdog=
         -Ddev-kvm-mode=0666
-        -Dkmod=true
-        -Dxkbcommon=true
-        -Dblkid=true
-        -Dfdisk=true
-        -Dseccomp=true
+        -Dkmod=enabled
+        -Dxkbcommon=enabled
+        -Dblkid=enabled
+        -Dfdisk=enabled
+        -Dseccomp=enabled
         -Dima=true
-        -Dselinux=true
-        -Dbpf-framework=%[0%{?have_bpf}?"true":"false"]
-        -Dapparmor=false
-        -Dpolkit=true
-        -Dxz=%[%{with xz}?"true":"false"]
-        -Dzlib=%[%{with zlib}?"true":"false"]
-        -Dbzip2=%[%{with bzip2}?"true":"false"]
-        -Dlz4=%[%{with lz4}?"true":"false"]
-        -Dzstd=%[%{with zstd}?"true":"false"]
-        -Dpam=true
-        -Dacl=true
+        -Dselinux=enabled
+        -Dbpf-framework=%[0%{?have_bpf}?"enabled":"disabled"]
+        -Dapparmor=disabled
+        -Dpolkit=enabled
+        -Dxz=%[%{with xz}?"enabled":"disabled"]
+        -Dzlib=%[%{with zlib}?"enabled":"disabled"]
+        -Dbzip2=%[%{with bzip2}?"enabled":"disabled"]
+        -Dlz4=%[%{with lz4}?"enabled":"disabled"]
+        -Dzstd=%[%{with zstd}?"enabled":"disabled"]
+        -Dpam=enabled
+        -Dacl=enabled
         -Dsmack=true
-        -Dopenssl=true
+        -Dopenssl=enabled
         -Dcryptolib=openssl
-        -Dp11kit=true
-        -Dgcrypt=false
-        -Daudit=true
-        -Delfutils=true
-        -Dlibcryptsetup=%[%{with bootstrap}?"false":"true"]
-        -Delfutils=true
-        -Dpwquality=true
-        -Dqrencode=%[%{defined rhel}?"false":"true"]
-        -Dgnutls=%[%{with gnutls}?"true":"false"]
-        -Dmicrohttpd=true
-        -Dlibidn2=true
+        -Dp11kit=enabled
+        -Dgcrypt=disabled
+        -Daudit=enabled
+        -Delfutils=enabled
+        -Dlibcryptsetup=%[%{with bootstrap}?"disabled":"enabled"]
+        -Delfutils=enabled
+        -Dpwquality=enabled
+        -Dqrencode=%[%{defined rhel}?"disabled":"enabled"]
+        -Dgnutls=%[%{with gnutls}?"enabled":"disabled"]
+        -Dmicrohttpd=enabled
+        -Dlibidn2=enabled
         -Dlibiptc=false
-        -Dlibcurl=true
-        -Dlibfido2=true
-        -Dxenctrl=%[0%{?have_xen}?"true":"false"]
+        -Dlibcurl=enabled
+        -Dlibfido2=enabled
+        -Dxenctrl=%[0%{?have_xen}?"enabled":"disabled"]
         -Defi=true
         -Dtpm=true
-        -Dtpm2=true
+        -Dtpm2=enabled
         -Dhwdb=true
         -Dsysusers=true
         -Dstandalone-binaries=true
@@ -653,7 +631,7 @@ CONFIGURE_OPTS=(
         -Dsplit-bin=true
         -Db_lto=%[%{with lto}?"true":"false"]
         -Db_ndebug=false
-        -Dman=true
+        -Dman=enabled
         -Dversion-tag=%{version}-%{release}
         # https://bugzilla.redhat.com/show_bug.cgi?id=1906010
         -Dshared-lib-tag=%{version_no_tilde}-%{release}
@@ -690,21 +668,15 @@ CONFIGURE_OPTS=(
         -Dsystemd-network-uid=192
         -Dsystemd-resolve-uid=193
         # -Dsystemd-timesync-uid=, not set yet
-)
 
-if grep gnu-efi meson_options.txt; then
-  CONFIGURE_OPTS+=( -Dgnu-efi=%[%{?have_gnu_efi}?"true":"false"] )
-else
-  # For now, let's build the bootloader in the same places where we
-  # built with gnu-efi. Later on, we might want to extend coverage, but
-  # considering that that support is untested, let's not do this now.
-  # Note, ukify requires bootloader, let's also explicitly enable/disable it
-  # here for https://github.com/systemd/systemd/pull/24175.
-  CONFIGURE_OPTS+=(
-        -Dbootloader=%[%{?have_gnu_efi}?"true":"false"]
-        -Dukify=%[%{?have_gnu_efi}?"true":"false"]
-  )
-fi
+        # For now, let's build the bootloader in the same places where we
+        # built with gnu-efi. Later on, we might want to extend coverage, but
+        # considering that that support is untested, let's not do this now.
+        # Note, ukify requires bootloader, let's also explicitly enable/disable it
+        # here for https://github.com/systemd/systemd/pull/24175.
+        -Dbootloader=%[%{?want_bootloader}?"enabled":"disabled"]
+        -Dukify=%[%{?want_bootloader}?"enabled":"disabled"]
+)
 
 %if %{without lto}
 %global _lto_cflags %nil
@@ -994,7 +966,7 @@ systemctl --no-reload preset systemd-oomd.service &>/dev/null || :
 # a different package version.
 systemctl --no-reload preset systemd-journald-audit.socket &>/dev/null || :
 
-%global udev_services systemd-udev{d,-settle,-trigger}.service systemd-udevd-{control,kernel}.socket systemd-homed.service systemd-timesyncd.service %{?have_gnu_efi:systemd-boot-update.service} systemd-portabled.service systemd-pstore.service remote-cryptsetup.target
+%global udev_services systemd-udev{d,-settle,-trigger}.service systemd-udevd-{control,kernel}.socket systemd-homed.service systemd-timesyncd.service %{?want_bootloader:systemd-boot-update.service} systemd-portabled.service systemd-pstore.service remote-cryptsetup.target
 
 %post udev
 # Move old stuff around in /var/lib
@@ -1172,7 +1144,7 @@ fi
 
 %files udev -f .file-list-udev
 
-%if 0%{?have_gnu_efi}
+%if 0%{?want_bootloader}
 %files ukify -f .file-list-ukify
 %files boot-unsigned -f .file-list-boot
 %endif

@@ -150,7 +150,7 @@ for file in files(buildroot):
                        integritytab|
                        remount-fs|
                        /initrd|
-                       systemd-pcrphase|
+                       systemd-pcr|
                        systemd-measure|
                        /boot$|
                        /kernel/|
