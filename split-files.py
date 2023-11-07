@@ -116,6 +116,9 @@ for file in files(buildroot):
     elif '.so.' in n:
         o = o_libs
 
+    elif re.search(r'10-oomd-.*defaults.conf|lib/systemd/oomd.conf.d', n, re.X):
+        o = o_oomd_defaults
+
     elif re.search(r'''udev(?!\.pc)|
                        hwdb|
                        bootctl|
@@ -160,6 +163,7 @@ for file in files(buildroot):
                        sysctl|
                        coredump|
                        homed|home1|
+                       oomd|
                        portabled|portable1
     ''', n, re.X):     # coredumpctl, homectl, portablectl are included in the main package because
                        # they can be used to interact with remote daemons. Also, the user could be
@@ -178,9 +182,6 @@ for file in files(buildroot):
                        systemd\.(positive|negative)
     ''', n, re.X):     # resolvectl and nss-resolve are in the main package.
         o = o_resolve
-
-    elif re.search(r'10-oomd-.*defaults.conf|lib/systemd/oomd.conf.d', n, re.X):
-        o = o_oomd_defaults
 
     else:
         o = o_main

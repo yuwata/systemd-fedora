@@ -500,7 +500,7 @@ resolver, as well as an LLMNR and MulticastDNS resolver and responder.
 
 %package oomd-defaults
 Summary:        Configuration files for systemd-oomd
-Requires:       %{name} = %{version}-%{release}
+Requires:       %{name}-udev = %{version}-%{release}
 License:        LGPL-2.1-or-later
 BuildArch:      noarch
 
@@ -871,13 +871,6 @@ systemd-machine-id-setup &>/dev/null || :
 # this would make things worse, increasing the number of warnings we get
 # about needed daemon-reload.
 
-oomd_state=$(systemctl is-active systemd-oomd 2>/dev/null || :)
-
-# Work-around for #1931034. Remove after F34 is released.
-if [ "$oomd_state" == "active" ]; then
-   systemctl stop -q systemd-oomd 2>/dev/null || :
-fi
-
 systemctl daemon-reexec &>/dev/null || {
   # systemd v239 had bug #9553 in D-Bus authentication of the private socket,
   # which was later fixed in v240 by #9625.
@@ -897,10 +890,6 @@ systemctl daemon-reexec &>/dev/null || {
     kill -TERM 1 &>/dev/null || :
   fi
 }
-
-if [ "$oomd_state" == "active" ]; then
-   systemctl start -q systemd-oomd 2>/dev/null || :
-fi
 
 [ $1 -eq 1 ] || exit 0
 
@@ -928,7 +917,7 @@ if [ $1 -eq 1 ]; then
    systemd-tmpfiles --create &>/dev/null || :
 fi
 
-%systemd_postun_with_restart systemd-timedated.service systemd-hostnamed.service systemd-journald.service systemd-localed.service systemd-userdbd.service systemd-oomd.service
+%systemd_postun_with_restart systemd-timedated.service systemd-hostnamed.service systemd-journald.service systemd-localed.service systemd-userdbd.service
 
 # FIXME: systemd-logind.service is excluded (https://github.com/systemd/systemd/pull/17558)
 
@@ -966,7 +955,7 @@ systemctl --no-reload preset systemd-oomd.service &>/dev/null || :
 # a different package version.
 systemctl --no-reload preset systemd-journald-audit.socket &>/dev/null || :
 
-%global udev_services systemd-udev{d,-settle,-trigger}.service systemd-udevd-{control,kernel}.socket systemd-homed.service systemd-timesyncd.service %{?want_bootloader:systemd-boot-update.service} systemd-portabled.service systemd-pstore.service remote-cryptsetup.target
+%global udev_services systemd-udev{d,-settle,-trigger}.service systemd-udevd-{control,kernel}.socket systemd-homed.service %{?want_bootloader:systemd-boot-update.service} systemd-oomd.service systemd-portabled.service systemd-pstore.service systemd-timesyncd.service remote-cryptsetup.target
 
 %post udev
 # Move old stuff around in /var/lib
