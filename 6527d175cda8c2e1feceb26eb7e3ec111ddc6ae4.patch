@@ -1,0 +1,24 @@
+From 6527d175cda8c2e1feceb26eb7e3ec111ddc6ae4 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Tue, 7 Nov 2023 18:54:38 +0100
+Subject: [PATCH] vmspawn: shorted --help output to fit in 80 columns
+
+I think that "SB" is good enough here, the option name shows the unabbreviated
+name.
+---
+ src/vmspawn/vmspawn.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/vmspawn/vmspawn.c b/src/vmspawn/vmspawn.c
+index ab137df0a7155..00166b2f7a40f 100644
+--- a/src/vmspawn/vmspawn.c
++++ b/src/vmspawn/vmspawn.c
+@@ -68,7 +68,7 @@ static int help(void) {
+                "     --qemu-mem=MEM         Configure guest's RAM size\n"
+                "     --qemu-kvm=            Configure whether to use KVM or not\n"
+                "     --qemu-gui             Start QEMU in graphical mode\n"
+-               "     --secure-boot=         Configure whether to search for firmware which supports Secure Boot\n\n"
++               "     --secure-boot=         Configure searching for firmware with SB support\n\n"
+                "%3$sCredentials:%4$s\n"
+                "     --set-credential=ID:VALUE\n"
+                "                            Pass a credential with literal value to container.\n"

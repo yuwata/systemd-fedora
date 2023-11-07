@@ -93,6 +93,7 @@ for file in files(buildroot):
     elif re.search(r'''mymachines|
                        machinectl|
                        systemd-nspawn|
+                       systemd-vmspawn|
                        import-pubring.gpg|
                        systemd-(machined|import|pull)|
                        /machine.slice|

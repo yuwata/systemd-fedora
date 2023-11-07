@@ -104,6 +104,8 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # https://bugzilla.redhat.com/show_bug.cgi?id=2164404
 Patch0001:      https://github.com/systemd/systemd/pull/26494.patch
 
+Patch0002:      https://github.com/systemd/systemd/pull/29913/commits/6527d175cda8c2e1feceb26eb7e3ec111ddc6ae4.patch
+Patch0003:      https://github.com/systemd/systemd/pull/29913/commits/30247ea76e72ed89a5d86ec9b78ca8f89a989258.patch
 
 # Those are downstream-only patches, but we don't want them in packit builds:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
@@ -451,8 +453,8 @@ License:        LGPL-2.1-or-later
 %description container
 Systemd tools to spawn and manage containers and virtual machines.
 
-This package contains systemd-nspawn, machinectl, systemd-machined, and
-systemd-importd.
+This package contains systemd-nspawn, systemd-vmspawn, machinectl,
+systemd-machined, and systemd-importd.
 
 %package journal-remote
 # Name is the same as in Debian
@@ -607,6 +609,7 @@ CONFIGURE_OPTS=(
         -Dqrencode=%[%{defined rhel}?"disabled":"enabled"]
         -Dgnutls=%[%{with gnutls}?"enabled":"disabled"]
         -Dmicrohttpd=enabled
+        -Dvmspawn=true
         -Dlibidn2=enabled
         -Dlibiptc=false
         -Dlibcurl=enabled
