@@ -249,7 +249,7 @@ Conflicts:      initscripts < 9.56.1
 Conflicts:      fedora-release < 23-0.12
 %endif
 # Make sure that dracut supports systemd-executor and the renames done for v255
-Conflicts:      dracut < dracut-059-16
+Conflicts:      dracut < 059-16
 
 Obsoletes:      timedatex < 0.6-3
 Provides:       timedatex = 0.6-3
