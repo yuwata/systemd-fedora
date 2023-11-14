@@ -13,7 +13,12 @@ badfuncs:
 changedfiles:
   exclude_path: .*
 
-# completely disabled inspections:
+# completely disable inspections:
 inspections:
   # we know about our patches, no need to report anything
   patches: off
+
+  # this inspection uses `udevadm` which comes from this package
+  # disable so we do not check udev rules with a possibly outdated version
+  # of the command
+  udevrules: off
