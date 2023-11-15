@@ -35,7 +35,7 @@
 Name:           systemd
 Url:            https://systemd.io
 %if %{without inplace}
-Version:        255~rc1
+Version:        255~rc2
 %else
 # determine the build information from local checkout
 Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
@@ -105,8 +105,6 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # Drop when dracut-060 is available.
 Patch0001:      https://github.com/systemd/systemd/pull/26494.patch
 
-Patch0002:      https://github.com/systemd/systemd/pull/29913/commits/6527d175cda8c2e1feceb26eb7e3ec111ddc6ae4.patch
-Patch0003:      https://github.com/systemd/systemd/pull/29913/commits/30247ea76e72ed89a5d86ec9b78ca8f89a989258.patch
 
 # Those are downstream-only patches, but we don't want them in packit builds:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
