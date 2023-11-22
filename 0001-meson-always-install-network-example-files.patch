@@ -1,0 +1,42 @@
+From 518d40b992abca8de5b9136e88748783200535da Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Thu, 23 Nov 2023 00:06:29 +0100
+Subject: [PATCH] meson: always install network example files
+
+I started working on integrating this in the Fedora package and realized that
+the example files should be installed regardless of the renamed files when
+default-network=true is used. This is because the renamed files become part of
+a different package, and we want to have the other files which are used as
+documentation in the main package anyway.
+---
+ network/meson.build | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
+
+diff --git a/network/meson.build b/network/meson.build
+index 4f17f7385e..2a472f4f51 100644
+--- a/network/meson.build
++++ b/network/meson.build
+@@ -18,6 +18,10 @@ if conf.get('ENABLE_NETWORKD') == 1
+                 '80-wifi-station.network.example',
+         )
+ 
++        install_data(
++                example_network_files,
++                install_dir : networkdir)
++
+         if get_option('default-network')
+                 foreach f : example_network_files
+                         install_data(
+@@ -25,12 +29,7 @@ if conf.get('ENABLE_NETWORKD') == 1
+                                 rename : fs.replace_suffix(fs.name(f), ''),
+                                 install_dir : networkdir)
+                 endforeach
+-        else
+-                install_data(
+-                        example_network_files,
+-                        install_dir : networkdir)
+         endif
+-
+ endif
+ 
+ install_data('99-default.link',

@@ -24,6 +24,7 @@ o_rpm_macros = open('.file-list-rpm-macros', 'w')
 o_devel = open('.file-list-devel', 'w')
 o_container = open('.file-list-container', 'w')
 o_networkd = open('.file-list-networkd', 'w')
+o_networkd_defaults = open('.file-list-networkd-defaults', 'w')
 o_oomd_defaults = open('.file-list-oomd-defaults', 'w')
 o_remote = open('.file-list-remote', 'w')
 o_resolve = open('.file-list-resolve', 'w')
@@ -103,7 +104,13 @@ for file in files(buildroot):
     ''', n, re.X):
         o = o_container
 
-    elif re.search(r'''/usr/lib/systemd/network/80-|
+    # .network.example files go into systemd-networkd, and the matching files
+    # without .example go into systemd-networkd-defaults
+    elif (re.search(r'''/usr/lib/systemd/network/.*\.network$''', n)
+          and os.path.exists(f'./{n}.example')):
+        o = o_networkd_defaults
+
+    elif re.search(r'''/usr/lib/systemd/network/.*\.network|
                        networkd|
                        networkctl|
                        org.freedesktop.network1|

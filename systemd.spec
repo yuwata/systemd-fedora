@@ -105,6 +105,8 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # Drop when dracut-060 is available.
 Patch0001:      https://github.com/systemd/systemd/pull/26494.patch
 
+Patch0002:      0001-meson-always-install-network-example-files.patch
+
 
 # Those are downstream-only patches, but we don't want them in packit builds:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
@@ -489,6 +491,17 @@ systemd-networkd is a system service that manages networks. It detects and
 configures network devices as they appear, as well as creating virtual network
 devices.
 
+%package networkd-defaults
+Summary:        Configure network interfaces with networkd by default
+Requires:       %{name}-networkd = %{version}-%{release}
+License:        MIT-0
+BuildArch:      noarch
+
+%description networkd-defaults
+This package contains a set of config files for systemd-networkd that cause it
+to configure network interfaces by default. Note that systemd-networkd needs to
+enabled for this to have any effect.
+
 %package resolved
 Summary:        Network Name Resolution manager
 Requires:       %{name}%{_isa} = %{version}-%{release}
@@ -625,6 +638,7 @@ CONFIGURE_OPTS=(
         -Dstandalone-binaries=true
         -Ddefault-kill-user-processes=false
         -Dfirst-boot-full-preset=true
+        -Ddefault-network=true
         -Dtests=unsafe
         -Dinstall-tests=true
         -Dtty-gid=5
@@ -1149,6 +1163,8 @@ fi
 %files journal-remote -f .file-list-remote
 
 %files networkd -f .file-list-networkd
+
+%files networkd-defaults -f .file-list-networkd-defaults
 
 %files oomd-defaults -f .file-list-oomd-defaults
 
