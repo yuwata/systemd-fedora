@@ -50,25 +50,29 @@ def files(root):
             if file.is_dir() and not file.is_symlink():
                 todo.append(file)
 
-o_libs = open('.file-list-libs', 'w')
-o_udev = open('.file-list-udev', 'w')
-o_ukify = open('.file-list-ukify', 'w')
-o_boot = open('.file-list-boot', 'w')
-o_pam = open('.file-list-pam', 'w')
-o_rpm_macros = open('.file-list-rpm-macros', 'w')
-o_devel = open('.file-list-devel', 'w')
-o_container = open('.file-list-container', 'w')
-o_networkd = open('.file-list-networkd', 'w')
-o_networkd_defaults = open('.file-list-networkd-defaults', 'w')
-o_oomd_defaults = open('.file-list-oomd-defaults', 'w')
-o_remote = open('.file-list-remote', 'w')
-o_resolve = open('.file-list-resolve', 'w')
-o_tests = open('.file-list-tests', 'w')
-o_standalone_repart = open('.file-list-standalone-repart', 'w')
-o_standalone_tmpfiles = open('.file-list-standalone-tmpfiles', 'w')
-o_standalone_sysusers = open('.file-list-standalone-sysusers', 'w')
-o_standalone_shutdown = open('.file-list-standalone-shutdown', 'w')
-o_main = open('.file-list-main', 'w')
+outputs = {suffix: open(f'.file-list-{suffix}', 'w')
+           for suffix in (
+                   'libs',
+                   'udev',
+                   'ukify',
+                   'boot',
+                   'pam',
+                   'rpm-macros',
+                   'devel',
+                   'container',
+                   'networkd',
+                   'networkd-defaults',
+                   'oomd-defaults',
+                   'remote',
+                   'resolve',
+                   'tests',
+                   'standalone-repart',
+                   'standalone-tmpfiles',
+                   'standalone-sysusers',
+                   'standalone-shutdown',
+                   'main',
+           )}
+
 for file in files(buildroot):
     n = file.path[1:]
     if re.match(r'''/usr/(share|include)$|
@@ -95,36 +99,36 @@ for file in files(buildroot):
 
     if n.endswith('.standalone'):
         if 'repart' in n:
-            o = o_standalone_repart
+            o = outputs['standalone-repart']
         elif 'tmpfiles' in n:
-            o = o_standalone_tmpfiles
+            o = outputs['standalone-tmpfiles']
         elif 'sysusers' in n:
-            o = o_standalone_sysusers
+            o = outputs['standalone-sysusers']
         elif 'shutdown' in n:
-            o = o_standalone_shutdown
+            o = outputs['standalone-shutdown']
         else:
             assert False, 'Found .standalone not belonging to known packages'
 
     elif '/security/pam_' in n or '/man8/pam_' in n:
-        o = o_pam
+        o = outputs['pam']
     elif '/rpm/' in n:
-        o = o_rpm_macros
+        o = outputs['rpm-macros']
     elif '/usr/lib/systemd/tests' in n:
-        o = o_tests
+        o = outputs['tests']
     elif 'ukify' in n:
-        o = o_ukify
+        o = outputs['ukify']
     elif re.search(r'/libsystemd-(shared|core)-.*\.so$', n):
-        o = o_main
+        o = outputs['main']
     elif re.search(r'/libcryptsetup-token-systemd-.*\.so$', n):
-        o = o_udev
+        o = outputs['udev']
     elif re.search(r'/lib.*\.pc|/man3/|/usr/include|\.so$', n):
-        o = o_devel
+        o = outputs['devel']
     elif re.search(r'''journal-(remote|gateway|upload)|
                        systemd-remote\.conf|
                        /usr/share/systemd/gatewayd|
                        /var/log/journal/remote
     ''', n, re.X):
-        o = o_remote
+        o = outputs['remote']
 
     elif re.search(r'''mymachines|
                        machinectl|
@@ -137,13 +141,13 @@ for file in files(buildroot):
                        var-lib-machines.mount|
                        org.freedesktop.(import|machine)1
     ''', n, re.X):
-        o = o_container
+        o = outputs['container']
 
     # .network.example files go into systemd-networkd, and the matching files
     # without .example go into systemd-networkd-defaults
     elif (re.search(r'''/usr/lib/systemd/network/.*\.network$''', n)
           and os.path.exists(f'./{n}.example')):
-        o = o_networkd_defaults
+        o = outputs['networkd-defaults']
 
     elif re.search(r'''/usr/lib/systemd/network/.*\.network|
                        networkd|
@@ -154,13 +158,13 @@ for file in files(buildroot):
                        systemd\.network|
                        systemd\.netdev
     ''', n, re.X):
-        o = o_networkd
+        o = outputs['networkd']
 
     elif '.so.' in n:
-        o = o_libs
+        o = outputs['libs']
 
     elif re.search(r'10-oomd-.*defaults.conf|lib/systemd/oomd.conf.d', n, re.X):
-        o = o_oomd_defaults
+        o = outputs['oomd-defaults']
 
     elif re.search(r'''udev(?!\.pc)|
                        hwdb|
@@ -211,23 +215,23 @@ for file in files(buildroot):
     ''', n, re.X):     # coredumpctl, homectl, portablectl are included in the main package because
                        # they can be used to interact with remote daemons. Also, the user could be
                        # confused if those user-facing binaries are not available.
-        o = o_udev
+        o = outputs['udev']
 
     elif re.search(r'''/boot/efi|
                        /usr/lib/systemd/boot|
                        sd-boot|systemd-boot\.|loader.conf
     ''', n, re.X):
-        o = o_boot
+        o = outputs['boot']
 
     elif re.search(r'''resolved|resolve1|
                        systemd-resolve|
                        resolvconf|
                        systemd\.(positive|negative)
     ''', n, re.X):     # resolvectl and nss-resolve are in the main package.
-        o = o_resolve
+        o = outputs['resolve']
 
     else:
-        o = o_main
+        o = outputs['main']
 
     if n in known_files:
         prefix = ' '.join(known_files[n].split()[:-1])
