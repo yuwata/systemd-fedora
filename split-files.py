@@ -249,3 +249,8 @@ for file in files(buildroot):
     suffix = '*' if '/man/' in n else ''
 
     print(f'{prefix}{n}{suffix}', file=o)
+
+if [print(f'ERROR: no file names were written to {o.name}')
+    for o in outputs.values()
+    if o.tell() == 0]:
+    sys.exit(1)
