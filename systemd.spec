@@ -849,43 +849,8 @@ ln -s --relative %{buildroot}%{_bindir}/kernel-install %{buildroot}%{_sbindir}/i
 
 %find_lang %{name}
 
-# Split files in build root into rpms. See split-files.py for the
-# rules towards the end, anything which is an exception needs a line
-# here.
-python3 %{SOURCE2} %buildroot <<EOF
-%ghost %config(noreplace) /etc/crypttab
-%ghost %attr(0444,root,root) /etc/udev/hwdb.bin
-/etc/inittab
-/usr/lib/systemd/purge-nobody-user
-%ghost %config(noreplace) /etc/vconsole.conf
-%ghost %config(noreplace) /etc/X11/xorg.conf.d/00-keyboard.conf
-%ghost %attr(0664,root,root) %verify(not group) /run/utmp
-%ghost %attr(0664,root,root) %verify(not group) /var/log/wtmp
-%ghost %attr(0660,root,root) %verify(not group) /var/log/btmp
-%ghost %attr(0664,root,root) %verify(not md5 size mtime group) /var/log/lastlog
-%ghost %config(noreplace) /etc/hostname
-%ghost %config(noreplace) /etc/localtime
-%ghost %config(noreplace) /etc/locale.conf
-%ghost %attr(0444,root,root) %config(noreplace) /etc/machine-id
-%ghost %config(noreplace) /etc/machine-info
-%ghost %attr(0700,root,root) %dir /var/cache/private
-%ghost %attr(0700,root,root) %dir /var/lib/private
-%ghost %dir /var/lib/private/systemd
-%ghost %dir /var/lib/private/systemd/journal-upload
-%ghost /var/lib/private/systemd/journal-upload/state
-%ghost %dir /var/lib/systemd/timesync
-%ghost /var/lib/systemd/timesync/clock
-%ghost %dir /var/lib/systemd/backlight
-%ghost /var/lib/systemd/catalog/database
-%ghost %dir /var/lib/systemd/coredump
-%ghost /var/lib/systemd/journal-upload
-%ghost %dir /var/lib/systemd/linger
-%ghost %attr(0600,root,root) /var/lib/systemd/random-seed
-%ghost %dir /var/lib/systemd/rfkill
-%ghost %dir %verify(not mode group) /var/log/journal
-%ghost %dir /var/log/journal/remote
-%ghost %attr(0700,root,root) %dir /var/log/private
-EOF
+# Split files in build root into rpms
+python3 %{SOURCE2} %buildroot
 
 %check
 %if %{with tests}
