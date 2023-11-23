@@ -1,6 +1,7 @@
 import re, sys, os, collections
 
 buildroot = sys.argv[1]
+no_bootloader = '--no-bootloader' in sys.argv
 
 known_files = '''
 %ghost %config(noreplace) /etc/crypttab
@@ -251,6 +252,8 @@ for file in files(buildroot):
     print(f'{prefix}{n}{suffix}', file=o)
 
 if [print(f'ERROR: no file names were written to {o.name}')
-    for o in outputs.values()
-    if o.tell() == 0]:
+    for name, o in outputs.items()
+    if (o.tell() == 0 and
+        not (no_bootloader and name in ('ukify', 'boot-unsigned')))
+    ]:
     sys.exit(1)

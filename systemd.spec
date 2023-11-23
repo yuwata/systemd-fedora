@@ -850,7 +850,7 @@ ln -s --relative %{buildroot}%{_bindir}/kernel-install %{buildroot}%{_sbindir}/i
 %find_lang %{name}
 
 # Split files in build root into rpms
-python3 %{SOURCE2} %buildroot
+python3 %{SOURCE2} %buildroot %{!?want_bootloader:--no-bootloader}
 
 %check
 %if %{with tests}
