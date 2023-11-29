@@ -107,6 +107,11 @@ Patch0001:      https://github.com/systemd/systemd/pull/26494.patch
 
 Patch0002:      0001-meson-always-install-network-example-files.patch
 
+# https://github.com/systemd/systemd/pull/30197
+# https://bugzilla.redhat.com/show_bug.cgi?id=2251394
+# Drop vconsole restart limit to prevent it sometimes failing on boot
+Patch0003:      0001-units-disable-start-rate-limit-for-systemd-vconsole-.patch
+
 
 # Those are downstream-only patches, but we don't want them in packit builds:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
