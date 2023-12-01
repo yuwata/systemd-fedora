@@ -1,0 +1,31 @@
+From ef90e8f9db911626c8f5c18c49cf6fe445afdefb Mon Sep 17 00:00:00 2001
+From: Daan De Meyer <daan.j.demeyer@gmail.com>
+Date: Thu, 30 Nov 2023 11:01:14 +0100
+Subject: [PATCH] Make sure we close bpf outer map fd in systemd-executor
+
+Not doing so leaks it into the child service and causes selinux
+denials.
+---
+ src/core/execute-serialize.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/src/core/execute-serialize.c b/src/core/execute-serialize.c
+index 56c4f4da8a..6c19cd42a2 100644
+--- a/src/core/execute-serialize.c
++++ b/src/core/execute-serialize.c
+@@ -1625,6 +1625,12 @@ static int exec_parameters_deserialize(ExecParameters *p, FILE *f, FDSet *fds) {
+                         if (fd < 0)
+                                 continue;
+ 
++                        /* This is special and relies on close-on-exec semantics, make sure it's
++                         * there */
++                        r = fd_cloexec(fd, true);
++                        if (r < 0)
++                                return r;
++
+                         p->bpf_outer_map_fd = fd;
+                 } else if ((val = startswith(l, "exec-parameters-notify-socket="))) {
+                         r = free_and_strdup(&p->notify_socket, val);
+-- 
+2.43.0
+

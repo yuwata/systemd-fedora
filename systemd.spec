@@ -112,6 +112,17 @@ Patch0002:      0001-meson-always-install-network-example-files.patch
 # Drop vconsole restart limit to prevent it sometimes failing on boot
 Patch0003:      0001-units-disable-start-rate-limit-for-systemd-vconsole-.patch
 
+# https://github.com/systemd/systemd/pull/30170
+# https://bugzilla.redhat.com/show_bug.cgi?id=2250930
+# restrict use of bpf_outer_map_fd to help avoid selinux denials
+Patch0004:      0001-core-pass-bpf_outer_map_fd-to-sd-executor-only-if-Re.patch
+Patch0005:      0002-core-remove-redundant-check-when-serializing-FDs.patch
+Patch0006:      0003-test-add-a-couple-of-tests-for-RestrictFileSystems.patch
+# https://github.com/systemd/systemd/pull/30266
+# https://bugzilla.redhat.com/show_bug.cgi?id=2250930
+# close bpf_outer_map_fd to avoid selinux denials
+Patch0007:      0001-Make-sure-we-close-bpf-outer-map-fd-in-systemd-execu.patch
+
 
 # Those are downstream-only patches, but we don't want them in packit builds:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
