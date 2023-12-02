@@ -254,6 +254,6 @@ for file in files(buildroot):
 if [print(f'ERROR: no file names were written to {o.name}')
     for name, o in outputs.items()
     if (o.tell() == 0 and
-        not (no_bootloader and name in ('ukify', 'boot-unsigned')))
+        not (no_bootloader and name in ('ukify', 'boot')))
     ]:
     sys.exit(1)
