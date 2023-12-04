@@ -644,7 +644,6 @@ CONFIGURE_OPTS=(
         -Dnobody-user=nobody
         -Dnobody-group=nobody
         -Dcompat-mutable-uid-boundaries=true
-        -Dsplit-usr=false
         -Dsplit-bin=true
         -Db_lto=%[%{with lto}?"true":"false"]
         -Db_ndebug=false
