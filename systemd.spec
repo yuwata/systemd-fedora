@@ -662,6 +662,7 @@ CONFIGURE_OPTS=(
         # https://fedoraproject.org/wiki/Changes/Shorter_Shutdown_Timer
         -Ddefault-timeout-sec=45
         -Ddefault-user-timeout-sec=45
+        -Dconfigfiledir=/usr/lib
         -Doomd=true
         -Dadm-gid=4
         -Daudio-gid=63
