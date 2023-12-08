@@ -8,6 +8,7 @@ known_files = '''
 %ghost %attr(0444,root,root) /etc/udev/hwdb.bin
 /etc/inittab
 /usr/lib/systemd/purge-nobody-user
+%dir %attr(0700,root,root) /etc/ssh/sshd_config.d
 %ghost %config(noreplace) /etc/vconsole.conf
 %ghost %config(noreplace) /etc/X11/xorg.conf.d/00-keyboard.conf
 %ghost %attr(0664,root,root) %verify(not group) /run/utmp
