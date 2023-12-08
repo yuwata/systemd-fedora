@@ -173,6 +173,7 @@ for file in files(buildroot):
                        boot-update|
                        bless-boot|
                        boot-system-token|
+                       bsod|
                        kernel-install|
                        installkernel|
                        vconsole|
