@@ -8,6 +8,8 @@ known_files = '''
 %ghost %attr(0444,root,root) /etc/udev/hwdb.bin
 /etc/inittab
 /usr/lib/systemd/purge-nobody-user
+# This directory is owned by openssh-server, but we don't want to introduce
+# a dependency. So let's copy the config and co-own the directory.
 %dir %attr(0700,root,root) /etc/ssh/sshd_config.d
 %ghost %config(noreplace) /etc/vconsole.conf
 %ghost %config(noreplace) /etc/X11/xorg.conf.d/00-keyboard.conf
@@ -39,7 +41,8 @@ known_files = '''
 %ghost %attr(0700,root,root) %dir /var/log/private
 '''.splitlines()
 
-known_files = {line.split()[-1]:line for line in known_files if line}
+known_files = {line.split()[-1]:line for line in known_files.splitlines()
+               if line and not line.startswith('#')}
 
 def files(root):
     os.chdir(root)
