@@ -39,7 +39,7 @@ known_files = '''
 %ghost %dir %verify(not mode group) /var/log/journal
 %ghost %dir /var/log/journal/remote
 %ghost %attr(0700,root,root) %dir /var/log/private
-'''.splitlines()
+'''
 
 known_files = {line.split()[-1]:line for line in known_files.splitlines()
                if line and not line.startswith('#')}
