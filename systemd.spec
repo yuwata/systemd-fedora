@@ -731,6 +731,25 @@ ln -sf ../bin/udevadm %{buildroot}%{_sbindir}/udevadm
 touch %{buildroot}/etc/crypttab
 chmod 600 %{buildroot}/etc/crypttab
 
+# Config files that were moved under /usr.
+# We need to %ghost them so that they are not removed on upgrades.
+touch %{buildroot}/etc/systemd/coredump.conf \
+      %{buildroot}/etc/systemd/homed.conf \
+      %{buildroot}/etc/systemd/journald.conf \
+      %{buildroot}/etc/systemd/journal-remote.conf \
+      %{buildroot}/etc/systemd/journal-upload.conf \
+      %{buildroot}/etc/systemd/logind.conf \
+      %{buildroot}/etc/systemd/networkd.conf \
+      %{buildroot}/etc/systemd/oomd.conf \
+      %{buildroot}/etc/systemd/pstore.conf \
+      %{buildroot}/etc/systemd/resolved.conf \
+      %{buildroot}/etc/systemd/sleep.conf \
+      %{buildroot}/etc/systemd/system.conf \
+      %{buildroot}/etc/systemd/timesyncd.conf \
+      %{buildroot}/etc/systemd/user.conf \
+      %{buildroot}/etc/udev/udev.conf \
+      %{buildroot}/etc/udev/iocost.conf
+
 # /etc/initab
 install -Dm0644 -t %{buildroot}/etc/ %{SOURCE5}
 

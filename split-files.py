@@ -240,17 +240,18 @@ for file in files(buildroot):
         o = outputs['main']
 
     if n in known_files:
-        prefix = ' '.join(known_files[n].split()[:-1])
-        if prefix:
-            prefix += ' '
+        prefix = known_files[n].split()[:-1]
     elif file.is_dir() and not file.is_symlink():
-        prefix = '%dir '
+        prefix = ['%dir']
     elif 'README' in n:
-        prefix = '%doc '
+        prefix = ['%doc']
     elif n.startswith('/etc'):
-        prefix = '%config(noreplace) '
+        prefix = ['%config(noreplace)']
+        if file.stat().st_size == 0:
+            prefix += ['%ghost']
     else:
-        prefix = ''
+        prefix = []
+    prefix = ' '.join(prefix + ['']) if prefix else ''
 
     suffix = '*' if '/man/' in n else ''
 
