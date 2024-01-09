@@ -1032,6 +1032,24 @@ fi
 %preun networkd
 %systemd_preun systemd-networkd.service systemd-networkd-wait-online.service
 
+%postun networkd
+%systemd_postun_with_restart systemd-networkd.service
+%systemd_postun systemd-networkd-wait-online.service
+
+%post resolved
+[ $1 -eq 1 ] || exit 0
+# Initial installation
+
+touch %{_localstatedir}/lib/rpm-state/systemd-resolved.initial-installation
+
+# Related to https://bugzilla.redhat.com/show_bug.cgi?id=1943263
+if ls /usr/lib/systemd/libsystemd-shared-24[0-8].so &>/dev/null; then
+    echo "Skipping presets for systemd-resolved.service, seems we are upgrading from old systemd."
+    exit 0
+fi
+
+%systemd_post systemd-resolved.service
+
 %preun resolved
 if [ $1 -eq 0 ] ; then
         systemctl disable --quiet \
@@ -1047,19 +1065,8 @@ if [ $1 -eq 0 ] ; then
         fi
 fi
 
-%post resolved
-[ $1 -eq 1 ] || exit 0
-# Initial installation
-
-touch %{_localstatedir}/lib/rpm-state/systemd-resolved.initial-installation
-
-# Related to https://bugzilla.redhat.com/show_bug.cgi?id=1943263
-if ls /usr/lib/systemd/libsystemd-shared-24[0-8].so &>/dev/null; then
-    echo "Skipping presets for systemd-resolved.service, seems we are upgrading from old systemd."
-    exit 0
-fi
-
-%systemd_post systemd-resolved.service
+%postun resolved
+%systemd_postun_with_restart systemd-resolved.service
 
 %posttrans resolved
 [ -e %{_localstatedir}/lib/rpm-state/systemd-resolved.initial-installation ] || exit 0
