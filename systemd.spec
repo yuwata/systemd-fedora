@@ -109,9 +109,11 @@ Patch0001:      https://github.com/systemd/systemd/pull/26494.patch
 # Those are downstream-only patches, but we don't want them in packit builds:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
 Patch0490:      use-bfq-scheduler.patch
+# https://bugzilla.redhat.com/show_bug.cgi?id=2251843
+Patch0491:      https://github.com/systemd/systemd/pull/30846.patch
 
 # Adjust upstream config to use our shared stack
-Patch0491:      fedora-use-system-auth-in-pam-systemd-user.patch
+Patch0499:      fedora-use-system-auth-in-pam-systemd-user.patch
 
 %ifarch %{ix86} x86_64 aarch64
 %global want_bootloader 1
