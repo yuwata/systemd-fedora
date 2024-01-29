@@ -253,8 +253,6 @@ Conflicts:      dracut < 059-16
 
 Obsoletes:      timedatex < 0.6-3
 Provides:       timedatex = 0.6-3
-Conflicts:      %{name}-standalone-repart < %{version}-%{release}^
-Provides:       %{name}-repart = %{version}-%{release}
 Conflicts:      %{name}-standalone-tmpfiles < %{version}-%{release}^
 Provides:       %{name}-tmpfiles = %{version}-%{release}
 Conflicts:      %{name}-standalone-sysusers < %{version}-%{release}^
@@ -391,6 +389,9 @@ Obsoletes:      u2f-hidraw-policy < 1.0.2-40
 
 # self-obsoletes to install both packages after split of systemd-boot
 Obsoletes:      systemd-udev < 252.2^
+
+Conflicts:      %{name}-standalone-repart < %{version}-%{release}^
+Provides:       %{name}-repart = %{version}-%{release}
 
 %description udev
 This package contains systemd-udev and the rules and hardware database needed to
