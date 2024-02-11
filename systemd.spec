@@ -702,14 +702,6 @@ CONFIGURE_OPTS=(
 %global _lto_cflags %nil
 %endif
 
-# Do configuration. If doing an inplace build, try to do
-# reconfiguration to pick up new options.
-%if %{with inplace}
-  command -v ccache 2>/dev/null && { CC="${CC:-ccache %__cc}"; CXX="${CXX:-ccache %__cxx}"; }
-
-  [ -e %{_vpath_builddir}/build.ninja ] &&
-  %__meson configure %{_vpath_builddir} "${CONFIGURE_OPTS[@]}" ||
-%endif
 { %meson "${CONFIGURE_OPTS[@]}"; }
 
 %meson_build
