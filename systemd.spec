@@ -28,13 +28,12 @@
 %bcond tests     1
 %bcond lto       1
 
-# Support for quick builds with rpmbuild --build-in-place.
-# See README.build-in-place.
-%bcond inplace 0
+# Build from git main
+%bcond upstream 0
 
 Name:           systemd
 Url:            https://systemd.io
-%if %{without inplace}
+%if %{without upstream}
 Version:        255.3
 %else
 # determine the build information from local checkout
@@ -100,6 +99,8 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # than in the next section. Packit CI will drop any patches in this range before
 # applying upstream pull requests.
 
+%if %{without upstream}
+
 # Work-around for dracut issue: run generators directly when we are in initrd
 # https://bugzilla.redhat.com/show_bug.cgi?id=2164404
 # Drop when dracut-060 is available.
@@ -114,6 +115,8 @@ Patch0491:      https://github.com/systemd/systemd/pull/30846.patch
 
 # Adjust upstream config to use our shared stack
 Patch0499:      fedora-use-system-auth-in-pam-systemd-user.patch
+
+%endif
 
 %ifarch %{ix86} x86_64 aarch64
 %global want_bootloader 1
@@ -206,6 +209,10 @@ BuildRequires:  pkgconfig(bash-completion)
 BuildRequires:  perl
 BuildRequires:  perl(IPC::SysV)
 
+%if %{with upstream}
+BuildRequires:  pkgconfig(libarchive)
+%endif
+
 %ifnarch %ix86
 # bpftool is not built for i368
 BuildRequires:  bpftool
@@ -281,6 +288,10 @@ Recommends:     libelf.so.1(ELFUTILS_1.7)%{?elf_bits}
 # used by dissect, integritysetup, veritysetyp, growfs, repart, cryptenroll, home
 Recommends:     libcryptsetup.so.12%{?elf_suffix}
 Recommends:     libcryptsetup.so.12(CRYPTSETUP_2.4)%{?elf_bits}
+
+%if %{with upstream}
+Recommends:     libarchive.so.13%{?elf_suffix}
+%endif
 
 %description
 systemd is a system and service manager that runs as PID 1 and starts the rest
