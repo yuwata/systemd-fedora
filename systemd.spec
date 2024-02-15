@@ -37,7 +37,7 @@ Url:            https://systemd.io
 Version:        255.3
 %else
 # determine the build information from local checkout
-Version:        %(tools/meson-vcs-tag.sh . error | sed -r 's/-([0-9])/.^\1/; s/-g/_g/')
+Version:        %(tools/meson-vcs-tag.sh)
 %endif
 Release:        %autorelease
 
