@@ -33,13 +33,8 @@
 
 Name:           systemd
 Url:            https://systemd.io
-%if %{without upstream}
-Version:        255.3
-%else
-# determine the build information from local checkout
-Version:        %(tools/meson-vcs-tag.sh)
-%endif
-Release:        %autorelease
+Version:        %{?version}%{!?version:255.3}
+Release:        %{?release}%{!?release:%autorelease}
 
 %global stable %(c="%version"; [ "$c" = "${c#*.*}" ]; echo $?)
 
