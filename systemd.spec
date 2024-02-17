@@ -659,7 +659,6 @@ CONFIGURE_OPTS=(
         -Dnobody-group=nobody
         -Dcompat-mutable-uid-boundaries=true
         -Dsplit-bin=true
-        -Db_lto=%[%{with lto}?"true":"false"]
         -Db_ndebug=false
         -Dman=enabled
         -Dversion-tag=%{version}-%{release}
