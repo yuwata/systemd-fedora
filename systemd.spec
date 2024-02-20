@@ -33,8 +33,10 @@
 
 Name:           systemd
 Url:            https://systemd.io
-Version:        %{?version}%{!?version:255.3}
-Release:        %{?release}%{!?release:%autorelease}
+# Allow users to specify the version and release when building the rpm by 
+# setting the %%version_override and %%release_override macros.
+Version:        %{?version_override}%{!?version_override:255.3}
+Release:        %{?release_override:%{release_override}%{?dist}}%{!?release_override:%autorelease}
 
 %global stable %(c="%version"; [ "$c" = "${c#*.*}" ]; echo $?)
 
