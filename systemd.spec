@@ -285,6 +285,15 @@ Recommends:     libcryptsetup.so.12%{?elf_suffix}
 Recommends:     libcryptsetup.so.12(CRYPTSETUP_2.4)%{?elf_bits}
 
 %if %{with upstream}
+# Libkmod is used to load modules.
+Recommends:     libkmod.so.2%{?elf_suffix}
+# kmod_list_next, kmod_load_resources, kmod_module_get_initstate,
+# kmod_module_get_module, kmod_module_get_name, kmod_module_new_from_lookup,
+# kmod_module_probe_insert_module, kmod_module_unref, kmod_module_unref_list,
+# kmod_new, kmod_set_log_fn, kmod_unref, kmod_validate_resources
+# are part of LIBKMOD_5.
+Recommends:     libkmod.so.2(LIBKMOD_5)%{?elf_bits}
+
 Recommends:     libarchive.so.13%{?elf_suffix}
 %endif
 
@@ -365,6 +374,13 @@ Provides:       udev%{_isa} = %{version}
 Obsoletes:      udev < 183
 Requires:       (grubby > 8.40-72 if grubby)
 Requires:       (sdubby > 1.0-3 if sdubby)
+
+%if %{with upstream}
+# Libkmod is used to load modules. Assume that if we need udevd, we certainly
+# want to load modules, so make this into a hard dependency here.
+Requires:       libkmod.so.2%{?elf_suffix}
+Requires:       libkmod.so.2(LIBKMOD_5)%{?elf_bits}
+%endif
 
 # Recommends to replace normal Requires deps for stuff that is dlopen()ed
 # used by dissect, integritysetup, veritysetyp, growfs, repart, cryptenroll, home
