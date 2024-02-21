@@ -725,7 +725,7 @@ CONFIGURE_OPTS=(
 %global _lto_cflags %nil
 %endif
 
-{ %meson "${CONFIGURE_OPTS[@]}"; }
+{ %meson "${CONFIGURE_OPTS[@]}" %{?meson_extra_configure_options} ; }
 
 %meson_build
 
