@@ -507,6 +507,7 @@ systemd-journal-upload.
 %package networkd
 Summary:        System daemon that manages network configurations
 Requires:       %{name}%{_isa} = %{version}-%{release}
+%{?fedora:Recommends:     %{name}-udev = %{version}-%{release}}
 License:        LGPL-2.1-or-later
 # https://src.fedoraproject.org/rpms/systemd/pull-request/34
 Obsoletes:      systemd < 246.6-2
