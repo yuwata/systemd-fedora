@@ -556,6 +556,7 @@ Requires:      %{name}%{_isa} = %{version}-%{release}
 # This dependency is provided transitively. Also add it explicitly to
 # appease rpminspect, https://github.com/rpminspect/rpminspect/issues/1231:
 Requires:      %{name}-libs%{_isa} = %{version}-%{release}
+Requires:      python3dist(psutil)
 
 License:       LGPL-2.1-or-later
 
