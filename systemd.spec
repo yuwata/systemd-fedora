@@ -364,9 +364,9 @@ Summary: Rule-based device node and kernel event manager
 License:        LGPL-2.1-or-later
 
 Requires:       systemd%{_isa} = %{version}-%{release}
-Requires(post):   systemd
-Requires(preun):  systemd
-Requires(postun): systemd
+Requires(post):   systemd%{_isa} = %{version}-%{release}
+Requires(preun):  systemd%{_isa} = %{version}-%{release}
+Requires(postun): systemd%{_isa} = %{version}-%{release}
 Requires(post): grep
 Requires:       kmod >= 18-4
 # https://bodhi.fedoraproject.org/updates/FEDORA-2020-dd43dd05b1
@@ -470,9 +470,9 @@ the version that works with Secure Boot.
 # Name is the same as in Debian
 Summary: Tools for containers and VMs
 Requires:       %{name}%{_isa} = %{version}-%{release}
-Requires(post):   systemd
-Requires(preun):  systemd
-Requires(postun): systemd
+Requires(post):   systemd%{_isa} = %{version}-%{release}
+Requires(preun):  systemd%{_isa} = %{version}-%{release}
+Requires(postun): systemd%{_isa} = %{version}-%{release}
 # obsolete parent package so that dnf will install new subpackage on upgrade (#1260394)
 Obsoletes:      %{name} < 229-5
 # Bias the system towards libcurl-minimal if nothing pulls in full libcurl (#1997040)
