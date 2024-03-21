@@ -437,6 +437,13 @@ Requires:       python3dist(zstd)
 Requires:       python3dist(cryptography)
 Recommends:     python3dist(pillow)
 
+# for tests
+%ifarch riscv64
+# 2.42 received support for riscv64 + efi targets
+%global binutils_version_req >= 2.42
+%endif
+BuildRequires:  binutils %{?binutils_version_req}
+
 BuildArch:      noarch
 
 %description ukify
