@@ -201,7 +201,9 @@ BuildRequires:  libseccomp-devel
 BuildRequires:  meson >= 0.43
 BuildRequires:  gettext
 # We use RUNNING_ON_VALGRIND in tests, so the headers need to be available
+%ifarch %{valgrind_arches}
 BuildRequires:  valgrind-devel
+%endif
 BuildRequires:  pkgconfig(bash-completion)
 BuildRequires:  perl
 BuildRequires:  perl(IPC::SysV)
