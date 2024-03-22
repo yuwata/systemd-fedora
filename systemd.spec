@@ -121,7 +121,7 @@ Patch0491:      https://github.com/systemd/systemd/pull/30846.patch
 # Adjust upstream config to use our shared stack
 Patch0499:      fedora-use-system-auth-in-pam-systemd-user.patch
 
-%ifarch %{ix86} x86_64 aarch64
+%ifarch %{ix86} x86_64 aarch64 riscv64
 %global want_bootloader 1
 %endif
 
