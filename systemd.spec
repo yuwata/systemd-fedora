@@ -31,6 +31,12 @@
 # Build from git main
 %bcond upstream  0
 
+%ifarch riscv64
+%if !%{defined release_override}
+%global release_override 1.0.riscv64
+%endif
+%endif
+
 Name:           systemd
 Url:            https://systemd.io
 # Allow users to specify the version and release when building the rpm by 
