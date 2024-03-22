@@ -15,12 +15,12 @@
 %global elf_suffix ()%{elf_bits}
 %endif
 
-%bcond bzip2  1
-%bcond gnutls 1
-%bcond lz4    1
-%bcond xz     1
-%bcond zlib   1
-%bcond zstd   1
+%bcond bzip2     1
+%bcond gnutls    1
+%bcond lz4       1
+%bcond xz        1
+%bcond zlib      1
+%bcond zstd      1
 
 # Bootstrap may be needed to break circular dependencies with cryptsetup,
 # e.g. when re-building cryptsetup on a json-c SONAME-bump.
@@ -29,7 +29,7 @@
 %bcond lto       1
 
 # Build from git main
-%bcond upstream 0
+%bcond upstream  0
 
 Name:           systemd
 Url:            https://systemd.io
