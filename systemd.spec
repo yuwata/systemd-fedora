@@ -27,6 +27,7 @@
 %bcond bootstrap 0
 %bcond tests     1
 %bcond lto       1
+%bcond docs      1
 
 # Build from git main
 %bcond upstream  0
@@ -174,8 +175,10 @@ BuildRequires:  pkgconfig(tss2-rc)
 BuildRequires:  pkgconfig(tss2-mu)
 BuildRequires:  pkgconfig(libbpf)
 BuildRequires:  systemtap-sdt-devel
+%if %{with docs}
 BuildRequires:  libxslt
 BuildRequires:  docbook-style-xsl
+%endif
 BuildRequires:  pkgconfig
 BuildRequires:  gperf
 BuildRequires:  gawk
@@ -682,7 +685,7 @@ CONFIGURE_OPTS=(
         -Dcompat-mutable-uid-boundaries=true
         -Dsplit-bin=true
         -Db_ndebug=false
-        -Dman=enabled
+        -Dman=%[%{with docs}?"enabled":"disabled"]
         -Dversion-tag=%{version}%[%{without upstream}?"-%{release}":""]
         # https://bugzilla.redhat.com/show_bug.cgi?id=1906010
         -Dshared-lib-tag=%{version_no_tilde}%[%{without upstream}?"-%{release}":""]
