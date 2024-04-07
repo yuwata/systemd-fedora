@@ -1,0 +1,31 @@
+From d0515eec3c38c9b53a8e30397cf9b40cda5d6b94 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Sun, 7 Apr 2024 10:39:20 +0200
+Subject: [PATCH] meson: do not fail build with newer kernel headers
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+systemd-255 is failing a build with the latest kernel headers… Let's downgrade
+this warning, because it's fine if there's a file system we don't know about
+and it makes thing less brittle if we don't treat this as a hard error.
+
+(I initially conditionalized this on BUILD_MODE, but I don't think we need a
+hard error there either. A warning will be noticed and fixed.)
+---
+ src/basic/meson.build | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/basic/meson.build b/src/basic/meson.build
+index 1516a9f7af3e4..386d9ab6c9c50 100644
+--- a/src/basic/meson.build
++++ b/src/basic/meson.build
+@@ -240,7 +240,7 @@ filesystem_includes = ['linux/magic.h',
+ check_filesystems = find_program('check-filesystems.sh')
+ r = run_command([check_filesystems, cpp, files('filesystems-gperf.gperf')] + filesystem_includes, check: false)
+ if r.returncode() != 0
+-        error('Unknown filesystems defined in kernel headers:\n\n' + r.stdout())
++        warning('Unknown filesystems defined in kernel headers:\n\n' + r.stdout())
+ endif
+ 
+ filesystems_gperf_h = custom_target(

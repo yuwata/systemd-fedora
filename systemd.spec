@@ -104,6 +104,8 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # Drop when dracut-060 is available.
 Patch0001:      https://github.com/systemd/systemd/pull/26494.patch
 
+Patch0002:      https://github.com/systemd/systemd/pull/32134.patch
+
 
 # Those are downstream-only patches, but we don't want them in packit builds:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
