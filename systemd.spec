@@ -210,8 +210,6 @@ BuildRequires:  gettext
 BuildRequires:  valgrind-devel
 %endif
 BuildRequires:  pkgconfig(bash-completion)
-BuildRequires:  perl
-BuildRequires:  perl(IPC::SysV)
 
 %if %{with upstream}
 BuildRequires:  pkgconfig(libarchive)
