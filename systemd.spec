@@ -269,6 +269,19 @@ Provides:       %{name}-sysusers = %{version}-%{release}
 Conflicts:      %{name}-standalone-shutdown < %{version}-%{release}^
 Provides:       %{name}-shutdown = %{version}-%{release}
 
+%if "%{_sbindir}" == "%{_bindir}"
+# Compat symlinks for Requires in other packages.
+# We rely on filesystem to create the symlinks for us.
+Requires:       filesystem(unmerged-sbin-symlinks)
+Provides:       /usr/sbin/halt
+Provides:       /usr/sbin/init
+Provides:       /usr/sbin/poweroff
+Provides:       /usr/sbin/reboot
+Provides:       /usr/sbin/runlevel
+Provides:       /usr/sbin/shutdown
+Provides:       /usr/sbin/telinit
+%endif
+
 # Recommends to replace normal Requires deps for stuff that is dlopen()ed
 Recommends:     libidn2.so.0%{?elf_suffix}
 Recommends:     libidn2.so.0(IDN2_0.0.0)%{?elf_bits}
@@ -421,6 +434,13 @@ Obsoletes:      systemd-udev < 252.2^
 
 Conflicts:      %{name}-standalone-repart < %{version}-%{release}^
 Provides:       %{name}-repart = %{version}-%{release}
+
+%if "%{_sbindir}" == "%{_bindir}"
+# Compat symlinks for Requires in other packages.
+# We rely on filesystem to create the symlinks for us.
+Requires:       filesystem(unmerged-sbin-symlinks)
+Provides:       /usr/sbin/udevadm
+%endif
 
 %description udev
 This package contains systemd-udev and the rules and hardware database needed to
@@ -755,8 +775,10 @@ sed -r 's|/system/|/user/|g' %{SOURCE16} >10-timeout-abort.conf.user
 %meson_install
 
 # udev links
+%if "%{_sbindir}" != "%{_bindir}"
 mkdir -p %{buildroot}/%{_sbindir}
 ln -sf ../bin/udevadm %{buildroot}%{_sbindir}/udevadm
+%endif
 
 # Compatiblity and documentation files
 touch %{buildroot}/etc/crypttab
@@ -997,7 +1019,7 @@ if [ -L %{_localstatedir}/lib/systemd/timesync ]; then
     rm %{_localstatedir}/lib/systemd/timesync
     mv %{_localstatedir}/lib/private/systemd/timesync %{_localstatedir}/lib/systemd/timesync
 fi
-if [ -f %{_localstatedir}/lib/systemd/clock ] ; then
+if [ -f %{_localstatedir}/lib/systemd/clock ]; then
     mkdir -p %{_localstatedir}/lib/systemd/timesync
     mv %{_localstatedir}/lib/systemd/clock %{_localstatedir}/lib/systemd/timesync/.
 fi
