@@ -901,6 +901,13 @@ install -Dm0644 -t %{buildroot}%{_prefix}/lib/systemd/network/ %{SOURCE25}
 
 ln -s --relative %{buildroot}%{_bindir}/kernel-install %{buildroot}%{_sbindir}/installkernel
 
+%if "%{_sbindir}" == "%{_bindir}"
+# Systemd has the split-sbin option which is also used to select the directory
+# for alias symlinks. We need to keep split-sbin=true for now, to support
+# unmerged systems. Move the symlinks here instead.
+mv -v %{buildroot}/usr/sbin/* %{buildroot}%{_bindir}/
+%endif
+
 %find_lang %{name}
 
 # Split files in build root into rpms
