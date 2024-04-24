@@ -99,12 +99,6 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 
 %if %{without upstream}
 
-# Work-around for dracut issue: run generators directly when we are in initrd
-# https://bugzilla.redhat.com/show_bug.cgi?id=2164404
-# Drop when dracut-060 is available.
-Patch0001:      https://github.com/systemd/systemd/pull/26494.patch
-
-
 # Those are downstream-only patches, but we don't want them in packit builds:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
 Patch0490:      use-bfq-scheduler.patch
@@ -256,7 +250,7 @@ Conflicts:      initscripts < 9.56.1
 Conflicts:      fedora-release < 23-0.12
 %endif
 # Make sure that dracut supports systemd-executor and the renames done for v255
-Conflicts:      dracut < 059-16
+Conflicts:      dracut < 060
 
 Obsoletes:      timedatex < 0.6-3
 Provides:       timedatex = 0.6-3
