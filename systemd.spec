@@ -917,33 +917,6 @@ meson test -C %{_vpath_builddir} -t 6 --print-errorlogs
 %post
 systemd-machine-id-setup &>/dev/null || :
 
-# FIXME: move to %postun. We want to restart systemd *after* removing
-# files from the old rpm. Right now we may still have bits the old
-# setup if the files are not present in the new version. But before
-# implement restarting of *other* services after the transaction, moving
-# this would make things worse, increasing the number of warnings we get
-# about needed daemon-reload.
-
-systemctl daemon-reexec &>/dev/null || {
-  # systemd v239 had bug #9553 in D-Bus authentication of the private socket,
-  # which was later fixed in v240 by #9625.
-  #
-  # The end result is that a `systemctl daemon-reexec` call as root will fail
-  # when upgrading from systemd v239, which means the system will not start
-  # running the new version of systemd after this post install script runs.
-  #
-  # To work around this issue, let's fall back to using a `kill -TERM 1` to
-  # re-execute the daemon when the `systemctl daemon-reexec` call fails.
-  #
-  # In order to prevent issues when the reason why the daemon-reexec failed is
-  # not the aforementioned bug, let's only use this fallback when:
-  #   - we're upgrading this RPM package; and
-  #   - we confirm that systemd is running as PID1 on this system.
-  if [ $1 -gt 1 ] && [ -d /run/systemd/system ] ; then
-    kill -TERM 1 &>/dev/null || :
-  fi
-}
-
 [ $1 -eq 1 ] || exit 0
 
 # create /var/log/journal only on initial installation,
@@ -965,9 +938,12 @@ systemctl preset-all &>/dev/null || :
 systemctl --global preset-all &>/dev/null || :
 
 %postun
-if [ $1 -eq 1 ]; then
-   [ -w %{_localstatedir} ] && journalctl --update-catalog || :
-   systemd-tmpfiles --create &>/dev/null || :
+if [ $1 -ge 1 ]; then
+  [ -w %{_localstatedir} ] && journalctl --update-catalog || :
+
+  systemctl daemon-reexec || :
+
+  systemd-tmpfiles --create &>/dev/null || :
 fi
 
 %systemd_postun_with_restart systemd-timedated.service systemd-hostnamed.service systemd-journald.service systemd-localed.service systemd-userdbd.service
