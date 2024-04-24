@@ -36,7 +36,7 @@ Name:           systemd
 Url:            https://systemd.io
 # Allow users to specify the version and release when building the rpm by 
 # setting the %%version_override and %%release_override macros.
-Version:        %{?version_override}%{!?version_override:255.4}
+Version:        %{?version_override}%{!?version_override:255.5}
 Release:        %{?release_override:%{release_override}%{?dist}}%{!?release_override:%autorelease}
 
 %global stable %(c="%version"; [ "$c" = "${c#*.*}" ]; echo $?)
@@ -103,8 +103,6 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # https://bugzilla.redhat.com/show_bug.cgi?id=2164404
 # Drop when dracut-060 is available.
 Patch0001:      https://github.com/systemd/systemd/pull/26494.patch
-
-Patch0002:      https://github.com/systemd/systemd/pull/32134.patch
 
 
 # Those are downstream-only patches, but we don't want them in packit builds:
