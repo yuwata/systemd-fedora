@@ -36,7 +36,7 @@ Name:           systemd
 Url:            https://systemd.io
 # Allow users to specify the version and release when building the rpm by 
 # setting the %%version_override and %%release_override macros.
-Version:        %{?version_override}%{!?version_override:255.5}
+Version:        %{?version_override}%{!?version_override:256~rc1}
 Release:        %{?release_override:%{release_override}%{?dist}}%{!?release_override:%autorelease}
 
 %global stable %(c="%version"; [ "$c" = "${c#*.*}" ]; echo $?)
@@ -163,6 +163,8 @@ BuildRequires:  qrencode-devel
 BuildRequires:  libmicrohttpd-devel
 BuildRequires:  libxkbcommon-devel
 BuildRequires:  iptables-devel
+BuildRequires:  pkgconfig(bash-completion)
+BuildRequires:  pkgconfig(libarchive)
 BuildRequires:  pkgconfig(libfido2)
 BuildRequires:  pkgconfig(tss2-esys)
 BuildRequires:  pkgconfig(tss2-rc)
@@ -200,11 +202,6 @@ BuildRequires:  gettext
 # We use RUNNING_ON_VALGRIND in tests, so the headers need to be available
 %ifarch %{valgrind_arches}
 BuildRequires:  valgrind-devel
-%endif
-BuildRequires:  pkgconfig(bash-completion)
-
-%if %{with upstream}
-BuildRequires:  pkgconfig(libarchive)
 %endif
 
 %ifnarch %ix86
