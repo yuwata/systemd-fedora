@@ -246,8 +246,9 @@ Conflicts:      initscripts < 9.56.1
 %if 0%{?fedora}
 Conflicts:      fedora-release < 23-0.12
 %endif
-# Make sure that dracut supports systemd-executor and the renames done for v255
-Conflicts:      dracut < 060
+# Make sure that dracut supports systemd-executor and the renames done for v255,
+# and dlopen libraries and read-only fs in initrd.
+Conflicts:      dracut < 060-2
 
 Obsoletes:      timedatex < 0.6-3
 Provides:       timedatex = 0.6-3
@@ -293,7 +294,6 @@ Recommends:     libelf.so.1(ELFUTILS_1.7)%{?elf_bits}
 Recommends:     libcryptsetup.so.12%{?elf_suffix}
 Recommends:     libcryptsetup.so.12(CRYPTSETUP_2.4)%{?elf_bits}
 
-%if %{with upstream}
 # Libkmod is used to load modules.
 Recommends:     libkmod.so.2%{?elf_suffix}
 # kmod_list_next, kmod_load_resources, kmod_module_get_initstate,
@@ -304,7 +304,6 @@ Recommends:     libkmod.so.2%{?elf_suffix}
 Recommends:     libkmod.so.2(LIBKMOD_5)%{?elf_bits}
 
 Recommends:     libarchive.so.13%{?elf_suffix}
-%endif
 
 %description
 systemd is a system and service manager that runs as PID 1 and starts the rest
@@ -384,12 +383,10 @@ Obsoletes:      udev < 183
 Requires:       (grubby > 8.40-72 if grubby)
 Requires:       (sdubby > 1.0-3 if sdubby)
 
-%if %{with upstream}
 # Libkmod is used to load modules. Assume that if we need udevd, we certainly
 # want to load modules, so make this into a hard dependency here.
 Requires:       libkmod.so.2%{?elf_suffix}
 Requires:       libkmod.so.2(LIBKMOD_5)%{?elf_bits}
-%endif
 
 # Recommends to replace normal Requires deps for stuff that is dlopen()ed
 # used by dissect, integritysetup, veritysetyp, growfs, repart, cryptenroll, home
