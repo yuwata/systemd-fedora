@@ -951,6 +951,10 @@ if [ $1 -ge 1 ] && [ -x "/usr/lib/systemd/systemd-update-helper" ]; then
     /usr/lib/systemd/systemd-update-helper user-reexec || :
 fi
 
+%triggerun -- systemd < 256
+# This is for upgrades from previous versions before systemd restart was moved to %%postun
+systemctl daemon-reexec || :
+
 %triggerpostun -- systemd < 253~rc1-2
 # This is for upgrades from previous versions where systemd-journald-audit.socket
 # had a static enablement symlink.
