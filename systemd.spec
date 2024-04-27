@@ -32,6 +32,8 @@
 # Build from git main
 %bcond upstream  0
 
+%global release_override 2
+
 Name:           systemd
 Url:            https://systemd.io
 # Allow users to specify the version and release when building the rpm by 
