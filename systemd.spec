@@ -1,4 +1,4 @@
-#global commit c4b843473a75fb38ed5bf54e9d3cfb1cb3719efa
+%global commit 1781de18ab8ebc3e42a607851d8effb3b0355c87
 %{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
@@ -32,13 +32,11 @@
 # Build from git main
 %bcond upstream  0
 
-%global release_override 4
-
 Name:           systemd
 Url:            https://systemd.io
 # Allow users to specify the version and release when building the rpm by 
 # setting the %%version_override and %%release_override macros.
-Version:        %{?version_override}%{!?version_override:256~rc1}
+Version:        %{?version_override}%{!?version_override:256~rc1^20240509git%{shortcommit}}
 Release:        %{?release_override:%{release_override}%{?dist}}%{!?release_override:%autorelease}
 
 %global stable %(c="%version"; [ "$c" = "${c#*.*}" ]; echo $?)
@@ -49,7 +47,7 @@ Summary:        System and Service Manager
 
 # download tarballs with "spectool -g systemd.spec"
 %if %{defined commit}
-Source0:        https://github.com/systemd/systemd%{?stable:-stable}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+Source0:        https://github.com/systemd/systemd%[%stable?"-stable":""]/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 %if 0%{?stable}
 Source0:        https://github.com/systemd/systemd-stable/archive/v%{version_no_tilde}/%{name}-%{version_no_tilde}.tar.gz
