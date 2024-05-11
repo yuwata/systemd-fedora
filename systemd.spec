@@ -98,6 +98,11 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # applying upstream pull requests.
 
 %if %{without upstream}
+# Drop varlink method call until selinux policy is updated,
+# see https://bodhi.fedoraproject.org/updates/FEDORA-2024-d5c99f5063,
+# https://bugzilla.redhat.com/show_bug.cgi?id=2279923.
+# Reverts https://github.com/systemd/systemd/commit/5b44c81ff868a4d1b78a74e4770f7a8b2f1d0f91.
+Patch0001:      0001-Revert-machined-add-varlink-interface-for-registerin.patch
 
 # Those are downstream-only patches, but we don't want them in packit builds:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
