@@ -32,7 +32,7 @@
 # Build from git main
 %bcond upstream  0
 
-%global release_override 2
+%{!?release_override:%global release_override 2}
 
 Name:           systemd
 Url:            https://systemd.io
