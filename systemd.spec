@@ -1,4 +1,4 @@
-%global commit 1781de18ab8ebc3e42a607851d8effb3b0355c87
+#global commit 1781de18ab8ebc3e42a607851d8effb3b0355c87
 %{?commit:%global shortcommit %(c=%{commit}; echo ${c:0:7})}
 
 # We ship a .pc file but don't want to have a dep on pkg-config. We
@@ -32,13 +32,13 @@
 # Build from git main
 %bcond upstream  0
 
-%{!?release_override:%global release_override 2}
+%{!?release_override:%global release_override 1}
 
 Name:           systemd
 Url:            https://systemd.io
 # Allow users to specify the version and release when building the rpm by 
 # setting the %%version_override and %%release_override macros.
-Version:        %{?version_override}%{!?version_override:256~rc1^20240509git%{shortcommit}}
+Version:        %{?version_override}%{!?version_override:256~rc2}
 Release:        %{?release_override:%{release_override}%{?dist}}%{!?release_override:%autorelease}
 
 %global stable %(c="%version"; [ "$c" = "${c#*.*}" ]; echo $?)
@@ -110,7 +110,7 @@ Patch0001:      0001-Revert-machined-add-varlink-interface-for-registerin.patch
 # Work-around for dracut issue: run generators directly when we are in initrd
 # https://bugzilla.redhat.com/show_bug.cgi?id=2164404
 # Drop when dracut-060 is available.
-Patch0001:      https://github.com/systemd/systemd/pull/26494.patch
+Patch0002:      https://github.com/systemd/systemd/pull/26494.patch
 %endif
 
 # Those are downstream-only patches, but we don't want them in packit builds:
