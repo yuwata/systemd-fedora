@@ -32,13 +32,13 @@
 # Build from git main
 %bcond upstream  0
 
-%{!?release_override:%global release_override 1}
+# %%{!?release_override:%%global release_override 1}
 
 Name:           systemd
 Url:            https://systemd.io
 # Allow users to specify the version and release when building the rpm by 
 # setting the %%version_override and %%release_override macros.
-Version:        %{?version_override}%{!?version_override:256~rc2}
+Version:        %{?version_override}%{!?version_override:256~rc3}
 Release:        %{?release_override:%{release_override}%{?dist}}%{!?release_override:%autorelease}
 
 %global stable %(c="%version"; [ "$c" = "${c#*.*}" ]; echo $?)
