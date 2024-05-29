@@ -106,11 +106,15 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # Reverts https://github.com/systemd/systemd/commit/5b44c81ff868a4d1b78a74e4770f7a8b2f1d0f91.
 Patch0001:      0001-Revert-machined-add-varlink-interface-for-registerin.patch
 
+Patch0002:      0001-generator-setup-use-RET_GATHER.patch
+Patch0003:      0002-exec-util-use-the-stdio-array-of-safe_fork_full-wher.patch
+Patch0004:      0003-exec-util-make-sure-to-close-all-fds-for-invoked-gen.patch
+
 %if 0%{?fedora} < 41
 # Work-around for dracut issue: run generators directly when we are in initrd
 # https://bugzilla.redhat.com/show_bug.cgi?id=2164404
 # Drop when dracut-060 is available.
-Patch0002:      https://github.com/systemd/systemd/pull/26494.patch
+Patch0010:      https://github.com/systemd/systemd/pull/26494.patch
 %endif
 
 # Those are downstream-only patches, but we don't want them in packit builds:
