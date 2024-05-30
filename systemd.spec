@@ -64,6 +64,7 @@ Source0:        https://github.com/systemd/systemd/archive/v%{version_no_tilde}/
 Source1:        triggers.systemd
 Source2:        split-files.py
 Source3:        purge-nobody-user
+Source4:        test_sysusers_defined.py
 
 # Prevent accidental removal of the systemd package
 Source5:        yum-protect-systemd.conf
@@ -270,6 +271,11 @@ Provides:       systemd-sysv = 206
 Conflicts:      initscripts < 9.56.1
 %if 0%{?fedora}
 Conflicts:      fedora-release < 23-0.12
+%endif
+%if 0%{?fedora} >= 41
+BuildRequires:  setup >= 2.15.0-3
+BuildRequires:  python3
+Conflicts:      setup < 2.15.0-3
 %endif
 
 %if 0%{?fedora} >= 41
@@ -924,6 +930,13 @@ ln -s --relative %{buildroot}%{_bindir}/kernel-install %{buildroot}%{_sbindir}/i
 # for alias symlinks. We need to keep split-sbin=true for now, to support
 # unmerged systems. Move the symlinks here instead.
 mv -v %{buildroot}/usr/sbin/* %{buildroot}%{_bindir}/
+%endif
+
+%if 0%{?fedora} >= 41
+# This requires https://pagure.io/setup/pull-request/50
+# and https://src.fedoraproject.org/rpms/setup/pull-request/10.
+%{python3} %{SOURCE4} /usr/lib/sysusers.d/20-setup-{users,groups}.conf %{buildroot}/usr/lib/sysusers.d/basic.conf
+rm %{buildroot}/usr/lib/sysusers.d/basic.conf
 %endif
 
 %find_lang %{name}
