@@ -66,14 +66,14 @@ Source2:        split-files.py
 Source3:        purge-nobody-user
 
 # Prevent accidental removal of the systemd package
-Source4:        yum-protect-systemd.conf
+Source5:        yum-protect-systemd.conf
 
-Source5:        inittab
-Source6:        sysctl.conf.README
-Source7:        systemd-journal-remote.xml
-Source8:        systemd-journal-gatewayd.xml
-Source9:        20-yama-ptrace.conf
-Source10:       systemd-udev-trigger-no-reload.conf
+Source6:        inittab
+Source7:        sysctl.conf.README
+Source8:        systemd-journal-remote.xml
+Source9:        systemd-journal-gatewayd.xml
+Source10:       20-yama-ptrace.conf
+Source11:       systemd-udev-trigger-no-reload.conf
 # https://fedoraproject.org/wiki/How_to_filter_libabigail_reports
 Source13:       .abignore
 
@@ -821,11 +821,13 @@ touch %{buildroot}/etc/systemd/coredump.conf \
       %{buildroot}/etc/udev/udev.conf \
       %{buildroot}/etc/udev/iocost.conf
 
+install -D -t %{buildroot}/usr/lib/systemd/ %{SOURCE3}
+
 # /etc/initab
-install -Dm0644 -t %{buildroot}/etc/ %{SOURCE5}
+install -Dm0644 -t %{buildroot}/etc/ %{SOURCE6}
 
 # /etc/sysctl.conf compat
-install -Dm0644 %{SOURCE6} %{buildroot}/etc/sysctl.conf
+install -Dm0644 %{SOURCE7} %{buildroot}/etc/sysctl.conf
 ln -s ../sysctl.conf %{buildroot}/etc/sysctl.d/99-sysctl.conf
 
 # Make sure these directories are properly owned
@@ -878,20 +880,18 @@ touch %{buildroot}%{_localstatedir}/lib/systemd/timesync/clock
 touch %{buildroot}%{_localstatedir}/lib/private/systemd/journal-upload/state
 
 # Install yum protection fragment
-install -Dm0644 %{SOURCE4} %{buildroot}/etc/dnf/protected.d/systemd.conf
+install -Dm0644 %{SOURCE5} %{buildroot}/etc/dnf/protected.d/systemd.conf
 
-install -Dm0644 -t %{buildroot}/usr/lib/firewalld/services/ %{SOURCE7} %{SOURCE8}
+install -Dm0644 -t %{buildroot}/usr/lib/firewalld/services/ %{SOURCE8} %{SOURCE9}
 
 # Install additional docs
 # https://bugzilla.redhat.com/show_bug.cgi?id=1234951
-install -Dm0644 -t %{buildroot}%{_pkgdocdir}/ %{SOURCE9}
+install -Dm0644 -t %{buildroot}%{_pkgdocdir}/ %{SOURCE10}
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1378974
-install -Dm0644 -t %{buildroot}%{system_unit_dir}/systemd-udev-trigger.service.d/ %{SOURCE10}
+install -Dm0644 -t %{buildroot}%{system_unit_dir}/systemd-udev-trigger.service.d/ %{SOURCE11}
 
 install -Dm0644 -t %{buildroot}%{_prefix}/lib/systemd/ %{SOURCE13}
-
-install -D -t %{buildroot}/usr/lib/systemd/ %{SOURCE3}
 
 # systemd-oomd default configuration
 install -Dm0644 -t %{buildroot}%{_prefix}/lib/systemd/oomd.conf.d/ %{SOURCE14}
