@@ -112,6 +112,11 @@ Patch0002:      0001-generator-setup-use-RET_GATHER.patch
 Patch0003:      0002-exec-util-use-the-stdio-array-of-safe_fork_full-wher.patch
 Patch0004:      0003-exec-util-make-sure-to-close-all-fds-for-invoked-gen.patch
 
+# Backport part of https://github.com/systemd/systemd/pull/33016
+# to fix a bug that causes crashes in KDE Frameworks 6.3.0
+Patch0005:      0001-core-dbus-execute-use-correct-char-for-representing-.patch
+Patch0006:      0002-core-dbus-execute-don-t-trigger-assertion-if-Working.patch
+
 %if 0%{?fedora} < 41
 # Work-around for dracut issue: run generators directly when we are in initrd
 # https://bugzilla.redhat.com/show_bug.cgi?id=2164404
