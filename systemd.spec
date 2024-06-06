@@ -989,7 +989,7 @@ fi
 
 # FIXME: systemd-logind.service is excluded (https://github.com/systemd/systemd/pull/17558)
 
-# This is the explanded form of %%systemd_user_daemon_reexec. We
+# This is the expanded form of %%systemd_user_daemon_reexec. We
 # can't use the macro because we define it ourselves.
 if [ $1 -ge 1 ] && [ -x "/usr/lib/systemd/systemd-update-helper" ]; then
     # Package upgrade, not uninstall
