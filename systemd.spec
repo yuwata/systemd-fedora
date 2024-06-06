@@ -40,7 +40,7 @@ Name:           systemd
 Url:            https://systemd.io
 # Allow users to specify the version and release when building the rpm by 
 # setting the %%version_override and %%release_override macros.
-Version:        %{?version_override}%{!?version_override:256~rc3}
+Version:        %{?version_override}%{!?version_override:256~rc4}
 Release:        %autorelease
 
 %global stable %(c="%version"; [ "$c" = "${c#*.*}" ]; echo $?)
@@ -103,20 +103,6 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # applying upstream pull requests.
 
 %if %{without upstream}
-# Drop varlink method call until selinux policy is updated,
-# see https://bodhi.fedoraproject.org/updates/FEDORA-2024-d5c99f5063,
-# https://bugzilla.redhat.com/show_bug.cgi?id=2279923.
-# Reverts https://github.com/systemd/systemd/commit/5b44c81ff868a4d1b78a74e4770f7a8b2f1d0f91.
-Patch0001:      0001-Revert-machined-add-varlink-interface-for-registerin.patch
-
-Patch0002:      0001-generator-setup-use-RET_GATHER.patch
-Patch0003:      0002-exec-util-use-the-stdio-array-of-safe_fork_full-wher.patch
-Patch0004:      0003-exec-util-make-sure-to-close-all-fds-for-invoked-gen.patch
-
-# Backport part of https://github.com/systemd/systemd/pull/33016
-# to fix a bug that causes crashes in KDE Frameworks 6.3.0
-Patch0005:      0001-core-dbus-execute-use-correct-char-for-representing-.patch
-Patch0006:      0002-core-dbus-execute-don-t-trigger-assertion-if-Working.patch
 
 %if 0%{?fedora} < 41
 # Work-around for dracut issue: run generators directly when we are in initrd
@@ -276,6 +262,7 @@ Conflicts:      fedora-release < 23-0.12
 BuildRequires:  setup >= 2.15.0-3
 BuildRequires:  python3
 Conflicts:      setup < 2.15.0-3
+Conflicts:      selinux-policy-any < 41.1
 %endif
 
 %if 0%{?fedora} >= 41
