@@ -32,6 +32,13 @@
 # Build from git main
 %bcond upstream  0
 
+# When bootstrap, libcryptsetup is disabled
+# but auto-features causes many options to be turned on
+# that depend on libcryptsetup (e.g. libcryptsetup-plugins, homed)
+%if %{with bootstrap}
+%global __meson_auto_features disabled
+%endif
+
 # Override %%autorelease. This is ugly, but rpmautospec doesn't implement
 # autorelease correctly if the macro is conditionalized in the Release field.
 %{?release_override:%global autorelease %{release_override}%{?dist}}
@@ -695,6 +702,7 @@ CONFIGURE_OPTS=(
         -Delfutils=enabled
         -Dlibcryptsetup=%[%{with bootstrap}?"disabled":"enabled"]
         -Delfutils=enabled
+        -Drepart=enabled
         -Dpwquality=enabled
         -Dqrencode=%[%{defined rhel}?"disabled":"enabled"]
         -Dgnutls=%[%{with gnutls}?"enabled":"disabled"]
