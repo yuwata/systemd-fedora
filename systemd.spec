@@ -937,6 +937,10 @@ mv -v %{buildroot}/usr/sbin/* %{buildroot}%{_bindir}/
 rm %{buildroot}/usr/lib/sysusers.d/basic.conf
 %endif
 
+# /home and /srv are created by filesystem.
+# Remove our config to avoid confusion where those are defined.
+rm %{buildroot}/usr/lib/tmpfiles.d/home.conf
+
 %find_lang %{name}
 
 # Split files in build root into rpms
