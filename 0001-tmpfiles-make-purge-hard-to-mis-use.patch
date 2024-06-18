@@ -1,0 +1,63 @@
+From f62d1f6ea55fc0dcccbe60582804c9b033f8ad0e Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Tue, 18 Jun 2024 20:32:10 +0200
+Subject: [PATCH] tmpfiles: make --purge hard to (mis-)use
+
+Follow-up for https://github.com/systemd/systemd/pull/33383.
+---
+ src/tmpfiles/tmpfiles.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+
+diff --git a/src/tmpfiles/tmpfiles.c b/src/tmpfiles/tmpfiles.c
+index 5841db293e..9b0f744ba9 100644
+--- a/src/tmpfiles/tmpfiles.c
++++ b/src/tmpfiles/tmpfiles.c
+@@ -4195,6 +4195,7 @@ static int parse_argv(int argc, char *argv[]) {
+                 ARG_IMAGE_POLICY,
+                 ARG_REPLACE,
+                 ARG_DRY_RUN,
++                ARG_DESTROY_DATA,
+                 ARG_NO_PAGER,
+         };
+ 
+@@ -4218,10 +4219,18 @@ static int parse_argv(int argc, char *argv[]) {
+                 { "replace",        required_argument,   NULL, ARG_REPLACE        },
+                 { "dry-run",        no_argument,         NULL, ARG_DRY_RUN        },
+                 { "no-pager",       no_argument,         NULL, ARG_NO_PAGER       },
++
++                /* This is not documented on purpose.
++                 * If you think --purge should be allowed without jumping through hoops,
++                 * consider opening a bug report with the description of the use case.
++                 */
++                { "destroy-data",   no_argument,         NULL, ARG_DESTROY_DATA   },
++
+                 {}
+         };
+ 
+         int c, r;
++        bool destroy_data = false;
+ 
+         assert(argc >= 0);
+         assert(argv);
+@@ -4328,6 +4337,10 @@ static int parse_argv(int argc, char *argv[]) {
+                         arg_dry_run = true;
+                         break;
+ 
++                case ARG_DESTROY_DATA:
++                        destroy_data = true;
++                        break;
++
+                 case ARG_NO_PAGER:
+                         arg_pager_flags |= PAGER_DISABLE;
+                         break;
+@@ -4347,6 +4360,10 @@ static int parse_argv(int argc, char *argv[]) {
+                 return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
+                                        "Refusing --purge without specification of a configuration file.");
+ 
++        if (FLAGS_SET(arg_operation, OPERATION_PURGE) && !arg_dry_run && !destroy_data)
++                return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
++                                       "Refusing --purge without --destroy-data.");
++
+         if (arg_replace && arg_cat_flags != CAT_CONFIG_OFF)
+                 return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
+                                        "Option --replace= is not supported with --cat-config/--tldr.");

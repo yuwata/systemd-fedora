@@ -125,6 +125,8 @@ Patch0490:      use-bfq-scheduler.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=2251843
 Patch0491:      https://github.com/systemd/systemd/pull/30846.patch
 
+# Soft-disable tmpfiles --purge until a good use case comes up.
+Patch0492:      0001-tmpfiles-make-purge-hard-to-mis-use.patch
 %endif
 
 # Adjust upstream config to use our shared stack
