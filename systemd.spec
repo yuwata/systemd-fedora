@@ -47,7 +47,7 @@ Name:           systemd
 Url:            https://systemd.io
 # Allow users to specify the version and release when building the rpm by 
 # setting the %%version_override and %%release_override macros.
-Version:        %{?version_override}%{!?version_override:256}
+Version:        %{?version_override}%{!?version_override:256.1}
 Release:        %autorelease
 
 %global stable %(c="%version"; [ "$c" = "${c#*.*}" ]; echo $?)
@@ -58,13 +58,9 @@ Summary:        System and Service Manager
 
 # download tarballs with "spectool -g systemd.spec"
 %if %{defined commit}
-Source0:        https://github.com/systemd/systemd%[%stable?"-stable":""]/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
-%else
-%if 0%{?stable}
-Source0:        https://github.com/systemd/systemd-stable/archive/v%{version_no_tilde}/%{name}-%{version_no_tilde}.tar.gz
+Source0:        https://github.com/systemd/systemd/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        https://github.com/systemd/systemd/archive/v%{version_no_tilde}/%{name}-%{version_no_tilde}.tar.gz
-%endif
 %endif
 # This file must be available before %%prep.
 # It is generated during systemd build and can be found in build/src/core/.
@@ -661,7 +657,7 @@ other libraries from systemd-libs. This package conflicts with the main systemd
 package and is meant for use in exitrds.
 
 %prep
-%autosetup -n %{?commit:%{name}%[%stable?"-stable":""]-%{commit}}%{!?commit:%{name}%[%stable?"-stable":""]-%{version_no_tilde}} -p1
+%autosetup -n %{?commit:%{name}-%{commit}}%{!?commit:%{name}-%{version_no_tilde}} -p1
 
 %build
 %global ntpvendor %(source /etc/os-release; echo ${ID})
