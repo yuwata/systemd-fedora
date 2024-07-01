@@ -478,7 +478,9 @@ Requires:       %{name} = %{version}-%{release}
 
 Requires:       systemd-boot
 Requires:       python3dist(pefile)
+%if %{undefined rhel}
 Requires:       python3dist(zstd)
+%endif
 Requires:       python3dist(cryptography)
 Recommends:     python3dist(pillow)
 
