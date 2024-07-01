@@ -212,7 +212,6 @@ BuildRequires:  python3dist(pillow)
 BuildRequires:  python3dist(pytest-flakes)
 %endif
 BuildRequires:  python3dist(pytest)
-BuildRequires:  python3dist(zstd)
 %if 0%{?want_bootloader}
 BuildRequires:  python3dist(pyelftools)
 %endif
