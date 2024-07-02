@@ -140,6 +140,7 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  clang
 BuildRequires:  coreutils
+BuildRequires:  rpmdevtools
 BuildRequires:  libcap-devel
 BuildRequires:  libmount-devel
 BuildRequires:  libfdisk-devel
@@ -231,6 +232,7 @@ BuildRequires:  valgrind-devel
 %ifnarch %ix86
 # bpftool is not built for i368
 BuildRequires:  bpftool
+BuildRequires:  kernel-devel
 %global have_bpf 1
 %endif
 
@@ -669,6 +671,28 @@ package and is meant for use in exitrds.
 %global ntpvendor %(source /etc/os-release; echo ${ID})
 %{!?ntpvendor: echo 'NTP vendor zone is not set!'; exit 1}
 
+VMLINUX_H_PATH=''
+
+%if 0%{?have_bpf}
+
+%global find_vmlinux_h %{expand:
+import functools, glob, subprocess
+def cmp(a, b):
+  c = subprocess.call(["rpmdev-vercmp", a, b], stdout=subprocess.DEVNULL)
+  return {0:0, 11:+1, 12:-1}[c]
+choices = list(glob.glob("/usr/src/kernels/*/vmlinux.h"))
+assert choices
+print(max(choices, key=functools.cmp_to_key(cmp)))
+}
+
+# The build fails on ppc64le with
+# "GCC error "Must specify a BPF target arch via __TARGET_ARCH_xxx".
+# TODO: Remove this when libbpf checks for __powerpc64__ macro.
+%ifnarch ppc64le
+VMLINUX_H_PATH=$(%python3 -c '%find_vmlinux_h')
+%endif
+%endif
+
 CONFIGURE_OPTS=(
         -Dmode=%[%{with upstream}?"developer":"release"]
         -Dsysvinit-path=/etc/rc.d/init.d
@@ -686,6 +710,8 @@ CONFIGURE_OPTS=(
         -Dima=true
         -Dselinux=enabled
         -Dbpf-framework=%[0%{?have_bpf}?"enabled":"disabled"]
+        -Dvmlinux-h=%[0%{?have_bpf}?"auto":"disabled"]
+        -Dvmlinux-h-path="$VMLINUX_H_PATH"
         -Dapparmor=disabled
         -Dpolkit=enabled
         -Dxz=%[%{with xz}?"enabled":"disabled"]
