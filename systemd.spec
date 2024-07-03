@@ -119,6 +119,10 @@ Patch0001:      0001-Revert-machined-add-varlink-interface-for-registerin.patch
 Patch0010:      https://github.com/systemd/systemd/pull/26494.patch
 %endif
 
+Patch0020:      0001-meson-rename-libbasic-to-libbasic_static.patch
+Patch0021:      0002-meson-build-libsystemd-core-via-an-intermediate-stat.patch
+Patch0022:      0003-meson-add-option-to-build-systemd-executor-staticall.patch
+
 # Those are downstream-only patches, but we don't want them in packit builds:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1738828
 Patch0490:      use-bfq-scheduler.patch
@@ -761,6 +765,7 @@ CONFIGURE_OPTS=(
         -Dversion-tag=%{version}%[%{without upstream}?"-%{release}":""]
         # https://bugzilla.redhat.com/show_bug.cgi?id=1906010
         -Dshared-lib-tag=%{version_no_tilde}%[%{without upstream}?"-%{release}":""]
+        -Dlink-executor-shared=false
         -Dfallback-hostname="localhost"
         -Ddefault-dnssec=no
         -Ddefault-dns-over-tls=no
