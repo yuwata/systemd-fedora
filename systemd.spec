@@ -112,7 +112,7 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # Reverts https://github.com/systemd/systemd/commit/5b44c81ff868a4d1b78a74e4770f7a8b2f1d0f91.
 Patch0001:      0001-Revert-machined-add-varlink-interface-for-registerin.patch
 
-%if 0%{?fedora} < 41
+%if ! (0%{?fedora} >= 40 || 0%{?rhel} >= 10)
 # Work-around for dracut issue: run generators directly when we are in initrd
 # https://bugzilla.redhat.com/show_bug.cgi?id=2164404
 # Drop when dracut-060 is available.
