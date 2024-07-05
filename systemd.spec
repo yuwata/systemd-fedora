@@ -279,11 +279,11 @@ Conflicts:      setup < 2.15.0-3
 Conflicts:      selinux-policy-any < 41.1
 %endif
 
-%if 0%{?fedora} >= 41
+%if 0%{?fedora} >= 41 || 0%{?rhel} >= 10
 # Make sure that dracut supports systemd-executor and the renames done for v255,
 # and dlopen libraries and read-only fs in initrd.
 Conflicts:      dracut < 060-2
-%else
+%elif 0%{?fedora}
 # Make sure that dracut supports systemd-executor and the renames done for v255.
 Conflicts:      dracut < 059-16
 %endif
