@@ -1,4 +1,4 @@
-From 63178ad7e51dae8730158573318388ea8c3e488e Mon Sep 17 00:00:00 2001
+From 3b101982011d787c05d7708740e6eada560c62cc Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
 Date: Wed, 3 Jul 2024 17:03:26 +0200
 Subject: [PATCH 2/3] meson: build libsystemd-core via an intermediate static

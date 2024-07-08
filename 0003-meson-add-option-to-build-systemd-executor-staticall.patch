@@ -1,4 +1,4 @@
-From 66df80d8c37dce4b597dfa26e1050856a610cf7f Mon Sep 17 00:00:00 2001
+From 254338a838354d9d3e43efa14190ca1203ef3afe Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
 Date: Wed, 3 Jul 2024 17:05:31 +0200
 Subject: [PATCH 3/3] meson: add option to build systemd-executor "statically"
@@ -49,11 +49,11 @@ our own, are linked dynamically.
  2 files changed, 14 insertions(+), 4 deletions(-)
 
 diff --git a/meson_options.txt b/meson_options.txt
-index d52ca4e4b5..3cce818392 100644
+index 667340ca59..909e2d53e8 100644
 --- a/meson_options.txt
 +++ b/meson_options.txt
 @@ -21,6 +21,8 @@ option('rootprefix', type : 'string', deprecated: true,
-        description : '''This option is deprecated and will be removed in a future release''')
+        description : 'This option is deprecated and will be removed in a future release')
  option('link-udev-shared', type : 'boolean',
         description : 'link systemd-udevd and its helpers to libsystemd-shared.so')
 +option('link-executor-shared', type : 'boolean',
