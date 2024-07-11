@@ -106,12 +106,6 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # applying upstream pull requests.
 
 %if %{without upstream}
-# Drop varlink method call until selinux policy is updated,
-# see https://bodhi.fedoraproject.org/updates/FEDORA-2024-d5c99f5063,
-# https://bugzilla.redhat.com/show_bug.cgi?id=2279923.
-# Reverts https://github.com/systemd/systemd/commit/5b44c81ff868a4d1b78a74e4770f7a8b2f1d0f91.
-Patch0001:      0001-Revert-machined-add-varlink-interface-for-registerin.patch
-
 %if ! (0%{?fedora} >= 40 || 0%{?rhel} >= 10)
 # Work-around for dracut issue: run generators directly when we are in initrd
 # https://bugzilla.redhat.com/show_bug.cgi?id=2164404
@@ -280,7 +274,7 @@ Conflicts:      fedora-release < 23-0.12
 BuildRequires:  setup >= 2.15.0-3
 BuildRequires:  python3
 Conflicts:      setup < 2.15.0-3
-Conflicts:      selinux-policy-any < 41.1
+Conflicts:      selinux-policy-any < 41.3
 %endif
 
 %if 0%{?fedora} >= 41 || 0%{?rhel} >= 10
