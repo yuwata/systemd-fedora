@@ -254,7 +254,6 @@ Requires:       %{name}-libs%{_isa} = %{version}-%{release}
 %{?fedora:Recommends:     %{name}-resolved = %{version}-%{release}}
 Recommends:     diffutils
 Requires:       (util-linux-core or util-linux)
-Recommends:     libxkbcommon%{_isa}
 Provides:       /bin/systemctl
 Provides:       /sbin/shutdown
 Provides:       syslog
@@ -309,6 +308,7 @@ Provides:       /usr/sbin/telinit
 %endif
 
 # Recommends to replace normal Requires deps for stuff that is dlopen()ed
+Recommends:     libxkbcommon.so.0%{?elf_suffix}
 Recommends:     libidn2.so.0%{?elf_suffix}
 Recommends:     libidn2.so.0(IDN2_0.0.0)%{?elf_bits}
 Recommends:     libpcre2-8.so.0%{?elf_suffix}
