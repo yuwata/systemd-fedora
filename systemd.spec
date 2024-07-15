@@ -626,6 +626,7 @@ useful to test systemd internals.
 Summary:       Standalone systemd-repart binary for use on systems without systemd
 Provides:      %{name}-repart = %{version}-%{release}
 Conflicts:     %{name}-udev
+Suggests:      coreutils-single
 RemovePathPostfixes: .standalone
 
 %description standalone-repart
@@ -637,6 +638,7 @@ package and is meant for use on systems without systemd.
 Summary:       Standalone systemd-tmpfiles binary for use on systems without systemd
 Provides:      %{name}-tmpfiles = %{version}-%{release}
 Conflicts:     %{name}
+Suggests:      coreutils-single
 RemovePathPostfixes: .standalone
 
 %description standalone-tmpfiles
@@ -648,6 +650,7 @@ package and is meant for use on systems without systemd.
 Summary:       Standalone systemd-sysusers binary for use on systems without systemd
 Provides:      %{name}-sysusers = %{version}-%{release}
 Conflicts:     %{name}
+Suggests:      coreutils-single
 RemovePathPostfixes: .standalone
 
 %description standalone-sysusers
@@ -659,6 +662,7 @@ package and is meant for use on systems without systemd.
 Summary:       Standalone systemd-shutdown binary for use on systems without systemd
 Provides:      %{name}-shutdown = %{version}-%{release}
 Conflicts:     %{name}
+Suggests:      coreutils-single
 RemovePathPostfixes: .standalone
 
 %description standalone-shutdown
