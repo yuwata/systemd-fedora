@@ -231,6 +231,9 @@ BuildRequires:  gettext
 %ifarch %{valgrind_arches}
 BuildRequires:  valgrind-devel
 %endif
+%if %{defined rhel} && 0%{?rhel} < 10
+BuildRequires: rsync
+%endif
 
 %ifnarch %ix86
 # bpftool is not built for i368
