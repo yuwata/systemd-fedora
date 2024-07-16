@@ -1,4 +1,4 @@
-From ca1344d04a9c1804234417dcfbd868524abc7ce6 Mon Sep 17 00:00:00 2001
+From 9e3d6b193d79ce447cd329617ada941f331570a9 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
 Date: Tue, 9 Jan 2024 11:28:04 +0100
 Subject: [PATCH] journal: again create user journals for users with high uids
@@ -43,7 +43,7 @@ Fixes https://bugzilla.redhat.com/show_bug.cgi?id=2251843.
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/basic/uid-classification.c b/src/basic/uid-classification.c
-index e2d2cebc6d..2c8b06c0d3 100644
+index e2d2cebc6de27..2c8b06c0d3088 100644
 --- a/src/basic/uid-classification.c
 +++ b/src/basic/uid-classification.c
 @@ -127,5 +127,5 @@ bool uid_for_system_journal(uid_t uid) {
