@@ -57,7 +57,9 @@ License:        LGPL-2.1-or-later AND MIT AND GPL-2.0-or-later
 Summary:        System and Service Manager
 
 # download tarballs with "spectool -g systemd.spec"
-%if %{defined commit}
+%if %{defined branch}
+Source0:        https://github.com/systemd/systemd/archive/refs/heads/%{branch}.tar.gz
+%elif %{defined commit}
 Source0:        https://github.com/systemd/systemd/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        https://github.com/systemd/systemd/archive/v%{version_no_tilde}/%{name}-%{version_no_tilde}.tar.gz
@@ -671,7 +673,13 @@ other libraries from systemd-libs. This package conflicts with the main systemd
 package and is meant for use in exitrds.
 
 %prep
-%autosetup -n %{?commit:%{name}-%{commit}}%{!?commit:%{name}-%{version_no_tilde}} -p1
+%if %{defined branch}
+%autosetup -n %{name}-%{branch} -p1
+%elif %{defined commit}
+%autosetup -n %{name}-%{commit} -p1
+%else
+%autosetup -n %{name}-%{version_no_tilde} -p1
+%endif
 
 %build
 %global ntpvendor %(source /etc/os-release; echo ${ID})
