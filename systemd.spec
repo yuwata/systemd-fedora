@@ -115,6 +115,9 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 Patch0010:      https://github.com/systemd/systemd/pull/26494.patch
 %endif
 
+# Requested in https://bugzilla.redhat.com/show_bug.cgi?id=2298422
+Patch0011:      https://github.com/systemd/systemd/pull/33738.patch
+
 Patch0020:      0001-meson-rename-libbasic-to-libbasic_static.patch
 Patch0021:      0002-meson-build-libsystemd-core-via-an-intermediate-stat.patch
 Patch0022:      0003-meson-add-option-to-build-systemd-executor-staticall.patch
