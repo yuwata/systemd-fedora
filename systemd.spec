@@ -426,6 +426,13 @@ Provides:       udev%{_isa} = %{version}
 Obsoletes:      udev < 183
 Requires:       (grubby > 8.40-72 if grubby)
 Requires:       (sdubby > 1.0-3 if sdubby)
+# A backport of systemd-timesyncd is shipped as a separate package in EPEL so
+# let's make sure we properly handle that.
+%if 0%{?rhel}
+Conflicts:      systemd-timesyncd < %{version}-%{release}
+Obsoletes:      systemd-timesyncd < %{version}-%{release}
+Provides:       systemd-timesyncd = %{version}-%{release}
+%endif
 
 # Libkmod is used to load modules. Assume that if we need udevd, we certainly
 # want to load modules, so make this into a hard dependency here.
