@@ -972,7 +972,9 @@ install -m 0755 -D -t %{buildroot}%{_rpmconfigdir}/ %{SOURCE24}
 # https://bugzilla.redhat.com/show_bug.cgi?id=2107754
 install -Dm0644 -t %{buildroot}%{_prefix}/lib/systemd/network/ %{SOURCE25}
 
+%if 0%{?fedora} || 0%{?rhel} >= 10
 ln -s --relative %{buildroot}%{_bindir}/kernel-install %{buildroot}%{_sbindir}/installkernel
+%endif
 
 %if "%{_sbindir}" == "%{_bindir}"
 # Systemd has the split-sbin option which is also used to select the directory
