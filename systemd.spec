@@ -797,9 +797,11 @@ CONFIGURE_OPTS=(
         -Ddefault-llmnr=resolve
         # https://bugzilla.redhat.com/show_bug.cgi?id=2028169
         -Dstatus-unit-format-default=combined
+%if 0%{?fedora}
         # https://fedoraproject.org/wiki/Changes/Shorter_Shutdown_Timer
         -Ddefault-timeout-sec=45
         -Ddefault-user-timeout-sec=45
+%endif
         -Dconfigfiledir=/usr/lib
         -Doomd=true
 
@@ -959,9 +961,11 @@ install -Dm0644 -t %{buildroot}%{_prefix}/lib/systemd/ %{SOURCE13}
 install -Dm0644 -t %{buildroot}%{_prefix}/lib/systemd/oomd.conf.d/ %{SOURCE14}
 install -Dm0644 -t %{buildroot}%{system_unit_dir}/system.slice.d/ %{SOURCE15}
 install -Dm0644 -t %{buildroot}%{user_unit_dir}/slice.d/ %{SOURCE15}
+%if 0%{?fedora}
 # https://fedoraproject.org/wiki/Changes/Shorter_Shutdown_Timer
 install -Dm0644 -t %{buildroot}%{system_unit_dir}/service.d/ %{SOURCE16}
 install -Dm0644 10-timeout-abort.conf.user %{buildroot}%{user_unit_dir}/service.d/10-timeout-abort.conf
+%endif
 
 # https://fedoraproject.org/wiki/Changes/IncreaseVmMaxMapCount
 install -Dm0644 -t %{buildroot}%{_prefix}/lib/sysctl.d/ %{SOURCE17}
