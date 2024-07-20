@@ -87,6 +87,7 @@ Source14:       10-oomd-defaults.conf
 Source15:       10-oomd-per-slice-defaults.conf
 Source16:       10-timeout-abort.conf
 Source17:       10-map-count.conf
+Source18:       60-block-scheduler.rules
 
 Source21:       macros.sysusers
 Source22:       sysusers.attr
@@ -123,8 +124,6 @@ Patch0021:      0002-meson-build-libsystemd-core-via-an-intermediate-stat.patch
 Patch0022:      0003-meson-add-option-to-build-systemd-executor-staticall.patch
 
 # Those are downstream-only patches, but we don't want them in packit builds:
-# https://bugzilla.redhat.com/show_bug.cgi?id=1738828
-Patch0490:      use-bfq-scheduler.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=2251843
 Patch0491:      https://github.com/systemd/systemd/pull/30846.patch
 
@@ -969,6 +968,12 @@ install -Dm0644 10-timeout-abort.conf.user %{buildroot}%{user_unit_dir}/service.
 
 # https://fedoraproject.org/wiki/Changes/IncreaseVmMaxMapCount
 install -Dm0644 -t %{buildroot}%{_prefix}/lib/sysctl.d/ %{SOURCE17}
+
+# As requested in https://bugzilla.redhat.com/show_bug.cgi?id=1738828.
+# Test results are that bfq seems to behave better and more consistently on
+# typical hardware. The kernel does not have a configuration option to set the
+# default scheduler, and it currently needs to be set by userspace.
+install -Dm0644 -t %{buildroot}%{_prefix}/lib/udev/rules.d/ %{SOURCE18}
 
 sed -i 's|#!/usr/bin/env python3|#!%{__python3}|' %{buildroot}/usr/lib/systemd/tests/run-unit-tests.py
 
