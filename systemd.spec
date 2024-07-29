@@ -119,6 +119,8 @@ Patch0010:      https://github.com/systemd/systemd/pull/26494.patch
 # Requested in https://bugzilla.redhat.com/show_bug.cgi?id=2298422
 Patch0011:      https://github.com/systemd/systemd/pull/33738.patch
 
+Patch0012:      https://github.com/systemd/systemd/pull/33861.patch
+
 # Those are downstream-only patches, but we don't want them in packit builds:
 # https://bugzilla.redhat.com/show_bug.cgi?id=2251843
 Patch0491:      https://github.com/systemd/systemd/pull/30846.patch
