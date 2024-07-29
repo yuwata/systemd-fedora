@@ -1,0 +1,39 @@
+From 94a2999f250e3f7579883f5c79815b80398043cd Mon Sep 17 00:00:00 2001
+From: Daan De Meyer <daan.j.demeyer@gmail.com>
+Date: Mon, 29 Jul 2024 17:13:28 +0200
+Subject: [PATCH] kernel-install: Only read cmdline from /proc/cmdline when not
+ in container
+
+If we're running from within a container, we're very likely not going
+to want to use the kernel command line from /proc/cmdline, so let's add
+a check to see if we're running from a container to decide whether we'll
+use the kernel command line from /proc/cmdline.
+---
+ src/kernel-install/90-loaderentry.install.in | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/src/kernel-install/90-loaderentry.install.in b/src/kernel-install/90-loaderentry.install.in
+index 4ef6aca169c1a..79427684cc5c9 100755
+--- a/src/kernel-install/90-loaderentry.install.in
++++ b/src/kernel-install/90-loaderentry.install.in
+@@ -79,8 +79,10 @@ elif [ -f /etc/kernel/cmdline ]; then
+     BOOT_OPTIONS="$(tr -s "$IFS" ' ' </etc/kernel/cmdline)"
+ elif [ -f /usr/lib/kernel/cmdline ]; then
+     BOOT_OPTIONS="$(tr -s "$IFS" ' ' </usr/lib/kernel/cmdline)"
+-else
++elif ! systemd-detect-virt --container --quiet; then
+     BOOT_OPTIONS="$(tr -s "$IFS" '\n' </proc/cmdline | grep -ve '^BOOT_IMAGE=' -e '^initrd=' | tr '\n' ' ')"
++else
++    BOOT_OPTIONS=""
+ fi
+ 
+ BOOT_OPTIONS="${BOOT_OPTIONS% }"
+@@ -194,7 +196,7 @@ mkdir -p "${LOADER_ENTRY%/*}" || {
+         echo "machine-id $MACHINE_ID"
+     fi
+     [ -n "$SORT_KEY" ] && echo "sort-key   $SORT_KEY"
+-    echo "options    $BOOT_OPTIONS"
++    [ -n "$BOOT_OPTIONS" ] && echo "options    $BOOT_OPTIONS"
+     echo "linux      $KERNEL_ENTRY"
+     [ -n "$DEVICETREE_ENTRY" ] && echo "devicetree $DEVICETREE_ENTRY"
+ 
