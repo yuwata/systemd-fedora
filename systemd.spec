@@ -47,7 +47,7 @@ Name:           systemd
 Url:            https://systemd.io
 # Allow users to specify the version and release when building the rpm by 
 # setting the %%version_override and %%release_override macros.
-Version:        %{?version_override}%{!?version_override:256.4}
+Version:        %{?version_override}%{!?version_override:256.5}
 Release:        %autorelease
 
 %global stable %(c="%version"; [ "$c" = "${c#*.*}" ]; echo $?)
@@ -118,9 +118,6 @@ Patch0010:      https://github.com/systemd/systemd/pull/26494.patch
 
 # Requested in https://bugzilla.redhat.com/show_bug.cgi?id=2298422
 Patch0011:      https://github.com/systemd/systemd/pull/33738.patch
-
-Patch0012:      https://github.com/systemd/systemd/pull/33861.patch
-Patch0013:      https://github.com/systemd/systemd/pull/33864.patch
 
 # Those are downstream-only patches, but we don't want them in packit builds:
 # https://bugzilla.redhat.com/show_bug.cgi?id=2251843
