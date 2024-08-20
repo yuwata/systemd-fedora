@@ -1005,6 +1005,13 @@ mv -v %{buildroot}/usr/sbin/* %{buildroot}%{_bindir}/
 rm %{buildroot}/usr/lib/sysusers.d/basic.conf
 %endif
 
+# Disable sshd_config.d/20-systemd-userdb.conf for now.
+# This option may override an existing AuthorizedKeysCommand setting
+# (or be ineffective, depending on the order of configuration).
+# See https://github.com/systemd/systemd/issues/33648.
+rm %{buildroot}/etc/ssh/sshd_config.d/20-systemd-userdb.conf
+mv %{buildroot}/usr/lib/tmpfiles.d/20-systemd-userdb.conf{,.example}
+
 %find_lang %{name}
 
 # Split files in build root into rpms
