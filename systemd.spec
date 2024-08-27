@@ -497,7 +497,9 @@ Requires:       python3dist(pefile)
 Requires:       python3dist(zstd)
 %endif
 Requires:       python3dist(cryptography)
+%if 0%{?fedora}
 Recommends:     python3dist(pillow)
+%endif
 
 # for tests
 %ifarch riscv64
