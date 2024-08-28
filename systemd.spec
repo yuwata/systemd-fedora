@@ -108,7 +108,6 @@ GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[
 # than in the next section. Packit CI will drop any patches in this range before
 # applying upstream pull requests.
 
-%if %{without upstream}
 %if 0%{?fedora} < 40 && 0%{?rhel} < 10
 # Work-around for dracut issue: run generators directly when we are in initrd
 # https://bugzilla.redhat.com/show_bug.cgi?id=2164404
@@ -125,7 +124,6 @@ Patch0491:      https://github.com/systemd/systemd/pull/30846.patch
 
 # Soft-disable tmpfiles --purge until a good use case comes up.
 Patch0492:      0001-tmpfiles-make-purge-hard-to-mis-use.patch
-%endif
 
 # Adjust upstream config to use our shared stack
 Patch0499:      fedora-use-system-auth-in-pam-systemd-user.patch
