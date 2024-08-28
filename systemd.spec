@@ -96,6 +96,8 @@ Source24:       sysusers.generate-pre.sh
 
 Source25:       98-default-mac-none.link
 
+Source26:       systemd-user
+
 %if 0
 GIT_DIR=../../src/systemd/.git git format-patch-ab --no-signature -M -N v235..v235-stable
 i=1; for j in 00*patch; do printf "Patch%04d:      %s\n" $i $j; i=$((i+1));done|xclip
@@ -124,9 +126,6 @@ Patch0491:      https://github.com/systemd/systemd/pull/30846.patch
 
 # Soft-disable tmpfiles --purge until a good use case comes up.
 Patch0492:      0001-tmpfiles-make-purge-hard-to-mis-use.patch
-
-# Adjust upstream config to use our shared stack
-Patch0499:      fedora-use-system-auth-in-pam-systemd-user.patch
 
 %ifarch %{ix86} x86_64 aarch64 riscv64
 %global want_bootloader 1
@@ -1010,6 +1009,8 @@ rm %{buildroot}/usr/lib/sysusers.d/basic.conf
 # See https://github.com/systemd/systemd/issues/33648.
 rm %{buildroot}/etc/ssh/sshd_config.d/20-systemd-userdb.conf
 mv %{buildroot}/usr/lib/tmpfiles.d/20-systemd-userdb.conf{,.example}
+
+install -m 0644 -t %{buildroot}%{_prefix}/lib/pam.d/ %{SOURCE26}
 
 %find_lang %{name}
 
