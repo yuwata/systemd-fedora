@@ -120,6 +120,9 @@ Patch0010:      https://github.com/systemd/systemd/pull/26494.patch
 # Requested in https://bugzilla.redhat.com/show_bug.cgi?id=2298422
 Patch0011:      https://github.com/systemd/systemd/pull/33738.patch
 
+# Make test-ukify skip itself on architectures without UEFI.
+Patch0012:      https://github.com/systemd/systemd/pull/34154.patch
+
 # Those are downstream-only patches, but we don't want them in packit builds:
 # https://bugzilla.redhat.com/show_bug.cgi?id=2251843
 Patch0491:      https://github.com/systemd/systemd/pull/30846.patch
@@ -483,12 +486,16 @@ This package also provides systemd-timesyncd, a network time protocol daemon.
 It also contains tools to manage encrypted home areas and secrets bound to the
 machine, and to create or grow partitions and make file systems automatically.
 
-%if 0%{?want_bootloader}
 %package ukify
 Summary:        Tool to build Unified Kernel Images
 Requires:       %{name} = %{version}-%{release}
 
-Requires:       systemd-boot
+Requires:       (systemd-boot if %{shrink:(
+        filesystem(x86-32) or
+        filesystem(x86-64) or
+        filesystem(aarch64) or
+        filesystem(riscv64)
+)})
 Requires:       python3dist(pefile)
 %if 0%{?fedora}
 Requires:       python3dist(zstd)
@@ -512,6 +519,7 @@ This package provides ukify, a script that combines a kernel image, an initrd,
 with a command line, and possibly PCR measurements and other metadata, into a
 Unified Kernel Image (UKI).
 
+%if 0%{?want_bootloader}
 %package boot-unsigned
 Summary: UEFI boot manager (unsigned version)
 
@@ -826,10 +834,8 @@ CONFIGURE_OPTS=(
         # For now, let's build the bootloader in the same places where we
         # built with gnu-efi. Later on, we might want to extend coverage, but
         # considering that that support is untested, let's not do this now.
-        # Note, ukify requires bootloader, let's also explicitly enable/disable it
-        # here for https://github.com/systemd/systemd/pull/24175.
         -Dbootloader=%[%{?want_bootloader}?"enabled":"disabled"]
-        -Dukify=%[%{?want_bootloader}?"enabled":"disabled"]
+        -Dukify=enabled
 )
 
 %if %{without lto}
@@ -1265,8 +1271,8 @@ fi
 
 %files udev -f .file-list-udev
 
-%if 0%{?want_bootloader}
 %files ukify -f .file-list-ukify
+%if 0%{?want_bootloader}
 %files boot-unsigned -f .file-list-boot
 %endif
 
