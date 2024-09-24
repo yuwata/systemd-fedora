@@ -71,9 +71,6 @@ Source2:        split-files.py
 Source3:        purge-nobody-user
 Source4:        test_sysusers_defined.py
 
-# Prevent accidental removal of the systemd package
-Source5:        yum-protect-systemd.conf
-
 Source6:        inittab
 Source7:        sysctl.conf.README
 Source8:        systemd-journal-remote.xml
@@ -942,8 +939,18 @@ touch %{buildroot}%{_localstatedir}/lib/systemd/random-seed
 touch %{buildroot}%{_localstatedir}/lib/systemd/timesync/clock
 touch %{buildroot}%{_localstatedir}/lib/private/systemd/journal-upload/state
 
-# Install yum protection fragment
-install -Dm0644 %{SOURCE5} %{buildroot}/etc/dnf/protected.d/systemd.conf
+# Install yum protection config. Old location in /etc.
+mkdir -p %{buildroot}/etc/dnf/protected.d/
+cat >%{buildroot}/etc/dnf/protected.d/systemd.conf <<EOF
+systemd
+systemd-udev
+EOF
+# Install dnf5 protection config. New location under /usr.
+mkdir -p %{buildroot}/usr/share/dnf5/libdnf.conf.d/
+cat >%{buildroot}/usr/share/dnf5/libdnf.conf.d/protect-systemd.conf <<EOF
+[main]
+protected_packages = systemd, systemd-udev
+EOF
 
 install -Dm0644 -t %{buildroot}/usr/lib/firewalld/services/ %{SOURCE8} %{SOURCE9}
 
