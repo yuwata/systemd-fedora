@@ -689,6 +689,10 @@ main systemd package and is meant for use in exitrds.
 %autosetup -n %{name}-%{version_no_tilde} -p1
 %endif
 
+# Disable user lockdown until rpm implements it natively.
+# https://github.com/rpm-software-management/rpm/issues/3450
+sed -r -i 's/^u!/u/' sysusers.d/*.conf*
+
 %build
 %global ntpvendor %(source /etc/os-release; echo ${ID})
 %{!?ntpvendor: echo 'NTP vendor zone is not set!'; exit 1}
