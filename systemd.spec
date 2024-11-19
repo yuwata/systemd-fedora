@@ -540,7 +540,11 @@ Requires:       %{name}%{_isa} = %{version}-%{release}
 Requires(post):   systemd%{_isa} = %{version}-%{release}
 Requires(preun):  systemd%{_isa} = %{version}-%{release}
 Requires(postun): systemd%{_isa} = %{version}-%{release}
-# obsolete parent package so that dnf will install new subpackage on upgrade (#1260394)
+# For systemd-vmspawn which uses qemu:
+Recommends:     qemu-kvm
+Recommends:     qemu-device-display-virtio-gpu
+Recommends:     qemu-device-display-virtio-vga
+# Obsolete parent package so that dnf will install new subpackage on upgrade (#1260394)
 Obsoletes:      %{name} < 229-5
 # Bias the system towards libcurl-minimal if nothing pulls in full libcurl (#1997040)
 Suggests:       libcurl-minimal
