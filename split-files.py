@@ -154,6 +154,9 @@ for file in files(buildroot):
           and os.path.exists(f'./{n}.example')):
         o = outputs['networkd-defaults']
 
+    # Files that are "consumed" by systemd-networkd go into the -networkd
+    # subpackage. As a special case, network-generator is co-owned also by
+    # the -udev subpackage because systemd-udevd reads .link files.
     elif re.search(r'''/usr/lib/systemd/network/.*\.network|
                        networkd|
                        networkctl|
@@ -164,6 +167,8 @@ for file in files(buildroot):
                        systemd\.netdev
     ''', n, re.X):
         o = outputs['networkd']
+    elif 'network-generator' in n:
+        o = (outputs['networkd'], outputs['udev'])
 
     elif '.so.' in n:
         o = outputs['libs']
@@ -255,7 +260,10 @@ for file in files(buildroot):
 
     suffix = '*' if '/man/' in n else ''
 
-    print(f'{prefix}{n}{suffix}', file=o)
+    if not isinstance(o, tuple):
+        o = (o,)
+    for file in o:
+        print(f'{prefix}{n}{suffix}', file=file)
 
 if [print(f'ERROR: no file names were written to {o.name}')
     for name, o in outputs.items()
