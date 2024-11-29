@@ -1,4 +1,4 @@
-From 45cfee930ab4067348cea5244c9c2dc31c64d14d Mon Sep 17 00:00:00 2001
+From 248b69d63068cabd7463c325d2ecc3db3239272e Mon Sep 17 00:00:00 2001
 From: Daan De Meyer <daan.j.demeyer@gmail.com>
 Date: Tue, 23 Jul 2024 13:14:05 +0200
 Subject: [PATCH] tmpfiles: make --purge hard to (mis-)use
@@ -6,11 +6,11 @@ Subject: [PATCH] tmpfiles: make --purge hard to (mis-)use
 Follow-up for https://github.com/systemd/systemd/pull/33383.
 ---
  src/tmpfiles/tmpfiles.c           | 17 +++++++++++++++++
- test/units/TEST-22-TMPFILES.18.sh |  4 ++--
- 2 files changed, 19 insertions(+), 2 deletions(-)
+ test/units/TEST-22-TMPFILES.18.sh |  6 +++---
+ 2 files changed, 20 insertions(+), 3 deletions(-)
 
 diff --git a/src/tmpfiles/tmpfiles.c b/src/tmpfiles/tmpfiles.c
-index 5a4f989668..c5b544f1df 100644
+index 86bf16356d..539c18f5e0 100644
 --- a/src/tmpfiles/tmpfiles.c
 +++ b/src/tmpfiles/tmpfiles.c
 @@ -4213,6 +4213,7 @@ static int parse_argv(int argc, char *argv[]) {
@@ -63,7 +63,7 @@ index 5a4f989668..c5b544f1df 100644
                  return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
                                         "Option --replace= is not supported with --cat-config/--tldr.");
 diff --git a/test/units/TEST-22-TMPFILES.18.sh b/test/units/TEST-22-TMPFILES.18.sh
-index c81f6bd0ef..dd536172d4 100755
+index c81f6bd0ef..1eb264a279 100755
 --- a/test/units/TEST-22-TMPFILES.18.sh
 +++ b/test/units/TEST-22-TMPFILES.18.sh
 @@ -24,7 +24,7 @@ test -f /tmp/somedir/somefile
@@ -75,7 +75,7 @@ index c81f6bd0ef..dd536172d4 100755
  test ! -f /tmp/somedir/somefile
  test ! -d /tmp/somedir/
  grep -q qux /tmp/someotherfile
-@@ -34,7 +34,7 @@ test ! -f /tmp/somedir/somefile
+@@ -34,12 +34,12 @@ test ! -f /tmp/somedir/somefile
  test ! -d /tmp/somedir/
  grep -q qux /tmp/someotherfile
  
@@ -83,6 +83,12 @@ index c81f6bd0ef..dd536172d4 100755
 +systemd-tmpfiles --create --destroy-data --purge - <<<"$c"
  test -f /tmp/somedir/somefile
  grep -q baz /tmp/somedir/somefile
+ grep -q qux /tmp/someotherfile
+ 
+-systemd-tmpfiles --purge - <<<"$c"
++systemd-tmpfiles --purge --destroy-data - <<<"$c"
+ test ! -f /tmp/somedir/somefile
+ test ! -d /tmp/somedir/
  grep -q qux /tmp/someotherfile
 -- 
 2.47.0
