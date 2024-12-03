@@ -541,7 +541,7 @@ Requires(post):   systemd%{_isa} = %{version}-%{release}
 Requires(preun):  systemd%{_isa} = %{version}-%{release}
 Requires(postun): systemd%{_isa} = %{version}-%{release}
 # For systemd-vmspawn which uses qemu:
-Recommends:     qemu-kvm
+Recommends:     qemu-kvm-core
 Recommends:     qemu-device-display-virtio-gpu
 Recommends:     qemu-device-display-virtio-vga
 # Obsolete parent package so that dnf will install new subpackage on upgrade (#1260394)
