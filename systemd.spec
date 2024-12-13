@@ -118,9 +118,6 @@ Patch0010:      https://github.com/systemd/systemd/pull/26494.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=2251843
 Patch0491:      https://github.com/systemd/systemd/pull/30846.patch
 
-# Soft-disable tmpfiles --purge until a good use case comes up.
-Patch0492:      0001-tmpfiles-make-purge-hard-to-mis-use.patch
-
 %ifarch %{ix86} x86_64 aarch64 riscv64
 %global want_bootloader 1
 %endif
