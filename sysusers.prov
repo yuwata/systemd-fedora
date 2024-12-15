@@ -42,7 +42,7 @@ parse() {
         [ -z "$line" ] && continue
         set -- $line
         case "$1" in
-            ('u')
+            ('u'|'u!')
                 process_u "$2" "$3"
                 ;;
             ('g')
