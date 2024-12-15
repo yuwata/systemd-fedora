@@ -69,7 +69,7 @@ parse() {
 		[ -z "$line" ] && continue
 		eval "arr=( $line )"
 		case "${arr[0]}" in
-			('u')
+			('u'|'u!')
 				if [[ "${arr[2]}" == *":"* ]]; then
 					user "${arr[1]}" "${arr[2]%:*}" "${arr[3]}" "${arr[2]#*:}" "${arr[4]}" "${arr[5]}"
 				else
