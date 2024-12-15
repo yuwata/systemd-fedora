@@ -121,6 +121,9 @@ Patch0491:      https://github.com/systemd/systemd/pull/30846.patch
 # Soft-disable tmpfiles --purge until a good use case comes up.
 Patch0492:      0001-tmpfiles-make-purge-hard-to-mis-use.patch
 
+# https://github.com/systemd/systemd/pull/35615
+Patch0493:      0002-test-time-util-fix-truncation-of-usec-to-sec.patch
+
 %ifarch %{ix86} x86_64 aarch64 riscv64
 %global want_bootloader 1
 %endif
