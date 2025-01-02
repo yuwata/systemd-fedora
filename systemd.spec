@@ -197,7 +197,6 @@ BuildRequires:  python3dist(lxml)
 BuildRequires:  python3dist(pefile)
 %if 0%{?fedora}
 BuildRequires:  python3dist(pillow)
-BuildRequires:  python3dist(pytest-flakes)
 %endif
 BuildRequires:  python3dist(pytest)
 %if 0%{?want_bootloader}
