@@ -723,7 +723,7 @@ VMLINUX_H_PATH=$(%python3 -c '%find_vmlinux_h')
 %endif
 
 CONFIGURE_OPTS=(
-        -Dmode=%[%{with upstream}?"developer":"release"]
+        -Dmode=release
         -Dslow-tests=true
         -Dsysvinit-path=/etc/rc.d/init.d
         -Drc-local=/etc/rc.d/rc.local
