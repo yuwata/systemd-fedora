@@ -1126,7 +1126,7 @@ if [ -f %{_localstatedir}/lib/systemd/clock ]; then
     mv %{_localstatedir}/lib/systemd/clock %{_localstatedir}/lib/systemd/timesync/.
 fi
 
-udevadm hwdb --update &>/dev/null
+systemd-hwdb update &>/dev/null
 
 %systemd_post %udev_services
 
