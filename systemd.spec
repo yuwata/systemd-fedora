@@ -78,7 +78,7 @@ Source9:        systemd-journal-gatewayd.xml
 Source10:       20-yama-ptrace.conf
 Source11:       systemd-udev-trigger-no-reload.conf
 # https://fedoraproject.org/wiki/How_to_filter_libabigail_reports
-Source13:       .abignore
+Source13:       libabigail.abignore
 
 Source14:       10-oomd-defaults.conf
 Source15:       10-oomd-per-slice-defaults.conf
@@ -963,7 +963,7 @@ install -Dm0644 -t %{buildroot}%{_pkgdocdir}/ %{SOURCE10}
 # https://bugzilla.redhat.com/show_bug.cgi?id=1378974
 install -Dm0644 -t %{buildroot}%{system_unit_dir}/systemd-udev-trigger.service.d/ %{SOURCE11}
 
-install -Dm0644 -t %{buildroot}%{_prefix}/lib/systemd/ %{SOURCE13}
+install -Dm0644 %{SOURCE13} %{buildroot}%{_prefix}/lib/systemd/.abignore
 
 # systemd-oomd default configuration
 install -Dm0644 -t %{buildroot}%{_prefix}/lib/systemd/oomd.conf.d/ %{SOURCE14}
