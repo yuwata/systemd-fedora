@@ -45,7 +45,7 @@
 
 Name:           systemd
 Url:            https://systemd.io
-# Allow users to specify the version and release when building the rpm by 
+# Allow users to specify the version and release when building the rpm by
 # setting the %%version_override and %%release_override macros.
 Version:        %{?version_override}%{!?version_override:257.1}
 Release:        %autorelease
