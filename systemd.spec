@@ -237,6 +237,10 @@ BuildRequires:  xen-devel
 %endif
 %endif
 
+%if %{with obs}
+BuildRequires:  pesign-obs-integration
+%endif
+
 Requires(post): coreutils
 Requires(post): grep
 # systemd-machine-id-setup requires libssl
@@ -512,6 +516,7 @@ with a command line, and possibly PCR measurements and other metadata, into a
 Unified Kernel Image (UKI).
 
 %if 0%{?want_bootloader}
+%if %{without obs}
 %package boot-unsigned
 Summary: UEFI boot manager (unsigned version)
 
@@ -532,6 +537,27 @@ line. systemd-boot supports systems with UEFI firmware only.
 
 This package contains the unsigned version. Install systemd-boot instead to get
 the version that works with Secure Boot.
+%else
+%package boot
+Summary: UEFI boot manager (signed version)
+
+Provides: systemd-boot-signed-%{efi_arch} = %version-%release
+Provides: systemd-boot = %version-%release
+Provides: systemd-boot%{_isa} = %version-%release
+# A provides with just the version, no release or dist, used to build systemd-boot
+Provides: version(systemd-boot-signed) = %version
+Provides: version(systemd-boot-signed)%{_isa} = %version
+
+# self-obsoletes to install both packages after split of systemd-boot
+Obsoletes:      systemd-udev < 252.2^
+
+%description boot
+systemd-boot (short: sd-boot) is a simple UEFI boot manager. It provides a
+graphical menu to select the entry to boot and an editor for the kernel command
+line. systemd-boot supports systems with UEFI firmware only.
+
+This package contains the signed version.
+%endif
 %endif
 
 %package container
@@ -1045,6 +1071,11 @@ EOF
 # Split files in build root into rpms
 python3 %{SOURCE2} %buildroot %{!?want_bootloader:--no-bootloader}
 
+# Stage sd-boot binaries for signing
+%if %{with obs} && 0%{?want_bootloader}
+BRP_PESIGN_FILES=/usr/lib/systemd/boot/efi/systemd-boot%{efi_arch}.efi BRP_PESIGN_PACKAGES=systemd-boot /usr/lib/rpm/brp-suse.d/brp-99-pesign
+%endif
+
 %check
 %if %{with tests}
 meson test -C %{_vpath_builddir} -t 6 --print-errorlogs
@@ -1299,7 +1330,11 @@ fi
 
 %files ukify -f .file-list-ukify
 %if 0%{?want_bootloader}
+%if %{without obs}
 %files boot-unsigned -f .file-list-boot
+%else
+%files boot -f .file-list-boot
+%endif
 %endif
 
 %files container -f .file-list-container
