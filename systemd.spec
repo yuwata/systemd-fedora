@@ -121,6 +121,9 @@ Patch:          0001-Revert-units-use-PrivateTmp-disconnected-instead-of-.patch
 # Those are downstream-only patches, but we don't want them in packit builds:
 # https://bugzilla.redhat.com/show_bug.cgi?id=2251843
 Patch:          https://github.com/systemd/systemd/pull/30846.patch
+
+# Backport various fmf fixes to allow running the integration tests in Fedora CI.
+Patch:          https://github.com/systemd/systemd/pull/35938.patch
 %endif
 
 %ifarch %{ix86} x86_64 aarch64 riscv64
