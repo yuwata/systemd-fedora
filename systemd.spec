@@ -104,25 +104,17 @@ Source25:       98-default-mac-none.link
 
 Source26:       systemd-user
 
-%if 0
-GIT_DIR=../../src/systemd/.git git format-patch-ab --no-signature -M -N v235..v235-stable
-i=1; for j in 00*patch; do printf "Patch%04d:      %s\n" $i $j; i=$((i+1));done|xclip
-GIT_DIR=../../src/systemd/.git git diffab -M v233..master@{2017-06-15} -- hwdb/[67]* hwdb/parse_hwdb.py >hwdb.patch
-%endif
-
 %if 0%{?fedora} < 40 && 0%{?rhel} < 10
 # Work-around for dracut issue: run generators directly when we are in initrd
 # https://bugzilla.redhat.com/show_bug.cgi?id=2164404
 # Drop when dracut-060 is available.
-Patch0010:      https://github.com/systemd/systemd/pull/26494.patch
+Patch:          https://github.com/systemd/systemd/pull/26494.patch
 %endif
 
 %if %{without upstream}
-
 # Those are downstream-only patches, but we don't want them in packit builds:
 # https://bugzilla.redhat.com/show_bug.cgi?id=2251843
-Patch0011:      https://github.com/systemd/systemd/pull/30846.patch
-
+Patch:          https://github.com/systemd/systemd/pull/30846.patch
 %endif
 
 %ifarch %{ix86} x86_64 aarch64 riscv64
