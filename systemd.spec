@@ -868,6 +868,11 @@ CONFIGURE_OPTS=(
         # considering that that support is untested, let's not do this now.
         -Dbootloader=%[%{?want_bootloader}?"enabled":"disabled"]
         -Dukify=enabled
+%if 0%{?want_bootloader} && %{with obs}
+        -Dsbat-distro-url=https://github.com/systemd/systemd
+        -Dsbat-distro=upstream
+        -Dsbat-distro-summary='Upstream build from git'
+%endif
 )
 
 %if %{without lto}
