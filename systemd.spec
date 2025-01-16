@@ -1050,9 +1050,13 @@ mv -v %{buildroot}/usr/sbin/* %{buildroot}%{_bindir}/
 %endif
 
 %if 0%{?fedora} >= 41
+%if %{without upstream}
 # This requires https://pagure.io/setup/pull-request/50
 # and https://src.fedoraproject.org/rpms/setup/pull-request/10.
+# We skip this on upstream builds so that new users and groups
+# can be added without breaking the build.
 %{python3} %{SOURCE4} /usr/lib/sysusers.d/20-setup-{users,groups}.conf %{buildroot}/usr/lib/sysusers.d/basic.conf
+%endif
 rm %{buildroot}/usr/lib/sysusers.d/basic.conf
 %endif
 
