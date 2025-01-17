@@ -1,3 +1,156 @@
+* Sun Jan 12 2025 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 257.2-6
+- Rebuilt for the bin-sbin merge (2nd attempt)
+
+* Fri Jan 10 2025 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 257.2-4
+- Revert use of PrivateTmp=disconnected (rhbz#2334015,
+  https://github.com/coreos/fedora-coreos-tracker/issues/1857)
+
+* Wed Jan 08 2025 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 257.2-1
+- Version 257.2
+- Fixes for assertion crashes and memory access issues in pid1 and systemd-
+  machined, and other fixes for systemd-repart, systemd-resolved, systemd-
+  stdio-bridge, systemctl, journalctl, sd-device, hibernation, and the
+  hardware database.
+
+* Tue Jan 07 2025 Yu Watanabe <watanabe.yu+github@gmail.com> - 257.1-7
+- Replace 'udevadm hwdb' with systemd-hwdb
+
+* Tue Jan 07 2025 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 257.1-6
+- Rename source .abignore file
+
+* Fri Dec 20 2024 Daan De Meyer <daan.j.demeyer@gmail.com> - 257.1-2
+- Re-enable upstream behaviour of systemd-tmpfiles --purge
+
+* Fri Dec 20 2024 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 257.1-1
+- Version 257.1
+- A bunch of post-release fixes, incl. for systemd-resolved, tpm2 support,
+  systemd-networkd, systemd-logind, journalct.
+- Should fix rhbz#2325780.
+
+* Sun Dec 15 2024 Yu Watanabe <watanabe.yu+github@gmail.com> - 257-3
+- Add patch for test-time-util
+
+* Sun Dec 15 2024 Yu Watanabe <watanabe.yu+github@gmail.com> - 257-2
+- sysusers: support new ! line flag for creating fully locked accounts
+
+* Tue Dec 10 2024 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 257-1
+- Version 257
+- A bunch of small fixes in various components: systemd itself, systemd-
+  cryptenroll, sd-varlink, sd-boot, documentation, tests
+- Includes an update of the hardware database
+
+* Thu Dec 05 2024 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 257~rc3-5
+- Enable slow tests during build
+
+* Tue Dec 03 2024 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 257~rc3-3
+- Recommend qemu-kvm-core instead of qemu-kvm (rhbz#2329979)
+
+* Fri Nov 29 2024 Yu Watanabe <watanabe.yu+github@gmail.com> - 257~rc3-2
+- Update tmpfiles --destroy-data patch
+
+* Wed Nov 27 2024 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 257~rc3-1
+- Version 257~rc3
+- A bunch of small fixes here and there: virtualization detection, udev,
+  systemd-networked, pid1.
+- Includes a hardware database update.
+
+* Tue Nov 26 2024 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 257~rc2-4
+- Make systemd-network-generator co-owned by -udev and -networkd
+  (rhbz#2328723)
+
+* Tue Nov 19 2024 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 257~rc2-3
+- Pull in qemu from systemd-container
+
+* Fri Nov 15 2024 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 257~rc2-2
+- Change sysusers u! lines to u because we don't have support in rpm
+
+* Fri Nov 15 2024 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 257~rc2-1
+- Version 257~rc2
+- Changes in systemd-measure, systemd-networkd, documentation, systemd-
+  sysupdated, systemd-sbsign, systemd-boot, systemd-stub, systemd-nspawn,
+  run0, ukify
+- Hardware database update
+
+* Fri Nov 15 2024 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 257~rc1-3
+- Disable freezing of user sessions (rhbz#2321268)
+
+* Thu Nov 07 2024 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 257~rc1-1
+- Version 257~rc1
+
+* Thu Nov 07 2024 Daan De Meyer <daan.j.demeyer@gmail.com> - 256.7-7
+- Use %%posttrans instead of %%postun to restart services
+
+* Thu Nov 07 2024 Yaakov Selkowitz <yselkowi@redhat.com> - 256.7-6
+- Disable OpenSSL v3 ENGINE on RHEL
+
+* Tue Nov 05 2024 Daan De Meyer <daan.j.demeyer@gmail.com> - 256.7-4
+- Backport user manager reexec changes
+
+* Tue Nov 05 2024 David Tardon <dtardon@redhat.com> - 256.7-3
+- Use %%systemd_preun in systemd-resolved
+
+* Thu Oct 24 2024 Yu Watanabe <watanabe.yu+github@gmail.com> - 256.7-2
+- test_sysusers_defined: support new ! line flag for creating fully locked
+  accounts
+
+* Fri Oct 11 2024 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 256.7-1
+- Version 256.7
+- Various small fixes in many components
+- Documentation updates
+
+* Tue Sep 24 2024 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 256.6-3
+- Move yum/dnf protection removal config file under /usr
+
+* Thu Sep 12 2024 Matteo Croce <teknoraver@meta.com> - 256.6-1
+- Version 256.6
+
+* Thu Aug 29 2024 Daan De Meyer <daan.j.demeyer@gmail.com> - 256.5-6
+- Always build ukify package
+
+* Wed Aug 28 2024 Daan De Meyer <daan.j.demeyer@gmail.com> - 256.5-5
+- Do not use patch to modify systemd-user pam config file
+
+* Tue Aug 27 2024 Daan De Meyer <daan.j.demeyer@gmail.com> - 256.5-3
+- Only make python3-pillow Recommends on Fedora
+
+* Sat Aug 24 2024 Davide Cavalca <dcavalca@fedoraproject.org> - 256.5-2
+- Do not require grubby on CentOS Stream 9
+
+* Tue Aug 20 2024 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 256.5-1
+- Version 256.5
+- Includes the patches for the kernel change with kernel threads in leaf
+  cgroups (https://github.com/systemd/systemd/pull/33885)
+- Various smaller fixes
+
+* Tue Aug 20 2024 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 256.4-4
+- Disable integration of userdb in sshd
+
+* Mon Jul 29 2024 Daan De Meyer <daan.j.demeyer@gmail.com> - 256.4-3
+- Backport patch to only read /proc/cmdline when not in container
+
+* Mon Jul 29 2024 Daan De Meyer <daan.j.demeyer@gmail.com> - 256.4-2
+- Backport upstream patch to try more initrd variants in
+  90-loaderentry.install
+
+* Thu Jul 25 2024 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 256.4-1
+- Version 256.4
+- Hardware db update
+- Minor fixes for systemd-udevd and varlink protocol
+
+* Tue Jul 23 2024 Daan De Meyer <daan.j.demeyer@gmail.com> - 256.3-3
+- Update tmpfiles --destroy-data patch
+
+* Tue Jul 23 2024 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 256.3-1
+- Version 256.3
+- A bunch of fixes for systemd (pid1)
+- Various upgrades related to running tests in mkosi
+
+* Sat Jul 20 2024 Daan De Meyer <daan.j.demeyer@gmail.com> - 256.2-17
+- Simplify BFQ scheduler enablement
+
+* Sat Jul 20 2024 Fedora Release Engineering <releng@fedoraproject.org> - 256.2-16
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_41_Mass_Rebuild
+
 * Wed Jul 17 2024 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 256.2-9
 - Backport udma buffer access patch (rhbz#2298422)
 
