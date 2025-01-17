@@ -118,6 +118,11 @@ Patch:          https://github.com/systemd/systemd/pull/26494.patch
 # https://github.com/coreos/fedora-coreos-tracker/issues/1857
 Patch:          0001-Revert-units-use-PrivateTmp-disconnected-instead-of-.patch
 
+# Backport of sysusers audit support for
+#  https://fedoraproject.org/wiki/Changes/RPMSuportForSystemdSysusers.
+Patch:          0001-update-utmp-do-not-give-up-if-the-first-attempt-at-c.patch
+Patch:          0002-sysusers-emit-audit-events-for-user-and-group-creati.patch
+
 # Those are downstream-only patches, but we don't want them in packit builds:
 # https://bugzilla.redhat.com/show_bug.cgi?id=2251843
 Patch:          https://github.com/systemd/systemd/pull/30846.patch
