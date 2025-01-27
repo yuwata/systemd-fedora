@@ -1,0 +1,26 @@
+From d8a47df70daaf1694efe6734348827b57911d65f Mon Sep 17 00:00:00 2001
+From: Adam Williamson <awilliam@redhat.com>
+Date: Fri, 10 Jan 2025 13:01:47 -0800
+Subject: [PATCH] kbd-model-map: add a georgian mapping
+
+https://github.com/legionus/kbd/pull/127 adds a Georgian mapping
+to kbd. console-setup already has one. Let's support it here, so
+it's used for Georgian installs on distros that use this table.
+
+Signed-off-by: Adam Williamson <awilliam@redhat.com>
+---
+ src/locale/kbd-model-map | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/locale/kbd-model-map b/src/locale/kbd-model-map
+index 279d1a36d8..612f6d749a 100644
+--- a/src/locale/kbd-model-map
++++ b/src/locale/kbd-model-map
+@@ -70,3 +70,4 @@ khmer			kh,us	pc105		-		terminate:ctrl_alt_bksp
+ es-dvorak		es	microsoftpro	dvorak		terminate:ctrl_alt_bksp
+ lv			lv	pc105		apostrophe	terminate:ctrl_alt_bksp
+ lv-tilde		lv	pc105		tilde		terminate:ctrl_alt_bksp
++ge			ge,us	pc105		-		terminate:ctrl_alt_bksp
+-- 
+2.47.1
+
