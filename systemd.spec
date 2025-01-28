@@ -129,12 +129,12 @@ Patch:          https://github.com/systemd/systemd/pull/30846.patch
 
 # Backport various fmf fixes to allow running the integration tests in Fedora CI.
 Patch:          https://github.com/systemd/systemd/pull/35938.patch
-%endif
 
 # https://github.com/systemd/systemd/pull/36194
 # https://bugzilla.redhat.com/show_bug.cgi?id=2336875
 # add Georgian mapping to kbd-model-map
 Patch:          0001-kbd-model-map-add-a-georgian-mapping.patch
+%endif
 
 %ifarch %{ix86} x86_64 aarch64 riscv64
 %global want_bootloader 1
