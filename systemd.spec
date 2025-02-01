@@ -149,6 +149,7 @@ BuildRequires:  libcap-devel
 BuildRequires:  libmount-devel
 BuildRequires:  libfdisk-devel
 BuildRequires:  libpwquality-devel
+BuildRequires:  libxcrypt-devel
 BuildRequires:  pam-devel
 BuildRequires:  libselinux-devel
 BuildRequires:  audit-libs-devel
