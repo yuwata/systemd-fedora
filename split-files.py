@@ -137,6 +137,8 @@ for file in files(buildroot):
 
     elif re.search(r'''mymachines|
                        machinectl|
+                       importctl|
+                       portablectl|
                        systemd-nspawn|
                        systemd-vmspawn|
                        import-pubring.gpg|
@@ -178,6 +180,7 @@ for file in files(buildroot):
 
     elif re.search(r'''udev(?!\.pc)|
                        hwdb|
+                       ac-power|
                        bootctl|
                        boot-update|
                        bless-boot|
