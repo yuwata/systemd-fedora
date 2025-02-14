@@ -140,9 +140,17 @@ for file in files(buildroot):
                        importctl|
                        portablectl|
                        systemd-nspawn|
+                       systemd\.nspawn|
                        systemd-vmspawn|
+                       systemd-dissect|
                        import-pubring.gpg|
-                       systemd-(machined|import|pull)|
+                       systemd-machined|
+                       systemd-import|
+                       systemd-export|
+                       systemd-pull|
+                       systemd-mountfsd|
+                       systemd-mountwork|
+                       systemd-nsresource|
                        /machine.slice|
                        /machines.target|
                        var-lib-machines.mount|
