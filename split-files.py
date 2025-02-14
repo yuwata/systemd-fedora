@@ -57,12 +57,14 @@ def files(root):
 
 outputs = {suffix: open(f'.file-list-{suffix}', 'w')
            for suffix in (
+                   'shared',
                    'libs',
                    'udev',
                    'ukify',
                    'boot',
                    'pam',
                    'rpm-macros',
+                   'sysusers',
                    'devel',
                    'container',
                    'networkd',
@@ -122,8 +124,10 @@ for file in files(buildroot):
         o = outputs['tests']
     elif 'ukify' in n:
         o = outputs['ukify']
-    elif re.search(r'/libsystemd-(shared|core)-.*\.so$', n):
+    elif re.search(r'/libsystemd-core-.*\.so$', n):
         o = outputs['main']
+    elif re.search(r'/libsystemd-shared-.*\.so$', n):
+        o = outputs['shared']
     elif re.search(r'/libcryptsetup-token-systemd-.*\.so$', n):
         o = outputs['udev']
     elif re.search(r'/lib.*\.pc|/man3/|/usr/include|\.so$', n):
@@ -134,6 +138,14 @@ for file in files(buildroot):
                        /var/log/journal/remote
     ''', n, re.X):
         o = outputs['remote']
+
+    # Just the binary, the dir, and the man page.
+    elif re.search(r'''systemd-sysusers$|
+                       sysusers\.d$|
+                       man/.*sysusers\.d\.5|
+                       man/.*systemd-sysusers\.8
+    ''', n, re.X):
+        o = outputs['sysusers']
 
     elif re.search(r'''mymachines|
                        machinectl|

@@ -253,6 +253,8 @@ Requires(meta): (%{name}-rpm-macros = %{version}-%{release} if rpm-build)
 Requires:       %{name}-libs%{_isa} = %{version}-%{release}
 %{?fedora:Recommends:     %{name}-networkd = %{version}-%{release}}
 %{?fedora:Recommends:     %{name}-resolved = %{version}-%{release}}
+Requires:       %{name}-shared%{_isa} = %{version}-%{release}
+Requires:       %{name}-sysusers%{_isa} = %{version}-%{release}
 Recommends:     diffutils
 Requires:       (util-linux-core or util-linux)
 Provides:       /bin/systemctl
@@ -264,7 +266,7 @@ Provides:       system-setup-keyboard = 0.9
 # systemd-sysv-convert was removed in f20: https://fedorahosted.org/fpc/ticket/308
 Obsoletes:      systemd-sysv < 206
 # self-obsoletes so that dnf will install new subpackages on upgrade (#1260394)
-Obsoletes:      %{name} < 249~~
+Obsoletes:      systemd < 257.3-4
 Provides:       systemd-sysv = 206
 Conflicts:      initscripts < 9.56.1
 %if 0%{?fedora}
@@ -290,8 +292,6 @@ Obsoletes:      timedatex < 0.6-3
 Provides:       timedatex = 0.6-3
 Conflicts:      %{name}-standalone-tmpfiles
 Provides:       %{name}-tmpfiles = %{version}-%{release}
-Conflicts:      %{name}-standalone-sysusers
-Provides:       %{name}-sysusers = %{version}-%{release}
 Conflicts:      %{name}-standalone-shutdown
 Provides:       %{name}-shutdown = %{version}-%{release}
 
@@ -371,6 +371,13 @@ Provides:       nss-myhostname%{_isa} = 0.4
 %description libs
 Libraries for systemd and udev.
 
+%package shared
+Summary:        Internal systemd shared library
+License:        LGPL-2.1-or-later AND MIT
+
+%description shared
+Internal libraries used by various systemd binaries.
+
 %package pam
 Summary:        systemd PAM module
 Requires:       %{name} = %{version}-%{release}
@@ -388,6 +395,15 @@ Just the definitions of rpm macros.
 See
 https://docs.fedoraproject.org/en-US/packaging-guidelines/Scriptlets/#_systemd
 for information how to use those macros.
+
+%package sysusers
+Summary:        systemd-sysusers program
+Requires:       %{name}-shared%{_isa} = %{version}-%{release}
+Conflicts:      %{name}-standalone-sysusers
+Obsoletes:      systemd < 257.3-4
+
+%description sysusers
+This package contains the systemd-sysusers program.
 
 %package devel
 Summary:        Development headers for systemd
@@ -1322,9 +1338,15 @@ fi
 %files libs -f .file-list-libs
 %license LICENSE.LGPL2.1
 
+%files shared -f .file-list-shared
+%license LICENSE.LGPL2.1
+%license LICENSES/MIT.txt
+
 %files pam -f .file-list-pam
 
 %files rpm-macros -f .file-list-rpm-macros
+
+%files sysusers -f .file-list-sysusers
 
 %files resolved -f .file-list-resolve
 
