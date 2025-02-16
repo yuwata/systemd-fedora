@@ -254,7 +254,10 @@ Requires:       %{name}-libs%{_isa} = %{version}-%{release}
 %{?fedora:Recommends:     %{name}-networkd = %{version}-%{release}}
 %{?fedora:Recommends:     %{name}-resolved = %{version}-%{release}}
 Requires:       %{name}-shared%{_isa} = %{version}-%{release}
-Requires:       %{name}-sysusers%{_isa} = %{version}-%{release}
+Requires:       /usr/bin/systemd-sysusers
+# The standalone version doesn't Provide the _isa suffix,
+# so this biases towards the common version.
+Recommends:     %{name}-sysusers%{_isa} = %{version}-%{release}
 Recommends:     diffutils
 Requires:       (util-linux-core or util-linux)
 Provides:       /bin/systemctl
@@ -710,7 +713,6 @@ main systemd package and is meant for use on systems without systemd.
 %package standalone-sysusers
 Summary:       Standalone systemd-sysusers binary for use on systems without systemd
 Provides:      %{name}-sysusers = %{version}-%{release}
-Conflicts:     %{name}
 Suggests:      coreutils-single
 RemovePathPostfixes: .standalone
 
