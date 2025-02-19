@@ -73,6 +73,9 @@ Source0:        https://github.com/systemd/systemd/archive/%{commit}/%{name}-%{s
 %else
 Source0:        https://github.com/systemd/systemd/archive/v%{version_no_tilde}/%{name}-%{version_no_tilde}.tar.gz
 %endif
+# This file must be available before %%prep.
+# It is generated during systemd build and can be found at build/src/rpm/triggers.systemd.sh.
+Source1:        triggers.systemd
 Source2:        split-files.py
 Source3:        purge-nobody-user
 Source4:        test_sysusers_defined.py
@@ -899,8 +902,19 @@ CONFIGURE_OPTS=(
 
 %meson_build
 
+# If dynamic spec generation is available, directly pick up the triggers
+# from the build directory for upstream builds.
+%if %{with upstream} && (0%{?fedora} >= 41 || 0%{?rhel} >= 11)
 # Include the triggers
 cp %{_vpath_builddir}/src/rpm/triggers.systemd.sh %{specpartsdir}/triggers.specpart
+%else
+new_triggers=%{_vpath_builddir}/src/rpm/triggers.systemd.sh
+if ! diff -u %{SOURCE1} ${new_triggers}; then
+   echo -e "\n\n\nWARNING: triggers.systemd in Source1 is different!"
+   echo -e "      cp $PWD/${new_triggers} %{SOURCE1}\n\n\n"
+   sleep 5
+fi
+%endif
 
 sed -r 's|/system/|/user/|g' %{SOURCE16} >10-timeout-abort.conf.user
 
@@ -1106,6 +1120,10 @@ meson test -C %{_vpath_builddir} -t 6 --print-errorlogs
 %endif
 
 #############################################################################################
+
+%if %{without upstream} || (0%{?fedora} < 41 && 0%{?rhel} < 11)
+%include %{SOURCE1}
+%endif
 
 # This macro is newly added upstream so we can't rely on it being always being available
 # in the systemd-rpm-macros yet so we define it ourselves.
