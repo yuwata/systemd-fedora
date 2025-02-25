@@ -274,9 +274,11 @@ Obsoletes:      system-setup-keyboard < 0.9
 Provides:       system-setup-keyboard = 0.9
 # systemd-sysv-convert was removed in f20: https://fedorahosted.org/fpc/ticket/308
 Obsoletes:      systemd-sysv < 206
+Provides:       systemd-sysv = 206
+%if v"%{version}" >= v"257.3"
 # self-obsoletes so that dnf will install new subpackages on upgrade (#1260394)
 Obsoletes:      systemd < 257.3-4
-Provides:       systemd-sysv = 206
+%endif
 Conflicts:      initscripts < 9.56.1
 %if 0%{?fedora}
 Conflicts:      fedora-release < 23-0.12
@@ -409,7 +411,9 @@ for information how to use those macros.
 Summary:        systemd-sysusers program
 Requires:       %{name}-shared%{_isa} = %{version}-%{release}
 Conflicts:      %{name}-standalone-sysusers
+%if v"%{version}" >= v"257.3"
 Obsoletes:      systemd < 257.3-4
+%endif
 
 %description sysusers
 This package contains the systemd-sysusers program.
