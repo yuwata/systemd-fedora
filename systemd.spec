@@ -69,7 +69,7 @@ Summary:        System and Service Manager
 # packit will always rewrite the first Source0 it finds, ignoring any conditionals so list
 # the fallback source that's used if neither %%branch nor %%commit are defined first.
 %if %{undefined branch} && %{undefined commit}
-Source0:        https://github.com/systemd/systemd/archive/v%{version_no_tilde}/%{name}-%{version_no_tilde}.tar.gz
+Source0:        https://github.com/systemd/systemd/archive/v%{version}/%{name}-%{version}.tar.gz
 %elif %{defined branch}
 Source0:        https://github.com/systemd/systemd/archive/refs/heads/%{branch}.tar.gz
 %elif %{defined commit}
@@ -744,7 +744,7 @@ main systemd package and is meant for use in exitrds.
 %elif %{defined commit}
 %autosetup -n %{name}-%{commit} -p1
 %else
-%autosetup -n %{name}-%{version_no_tilde} -p1
+%autosetup -n %{name}-%{version} -p1
 %endif
 
 # Disable user lockdown until rpm implements it natively.
