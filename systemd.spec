@@ -265,7 +265,7 @@ Requires:       /usr/bin/systemd-sysusers
 Recommends:     %{name}-sysusers%{_isa} = %{version}-%{release}
 Recommends:     diffutils
 Requires:       (util-linux-core or util-linux)
-Requires:       (libbpf >= 2:1.5.0 if libbpf)
+Requires:       (libbpf >= 2:1.4.7 if libbpf)
 Provides:       /bin/systemctl
 Provides:       /sbin/shutdown
 Provides:       syslog
