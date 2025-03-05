@@ -275,10 +275,6 @@ Provides:       system-setup-keyboard = 0.9
 # systemd-sysv-convert was removed in f20: https://fedorahosted.org/fpc/ticket/308
 Obsoletes:      systemd-sysv < 206
 Provides:       systemd-sysv = 206
-%if v"%{version}" >= v"257.3"
-# self-obsoletes so that dnf will install new subpackages on upgrade (#1260394)
-Obsoletes:      systemd < 257.3-4
-%endif
 Conflicts:      initscripts < 9.56.1
 %if 0%{?fedora}
 Conflicts:      fedora-release < 23-0.12
@@ -299,8 +295,6 @@ Conflicts:      dracut < 060-2
 Conflicts:      dracut < 059-16
 %endif
 
-Obsoletes:      timedatex < 0.6-3
-Provides:       timedatex = 0.6-3
 Conflicts:      %{name}-standalone-tmpfiles
 Provides:       %{name}-tmpfiles = %{version}-%{release}
 Conflicts:      %{name}-standalone-shutdown
@@ -371,11 +365,6 @@ This package was built from the %(c=%version; echo "v${c%.*}-stable") branch of 
 %package libs
 Summary:        systemd libraries
 License:        LGPL-2.1-or-later AND MIT
-Obsoletes:      libudev < 183
-Obsoletes:      systemd < 185-4
-Conflicts:      systemd < 185-4
-Obsoletes:      systemd-compat-libs < 230
-Obsoletes:      nss-myhostname < 0.4
 Provides:       nss-myhostname = 0.4
 Provides:       nss-myhostname%{_isa} = 0.4
 
@@ -411,9 +400,6 @@ for information how to use those macros.
 Summary:        systemd-sysusers program
 Requires:       %{name}-shared%{_isa} = %{version}-%{release}
 Conflicts:      %{name}-standalone-sysusers
-%if v"%{version}" >= v"257.3"
-Obsoletes:      systemd < 257.3-4
-%endif
 
 %description sysusers
 This package contains the systemd-sysusers program.
@@ -425,7 +411,6 @@ Requires:       %{name}-libs%{_isa} = %{version}-%{release}
 Requires(meta): (%{name}-rpm-macros = %{version}-%{release} if rpm-build)
 Provides:       libudev-devel = %{version}
 Provides:       libudev-devel%{_isa} = %{version}
-Obsoletes:      libudev-devel < 183
 
 %description devel
 Development headers and auxiliary files for developing applications linking
@@ -441,11 +426,8 @@ Requires(preun):  systemd%{_isa} = %{version}-%{release}
 Requires(postun): systemd%{_isa} = %{version}-%{release}
 Requires(post): grep
 Requires:       kmod >= 18-4
-# https://bodhi.fedoraproject.org/updates/FEDORA-2020-dd43dd05b1
-Obsoletes:      systemd < 245.6-1
 Provides:       udev = %{version}
 Provides:       udev%{_isa} = %{version}
-Obsoletes:      udev < 183
 %if 0%{?fedora} || 0%{?rhel} >= 10
 Requires:       (grubby > 8.40-72 if grubby)
 Requires:       (sdubby > 1.0-3 if sdubby)
@@ -489,9 +471,6 @@ Requires:       kbd
 # https://bugzilla.redhat.com/show_bug.cgi?id=1753381
 Provides:       u2f-hidraw-policy = 1.0.2-40
 Obsoletes:      u2f-hidraw-policy < 1.0.2-40
-
-# self-obsoletes to install both packages after split of systemd-boot
-Obsoletes:      systemd-udev < 252.2^
 
 Conflicts:      %{name}-standalone-repart
 Provides:       %{name}-repart = %{version}-%{release}
@@ -558,9 +537,6 @@ Provides: systemd-boot%{_isa} = %version-%release
 Provides: version(systemd-boot-unsigned) = %version
 Provides: version(systemd-boot-unsigned)%{_isa} = %version
 
-# self-obsoletes to install both packages after split of systemd-boot
-Obsoletes:      systemd-udev < 252.2^
-
 %description boot-unsigned
 systemd-boot (short: sd-boot) is a simple UEFI boot manager. It provides a
 graphical menu to select the entry to boot and an editor for the kernel command
@@ -578,9 +554,6 @@ Provides: systemd-boot%{_isa} = %version-%release
 # A provides with just the version, no release or dist, used to build systemd-boot
 Provides: version(systemd-boot-signed) = %version
 Provides: version(systemd-boot-signed)%{_isa} = %version
-
-# self-obsoletes to install both packages after split of systemd-boot
-Obsoletes:      systemd-udev < 252.2^
 
 %description boot
 systemd-boot (short: sd-boot) is a simple UEFI boot manager. It provides a
@@ -604,8 +577,6 @@ Recommends:     qemu-kvm-core
 Recommends:     qemu-device-display-virtio-gpu
 Recommends:     qemu-device-display-virtio-vga
 %endif
-# Obsolete parent package so that dnf will install new subpackage on upgrade (#1260394)
-Obsoletes:      %{name} < 229-5
 # Bias the system towards libcurl-minimal if nothing pulls in full libcurl (#1997040)
 Suggests:       libcurl-minimal
 License:        LGPL-2.1-or-later
@@ -624,7 +595,6 @@ License:        LGPL-2.1-or-later
 Requires:       firewalld-filesystem
 Provides:       %{name}-journal-gateway = %{version}-%{release}
 Provides:       %{name}-journal-gateway%{_isa} = %{version}-%{release}
-Obsoletes:      %{name}-journal-gateway < 227-7
 # Bias the system towards libcurl-minimal if nothing pulls in full libcurl (#1997040)
 Suggests:       libcurl-minimal
 
@@ -640,8 +610,6 @@ Summary:        System daemon that manages network configurations
 Requires:       %{name}%{_isa} = %{version}-%{release}
 %{?fedora:Recommends:     %{name}-udev = %{version}-%{release}}
 License:        LGPL-2.1-or-later
-# https://src.fedoraproject.org/rpms/systemd/pull-request/34
-Obsoletes:      systemd < 246.6-2
 
 %description networkd
 systemd-networkd is a system service that manages networks. It detects and
@@ -662,7 +630,6 @@ enabled for this to have any effect.
 %package resolved
 Summary:        Network Name Resolution manager
 Requires:       %{name}%{_isa} = %{version}-%{release}
-Obsoletes:      %{name} < 249~~
 Requires:       libidn2.so.0%{?elf_suffix}
 Requires:       libidn2.so.0(IDN2_0.0.0)%{?elf_bits}
 Requires(posttrans): grep
