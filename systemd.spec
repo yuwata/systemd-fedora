@@ -1384,10 +1384,16 @@ fi
 %files standalone-shutdown -f .file-list-standalone-shutdown
 
 %clean
-rm -rf $RPM_BUILD_ROOT
-rm -f 10-timeout-abort.conf.user
-rm -f .file-list-*
-rm -f %{name}.lang
+rm -rf \
+    $RPM_BUILD_ROOT \
+    10-timeout-abort.conf.user \
+    .file-list-* \
+    %{name}.lang \
+    debugfiles.list \
+    debuglinks.list \
+    debugsourcefiles.list \
+    debugsources.list \
+    elfbins.list
 
 %changelog
 %autochangelog
