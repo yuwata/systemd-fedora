@@ -1028,7 +1028,7 @@ install -Dm0644 -t %{buildroot}%{_prefix}/lib/udev/rules.d/ %{SOURCE18}
 
 sed -i 's|#!/usr/bin/env python3|#!%{__python3}|' %{buildroot}/usr/lib/systemd/tests/run-unit-tests.py
 
-%if 0%{fedora} >= 42
+%if 0%{?fedora} >= 42
 install -m 0644 -D %{SOURCE21} %{buildroot}%{_rpmconfigdir}/macros.d/macros.sysusers
 %else
 install -m 0644 -D %{SOURCE20} %{buildroot}%{_rpmconfigdir}/macros.d/macros.sysusers
