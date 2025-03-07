@@ -504,7 +504,7 @@ Requires:       (systemd-boot if %{shrink:(
 )})
 Requires:       python3dist(pefile)
 %if 0%{?fedora}
-Requires:       python3dist(zstd)
+Requires:       python3dist(zstandard)
 %endif
 Requires:       python3dist(cryptography)
 %if 0%{?fedora}
