@@ -859,6 +859,19 @@ CONFIGURE_OPTS=(
         -Dsystemd-resolve-uid=193
         # -Dsystemd-timesync-uid=, not set yet
 
+        # Make sure we use the original paths to maintain compatibility
+        # with unmerged systems
+        -Dquotaon-path=/usr/sbin/quotaon
+        -Dquotacheck-path=/usr/sbin/quotacheck
+        -Dkmod-path=/usr/bin/kmod
+        -Dkexec-path=/usr/sbin/kexec
+        -Dsulogin-path=/usr/sbin/sulogin
+        -Dmount-path=/usr/bin/mount
+        -Dumount-path=/usr/bin/umount
+        -Dloadkeys-path=/usr/bin/loadkeys
+        -Dsetfont-path=/usr/bin/setfont
+        -Dnologin-path=/usr/sbin/nologin
+
         # For now, let's build the bootloader in the same places where we
         # built with gnu-efi. Later on, we might want to extend coverage, but
         # considering that that support is untested, let's not do this now.
