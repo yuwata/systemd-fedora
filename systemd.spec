@@ -431,6 +431,8 @@ Provides:       udev = %{version}
 Provides:       udev%{_isa} = %{version}
 %if 0%{?fedora} || 0%{?rhel} >= 10
 Requires:       (grubby > 8.40-72 if grubby)
+%endif
+%if 0%{?fedora}
 Requires:       (sdubby > 1.0-3 if sdubby)
 %endif
 # A backport of systemd-timesyncd is shipped as a separate package in EPEL so
