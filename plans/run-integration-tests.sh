@@ -31,7 +31,7 @@ else
 fi
 
 mkdir systemd
-rpm2cpio ./systemd-*.src.rpm | cpio --to-stdout --extract './systemd-*.tar.gz' | tar xz --strip-components=1 -C systemd
+rpm2cpio ./systemd-*.src.rpm | cpio --to-stdout --extract './*.tar.gz' | tar xz --strip-components=1 -C systemd
 pushd systemd
 
 # Now prepare mkosi at the same version required by the systemd repo.
