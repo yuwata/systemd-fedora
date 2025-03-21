@@ -79,7 +79,6 @@ Source0:        https://github.com/systemd/systemd/archive/%{commit}/%{name}-%{s
 # It is generated during systemd build and can be found at build/src/rpm/triggers.systemd.sh.
 Source1:        triggers.systemd
 Source2:        split-files.py
-Source3:        purge-nobody-user
 Source4:        test_sysusers_defined.py
 
 Source6:        inittab
@@ -939,8 +938,6 @@ touch %{buildroot}/etc/systemd/coredump.conf \
       %{buildroot}/etc/systemd/user.conf \
       %{buildroot}/etc/udev/udev.conf \
       %{buildroot}/etc/udev/iocost.conf
-
-install -D -t %{buildroot}/usr/lib/systemd/ %{SOURCE3}
 
 # /etc/initab
 install -Dm0644 -t %{buildroot}/etc/ %{SOURCE6}

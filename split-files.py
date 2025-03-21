@@ -7,7 +7,6 @@ known_files = '''
 %ghost %config(noreplace) /etc/crypttab
 %ghost %attr(0444,root,root) /etc/udev/hwdb.bin
 /etc/inittab
-/usr/lib/systemd/purge-nobody-user
 # This directory is owned by openssh-server, but we don't want to introduce
 # a dependency. So let's copy the config and co-own the directory.
 %dir %attr(0700,root,root) /etc/ssh/sshd_config.d
