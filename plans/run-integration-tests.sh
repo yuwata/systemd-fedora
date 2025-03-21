@@ -61,6 +61,16 @@ Environment=NO_BUILD=1
 WithTests=yes
 EOF
 
+if [[ -n "${MKOSI_REPOSITORIES:-}" ]]; then
+    tee --append mkosi.local.conf <<EOF
+[Distribution]
+Repositories=$MKOSI_REPOSITORIES
+
+[Build]
+ToolsTreeRepositories=$MKOSI_REPOSITORIES
+EOF
+fi
+
 if [[ -n "${TEST_SELINUX_CHECK_AVCS:-}" ]]; then
     tee --append mkosi.local.conf <<EOF
 [Runtime]
