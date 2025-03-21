@@ -1,16 +1,22 @@
 summary: systemd upstream test suite
-discover:
-  how: fmf
-  dist-git-source: true
-  dist-git-install-builddeps: false
-prepare:
-  - name: systemd
-    how: install
-    exclude:
-      - systemd-standalone-.*
-execute:
-  how: tmt
 provision:
   hardware:
     virtualization:
       is-supported: true
+prepare:
+  - name: install-dependencies
+    how: install
+    package:
+      - coreutils
+      - distribution-gpg-keys
+      - dnf
+      - git-core
+      - koji
+      - centos-packager
+      - copr-cli
+    exclude:
+      - systemd-standalone-.*
+execute:
+    how: tmt
+    script: exec plans/run-integration-tests.sh
+    duration: 2h

@@ -22,11 +22,7 @@ def parse_sysusers_file(filename):
     return users, groups
 
 setup_users, setup_groups = parse_sysusers_file(sys.argv[1])
-setup_users2, setup_groups2 = parse_sysusers_file(sys.argv[2])
-setup_users |= setup_users2
-setup_groups |= setup_groups2
-
-basic_users, basic_groups = parse_sysusers_file(sys.argv[3])
+basic_users, basic_groups = parse_sysusers_file(sys.argv[2])
 
 if d := basic_users - setup_users:
     exit(f'We have new users: {d}')
