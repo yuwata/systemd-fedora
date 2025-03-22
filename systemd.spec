@@ -1187,7 +1187,106 @@ systemctl daemon-reexec || :
 # a different package version.
 systemctl --no-reload preset systemd-journald-audit.socket &>/dev/null || :
 
-%global udev_services systemd-udev{d,-settle,-trigger}.service systemd-udevd-{control,kernel}.socket systemd-homed.service %{?want_bootloader:systemd-boot-update.service} systemd-oomd.service systemd-portabled.service systemd-pstore.service systemd-timesyncd.service remote-cryptsetup.target
+%global udev_services %{shrink:
+                        cryptsetup-pre.target
+                        cryptsetup.target
+                        hibernate.target
+                        hybrid-sleep.target
+                        initrd-cleanup.service
+                        initrd-fs.target
+                        initrd-parse-etc.service
+                        initrd-root-device.target
+                        initrd-root-fs.target
+                        initrd-switch-root.service
+                        initrd-switch-root.target
+                        initrd-udevadm-cleanup-db.service
+                        initrd-usr-fs.target
+                        initrd.target
+                        integritysetup-pre.target
+                        integritysetup.target
+                        kmod-static-nodes.service
+                        proc-sys-fs-binfmt_misc.automount
+                        proc-sys-fs-binfmt_misc.mount
+                        quotaon-root.service
+                        quotaon@.service
+                        remote-cryptsetup.target
+                        remote-veritysetup.target
+                        sleep.target
+                        suspend-then-hibernate.target
+                        suspend.target
+                        system-systemd\x2dcryptsetup.slice
+                        system-systemd\x2dveritysetup.slice
+                        systemd-backlight@.service
+                        systemd-binfmt.service
+                        systemd-bless-boot.service
+                        systemd-bsod.service
+                        systemd-coredump.socket
+                        systemd-coredump@.service
+                        systemd-fsck-root.service
+                        systemd-fsck@.service
+                        systemd-growfs-root.service
+                        systemd-growfs@.service
+                        systemd-hibernate-clear.service
+                        systemd-hibernate-resume.service
+                        systemd-hibernate.service
+                        systemd-homed-activate.service
+                        systemd-homed-firstboot.service
+                        systemd-homed.service
+                        systemd-hwdb-update.service
+                        systemd-hybrid-sleep.service
+                        systemd-modules-load.service
+                        systemd-network-generator.service
+                        systemd-oomd.service
+                        systemd-oomd.socket
+                        systemd-pcrextend.socket
+                        systemd-pcrextend@.service
+                        systemd-pcrfs-root.service
+                        systemd-pcrfs@.service
+                        systemd-pcrlock-file-system.service
+                        systemd-pcrlock-firmware-code.service
+                        systemd-pcrlock-firmware-config.service
+                        systemd-pcrlock-machine-id.service
+                        systemd-pcrlock-make-policy.service
+                        systemd-pcrlock-secureboot-authority.service
+                        systemd-pcrlock-secureboot-policy.service
+                        systemd-pcrlock.socket
+                        systemd-pcrlock@.service
+                        systemd-pcrmachine.service
+                        systemd-pcrphase-initrd.service
+                        systemd-pcrphase-sysinit.service
+                        systemd-pcrphase.service
+                        systemd-portabled.service
+                        systemd-pstore.service
+                        systemd-quotacheck-root.service
+                        systemd-quotacheck@.service
+                        systemd-random-seed.service
+                        systemd-remount-fs.service
+                        systemd-repart.service
+                        systemd-rfkill.service
+                        systemd-rfkill.socket
+                        systemd-suspend-then-hibernate.service
+                        systemd-suspend.service
+                        systemd-sysctl.service
+                        systemd-timesyncd.service
+                        systemd-tmpfiles-setup-dev-early.service
+                        systemd-tmpfiles-setup-dev.service
+                        systemd-udev-load-credentials.service
+                        systemd-udev-settle.service
+                        systemd-udev-trigger.service
+                        systemd-udevd-control.socket
+                        systemd-udevd-kernel.socket
+                        systemd-udevd.service
+                        systemd-vconsole-setup.service
+                        systemd-volatile-root.service
+                        veritysetup-pre.target
+                        veritysetup.target
+                        %{?want_bootloader:
+                          systemd-boot-random-seed.service
+                          systemd-boot-update.service
+                          systemd-bootctl.socket
+                          systemd-bootctl@.service
+                         }
+                       }
 
 %post udev
 # Move old stuff around in /var/lib
@@ -1221,7 +1320,7 @@ grep -q -E '^KEYMAP="?fi-latin[19]"?' /etc/vconsole.conf 2>/dev/null &&
 %posttrans udev
 # Restart some services.
 # Others are either oneshot services, or sockets, and restarting them causes issues (#1378974)
-%systemd_posttrans_with_restart systemd-udevd.service systemd-timesyncd.service
+%systemd_posttrans_with_restart systemd-udevd.service systemd-timesyncd.service systemd-homed.service systemd-oomd.service systemd-portabled.service
 
 %global journal_remote_units_restart systemd-journal-gatewayd.service systemd-journal-remote.service systemd-journal-upload.service
 %global journal_remote_units_norestart systemd-journal-gatewayd.socket systemd-journal-remote.socket
@@ -1243,6 +1342,14 @@ fi
 %systemd_posttrans_with_restart %journal_remote_units_restart
 %firewalld_reload
 
+%global networkd_services %{shrink:
+                            systemd-networkd.service
+                            systemd-networkd.socket
+                            systemd-networkd-wait-online.service
+                            systemd-network-generator.service
+                            systemd-networkd-persistent-storage.service
+                           }
+
 %post networkd
 # systemd-networkd was split out in systemd-246.6-2.
 # Ideally, we would have a trigger scriptlet to record enablement
@@ -1256,11 +1363,11 @@ fi
 if [ $1 -eq 1 ] && ls /usr/lib/systemd/libsystemd-shared-24[0-6].so &>/dev/null; then
     echo "Skipping presets for systemd-networkd.service, seems we are upgrading from old systemd."
 else
-    %systemd_post systemd-networkd.service systemd-networkd-wait-online.service
+    %systemd_post %networkd_services
 fi
 
 %preun networkd
-%systemd_preun systemd-networkd.service systemd-networkd-wait-online.service
+%systemd_preun %networkd_services
 
 %posttrans networkd
 %systemd_posttrans_with_restart systemd-networkd.service
