@@ -46,6 +46,23 @@
 # autorelease correctly if the macro is conditionalized in the Release field.
 %{?release_override:%global autorelease %{release_override}%{?dist}}
 
+# In OBS, noarch packages are shared between all architectures and
+# independent architectures can be rebuilt automatically without all
+# the other architectures getting rebuilt. This can result in the noarch
+# packages being newer than the archful packages for some architectures,
+# which means our current strict deps from the noarch packages on the
+# archful packages can't be satisfied.
+#
+# To address this problem, let's relax the dependencies from the noarch
+# packages on the archful packages for OBS builds. Let's only do this for
+# OBS builds because this isn't an issue on Fedora as it's impossible to
+# build a package for only some of the architectures.
+%if %{with obs}
+%define noarch_requires_version %{version}
+%else
+%define noarch_requires_version %{version}-%{release}
+%endif
+
 Name:           systemd
 Url:            https://systemd.io
 # Allow users to specify the version and release when building the rpm by
@@ -496,7 +513,7 @@ machine, and to create or grow partitions and make file systems automatically.
 
 %package ukify
 Summary:        Tool to build Unified Kernel Images
-Requires:       %{name} = %{version}-%{release}
+Requires:       %{name} = %{noarch_requires_version}
 
 Requires:       (systemd-boot if %{shrink:(
         filesystem(x86-32) or
@@ -620,7 +637,7 @@ devices.
 
 %package networkd-defaults
 Summary:        Configure network interfaces with networkd by default
-Requires:       %{name}-networkd = %{version}-%{release}
+Requires:       %{name}-networkd = %{noarch_requires_version}
 License:        MIT-0
 BuildArch:      noarch
 
@@ -643,7 +660,7 @@ resolver, as well as an LLMNR and MulticastDNS resolver and responder.
 
 %package oomd-defaults
 Summary:        Configuration files for systemd-oomd
-Requires:       %{name}-udev = %{version}-%{release}
+Requires:       %{name}-udev = %{noarch_requires_version}
 License:        LGPL-2.1-or-later
 BuildArch:      noarch
 
