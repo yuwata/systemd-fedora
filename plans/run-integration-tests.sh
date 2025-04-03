@@ -30,39 +30,48 @@ else
     exit 1
 fi
 
+PACKAGEDIR="$PWD"
+
 mkdir systemd
 rpm2cpio ./systemd-*.src.rpm | cpio --to-stdout --extract './*.tar.gz' | tar xz --strip-components=1 -C systemd
-pushd systemd
 
 # Now prepare mkosi at the same version required by the systemd repo.
 git clone https://github.com/systemd/mkosi
-mkosi_hash="$(grep systemd/mkosi@ .github/workflows/mkosi.yml | sed "s|.*systemd/mkosi@||g")"
+mkosi_hash="$(grep systemd/mkosi@ systemd/.github/workflows/mkosi.yml | sed "s|.*systemd/mkosi@||g")"
 git -C mkosi checkout "$mkosi_hash"
 
 export PATH="$PWD/mkosi/bin:$PATH"
 
+pushd systemd
+
 # shellcheck source=/dev/null
 . /etc/os-release || . /usr/lib/os-release
 
-tee mkosi.local.conf <<EOF
+if [[ -d mkosi ]]; then
+    LOCAL_CONF=mkosi/mkosi.local.conf
+else
+    LOCAL_CONF=mkosi.local.conf
+fi
+
+tee "$LOCAL_CONF" <<EOF
 [Distribution]
 Distribution=${MKOSI_DISTRIBUTION:-$ID}
 Release=${MKOSI_RELEASE:-${VERSION_ID:-rawhide}}
 
 [Content]
-PackageDirectories=..
+PackageDirectories=$PACKAGEDIR
 SELinuxRelabel=yes
 
 [Build]
 ToolsTreeDistribution=${MKOSI_DISTRIBUTION:-$ID}
 ToolsTreeRelease=${MKOSI_RELEASE:-${VERSION_ID:-rawhide}}
-ToolsTreePackageDirectories=..
+ToolsTreePackageDirectories=$PACKAGEDIR
 Environment=NO_BUILD=1
 WithTests=yes
 EOF
 
 if [[ -n "${MKOSI_REPOSITORIES:-}" ]]; then
-    tee --append mkosi.local.conf <<EOF
+    tee --append "$LOCAL_CONF" <<EOF
 [Distribution]
 Repositories=$MKOSI_REPOSITORIES
 
@@ -72,7 +81,7 @@ EOF
 fi
 
 if [[ -n "${TEST_SELINUX_CHECK_AVCS:-}" ]]; then
-    tee --append mkosi.local.conf <<EOF
+    tee --append "$LOCAL_CONF" <<EOF
 [Runtime]
 KernelCommandLineExtra=systemd.setenv=TEST_SELINUX_CHECK_AVCS=$TEST_SELINUX_CHECK_AVCS
 EOF
