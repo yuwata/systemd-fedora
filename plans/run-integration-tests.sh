@@ -116,6 +116,7 @@ fi
 # for now.
 export TEST_SKIP="TEST-21-DFUZZER"
 
+mkosi genkey
 mkosi summary
 mkosi -f sandbox -- true
 if [[ -d test/integration-tests/standalone ]]; then
@@ -123,7 +124,6 @@ if [[ -d test/integration-tests/standalone ]]; then
 else
     mkosi sandbox -- meson setup -Dintegration-tests=true build
 fi
-mkosi genkey
 mkosi -f
 mkosi sandbox -- \
     meson test \
