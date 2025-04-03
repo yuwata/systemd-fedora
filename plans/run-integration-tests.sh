@@ -90,8 +90,13 @@ fi
 # Create missing mountpoint for mkosi sandbox.
 mkdir -p /etc/pacman.d/gnupg
 
-# TODO: drop once BTRFS regression is fixed
-sed -i "s/Format=btrfs/Format=ext4/" mkosi.repart/10-root.conf
+# We don't bother with this change if the mkosi configuration is
+# in mkosi/ as if that's the case then we know for sure that the
+# upstream has this fix as well.
+# TODO: drop once BTRFS regression is fixed.
+if [[ -f mkosi.repart/10-root.conf ]]; then
+    sed -i "s/Format=btrfs/Format=ext4/" mkosi.repart/10-root.conf
+fi
 
 # If we don't have KVM, skip running in qemu, as it's too slow. But try to load the module first.
 modprobe kvm || true
