@@ -36,11 +36,11 @@ mkdir systemd
 rpm2cpio ./systemd-*.src.rpm | cpio --to-stdout --extract './*.tar.gz' | tar xz --strip-components=1 -C systemd
 
 # Now prepare mkosi at the same version required by the systemd repo.
-git clone https://github.com/systemd/mkosi
+git clone https://github.com/systemd/mkosi /var/tmp/systemd-integration-tests-mkosi
 mkosi_hash="$(grep systemd/mkosi@ systemd/.github/workflows/mkosi.yml | sed "s|.*systemd/mkosi@||g")"
-git -C mkosi checkout "$mkosi_hash"
+git -C /var/tmp/systemd-integration-tests-mkosi checkout "$mkosi_hash"
 
-export PATH="$PWD/mkosi/bin:$PATH"
+export PATH="/var/tmp/systemd-integration-tests-mkosi/bin:$PATH"
 
 pushd systemd
 
