@@ -32,17 +32,27 @@ fi
 
 PACKAGEDIR="$PWD"
 
-mkdir systemd
-rpm2cpio ./systemd-*.src.rpm | cpio --to-stdout --extract './*.tar.gz' | tar xz --strip-components=1 -C systemd
+# TODO: Remove fallback once v257.6 is released. Also stop downloading source rpms then.
+
+# This will match both the regular and the debuginfo rpm so make sure we select only the
+# non-debuginfo rpm.
+RPMS=(systemd-tests-*.rpm)
+rpm2cpio "${RPMS[0]}" | cpio --make-directories --extract
+if [[ -d usr/lib/systemd/tests/mkosi ]]; then
+    pushd usr/lib/systemd/tests
+    mkosi_hash="$(grep "MinimumVersion=commit:" mkosi/mkosi.conf | sed "s|MinimumVersion=commit:||g")"
+else
+    mkdir systemd
+    rpm2cpio systemd-*.src.rpm | cpio --to-stdout --extract './*.tar.gz' | tar xz --strip-components=1 -C systemd
+    pushd systemd
+    mkosi_hash="$(grep systemd/mkosi@ .github/workflows/mkosi.yml | sed "s|.*systemd/mkosi@||g")"
+fi
 
 # Now prepare mkosi at the same version required by the systemd repo.
 git clone https://github.com/systemd/mkosi /var/tmp/systemd-integration-tests-mkosi
-mkosi_hash="$(grep systemd/mkosi@ systemd/.github/workflows/mkosi.yml | sed "s|.*systemd/mkosi@||g")"
 git -C /var/tmp/systemd-integration-tests-mkosi checkout "$mkosi_hash"
 
 export PATH="/var/tmp/systemd-integration-tests-mkosi/bin:$PATH"
-
-pushd systemd
 
 # shellcheck source=/dev/null
 . /etc/os-release || . /usr/lib/os-release
@@ -119,7 +129,9 @@ export TEST_SKIP="TEST-21-DFUZZER"
 mkosi genkey
 mkosi summary
 mkosi -f sandbox -- true
-if [[ -d test/integration-tests/standalone ]]; then
+if [[ -d integration-tests/standalone ]]; then
+    mkosi sandbox -- meson setup build integration-tests/standalone
+elif [[ -d test/integration-tests/standalone ]]; then
     mkosi sandbox -- meson setup build test/integration-tests/standalone
 else
     mkosi sandbox -- meson setup -Dintegration-tests=true build
