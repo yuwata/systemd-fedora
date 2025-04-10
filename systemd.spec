@@ -141,6 +141,9 @@ Patch:          0002-sysusers-emit-audit-events-for-user-and-group-creati.patch
 # Those are downstream-only patches, but we don't want them in packit builds:
 # https://bugzilla.redhat.com/show_bug.cgi?id=2251843
 Patch:          https://github.com/systemd/systemd/pull/30846.patch
+
+# Backport of CI fix
+Patch:          0001-test-sd-device-limit-the-number-of-iterations-when-t.patch
 %endif
 
 %ifarch %{ix86} x86_64 aarch64 riscv64
