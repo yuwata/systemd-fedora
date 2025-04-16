@@ -389,6 +389,10 @@ Libraries for systemd and udev.
 %package shared
 Summary:        Internal systemd shared library
 License:        LGPL-2.1-or-later AND MIT
+# in 257.3-6 /usr/lib64/systemd/libsystemd-shared-257.2-14.fc42.so
+# was moved from package systemd to systemd-shared.
+# Add a conflit to allow downgrades across this change.
+Conflicts:      %{name} < 257.3-6
 
 %description shared
 Internal libraries used by various systemd binaries.
@@ -415,6 +419,9 @@ for information how to use those macros.
 Summary:        systemd-sysusers program
 Requires:       %{name}-shared%{_isa} = %{version}-%{release}
 Conflicts:      %{name}-standalone-sysusers
+# in 257.3-6 /usr/bin/systemd-sysusers was moved from package systemd
+# to systemd-sysusers. Add a conflit to allow downgrades across this change.
+Conflicts:      %{name} < 257.3-6
 
 %description sysusers
 This package contains the systemd-sysusers program.
