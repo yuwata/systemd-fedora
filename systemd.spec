@@ -138,6 +138,10 @@ Patch:          0001-Revert-units-use-PrivateTmp-disconnected-instead-of-.patch
 #  https://fedoraproject.org/wiki/Changes/RPMSuportForSystemdSysusers.
 Patch:          0002-sysusers-emit-audit-events-for-user-and-group-creati.patch
 
+# Backport of adb/fastboot udev rules:
+# https://bugzilla.redhat.com/show_bug.cgi?id=2356537
+Patch:          https://github.com/systemd/systemd/pull/36939.patch
+
 # Those are downstream-only patches, but we don't want them in packit builds:
 # https://bugzilla.redhat.com/show_bug.cgi?id=2251843
 Patch:          https://github.com/systemd/systemd/pull/30846.patch

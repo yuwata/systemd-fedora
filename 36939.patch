@@ -1,0 +1,44 @@
+From 1bd33efc903923b551cfde93457d0c446f7ec253 Mon Sep 17 00:00:00 2001
+From: LuK1337 <priv.luk@gmail.com>
+Date: Tue, 1 Apr 2025 22:23:06 +0200
+Subject: [PATCH] rules: Make ADB and fastboot work out-of-the-box
+
+https://android.googlesource.com/platform/packages/modules/adb/+/d0db47dcdf941673f405e1095e6ffb5e565902e5/adb.h#199
+https://android.googlesource.com/platform/system/core/+/7199051aaf0ddfa2849650933119307327d8669c/fastboot/fastboot.cpp#244
+---
+ rules.d/70-uaccess.rules.in | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+
+diff --git a/rules.d/70-uaccess.rules.in b/rules.d/70-uaccess.rules.in
+index 046f169e447b9..96b61cec32b25 100644
+--- a/rules.d/70-uaccess.rules.in
++++ b/rules.d/70-uaccess.rules.in
+@@ -77,6 +77,20 @@ ENV{DDC_DEVICE}=="?*", TAG+="uaccess"
+ # media player raw devices (for user-mode drivers, Android SDK, etc.)
+ SUBSYSTEM=="usb", ENV{ID_MEDIA_PLAYER}=="?*", TAG+="uaccess"
+ 
++# Android devices (ADB DbC, ADB, Fastboot)
++# Used to interact with devices over Android Debug Bridge and Fastboot protocols, see:
++# * https://developer.android.com/tools/adb
++# * https://source.android.com/docs/setup/test/running
++# * https://source.android.com/docs/setup/test/flash
++#
++# The bInterfaceClass and bInterfaceSubClass used are documented in source code here:
++# * https://android.googlesource.com/platform/packages/modules/adb/+/d0db47dcdf941673f405e1095e6ffb5e565902e5/adb.h#199
++# * https://android.googlesource.com/platform/system/core/+/7199051aaf0ddfa2849650933119307327d8669c/fastboot/fastboot.cpp#244
++#
++# Since it's using a generic vendor specific interface class, this can potentially result
++# in a rare case where non-ADB/Fastboot device ends up with an ID_DEBUG_APPLIANCE="android".
++SUBSYSTEM=="usb", ENV{ID_USB_INTERFACES}=="*:dc0201:*|*:ff4201:*|*:ff4203:*", ENV{ID_DEBUG_APPLIANCE}="android"
++
+ # software-defined radio communication devices
+ ENV{ID_SOFTWARE_RADIO}=="?*", TAG+="uaccess"
+ 
+@@ -111,4 +125,7 @@ SUBSYSTEM=="hidraw", ENV{ID_HARDWARE_WALLET}=="1", TAG+="uaccess"
+ # As defined in https://en.wikipedia.org/wiki/3Dconnexion
+ SUBSYSTEM=="hidraw", ENV{ID_INPUT_3D_MOUSE}=="1", TAG+="uaccess"
+ 
++# Debug interfaces (e.g. Android Debug Bridge)
++ENV{ID_DEBUG_APPLIANCE}=="?*", TAG+="uaccess"
++
+ LABEL="uaccess_end"
