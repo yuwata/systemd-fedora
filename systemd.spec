@@ -1111,15 +1111,6 @@ mv %{buildroot}/usr/lib/tmpfiles.d/20-systemd-userdb.conf{,.example}
 
 install -m 0644 -t %{buildroot}%{_prefix}/lib/pam.d/ %{SOURCE26}
 
-# Disable freezing of user sessions while we're working out the details.
-mkdir -p %{buildroot}/usr/lib/systemd/system/service.d/
-cat >>%{buildroot}/usr/lib/systemd/system/service.d/50-keep-warm.conf <<EOF
-# Disable freezing of user sessions to work around kernel bugs.
-# See https://bugzilla.redhat.com/show_bug.cgi?id=2321268
-[Service]
-Environment=SYSTEMD_SLEEP_FREEZE_USER_SESSIONS=0
-EOF
-
 %find_lang %{name}
 
 # Split files in build root into rpms
