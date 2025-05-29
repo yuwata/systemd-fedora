@@ -67,7 +67,7 @@ Url:            https://systemd.io
 # But don't do that on OBS, otherwise the version subst fails, and will be
 # like 257-123-gabcd257.1 instead of 257-123-gabcd
 %if %{without obs}
-Version:        %{?version_override}%{!?version_override:257.5}
+Version:        %{?version_override}%{!?version_override:257.6}
 %else
 Version:        %{?version_override}%{!?version_override:%(cat meson.version)}
 %endif
@@ -128,6 +128,8 @@ Patch:          https://github.com/systemd/systemd/pull/26494.patch
 %endif
 
 %if %{without upstream}
+# Those are downstream-only patches, but we don't want them in packit builds.
+
 # Temporarily drop use of PrivateTmp=disconnected. This is causing failures
 # in various places:
 # https://bugzilla.redhat.com/show_bug.cgi?id=2334015
@@ -138,16 +140,8 @@ Patch:          0001-Revert-units-use-PrivateTmp-disconnected-instead-of-.patch
 #  https://fedoraproject.org/wiki/Changes/RPMSuportForSystemdSysusers.
 Patch:          0002-sysusers-emit-audit-events-for-user-and-group-creati.patch
 
-# Backport of adb/fastboot udev rules:
-# https://bugzilla.redhat.com/show_bug.cgi?id=2356537
-Patch:          https://github.com/systemd/systemd/pull/36939.patch
-
-# Those are downstream-only patches, but we don't want them in packit builds:
 # https://bugzilla.redhat.com/show_bug.cgi?id=2251843
 Patch:          https://github.com/systemd/systemd/pull/30846.patch
-
-# Backport of CI fix
-Patch:          0001-test-sd-device-limit-the-number-of-iterations-when-t.patch
 %endif
 
 %ifarch %{ix86} x86_64 aarch64 riscv64
