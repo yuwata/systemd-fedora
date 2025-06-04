@@ -270,13 +270,13 @@ for file in files(buildroot):
 
     if n in known_files:
         prefix = known_files[n].split()[:-1]
-    elif file.is_dir() and not file.is_symlink():
+    elif file.is_dir(follow_symlinks=False):
         prefix = ['%dir']
     elif 'README' in n:
         prefix = ['%doc']
     elif n.startswith('/etc'):
         prefix = ['%config(noreplace)']
-        if file.stat().st_size == 0:
+        if not file.is_symlink() and file.stat().st_size == 0:
             prefix += ['%ghost']
     else:
         prefix = []
