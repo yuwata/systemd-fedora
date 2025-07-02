@@ -24,7 +24,8 @@
 %bcond bootstrap 0
 %bcond tests     1
 %bcond lto       1
-%bcond docs      1
+# Build docs on 64-bit architectures only
+%bcond docs      %[%{?__isa_bits} >= 64]
 
 # Build from git main
 %bcond upstream  0
