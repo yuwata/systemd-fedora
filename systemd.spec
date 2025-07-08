@@ -1128,6 +1128,14 @@ BRP_PESIGN_FILES=/usr/lib/systemd/boot/efi/systemd-boot%{efi_arch}.efi BRP_PESIG
 meson test -C %{_vpath_builddir} -t 6 --print-errorlogs
 %endif
 
+%if %{with lto}
+# Make sure that LTO is effective at removing unused code. When compiled
+# without LTO, we end up with all of libbasic_static.a in libsystemd.so.
+# For example, all the configuration stuff is not needed for libsystemd.so.
+# Make sure it is gone.
+(! strings %{buildroot}%{_libdir}/libsystemd.so | grep Config)
+%endif
+
 #############################################################################################
 
 %if %{without upstream} || (0%{?fedora} < 41 && 0%{?rhel} < 11)
