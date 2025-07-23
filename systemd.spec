@@ -68,7 +68,7 @@ Url:            https://systemd.io
 # But don't do that on OBS, otherwise the version subst fails, and will be
 # like 257-123-gabcd257.1 instead of 257-123-gabcd
 %if %{without obs}
-Version:        %{?version_override}%{!?version_override:257.7}
+Version:        %{?version_override}%{!?version_override:258~rc1}
 %else
 Version:        %{?version_override}%{!?version_override:%(cat meson.version)}
 %endif
@@ -84,7 +84,7 @@ Summary:        System and Service Manager
 # packit will always rewrite the first Source0 it finds, ignoring any conditionals so list
 # the fallback source that's used if neither %%branch nor %%commit are defined first.
 %if %{undefined branch} && %{undefined commit}
-Source0:        https://github.com/systemd/systemd/archive/v%{version}/%{name}-%{version}.tar.gz
+Source0:        https://github.com/systemd/systemd/archive/v%{version_no_tilde}/%{name}-%{version_no_tilde}.tar.gz
 %elif %{defined branch}
 Source0:        https://github.com/systemd/systemd/archive/refs/heads/%{branch}.tar.gz
 %elif %{defined commit}
@@ -136,10 +136,6 @@ Patch:          https://github.com/systemd/systemd/pull/26494.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=2334015
 # https://github.com/coreos/fedora-coreos-tracker/issues/1857
 Patch:          0001-Revert-units-use-PrivateTmp-disconnected-instead-of-.patch
-
-# Backport of sysusers audit support for
-#  https://fedoraproject.org/wiki/Changes/RPMSuportForSystemdSysusers.
-Patch:          0002-sysusers-emit-audit-events-for-user-and-group-creati.patch
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=2251843
 Patch:          https://github.com/systemd/systemd/pull/30846.patch
@@ -500,6 +496,10 @@ Obsoletes:      u2f-hidraw-policy < 1.0.2-40
 Conflicts:      %{name}-standalone-repart
 Provides:       %{name}-repart = %{version}-%{release}
 
+# Newer versions of those are required to support X11 keycode remapping
+Conflicts:      xorg-x11-drv-evdev < 2.11.0
+Conflicts:      xorg-x11-drv-libinput < 1.5.0
+
 %if "%{_sbindir}" == "%{_bindir}"
 # Compat symlinks for Requires in other packages.
 # We rely on filesystem to create the symlinks for us.
@@ -741,7 +741,7 @@ main systemd package and is meant for use in exitrds.
 %elif %{defined commit}
 %autosetup -n %{name}-%{commit} -p1
 %else
-%autosetup -n %{name}-%{version} -p1
+%autosetup -n %{name}-%{version_no_tilde} -p1
 %endif
 
 # Disable user lockdown until rpm implements it natively.
@@ -804,7 +804,6 @@ CONFIGURE_OPTS=(
         -Dacl=enabled
         -Dsmack=true
         -Dopenssl=enabled
-        -Dcryptolib=openssl
         -Dp11kit=enabled
         -Dgcrypt=disabled
         -Daudit=enabled

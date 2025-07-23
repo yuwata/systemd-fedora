@@ -155,7 +155,7 @@ for file in files(buildroot):
                        systemd\.nspawn|
                        systemd-vmspawn|
                        systemd-dissect|
-                       import-pubring.gpg|
+                       import-pubring|
                        systemd-machined|
                        systemd-import|
                        systemd-export|
