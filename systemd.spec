@@ -740,6 +740,8 @@ main systemd package and is meant for use in exitrds.
 %autosetup -n %{name}-%{branch} -p1
 %elif %{defined commit}
 %autosetup -n %{name}-%{commit} -p1
+%elif %{with obs}
+%autosetup -n %{name}-%{version} -p1
 %else
 %autosetup -n %{name}-%{version_no_tilde} -p1
 %endif
