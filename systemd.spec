@@ -84,7 +84,7 @@ Summary:        System and Service Manager
 # packit will always rewrite the first Source0 it finds, ignoring any conditionals so list
 # the fallback source that's used if neither %%branch nor %%commit are defined first.
 %if %{with obs}
-Source0:        https://github.com/systemd/systemd/archive/v%{version_no_tilde}/%{name}-%{version}.tar.gz
+Source0:        https://github.com/systemd/systemd/archive/v%{version_no_tilde}/%{name}-%{version}.tar.xz
 %elif %{undefined branch} && %{undefined commit}
 Source0:        https://github.com/systemd/systemd/archive/v%{version_no_tilde}/%{name}-%{version_no_tilde}.tar.gz
 %elif %{defined branch}
