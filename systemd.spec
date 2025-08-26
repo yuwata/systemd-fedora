@@ -141,6 +141,8 @@ Patch:          0001-Revert-units-use-PrivateTmp-disconnected-instead-of-.patch
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=2251843
 Patch:          https://github.com/systemd/systemd/pull/30846.patch
+
+Patch:          https://github.com/systemd/systemd/pull/38724.patch
 %endif
 
 %ifarch %{ix86} x86_64 aarch64 riscv64
