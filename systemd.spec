@@ -1240,8 +1240,8 @@ systemctl --no-reload preset systemd-journald-audit.socket &>/dev/null || :
                         sleep.target
                         suspend-then-hibernate.target
                         suspend.target
-                        system-systemd\x2dcryptsetup.slice
-                        system-systemd\x2dveritysetup.slice
+                        system-systemd\\x2dcryptsetup.slice
+                        system-systemd\\x2dveritysetup.slice
                         systemd-backlight@.service
                         systemd-binfmt.service
                         systemd-bless-boot.service
