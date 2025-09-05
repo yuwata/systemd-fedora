@@ -68,7 +68,7 @@ Url:            https://systemd.io
 # But don't do that on OBS, otherwise the version subst fails, and will be
 # like 257-123-gabcd257.1 instead of 257-123-gabcd
 %if %{without obs}
-Version:        %{?version_override}%{!?version_override:258~rc3}
+Version:        %{?version_override}%{!?version_override:258~rc4}
 %else
 Version:        %{?version_override}%{!?version_override:%(cat meson.version)}
 %endif
