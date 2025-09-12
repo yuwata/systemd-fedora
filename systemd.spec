@@ -1005,6 +1005,7 @@ touch %{buildroot}%{_sysconfdir}/machine-info
 touch %{buildroot}%{_sysconfdir}/localtime
 mkdir -p %{buildroot}%{_sysconfdir}/X11/xorg.conf.d
 touch %{buildroot}%{_sysconfdir}/X11/xorg.conf.d/00-keyboard.conf
+install -d -m 0700 %{buildroot}%{_sysconfdir}/userdb
 
 # Make sure the shutdown/sleep drop-in dirs exist
 mkdir -p %{buildroot}%{pkgdir}/system-shutdown/
