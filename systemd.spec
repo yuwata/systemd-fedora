@@ -68,7 +68,7 @@ Url:            https://systemd.io
 # But don't do that on OBS, otherwise the version subst fails, and will be
 # like 257-123-gabcd257.1 instead of 257-123-gabcd
 %if %{without obs}
-Version:        %{?version_override}%{!?version_override:258~rc4}
+Version:        %{?version_override}%{!?version_override:258}
 %else
 Version:        %{?version_override}%{!?version_override:%(cat meson.version)}
 %endif
@@ -142,6 +142,7 @@ Patch:          0001-Revert-units-use-PrivateTmp-disconnected-instead-of-.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=2251843
 Patch:          https://github.com/systemd/systemd/pull/30846.patch
 
+# Workaround for a kernel issue. Fixed in kernel-core-6.17.0-0.rc3.31.fc44.x86_64.
 Patch:          https://github.com/systemd/systemd/pull/38724.patch
 
 # userdb: create userdb root directory with correct label
