@@ -333,6 +333,12 @@ Provides:       /usr/sbin/shutdown
 Provides:       /usr/sbin/telinit
 %endif
 
+# libmount is always required, even in containers, so make it a hard dependency.
+Requires:       libmount.so.1%{?elf_suffix}
+Requires:       libmount.so.1(MOUNT_2.26)%{?elf_bits}
+# Various systemd services have syscall filters so make libseccomp a hard dependency.
+Requires:       libseccomp.so.2%{?elf_suffix}
+
 # Recommends to replace normal Requires deps for stuff that is dlopen()ed
 Recommends:     libxkbcommon.so.0%{?elf_suffix}
 Recommends:     libidn2.so.0%{?elf_suffix}
@@ -476,6 +482,9 @@ Conflicts:      systemd-networkd < %{version}-%{release}
 # want to load modules, so make this into a hard dependency here.
 Requires:       libkmod.so.2%{?elf_suffix}
 Requires:       libkmod.so.2(LIBKMOD_5)%{?elf_bits}
+# udev uses libblkid in various builtins so make it a hard dependency.
+Requires:       libblkid.so.1%{?elf_suffix}
+Requires:       libblkid.so.1(BLKID_2.30)%{?elf_bits}
 
 # Recommends to replace normal Requires deps for stuff that is dlopen()ed
 # used by dissect, integritysetup, veritysetyp, growfs, repart, cryptenroll, home
