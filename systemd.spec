@@ -469,6 +469,7 @@ Conflicts:      systemd-timesyncd < %{version}-%{release}
 Obsoletes:      systemd-timesyncd < %{version}-%{release}
 Provides:       systemd-timesyncd = %{version}-%{release}
 %endif
+Conflicts:      systemd-networkd < %{version}-%{release}
 
 # Libkmod is used to load modules. Assume that if we need udevd, we certainly
 # want to load modules, so make this into a hard dependency here.
@@ -643,6 +644,7 @@ systemd-journal-upload.
 Summary:        System daemon that manages network configurations
 Requires:       %{name}%{_isa} = %{version}-%{release}
 %{?fedora:Recommends:     %{name}-udev = %{version}-%{release}}
+Conflicts:      systemd-udev < %{version}-%{release}
 License:        LGPL-2.1-or-later
 
 %description networkd
