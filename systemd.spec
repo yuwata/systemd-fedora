@@ -274,16 +274,16 @@ Requires(post): grep
 # systemd-machine-id-setup requires libssl
 Requires(post): openssl-libs
 Requires:       dbus >= 1.9.18
-Requires:       %{name}-pam%{_isa} = %{version}-%{release}
-Requires(meta): (%{name}-rpm-macros = %{version}-%{release} if rpm-build)
-Requires:       %{name}-libs%{_isa} = %{version}-%{release}
-%{?fedora:Recommends:     %{name}-networkd = %{version}-%{release}}
-%{?fedora:Recommends:     %{name}-resolved = %{version}-%{release}}
-Requires:       %{name}-shared%{_isa} = %{version}-%{release}
+Requires:       systemd-pam%{_isa} = %{version}-%{release}
+Requires(meta): (systemd-rpm-macros = %{version}-%{release} if rpm-build)
+Requires:       systemd-libs%{_isa} = %{version}-%{release}
+%{?fedora:Recommends:     systemd-networkd = %{version}-%{release}}
+%{?fedora:Recommends:     systemd-resolved = %{version}-%{release}}
+Requires:       systemd-shared%{_isa} = %{version}-%{release}
 Requires:       /usr/bin/systemd-sysusers
 # The standalone version doesn't Provide the _isa suffix,
 # so this biases towards the common version.
-Recommends:     %{name}-sysusers%{_isa} = %{version}-%{release}
+Recommends:     systemd-sysusers%{_isa} = %{version}-%{release}
 Recommends:     diffutils
 Requires:       (util-linux-core or util-linux)
 Requires:       (libbpf >= 2:1.4.7 if libbpf)
@@ -316,10 +316,10 @@ Conflicts:      dracut < 060-2
 Conflicts:      dracut < 059-16
 %endif
 
-Conflicts:      %{name}-standalone-tmpfiles
-Provides:       %{name}-tmpfiles = %{version}-%{release}
-Conflicts:      %{name}-standalone-shutdown
-Provides:       %{name}-shutdown = %{version}-%{release}
+Conflicts:      systemd-standalone-tmpfiles
+Provides:       systemd-tmpfiles = %{version}-%{release}
+Conflicts:      systemd-standalone-shutdown
+Provides:       systemd-shutdown = %{version}-%{release}
 
 %if "%{_sbindir}" == "%{_bindir}"
 # Compat symlinks for Requires in other packages.
@@ -398,14 +398,14 @@ License:        LGPL-2.1-or-later AND MIT
 # in 257.3-6 /usr/lib64/systemd/libsystemd-shared-257.2-14.fc42.so
 # was moved from package systemd to systemd-shared.
 # Add a conflit to allow downgrades across this change.
-Conflicts:      %{name} < 257.3-6
+Conflicts:      systemd < 257.3-6
 
 %description shared
 Internal libraries used by various systemd binaries.
 
 %package pam
 Summary:        systemd PAM module
-Requires:       %{name} = %{version}-%{release}
+Requires:       systemd = %{version}-%{release}
 
 %description pam
 Systemd PAM module registers the session with systemd-logind.
@@ -423,11 +423,11 @@ for information how to use those macros.
 
 %package sysusers
 Summary:        systemd-sysusers program
-Requires:       %{name}-shared%{_isa} = %{version}-%{release}
-Conflicts:      %{name}-standalone-sysusers
+Requires:       systemd-shared%{_isa} = %{version}-%{release}
+Conflicts:      systemd-standalone-sysusers
 # in 257.3-6 /usr/bin/systemd-sysusers was moved from package systemd
 # to systemd-sysusers. Add a conflit to allow downgrades across this change.
-Conflicts:      %{name} < 257.3-6
+Conflicts:      systemd < 257.3-6
 
 %description sysusers
 This package contains the systemd-sysusers program.
@@ -435,8 +435,8 @@ This package contains the systemd-sysusers program.
 %package devel
 Summary:        Development headers for systemd
 License:        LGPL-2.1-or-later AND MIT
-Requires:       %{name}-libs%{_isa} = %{version}-%{release}
-Requires(meta): (%{name}-rpm-macros = %{version}-%{release} if rpm-build)
+Requires:       systemd-libs%{_isa} = %{version}-%{release}
+Requires(meta): (systemd-rpm-macros = %{version}-%{release} if rpm-build)
 Provides:       libudev-devel = %{version}
 Provides:       libudev-devel%{_isa} = %{version}
 
@@ -503,8 +503,8 @@ Requires:       kbd
 Provides:       u2f-hidraw-policy = 1.0.2-40
 Obsoletes:      u2f-hidraw-policy < 1.0.2-40
 
-Conflicts:      %{name}-standalone-repart
-Provides:       %{name}-repart = %{version}-%{release}
+Conflicts:      systemd-standalone-repart
+Provides:       systemd-repart = %{version}-%{release}
 
 # Newer versions of those are required to support X11 keycode remapping
 Conflicts:      xorg-x11-drv-evdev < 2.11.0
@@ -529,7 +529,7 @@ machine, and to create or grow partitions and make file systems automatically.
 
 %package ukify
 Summary:        Tool to build Unified Kernel Images
-Requires:       %{name} = %{noarch_requires_version}
+Requires:       systemd = %{noarch_requires_version}
 
 Requires:       (systemd-boot if %{shrink:(
         filesystem(x86-32) or
@@ -602,7 +602,7 @@ This package contains the signed version.
 %package container
 # Name is the same as in Debian
 Summary: Tools for containers and VMs
-Requires:       %{name}%{_isa} = %{version}-%{release}
+Requires:       systemd%{_isa} = %{version}-%{release}
 Requires(post):   systemd%{_isa} = %{version}-%{release}
 Requires(preun):  systemd%{_isa} = %{version}-%{release}
 Requires(postun): systemd%{_isa} = %{version}-%{release}
@@ -625,11 +625,11 @@ systemd-machined, and systemd-importd.
 %package journal-remote
 # Name is the same as in Debian
 Summary:        Tools to send journal events over the network
-Requires:       %{name}%{_isa} = %{version}-%{release}
+Requires:       systemd%{_isa} = %{version}-%{release}
 License:        LGPL-2.1-or-later
 Requires:       firewalld-filesystem
-Provides:       %{name}-journal-gateway = %{version}-%{release}
-Provides:       %{name}-journal-gateway%{_isa} = %{version}-%{release}
+Provides:       systemd-journal-gateway = %{version}-%{release}
+Provides:       systemd-journal-gateway%{_isa} = %{version}-%{release}
 # Bias the system towards libcurl-minimal if nothing pulls in full libcurl (#1997040)
 Suggests:       libcurl-minimal
 
@@ -642,8 +642,8 @@ systemd-journal-upload.
 
 %package networkd
 Summary:        System daemon that manages network configurations
-Requires:       %{name}%{_isa} = %{version}-%{release}
-%{?fedora:Recommends:     %{name}-udev = %{version}-%{release}}
+Requires:       systemd%{_isa} = %{version}-%{release}
+%{?fedora:Recommends:     systemd-udev = %{version}-%{release}}
 Conflicts:      systemd-udev < %{version}-%{release}
 License:        LGPL-2.1-or-later
 
@@ -654,7 +654,7 @@ devices.
 
 %package networkd-defaults
 Summary:        Configure network interfaces with networkd by default
-Requires:       %{name}-networkd = %{noarch_requires_version}
+Requires:       systemd-networkd = %{noarch_requires_version}
 License:        MIT-0
 BuildArch:      noarch
 
@@ -665,7 +665,7 @@ enabled for this to have any effect.
 
 %package resolved
 Summary:        Network Name Resolution manager
-Requires:       %{name}%{_isa} = %{version}-%{release}
+Requires:       systemd%{_isa} = %{version}-%{release}
 Requires:       libidn2.so.0%{?elf_suffix}
 Requires:       libidn2.so.0(IDN2_0.0.0)%{?elf_bits}
 Requires(posttrans): grep
@@ -677,7 +677,7 @@ resolver, as well as an LLMNR and MulticastDNS resolver and responder.
 
 %package oomd-defaults
 Summary:        Configuration files for systemd-oomd
-Requires:       %{name}-udev = %{noarch_requires_version}
+Requires:       systemd-udev = %{noarch_requires_version}
 License:        LGPL-2.1-or-later
 BuildArch:      noarch
 
@@ -687,10 +687,10 @@ a userspace out-of-memory (OOM) killer.
 
 %package tests
 Summary:       Internal unit tests for systemd
-Requires:      %{name}%{_isa} = %{version}-%{release}
+Requires:      systemd%{_isa} = %{version}-%{release}
 # This dependency is provided transitively. Also add it explicitly to
 # appease rpminspect, https://github.com/rpminspect/rpminspect/issues/1231:
-Requires:      %{name}-libs%{_isa} = %{version}-%{release}
+Requires:      systemd-libs%{_isa} = %{version}-%{release}
 Requires:      python3dist(psutil)
 
 License:       LGPL-2.1-or-later
@@ -701,8 +701,8 @@ Different binaries test different parts of the codebase.
 
 %package standalone-repart
 Summary:       Standalone systemd-repart binary for use on systems without systemd
-Provides:      %{name}-repart = %{version}-%{release}
-Conflicts:     %{name}-udev
+Provides:      systemd-repart = %{version}-%{release}
+Conflicts:     systemd-udev
 Suggests:      coreutils-single
 RemovePathPostfixes: .standalone
 
@@ -713,8 +713,8 @@ main systemd package and is meant for use on systems without systemd.
 
 %package standalone-tmpfiles
 Summary:       Standalone systemd-tmpfiles binary for use on systems without systemd
-Provides:      %{name}-tmpfiles = %{version}-%{release}
-Conflicts:     %{name}
+Provides:      systemd-tmpfiles = %{version}-%{release}
+Conflicts:     systemd
 Suggests:      coreutils-single
 RemovePathPostfixes: .standalone
 
@@ -725,7 +725,7 @@ main systemd package and is meant for use on systems without systemd.
 
 %package standalone-sysusers
 Summary:       Standalone systemd-sysusers binary for use on systems without systemd
-Provides:      %{name}-sysusers = %{version}-%{release}
+Provides:      systemd-sysusers = %{version}-%{release}
 Suggests:      coreutils-single
 RemovePathPostfixes: .standalone
 
@@ -736,8 +736,8 @@ main systemd package and is meant for use on systems without systemd.
 
 %package standalone-shutdown
 Summary:       Standalone systemd-shutdown binary for use in exitrds
-Provides:      %{name}-shutdown = %{version}-%{release}
-Conflicts:     %{name}
+Provides:      systemd-shutdown = %{version}-%{release}
+Conflicts:     systemd
 Suggests:      coreutils-single
 RemovePathPostfixes: .standalone
 
