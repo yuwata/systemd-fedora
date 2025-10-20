@@ -532,9 +532,7 @@ Requires:       (systemd-boot if %{shrink:(
         filesystem(riscv64)
 )})
 Requires:       python3dist(pefile)
-%if 0%{?fedora}
 Requires:       python3dist(zstandard)
-%endif
 Requires:       python3dist(cryptography)
 %if 0%{?fedora}
 Recommends:     python3dist(pillow)
