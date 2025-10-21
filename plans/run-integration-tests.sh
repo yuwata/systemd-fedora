@@ -17,9 +17,9 @@ sysctl fs.inotify.max_user_watches=65536 || true
 sysctl fs.inotify.max_user_instances=1024 || true
 
 if [[ -n "${KOJI_TASK_ID:-}" ]]; then
-    koji download-task --noprogress --arch="src,noarch,$(rpm --eval '%{_arch}')" "$KOJI_TASK_ID"
+    koji download-task --noprogress --arch="noarch,$(rpm --eval '%{_arch}')" "$KOJI_TASK_ID"
 elif [[ -n "${CBS_TASK_ID:-}" ]]; then
-    cbs download-task --noprogress --arch="src,noarch,$(rpm --eval '%{_arch}')" "$CBS_TASK_ID"
+    cbs download-task --noprogress --arch="noarch,$(rpm --eval '%{_arch}')" "$CBS_TASK_ID"
 elif [[ -n "${PACKIT_SRPM_URL:-}" ]]; then
     COPR_BUILD_ID="$(basename "$(dirname "$PACKIT_SRPM_URL")")"
     COPR_CHROOT="$(basename "$(dirname "$(dirname "$PACKIT_BUILD_LOG_URL")")")"
@@ -32,21 +32,12 @@ fi
 
 PACKAGEDIR="$PWD"
 
-# TODO: Remove fallback once v257.6 is released. Also stop downloading source rpms then.
-
 # This will match both the regular and the debuginfo rpm so make sure we select only the
 # non-debuginfo rpm.
 RPMS=(systemd-tests-*.rpm)
 rpm2cpio "${RPMS[0]}" | cpio --make-directories --extract
-if [[ -d usr/lib/systemd/tests/mkosi ]]; then
-    pushd usr/lib/systemd/tests
-    mkosi_hash="$(grep "MinimumVersion=commit:" mkosi/mkosi.conf | sed "s|MinimumVersion=commit:||g")"
-else
-    mkdir systemd
-    rpm2cpio systemd-*.src.rpm | cpio --to-stdout --extract './*.tar.gz' | tar xz --strip-components=1 -C systemd
-    pushd systemd
-    mkosi_hash="$(grep systemd/mkosi@ .github/workflows/mkosi.yml | sed "s|.*systemd/mkosi@||g")"
-fi
+pushd usr/lib/systemd/tests
+mkosi_hash="$(grep "MinimumVersion=commit:" mkosi/mkosi.conf | sed "s|MinimumVersion=commit:||g")"
 
 # Now prepare mkosi at the same version required by the systemd repo.
 git clone https://github.com/systemd/mkosi /var/tmp/systemd-integration-tests-mkosi
@@ -57,13 +48,7 @@ export PATH="/var/tmp/systemd-integration-tests-mkosi/bin:$PATH"
 # shellcheck source=/dev/null
 . /etc/os-release || . /usr/lib/os-release
 
-if [[ -d mkosi ]]; then
-    LOCAL_CONF=mkosi/mkosi.local.conf
-else
-    LOCAL_CONF=mkosi.local.conf
-fi
-
-tee "$LOCAL_CONF" <<EOF
+tee mkosi/mkosi.local.conf <<EOF
 [Distribution]
 Distribution=${MKOSI_DISTRIBUTION:-$ID}
 Release=${MKOSI_RELEASE:-${VERSION_ID:-rawhide}}
@@ -97,17 +82,6 @@ KernelCommandLineExtra=systemd.setenv=TEST_SELINUX_CHECK_AVCS=$TEST_SELINUX_CHEC
 EOF
 fi
 
-# Create missing mountpoint for mkosi sandbox.
-mkdir -p /etc/pacman.d/gnupg
-
-# We don't bother with this change if the mkosi configuration is
-# in mkosi/ as if that's the case then we know for sure that the
-# upstream has this fix as well.
-# TODO: drop once BTRFS regression is fixed.
-if [[ -f mkosi.repart/10-root.conf ]]; then
-    sed -i "s/Format=btrfs/Format=ext4/" mkosi.repart/10-root.conf
-fi
-
 # If we don't have KVM, skip running in qemu, as it's too slow. But try to load the module first.
 modprobe kvm || true
 if [[ ! -e /dev/kvm ]]; then
@@ -128,23 +102,17 @@ export TEST_SKIP="TEST-21-DFUZZER"
 
 mkosi genkey
 mkosi summary
-mkosi -f sandbox -- true
-if [[ -d integration-tests/standalone ]]; then
-    mkosi sandbox -- meson setup build integration-tests/standalone
-elif [[ -d test/integration-tests/standalone ]]; then
-    mkosi sandbox -- meson setup build test/integration-tests/standalone
-else
-    mkosi sandbox -- meson setup -Dintegration-tests=true build
-fi
+mkosi -f box -- true
+mkosi box -- meson setup build integration-tests/standalone
 mkosi -f
-mkosi sandbox -- \
+mkosi box -- \
     meson test \
-    -C build \
-    --no-rebuild \
-    --suite integration-tests \
-    --print-errorlogs \
-    --no-stdsplit \
-    --num-processes "$NPROC" && EC=0 || EC=$?
+        -C build \
+        --setup=integration \
+        --print-errorlogs \
+        --no-stdsplit \
+        --max-lines 300 \
+        --num-processes "$NPROC" && EC=0 || EC=$?
 
 [[ -d build/meson-logs ]] && find build/meson-logs -type f -exec mv {} "$TMT_TEST_DATA" \;
 [[ -d build/test/journal ]] && find build/test/journal -type f -exec mv {} "$TMT_TEST_DATA" \;
