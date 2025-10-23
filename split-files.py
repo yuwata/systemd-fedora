@@ -245,6 +245,7 @@ for file in files(buildroot):
                        sysctl|
                        coredump|
                        homed|home1|
+                       sysupdate|updatctl|
                        oomd|
                        portabled|portable1
     ''', n, re.X):     # coredumpctl, homectl, portablectl are included in the main package because
