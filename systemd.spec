@@ -161,6 +161,9 @@ BuildRequires:  libselinux-devel
 BuildRequires:  audit-libs-devel
 %if %{without bootstrap}
 BuildRequires:  cryptsetup-devel
+# Require (previous version) of our macros package.
+# We use the %%systemd_{post,preun,…} macros for various services.
+BuildRequires:  systemd-rpm-macros
 %endif
 BuildRequires:  dbus-devel
 BuildRequires:  util-linux
