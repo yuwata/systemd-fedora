@@ -1374,6 +1374,8 @@ fi
 %global networkd_services %{shrink:
                             systemd-networkd.service
                             systemd-networkd.socket
+                            systemd-networkd-varlink.socket
+                            %[%{with upstream}?"systemd-networkd-resolve-hook.socket":""]
                             systemd-networkd-wait-online.service
                             systemd-network-generator.service
                             systemd-networkd-persistent-storage.service
