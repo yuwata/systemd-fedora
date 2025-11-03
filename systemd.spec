@@ -82,15 +82,15 @@ Summary:        System and Service Manager
 
 # download tarballs with "spectool -g systemd.spec"
 # packit will always rewrite the first Source0 it finds, ignoring any conditionals so list
-# the fallback source that's used if neither %%branch nor %%commit are defined first.
-%if %{with obs}
-Source0:        https://github.com/systemd/systemd/archive/v%{version_no_tilde}/%{name}-%{version}.tar.xz
-%elif %{undefined branch} && %{undefined commit}
+# the fallback source that's used if neither %%branch, %%commit or %%obs are defined first.
+%if %{undefined branch} && %{undefined commit} && %{without obs}
 Source0:        https://github.com/systemd/systemd/archive/v%{version_no_tilde}/%{name}-%{version_no_tilde}.tar.gz
 %elif %{defined branch}
 Source0:        https://github.com/systemd/systemd/archive/refs/heads/%{branch}.tar.gz
 %elif %{defined commit}
 Source0:        https://github.com/systemd/systemd/archive/%{commit}/%{name}-%{commit}.tar.gz
+%elif %{with obs}
+Source0:        https://github.com/systemd/systemd/archive/v%{version_no_tilde}/%{name}-%{version}.tar.xz
 %endif
 # This file must be available before %%prep.
 # It is generated during systemd build and can be found at build/src/rpm/triggers.systemd.sh.
