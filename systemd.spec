@@ -742,17 +742,14 @@ library or other libraries from systemd-libs. This package conflicts with the
 main systemd package and is meant for use in exitrds.
 
 %prep
-%if %{defined branch}
-%autosetup -n %{name}-%{branch} -p1
-%elif %{defined commit}
-%autosetup -n %{name}-%{commit} -p1
-%elif %{with obs}
+%if %{with obs}
 # Recipe files in the OBS build are in a distro-specific dir, as they conflict (e.g. with SUSE ones)
 mv %{_sourcedir}/%{name}.fedora/* %{_sourcedir}
-%autosetup -n %{name}-%{version} -p1
-%else
-%autosetup -n %{name}-%{version_no_tilde} -p1
 %endif
+
+# Automatically figure out the name of the top-level directory.
+# rpm really should do this automatically.
+%autosetup -n %(tar -tf %{SOURCE0} | head -n1) -p1
 
 # Disable user lockdown until rpm implements it natively.
 # https://github.com/rpm-software-management/rpm/issues/3450
