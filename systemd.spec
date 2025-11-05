@@ -137,6 +137,10 @@ Patch:          https://github.com/systemd/systemd/pull/26494.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=2251843
 Patch:          https://github.com/systemd/systemd/pull/30846.patch
 
+# Again create runlevelX.target. Dropping those files breaks upgrades.
+# https://bugzilla.redhat.com/show_bug.cgi?id=2411195
+Patch:          0001-Revert-units-drop-runlevel-0-6-.target.patch
+
 # userdb: create userdb root directory with correct label
 # We can drop this after SELinux policy is updated to handle the transition.
 Patch:          https://github.com/systemd/systemd/pull/38769.patch
