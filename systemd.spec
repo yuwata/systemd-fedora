@@ -38,6 +38,11 @@
 # that depend on libcryptsetup (e.g. libcryptsetup-plugins, homed)
 %if %{with bootstrap}
 %global __meson_auto_features disabled
+# If we're building for upstream, don't unconditionally enable all
+# new features as new features might be introduced for which we're
+# missing build dependencies.
+%elif %{with upstream}
+%global __meson_auto_features auto
 %endif
 
 # Override %%autorelease. This is ugly, but rpmautospec doesn't implement
