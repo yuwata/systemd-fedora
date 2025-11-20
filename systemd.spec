@@ -760,7 +760,9 @@ main systemd package and is meant for use in exitrds.
 mv %{_sourcedir}/%{name}.fedora/* %{_sourcedir}
 %endif
 
-%autosetup -C -p1
+# Automatically figure out the name of the top-level directory.
+# TODO: Use %%autosetup -C once we can depend on rpm >= 4.20.
+%autosetup -n %(tar -tf %{SOURCE0} | head -n1) -p1
 
 # Disable user lockdown until rpm implements it natively.
 # https://github.com/rpm-software-management/rpm/issues/3450
