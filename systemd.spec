@@ -333,9 +333,7 @@ Provides:       /usr/sbin/halt
 Provides:       /usr/sbin/init
 Provides:       /usr/sbin/poweroff
 Provides:       /usr/sbin/reboot
-Provides:       /usr/sbin/runlevel
 Provides:       /usr/sbin/shutdown
-Provides:       /usr/sbin/telinit
 %endif
 
 # libmount is always required, even in containers, so make it a hard dependency.
