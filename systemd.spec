@@ -149,6 +149,10 @@ Patch:          0001-Revert-units-drop-runlevel-0-6-.target.patch
 # userdb: create userdb root directory with correct label
 # We can drop this after SELinux policy is updated to handle the transition.
 Patch:          https://github.com/systemd/systemd/pull/38769.patch
+
+# Workaround for https://bugzilla.redhat.com/show_bug.cgi?id=2415701
+Patch:          0001-machined-add-description-to-varlink-server-unify-err.patch
+Patch:          0002-machined-continue-without-resolve.hook-socket.patch
 %endif
 
 %ifarch %{ix86} x86_64 aarch64 riscv64
