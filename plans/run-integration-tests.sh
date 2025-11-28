@@ -66,7 +66,7 @@ WithTests=yes
 EOF
 
 if [[ -n "${MKOSI_REPOSITORIES:-}" ]]; then
-    tee --append "$LOCAL_CONF" <<EOF
+    tee --append mkosi/mkosi.local.conf <<EOF
 [Distribution]
 Repositories=$MKOSI_REPOSITORIES
 
@@ -76,7 +76,7 @@ EOF
 fi
 
 if [[ -n "${TEST_SELINUX_CHECK_AVCS:-}" ]]; then
-    tee --append "$LOCAL_CONF" <<EOF
+    tee --append mkosi/mkosi.local.conf <<EOF
 [Runtime]
 KernelCommandLineExtra=systemd.setenv=TEST_SELINUX_CHECK_AVCS=$TEST_SELINUX_CHECK_AVCS
 EOF
