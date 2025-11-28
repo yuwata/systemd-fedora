@@ -105,14 +105,19 @@ mkosi summary
 mkosi -f box -- true
 mkosi box -- meson setup build integration-tests/standalone
 mkosi -f
+if [[ "$(mkosi box -- meson test --help)" == *"--max-lines"* ]]; then
+    MAX_LINES=(--max-lines 300)
+else
+    MAX_LINES=()
+fi
 mkosi box -- \
     meson test \
         -C build \
         --setup=integration \
         --print-errorlogs \
         --no-stdsplit \
-        --max-lines 300 \
-        --num-processes "$NPROC" && EC=0 || EC=$?
+        --num-processes "$NPROC" \
+        "${MAX_LINES[@]}" && EC=0 || EC=$?
 
 [[ -d build/meson-logs ]] && find build/meson-logs -type f -exec mv {} "$TMT_TEST_DATA" \;
 [[ -d build/test/journal ]] && find build/test/journal -type f -exec mv {} "$TMT_TEST_DATA" \;
