@@ -163,7 +163,6 @@ BuildRequires:  gcc-c++
 BuildRequires:  clang
 BuildRequires:  coreutils
 BuildRequires:  rpmdevtools
-BuildRequires:  libcap-devel
 BuildRequires:  libmount-devel
 BuildRequires:  libfdisk-devel
 BuildRequires:  libpwquality-devel
