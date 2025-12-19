@@ -279,8 +279,8 @@ Requires(post): coreutils
 Requires(post): grep
 # systemd-machine-id-setup requires libssl
 Requires(post): openssl-libs
-Requires:       dbus >= 1.9.18
-Requires:       systemd-pam%{_isa} = %{version}-%{release}
+Recommends:     dbus >= 1.9.18
+Recommends:     systemd-pam%{_isa} = %{version}-%{release}
 Requires(meta): (systemd-rpm-macros = %{version}-%{release} if rpm-build)
 Requires:       systemd-libs%{_isa} = %{version}-%{release}
 %{?fedora:Recommends:     systemd-networkd = %{version}-%{release}}
