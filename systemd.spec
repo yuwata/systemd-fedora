@@ -804,9 +804,7 @@ VMLINUX_H_PATH=$(%python3 -c '%find_vmlinux_h')
 CONFIGURE_OPTS=(
         -Dmode=release
         -Dslow-tests=true
-%if %{without upstream}
         -Dsysvinit-path=/etc/rc.d/init.d
-%endif
         -Drc-local=/etc/rc.d/rc.local
         -Dntp-servers='0.%{ntpvendor}.pool.ntp.org 1.%{ntpvendor}.pool.ntp.org 2.%{ntpvendor}.pool.ntp.org 3.%{ntpvendor}.pool.ntp.org'
         -Ddns-servers=
