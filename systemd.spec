@@ -152,6 +152,12 @@ Patch:          38769.patch
 
 # Workaround for https://bugzilla.redhat.com/show_bug.cgi?id=2415701
 Patch:          0002-machined-continue-without-resolve.hook-socket.patch
+
+# 2 patches for https://fedoraproject.org/wiki/Changes/Automatic_DTB_selection_for_aarch64_EFI_systems
+# Upstream commit: https://github.com/systemd/systemd/commit/75890d949f92c412c0936b8536b2e0dc8f7dfb40
+Patch:          0003-ukify-omit-.osrel-section-when-os-release-is-empty.patch
+# Upstream PR: https://github.com/systemd/systemd/pull/40329
+Patch:          0004-stub-Fix-NULL-pointer-deref-when-there-are-no-initrd.patch
 %endif
 
 %ifarch %{ix86} x86_64 aarch64 riscv64
