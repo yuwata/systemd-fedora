@@ -206,6 +206,7 @@ for file in files(buildroot):
                        bless-boot|
                        boot-system-token|
                        bsod|
+                       getty|
                        kernel-install|
                        installkernel|
                        vconsole|
@@ -233,6 +234,7 @@ for file in files(buildroot):
                        integritysetup|
                        integritytab|
                        remount-fs|
+                       tpm2|
                        /initrd|
                        systemd[.-]pcr|
                        /pcrlock\.d|

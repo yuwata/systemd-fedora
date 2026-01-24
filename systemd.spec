@@ -1245,6 +1245,7 @@ systemctl --no-reload preset systemd-journald-audit.socket &>/dev/null || :
 %global udev_services %{shrink:
                         cryptsetup-pre.target
                         cryptsetup.target
+                        getty@.service
                         hibernate.target
                         hybrid-sleep.target
                         initrd-cleanup.service
