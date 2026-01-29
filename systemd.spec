@@ -159,7 +159,7 @@ Patch:          0003-ukify-omit-.osrel-section-when-os-release-is-empty.patch
 # Upstream PR: https://github.com/systemd/systemd/pull/40329
 Patch:          0004-stub-Fix-NULL-pointer-deref-when-there-are-no-initrd.patch
 
-Patch:          https://github.com/systemd/systemd/pull/40440.patch
+Patch:          40440.patch
 %endif
 
 %ifarch %{ix86} x86_64 aarch64 riscv64
