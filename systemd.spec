@@ -939,6 +939,8 @@ CONFIGURE_OPTS=(
         -Dsbat-distro-url=https://github.com/systemd/systemd
         -Dsbat-distro=upstream
         -Dsbat-distro-summary='Upstream build from git'
+        -Defi-stub-extra-sections=500
+        -Defi-addon-extra-sections=100
 %endif
 )
 
