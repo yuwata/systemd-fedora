@@ -206,7 +206,7 @@ for file in files(buildroot):
                        bless-boot|
                        boot-system-token|
                        bsod|
-                       getty|
+                       getty|autovt@|
                        kernel-install|
                        installkernel|
                        vconsole|
