@@ -159,7 +159,7 @@ Patch:          0003-ukify-omit-.osrel-section-when-os-release-is-empty.patch
 # Upstream PR: https://github.com/systemd/systemd/pull/40329
 Patch:          0004-stub-Fix-NULL-pointer-deref-when-there-are-no-initrd.patch
 
-Patch:          40440.patch
+Patch:          https://github.com/systemd/systemd/pull/40440.patch
 %endif
 
 %ifarch %{ix86} x86_64 aarch64 riscv64
@@ -1382,6 +1382,10 @@ grep -q -E '^KEYMAP="?fi-latin[19]"?' /etc/vconsole.conf 2>/dev/null &&
 # Restart some services.
 # Others are either oneshot services, or sockets, and restarting them causes issues (#1378974)
 %systemd_posttrans_with_restart systemd-udevd.service systemd-timesyncd.service systemd-homed.service systemd-oomd.service systemd-portabled.service
+
+# Move symlink from /etc to /usr/lib. Anaconda wants to overwrite the symlink.
+# See https://bodhi.fedoraproject.org/updates/FEDORA-2026-8c83517ced.
+test -f /etc/systemd/system/autovt@.service && mv /etc/systemd/system/autovt@.service /usr/lib/systemd/system/
 
 %global journal_remote_units_restart systemd-journal-gatewayd.service systemd-journal-remote.service systemd-journal-upload.service
 %global journal_remote_units_norestart systemd-journal-gatewayd.socket systemd-journal-remote.socket
