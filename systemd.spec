@@ -1244,14 +1244,6 @@ systemctl daemon-reexec || :
 # a different package version.
 systemctl --no-reload preset systemd-journald-audit.socket &>/dev/null || :
 
-# Note: getty@.service is excluded from enablement below. Anaconda
-# tries to overwrite the symlink, and things go wrong if the unit is
-# enabled in the usual fashion. Let's mimic the previous behaviour for
-# now by creating the symlink in /usr/lib/systemd/system manually in
-# the %%install section.
-#
-# See https://bodhi.fedoraproject.org/updates/FEDORA-2026-8c83517ced.
-
 %global udev_services %{shrink:
                         cryptsetup-pre.target
                         cryptsetup.target
