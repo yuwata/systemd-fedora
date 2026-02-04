@@ -1057,6 +1057,8 @@ touch %{buildroot}%{_localstatedir}/lib/systemd/random-seed
 touch %{buildroot}%{_localstatedir}/lib/systemd/timesync/clock
 touch %{buildroot}%{_localstatedir}/lib/private/systemd/journal-upload/state
 
+ln -s getty@.service %{buildroot}%{system_unit_dir}/autovt@.service
+
 # Install yum protection config. Old location in /etc.
 mkdir -p %{buildroot}/etc/dnf/protected.d/
 cat >%{buildroot}/etc/dnf/protected.d/systemd.conf <<EOF
@@ -1246,10 +1248,17 @@ systemctl daemon-reexec || :
 # a different package version.
 systemctl --no-reload preset systemd-journald-audit.socket &>/dev/null || :
 
+# Note: getty@.service is excluded from enablement below. Anaconda
+# tries to overwrite the symlink, and things go wrong if the unit is
+# enabled in the usual fashion. Let's mimic the previous behaviour for
+# now by creating the symlink in /usr/lib/systemd/system manually in
+# the %%install section.
+#
+# See https://bodhi.fedoraproject.org/updates/FEDORA-2026-8c83517ced.
+
 %global udev_services %{shrink:
                         cryptsetup-pre.target
                         cryptsetup.target
-                        getty@.service
                         hibernate.target
                         hybrid-sleep.target
                         initrd-cleanup.service
@@ -1382,10 +1391,6 @@ grep -q -E '^KEYMAP="?fi-latin[19]"?' /etc/vconsole.conf 2>/dev/null &&
 # Restart some services.
 # Others are either oneshot services, or sockets, and restarting them causes issues (#1378974)
 %systemd_posttrans_with_restart systemd-udevd.service systemd-timesyncd.service systemd-homed.service systemd-oomd.service systemd-portabled.service
-
-# Move symlink from /etc to /usr/lib. Anaconda wants to overwrite the symlink.
-# See https://bodhi.fedoraproject.org/updates/FEDORA-2026-8c83517ced.
-test -f /etc/systemd/system/autovt@.service && mv /etc/systemd/system/autovt@.service /usr/lib/systemd/system/
 
 %global journal_remote_units_restart systemd-journal-gatewayd.service systemd-journal-remote.service systemd-journal-upload.service
 %global journal_remote_units_norestart systemd-journal-gatewayd.socket systemd-journal-remote.socket
