@@ -1328,6 +1328,7 @@ systemctl --no-reload preset systemd-journald-audit.socket &>/dev/null || :
                         systemd-suspend.service
                         systemd-sysctl.service
                         systemd-timesyncd.service
+                        systemd-tmpfiles-clear.service
                         systemd-tmpfiles-setup-dev-early.service
                         systemd-tmpfiles-setup-dev.service
                         systemd-udev-load-credentials.service
