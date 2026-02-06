@@ -175,6 +175,8 @@ BuildRequires:  cryptsetup-devel
 # Require (previous version) of our macros package.
 # We use the %%systemd_{post,preun,…} macros for various services.
 BuildRequires:  systemd-rpm-macros
+# Use dlopen-notes to generate Requires/Recommends from embedded metadata.
+BuildRequires:  package-notes
 %endif
 BuildRequires:  dbus-devel
 BuildRequires:  util-linux
@@ -339,44 +341,15 @@ Provides:       /usr/sbin/shutdown
 %endif
 
 # libmount is always required, even in containers, so make it a hard dependency.
-Requires:       libmount.so.1%{?elf_suffix}
-Requires:       libmount.so.1(MOUNT_2.26)%{?elf_bits}
 # Various systemd services have syscall filters so make libseccomp a hard dependency.
-Requires:       libseccomp.so.2%{?elf_suffix}
+#
+# Libkmod is used to load modules. Assume that if we need udevd, we certainly
+# want to load modules, so make this into a hard dependency here.
+# udev uses libblkid in various builtins so make it a hard dependency.
 
-# Recommends to replace normal Requires deps for stuff that is dlopen()ed
-Recommends:     libxkbcommon.so.0%{?elf_suffix}
-Recommends:     libidn2.so.0%{?elf_suffix}
-Recommends:     libidn2.so.0(IDN2_0.0.0)%{?elf_bits}
-Recommends:     libpcre2-8.so.0%{?elf_suffix}
-Recommends:     libpwquality.so.1%{?elf_suffix}
-Recommends:     libpwquality.so.1(LIBPWQUALITY_1.0)%{?elf_bits}
-%if 0%{?fedora}
-Recommends:     libqrencode.so.4%{?elf_suffix}
-%endif
-Recommends:     libbpf.so.1%{?elf_suffix}
-Recommends:     libbpf.so.1(LIBBPF_0.4.0)%{?elf_bits}
-
-# used by systemd-coredump and systemd-analyze
-Recommends:     libdw.so.1%{?elf_suffix}
-Recommends:     libdw.so.1(ELFUTILS_0.186)%{?elf_bits}
-Recommends:     libelf.so.1%{?elf_suffix}
-Recommends:     libelf.so.1(ELFUTILS_1.7)%{?elf_bits}
-
-# used by dissect, integritysetup, veritysetyp, growfs, repart, cryptenroll, home
-Recommends:     libcryptsetup.so.12%{?elf_suffix}
-Recommends:     libcryptsetup.so.12(CRYPTSETUP_2.4)%{?elf_bits}
-
-# Libkmod is used to load modules.
-Recommends:     libkmod.so.2%{?elf_suffix}
-# kmod_list_next, kmod_load_resources, kmod_module_get_initstate,
-# kmod_module_get_module, kmod_module_get_name, kmod_module_new_from_lookup,
-# kmod_module_probe_insert_module, kmod_module_unref, kmod_module_unref_list,
-# kmod_new, kmod_set_log_fn, kmod_unref, kmod_validate_resources
-# are part of LIBKMOD_5.
-Recommends:     libkmod.so.2(LIBKMOD_5)%{?elf_bits}
-
-Recommends:     libarchive.so.13%{?elf_suffix}
+%define __dlopen_notes_requires_opts   --rpm-features=systemd:mount,systemd:seccomp,systemd-udev:kmod,systemd-udev:blkid,systemd-resolved:idn
+# Upgrade upstream priority:suggested to Recommends
+%define __dlopen_notes_recommends_opts --rpm-features=*:cryptsetup,*:xkbcommon,*:idn,*:pcre2,*:pwquality,%[0%{?fedora}?"*:qrencode":""],*:bpf,*:dw,*:elf,*:archive,systemd-udev:fido2,systemd-udev:tpm,systemd-udev:p11-kit
 
 %description
 systemd is a system and service manager that runs as PID 1 and starts the rest
@@ -482,32 +455,6 @@ Obsoletes:      systemd-timesyncd < %{version}-%{release}
 Provides:       systemd-timesyncd = %{version}-%{release}
 %endif
 Conflicts:      systemd-networkd < %{version}-%{release}
-
-# Libkmod is used to load modules. Assume that if we need udevd, we certainly
-# want to load modules, so make this into a hard dependency here.
-Requires:       libkmod.so.2%{?elf_suffix}
-Requires:       libkmod.so.2(LIBKMOD_5)%{?elf_bits}
-# udev uses libblkid in various builtins so make it a hard dependency.
-Requires:       libblkid.so.1%{?elf_suffix}
-Requires:       libblkid.so.1(BLKID_2.30)%{?elf_bits}
-
-# Recommends to replace normal Requires deps for stuff that is dlopen()ed
-# used by dissect, integritysetup, veritysetyp, growfs, repart, cryptenroll, home
-Recommends:     libcryptsetup.so.12%{?elf_suffix}
-Recommends:     libcryptsetup.so.12(CRYPTSETUP_2.4)%{?elf_bits}
-
-# used by systemd-coredump and systemd-analyze
-Recommends:     libdw.so.1%{?elf_suffix}
-Recommends:     libdw.so.1(ELFUTILS_0.186)%{?elf_bits}
-Recommends:     libelf.so.1%{?elf_suffix}
-Recommends:     libelf.so.1(ELFUTILS_1.7)%{?elf_bits}
-
-# used by home, cryptsetup, cryptenroll, logind
-Recommends:     libfido2.so.1%{?elf_suffix}
-Recommends:     libp11-kit.so.0%{?elf_suffix}
-Recommends:     libtss2-esys.so.0%{?elf_suffix}
-Recommends:     libtss2-mu.so.0%{?elf_suffix}
-Recommends:     libtss2-rc.so.0%{?elf_suffix}
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1377733#c9
 Suggests:       systemd-bootchart
@@ -685,8 +632,6 @@ enabled for this to have any effect.
 %package resolved
 Summary:        Network Name Resolution manager
 Requires:       systemd%{_isa} = %{version}-%{release}
-Requires:       libidn2.so.0%{?elf_suffix}
-Requires:       libidn2.so.0(IDN2_0.0.0)%{?elf_bits}
 Requires(posttrans): grep
 
 %description resolved
