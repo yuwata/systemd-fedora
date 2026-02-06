@@ -1296,18 +1296,6 @@ fi
                        }
 
 %post udev
-# Move old stuff around in /var/lib
-mv %{_localstatedir}/lib/random-seed %{_localstatedir}/lib/systemd/random-seed &>/dev/null
-mv %{_localstatedir}/lib/backlight %{_localstatedir}/lib/systemd/backlight &>/dev/null
-if [ -L %{_localstatedir}/lib/systemd/timesync ]; then
-    rm %{_localstatedir}/lib/systemd/timesync
-    mv %{_localstatedir}/lib/private/systemd/timesync %{_localstatedir}/lib/systemd/timesync
-fi
-if [ -f %{_localstatedir}/lib/systemd/clock ]; then
-    mkdir -p %{_localstatedir}/lib/systemd/timesync
-    mv %{_localstatedir}/lib/systemd/clock %{_localstatedir}/lib/systemd/timesync/.
-fi
-
 systemd-hwdb update &>/dev/null
 
 %systemd_post %udev_services
@@ -1315,11 +1303,6 @@ systemd-hwdb update &>/dev/null
 # Try to save the random seed, but don't complain if /dev/urandom is unavailable
 /usr/lib/systemd/systemd-random-seed save 2>&1 | \
     grep -v 'Failed to open /dev/urandom' || :
-
-# Replace obsolete keymaps
-# https://bugzilla.redhat.com/show_bug.cgi?id=1151958
-grep -q -E '^KEYMAP="?fi-latin[19]"?' /etc/vconsole.conf 2>/dev/null &&
-    sed -i.rpm.bak -r 's/^KEYMAP="?fi-latin[19]"?/KEYMAP="fi"/' /etc/vconsole.conf || :
 
 %preun udev
 %systemd_preun %udev_services
@@ -1359,20 +1342,7 @@ fi
                            }
 
 %post networkd
-# systemd-networkd was split out in systemd-246.6-2.
-# Ideally, we would have a trigger scriptlet to record enablement
-# state when upgrading from systemd <= systemd-246.6-1. But, AFAICS,
-# rpm doesn't allow us to trigger on another package, short of
-# querying the rpm database ourselves, which seems risky. For rpm,
-# systemd and systemd-networkd are completely unrelated.  So let's use
-# a hack to detect if an old systemd version is currently present in
-# the file system.
-# https://bugzilla.redhat.com/show_bug.cgi?id=1943263
-if [ $1 -eq 1 ] && ls /usr/lib/systemd/libsystemd-shared-24[0-6].so &>/dev/null; then
-    echo "Skipping presets for systemd-networkd.service, seems we are upgrading from old systemd."
-else
-    %systemd_post %networkd_services
-fi
+%systemd_post %networkd_services
 
 %preun networkd
 %systemd_preun %networkd_services
