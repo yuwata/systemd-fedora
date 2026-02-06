@@ -842,7 +842,6 @@ CONFIGURE_OPTS=(
         -Daudit=enabled
         -Delfutils=enabled
         -Dlibcryptsetup=%[%{with bootstrap}?"disabled":"enabled"]
-        -Delfutils=enabled
         -Drepart=enabled
         -Dpwquality=enabled
         -Dqrencode=%[%{defined rhel}?"disabled":"enabled"]
