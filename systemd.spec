@@ -73,7 +73,7 @@ Url:            https://systemd.io
 # But don't do that on OBS, otherwise the version subst fails, and will be
 # like 257-123-gabcd257.1 instead of 257-123-gabcd
 %if %{without obs}
-Version:        %{?version_override}%{!?version_override:259}
+Version:        %{?version_override}%{!?version_override:259.1}
 %else
 Version:        %{?version_override}%{!?version_override:%(cat meson.version)}
 %endif
@@ -153,11 +153,6 @@ Patch:          38769.patch
 # Workaround for https://bugzilla.redhat.com/show_bug.cgi?id=2415701
 Patch:          0002-machined-continue-without-resolve.hook-socket.patch
 
-# 2 patches for https://fedoraproject.org/wiki/Changes/Automatic_DTB_selection_for_aarch64_EFI_systems
-# Upstream commit: https://github.com/systemd/systemd/commit/75890d949f92c412c0936b8536b2e0dc8f7dfb40
-Patch:          0003-ukify-omit-.osrel-section-when-os-release-is-empty.patch
-# Upstream PR: https://github.com/systemd/systemd/pull/40329
-Patch:          0004-stub-Fix-NULL-pointer-deref-when-there-are-no-initrd.patch
 %endif
 
 %ifarch %{ix86} x86_64 aarch64 riscv64
