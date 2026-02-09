@@ -174,7 +174,7 @@ Patch:          https://github.com/systemd/systemd/pull/43689.patch
 
 %endif
 
-%ifarch %{ix86} x86_64 aarch64 riscv64
+%ifarch %{ix86} x86_64 aarch64 riscv64 loongarch64
 %global want_bootloader 1
 %endif
 
@@ -580,7 +580,8 @@ Requires:       (systemd-boot if %{shrink:(
         filesystem(x86-32) or
         filesystem(x86-64) or
         filesystem(aarch64) or
-        filesystem(riscv64)
+        filesystem(riscv64) or
+        filesystem(loongarch64)
 )})
 Requires:       python3dist(pefile)
 Requires:       python3dist(zstandard)
