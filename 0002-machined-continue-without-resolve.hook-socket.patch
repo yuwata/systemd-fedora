@@ -1,17 +1,17 @@
-From 8d6d86d1d7e45eeae921e88adde55d6524027c96 Mon Sep 17 00:00:00 2001
+From 9b1828c629007953a7c0abdd4a830d2d65017570 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
 Date: Wed, 26 Nov 2025 22:29:53 +0100
-Subject: [PATCH 3/3] machined: continue without resolve.hook socket
+Subject: [PATCH 2/2] machined: continue without resolve.hook socket
 
 ---
  src/machine/machined-varlink.c | 12 +++++++++---
  1 file changed, 9 insertions(+), 3 deletions(-)
 
 diff --git a/src/machine/machined-varlink.c b/src/machine/machined-varlink.c
-index f83cbb8562..0b30cd0531 100644
+index 543e4c8ee7..04091b9674 100644
 --- a/src/machine/machined-varlink.c
 +++ b/src/machine/machined-varlink.c
-@@ -894,9 +894,15 @@ static int manager_varlink_init_resolve_hook(Manager *m) {
+@@ -881,9 +881,15 @@ static int manager_varlink_init_resolve_hook(Manager *m) {
  
          r = sd_varlink_server_listen_address(s, VARLINK_PATH_MACHINED_RESOLVE_HOOK,
                                               0666 | SD_VARLINK_SERVER_MODE_MKDIR_0755);

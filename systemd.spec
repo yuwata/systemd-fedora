@@ -73,7 +73,7 @@ Url:            https://systemd.io
 # But don't do that on OBS, otherwise the version subst fails, and will be
 # like 257-123-gabcd257.1 instead of 257-123-gabcd
 %if %{without obs}
-Version:        %{?version_override}%{!?version_override:259.1}
+Version:        %{?version_override}%{!?version_override:260~rc1}
 %else
 Version:        %{?version_override}%{!?version_override:%(cat meson.version)}
 %endif
@@ -142,16 +142,14 @@ Patch:          https://github.com/systemd/systemd/pull/26494.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=2251843
 Patch:          30846.patch
 
-# Again create runlevelX.target. Dropping those files breaks upgrades.
-# https://bugzilla.redhat.com/show_bug.cgi?id=2411195
-Patch:          0001-Revert-units-drop-runlevel-0-6-.target.patch
-
 # userdb: create userdb root directory with correct label
 # We can drop this after SELinux policy is updated to handle the transition.
 Patch:          38769.patch
 
 # Workaround for https://bugzilla.redhat.com/show_bug.cgi?id=2415701
 Patch:          0002-machined-continue-without-resolve.hook-socket.patch
+
+Patch:          0003-rpm-systemd-update-helper-use-enqueue-marked-jobs.patch
 
 %endif
 

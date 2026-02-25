@@ -1,0 +1,32 @@
+From ecab24999254a2601c5fb13686ab986ff40427ba Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@amutable.com>
+Date: Wed, 25 Feb 2026 22:04:16 +0100
+Subject: [PATCH] rpm/systemd-update-helper: use 'enqueue-marked-jobs'
+
+Without this, a warning is emitted on upgrades.
+---
+ src/rpm/systemd-update-helper.in | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/rpm/systemd-update-helper.in b/src/rpm/systemd-update-helper.in
+index 6467326e35..9063a2cc3b 100755
+--- a/src/rpm/systemd-update-helper.in
++++ b/src/rpm/systemd-update-helper.in
+@@ -99,7 +99,7 @@ case "$command" in
+         fi
+ 
+         if [[ "$command" =~ restart ]]; then
+-            systemctl reload-or-restart --marked
++            systemctl enqueue-marked-jobs
+         fi
+         ;;
+ 
+@@ -120,7 +120,7 @@ case "$command" in
+ 
+             for user in $users; do
+                 SYSTEMD_BUS_TIMEOUT={{UPDATE_HELPER_USER_TIMEOUT_SEC}}s \
+-                        systemctl --user -M "$user@" reload-or-restart --marked &
++                        systemctl --user -M "$user@" enqueue-marked-jobs &
+             done
+             wait
+         fi
