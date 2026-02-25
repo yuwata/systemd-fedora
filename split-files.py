@@ -121,7 +121,7 @@ for file in files(buildroot):
         o = outputs['rpm-macros']
     elif '/usr/lib/systemd/tests' in n:
         o = outputs['tests']
-    elif 'ukify' in n and '/man/' not in n:
+    elif ('ukify' in n or '/hwids/' in n) and '/man/' not in n:
         o = outputs['ukify']
     elif re.search(r'/libsystemd-core-.*\.so$', n):
         o = outputs['main']
@@ -254,7 +254,7 @@ for file in files(buildroot):
         o = outputs['udev']
 
     elif re.search(r'''/boot/efi|
-                       /usr/lib/systemd/boot|
+                       /usr/lib/systemd/boot/efi|
                        sd-boot|systemd-boot\.|loader.conf
     ''', n, re.X):
         o = outputs['boot']
