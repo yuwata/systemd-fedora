@@ -1186,6 +1186,10 @@ fi \
 %post
 systemd-machine-id-setup &>/dev/null || :
 
+# This is for upgrades from previous versions before getty@.service needed to be enabled
+[ $1 -gt 1 ] && systemctl is-enabled getty@tty1.service &>/dev/null && \
+    touch %{_localstatedir}/lib/rpm-state/systemd-getty-was-active || :
+
 [ $1 -eq 1 ] || exit 0
 
 # create /var/log/journal only on initial installation,
@@ -1213,6 +1217,8 @@ if [ $1 -ge 2 ]; then
   systemctl daemon-reexec || :
 
   systemd-tmpfiles --create &>/dev/null || :
+
+  rm -f %{_localstatedir}/lib/rpm-state/systemd-getty-was-active || :
 fi
 
 %systemd_posttrans_with_restart systemd-timedated.service systemd-hostnamed.service systemd-journald.service systemd-localed.service systemd-userdbd.service
@@ -1230,9 +1236,15 @@ fi
 # This is for upgrades from previous versions before systemd restart was moved to %%postun
 systemctl daemon-reexec || :
 
+%triggerpostun -- systemd < 260~rc1
+if [ -f %{_localstatedir}/lib/rpm-state/systemd-getty-was-active ]; then
+    systemctl --no-reload enable getty@.service || :
+fi
+
 %global udev_services %{shrink:
                         cryptsetup-pre.target
                         cryptsetup.target
+                        getty@.service
                         hibernate.target
                         hybrid-sleep.target
                         initrd-cleanup.service
