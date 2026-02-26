@@ -233,6 +233,7 @@ for file in files(buildroot):
                        integritysetup|
                        integritytab|
                        remount-fs|
+                       tpm2|
                        /initrd|
                        systemd[.-]pcr|
                        /pcrlock\.d|
