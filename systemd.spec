@@ -149,7 +149,9 @@ Patch:          38769.patch
 # Workaround for https://bugzilla.redhat.com/show_bug.cgi?id=2415701
 Patch:          0002-machined-continue-without-resolve.hook-socket.patch
 
+# Fixes after v260-rc1
 Patch:          0003-rpm-systemd-update-helper-use-enqueue-marked-jobs.patch
+Patch:          0001-core-socket-fix-reversed-symlink-direction-in-error-.patch
 
 %endif
 
