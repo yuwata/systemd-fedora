@@ -1230,13 +1230,6 @@ fi
 # This is for upgrades from previous versions before systemd restart was moved to %%postun
 systemctl daemon-reexec || :
 
-%triggerpostun -- systemd < 253~rc1-2
-# This is for upgrades from previous versions where systemd-journald-audit.socket
-# had a static enablement symlink.
-# We use %%triggerpostun here because rpm doesn't allow a second %%triggerun with
-# a different package version.
-systemctl --no-reload preset systemd-journald-audit.socket &>/dev/null || :
-
 %global udev_services %{shrink:
                         cryptsetup-pre.target
                         cryptsetup.target
