@@ -23,7 +23,10 @@
 # e.g. when re-building cryptsetup on a json-c SONAME-bump.
 %bcond bootstrap 0
 %bcond tests     1
-%bcond lto       1
+
+# riscv64 has LTO disabled globally
+%bcond lto       %["%_arch" != "riscv64"]
+
 # Build docs on 64-bit architectures only
 %bcond docs      %[%{?__isa_bits} >= 64]
 
