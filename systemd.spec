@@ -73,7 +73,7 @@ Url:            https://systemd.io
 # But don't do that on OBS, otherwise the version subst fails, and will be
 # like 257-123-gabcd257.1 instead of 257-123-gabcd
 %if %{without obs}
-Version:        %{?version_override}%{!?version_override:260~rc1}
+Version:        %{?version_override}%{!?version_override:260~rc2}
 %else
 Version:        %{?version_override}%{!?version_override:%(cat meson.version)}
 %endif
@@ -148,10 +148,6 @@ Patch:          38769.patch
 
 # Workaround for https://bugzilla.redhat.com/show_bug.cgi?id=2415701
 Patch:          0002-machined-continue-without-resolve.hook-socket.patch
-
-# Fixes after v260-rc1
-Patch:          0003-rpm-systemd-update-helper-use-enqueue-marked-jobs.patch
-Patch:          0001-core-socket-fix-reversed-symlink-direction-in-error-.patch
 
 %endif
 
