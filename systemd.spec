@@ -76,7 +76,7 @@ Url:            https://systemd.io
 # But don't do that on OBS, otherwise the version subst fails, and will be
 # like 257-123-gabcd257.1 instead of 257-123-gabcd
 %if %{without obs}
-Version:        %{?version_override}%{!?version_override:260~rc2}
+Version:        %{?version_override}%{!?version_override:260~rc3}
 %else
 Version:        %{?version_override}%{!?version_override:%(cat meson.version)}
 %endif
@@ -151,11 +151,6 @@ Patch:          38769.patch
 
 # Workaround for https://bugzilla.redhat.com/show_bug.cgi?id=2415701
 Patch:          0002-machined-continue-without-resolve.hook-socket.patch
-
-# Silence false positive "HWID match failed, no DT blob" error
-# https://bugzilla.redhat.com/show_bug.cgi?id=2444759
-# https://github.com/systemd/systemd/pull/40957
-Patch:          40957.patch
 
 %endif
 
