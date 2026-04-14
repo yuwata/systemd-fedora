@@ -152,6 +152,9 @@ Patch:          38769.patch
 # Workaround for https://bugzilla.redhat.com/show_bug.cgi?id=2415701
 Patch:          0002-machined-continue-without-resolve.hook-socket.patch
 
+# Fix compilation with openssl 4.0
+Patch:          https://github.com/systemd/systemd/pull/41639.patch
+
 %endif
 
 %ifarch %{ix86} x86_64 aarch64 riscv64
