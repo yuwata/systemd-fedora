@@ -306,7 +306,7 @@ Conflicts:      initscripts < 9.56.1
 %if 0%{?fedora}
 Conflicts:      fedora-release < 23-0.12
 %endif
-%if 0%{?fedora} >= 41
+%if 0%{?fedora} >= 41 || 0%{?rhel} >= 11
 BuildRequires:  setup >= 2.15.0-3
 BuildRequires:  python3
 Conflicts:      setup < 2.15.0-3
@@ -1094,7 +1094,7 @@ install -Dm0644 -t %{buildroot}%{_prefix}/lib/udev/rules.d/ %{SOURCE18}
 
 sed -i 's|#!/usr/bin/env python3|#!%{__python3}|' %{buildroot}/usr/lib/systemd/tests/run-unit-tests.py
 
-%if 0%{?fedora} >= 42
+%if 0%{?fedora} >= 42 || 0%{?rhel} >= 11
 install -m 0644 -D %{SOURCE21} %{buildroot}%{_rpmconfigdir}/macros.d/macros.sysusers
 %else
 install -m 0644 -D %{SOURCE20} %{buildroot}%{_rpmconfigdir}/macros.d/macros.sysusers
@@ -1120,13 +1120,13 @@ ln -s --relative %{buildroot}%{_bindir}/kernel-install %{buildroot}%{_sbindir}/i
 mv -v %{buildroot}/usr/sbin/* %{buildroot}%{_bindir}/
 %endif
 
-%if 0%{?fedora} >= 41
+%if 0%{?fedora} >= 41 || 0%{?rhel} >= 11
 %if %{without upstream}
 # This requires https://pagure.io/setup/pull-request/50
 # and https://src.fedoraproject.org/rpms/setup/pull-request/10.
 # We skip this on upstream builds so that new users and groups
 # can be added without breaking the build.
-%if 0%{?fedora} >= 43
+%if 0%{?fedora} >= 43 || 0%{?rhel} >= 11
 IGNORED=empower \
   %{python3} %{SOURCE4} /usr/lib/sysusers.d/setup.conf %{buildroot}/usr/lib/sysusers.d/basic.conf
 %else
