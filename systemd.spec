@@ -511,8 +511,14 @@ Recommends:     libtss2-rc.so.0%{?elf_suffix}
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1377733#c9
 Suggests:       systemd-bootchart
+
 # https://bugzilla.redhat.com/show_bug.cgi?id=1408878
+%if %{with upstream}
+# v261 handles missing setfont/loadkeys gracefully
+Recommends:     kbd
+%else
 Requires:       kbd
+%endif
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1753381
 Provides:       u2f-hidraw-policy = 1.0.2-40
