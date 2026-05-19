@@ -439,6 +439,33 @@ Requires(preun):  systemd%{_isa} = %{version}-%{release}
 Requires(postun): systemd%{_isa} = %{version}-%{release}
 Requires(post): grep
 Requires:       kmod >= 18-4
+
+# Libkmod is used to load modules. Assume that if we need udevd, we certainly
+# want to load modules, so make this into a hard dependency here.
+Requires:       libkmod.so.2%{?elf_suffix}
+Requires:       libkmod.so.2(LIBKMOD_5)%{?elf_bits}
+# udev uses libblkid in various builtins so make it a hard dependency.
+Requires:       libblkid.so.1%{?elf_suffix}
+Requires:       libblkid.so.1(BLKID_2.30)%{?elf_bits}
+
+# Recommends to replace normal Requires deps for stuff that is dlopen()ed
+# used by dissect, integritysetup, veritysetyp, growfs, repart, cryptenroll, home
+Recommends:     libcryptsetup.so.12%{?elf_suffix}
+Recommends:     libcryptsetup.so.12(CRYPTSETUP_2.4)%{?elf_bits}
+
+# used by systemd-coredump and systemd-analyze
+Recommends:     libdw.so.1%{?elf_suffix}
+Recommends:     libdw.so.1(ELFUTILS_0.186)%{?elf_bits}
+Recommends:     libelf.so.1%{?elf_suffix}
+Recommends:     libelf.so.1(ELFUTILS_1.7)%{?elf_bits}
+
+# used by home, cryptsetup, cryptenroll, logind
+Recommends:     libfido2.so.1%{?elf_suffix}
+Recommends:     libp11-kit.so.0%{?elf_suffix}
+Recommends:     libtss2-esys.so.0%{?elf_suffix}
+Recommends:     libtss2-mu.so.0%{?elf_suffix}
+Recommends:     libtss2-rc.so.0%{?elf_suffix}
+
 Provides:       udev = %{version}
 Provides:       udev%{_isa} = %{version}
 %if 0%{?fedora} || 0%{?rhel} >= 10
@@ -632,6 +659,8 @@ enabled for this to have any effect.
 %package resolved
 Summary:        Network Name Resolution manager
 Requires:       systemd%{_isa} = %{version}-%{release}
+Requires:       libidn2.so.0%{?elf_suffix}
+Requires:       libidn2.so.0(IDN2_0.0.0)%{?elf_bits}
 Requires(posttrans): grep
 
 %description resolved
