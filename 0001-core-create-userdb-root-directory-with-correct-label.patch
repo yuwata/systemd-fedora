@@ -1,4 +1,4 @@
-From e364a55e4869288c3574c856c9c96ad174a204ac Mon Sep 17 00:00:00 2001
+From 64a0066cfaa4dfcf25c5f6d3ae58df4f24dd1108 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Christian=20G=C3=B6ttsche?= <cgzones@googlemail.com>
 Date: Sat, 30 Aug 2025 13:55:56 +0200
 Subject: [PATCH 1/2] core: create userdb root directory with correct label
@@ -16,18 +16,18 @@ longer is. Regression introduced in 736349958efe34089131ca88950e2e5bb391d36a.
  1 file changed, 6 insertions(+), 1 deletion(-)
 
 diff --git a/src/core/varlink.c b/src/core/varlink.c
-index ec4f8abad9..9a03bf9bda 100644
+index 6074c55ab1..acd51fc47e 100644
 --- a/src/core/varlink.c
 +++ b/src/core/varlink.c
-@@ -6,6 +6,7 @@
- #include "errno-util.h"
+@@ -8,6 +8,7 @@
+ #include "json-util.h"
  #include "manager.h"
  #include "metrics.h"
-+#include "mkdir-label.h"
++#include "mkdir.h"
  #include "path-util.h"
  #include "pidref.h"
  #include "string-util.h"
-@@ -469,7 +470,11 @@ static int varlink_server_listen_many_idempotent_sentinel(
+@@ -514,7 +515,11 @@ static int varlink_server_listen_many_idempotent_sentinel(
                  if (!known_fresh && varlink_server_contains_socket(s, address))
                          continue;
  

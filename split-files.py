@@ -235,7 +235,10 @@ for file in files(buildroot):
                        remount-fs|
                        tpm2|
                        /initrd|
+                       systemd-sysinstall|
                        systemd[.-]pcr|
+                       systemd-imdsd|
+                       systemd-loop|
                        /pcrlock\.d|
                        systemd-measure|
                        /boot$|
