@@ -7,11 +7,6 @@
 %global system_unit_dir %{pkgdir}/system
 %global user_unit_dir %{pkgdir}/user
 
-%if 0%{?__isa_bits} == 64
-%global elf_bits (64bit)
-%global elf_suffix ()%{elf_bits}
-%endif
-
 %bcond bzip2     1
 %bcond gnutls    1
 %bcond lz4       1
@@ -151,7 +146,6 @@ Patch:          0001-core-create-userdb-root-directory-with-correct-label.patch
 
 # Workaround for https://bugzilla.redhat.com/show_bug.cgi?id=2415701
 Patch:          0002-machined-continue-without-resolve.hook-socket.patch
-
 %endif
 
 %ifarch %{ix86} x86_64 aarch64 riscv64
@@ -175,6 +169,8 @@ BuildRequires:  cryptsetup-devel
 # Require (previous version) of our macros package.
 # We use the %%systemd_{post,preun,…} macros for various services.
 BuildRequires:  systemd-rpm-macros
+# Use dlopen-notes to generate Requires/Recommends from embedded metadata.
+BuildRequires:  package-notes >= 0.18
 %endif
 BuildRequires:  dbus-devel
 BuildRequires:  util-linux
@@ -286,11 +282,11 @@ Requires:       systemd-libs%{_isa} = %{version}-%{release}
 %{?fedora:Recommends:     systemd-resolved = %{version}-%{release}}
 Requires:       systemd-shared%{_isa} = %{version}-%{release}
 Requires:       /usr/bin/systemd-sysusers
+
 # The standalone version doesn't Provide the _isa suffix,
 # so this biases towards the common version.
-Requires:       libzstd.so.1%{?elf_suffix}
-
 Recommends:     systemd-sysusers%{_isa} = %{version}-%{release}
+
 Recommends:     diffutils
 Requires:       (util-linux-core or util-linux)
 Requires:       (libbpf >= 2:1.4.7 if libbpf)
@@ -339,56 +335,33 @@ Provides:       /usr/sbin/reboot
 Provides:       /usr/sbin/shutdown
 %endif
 
-# libmount is always required, even in containers, so make it a hard dependency.
-Requires:       libmount.so.1%{?elf_suffix}
-Requires:       libmount.so.1(MOUNT_2.26)%{?elf_bits}
-# Various systemd services have syscall filters so make libseccomp a hard dependency.
-Requires:       libseccomp.so.2%{?elf_suffix}
+%define dlopen_notes_features %{expand:
+  # Various systemd services have syscall filters so make libseccomp a hard dependency.
+  systemd:seccomp:required
 
-Requires:       libacl.so.1%{?elf_suffix}
+  # zstd is used for compression in the journal
+  systemd:zstd:required
 
-Recommends:     libaudit.so.1%{?elf_suffix}
+  # Libkmod is used to load modules. Assume that if we need udevd, we certainly
+  # want to load modules, so make this into a hard dependency here.
+  systemd-udev:kmod:required
 
-# Recommends to replace normal Requires deps for stuff that is dlopen()ed
-Recommends:     libxkbcommon.so.0%{?elf_suffix}
-Recommends:     libidn2.so.0%{?elf_suffix}
-Recommends:     libidn2.so.0(IDN2_0.0.0)%{?elf_bits}
-Recommends:     libpcre2-8.so.0%{?elf_suffix}
-Recommends:     libpwquality.so.1%{?elf_suffix}
-Recommends:     libpwquality.so.1(LIBPWQUALITY_1.0)%{?elf_bits}
-%if 0%{?fedora}
-Recommends:     libqrencode.so.4%{?elf_suffix}
-%endif
-Recommends:     libbpf.so.1%{?elf_suffix}
-Recommends:     libbpf.so.1(LIBBPF_0.4.0)%{?elf_bits}
+  # We want to always use idn with resolved.
+  systemd-resolved:idn:required
 
-# used by systemd-coredump and systemd-analyze
-Recommends:     libdw.so.1%{?elf_suffix}
-Recommends:     libdw.so.1(ELFUTILS_0.186)%{?elf_bits}
-Recommends:     libelf.so.1%{?elf_suffix}
-Recommends:     libelf.so.1(ELFUTILS_1.7)%{?elf_bits}
+  # libcurl is required by systemd-imdsd and systemd-report.
+  # Downgrade the dep for now.
+  systemd:curl:recommended
+  systemd-udev:curl:recommended
 
-# used by dissect, integritysetup, veritysetyp, growfs, repart, cryptenroll, home
-Recommends:     libcryptsetup.so.12%{?elf_suffix}
-Recommends:     libcryptsetup.so.12(CRYPTSETUP_2.4)%{?elf_bits}
+  # libssl + libcrypto are required by systemd-resolved/resolvectl.
+  # Downgrade the dep in the main package.
+  systemd:libssl:recommended
+  systemd:libcrypto:recommended
 
-# Libkmod is used to load modules.
-Recommends:     libkmod.so.2%{?elf_suffix}
-# kmod_list_next, kmod_load_resources, kmod_module_get_initstate,
-# kmod_module_get_module, kmod_module_get_name, kmod_module_new_from_lookup,
-# kmod_module_probe_insert_module, kmod_module_unref, kmod_module_unref_list,
-# kmod_new, kmod_set_log_fn, kmod_unref, kmod_validate_resources
-# are part of LIBKMOD_5.
-Recommends:     libkmod.so.2(LIBKMOD_5)%{?elf_bits}
-
-# This is mentioned here, but the assumption is that systems which use SELinux
-# will have the libraries.
-Suggests:       libselinux.so.1%{?elf_suffix}
-
-# Those can be useful to read old journal files.
-Suggests:       liblzma.so.5%{?elf_suffix}
-Suggests:       liblz4.so.1%{?elf_suffix}
-Suggests:       libz.so.1%{?elf_suffix}
+  # Disable qrencode on non-fedora builds
+  %{!?fedora:*:qrencode:ignored}
+}
 
 %description
 systemd is a system and service manager that runs as PID 1 and starts the rest
@@ -479,37 +452,6 @@ Requires(postun): systemd%{_isa} = %{version}-%{release}
 Requires(post): grep
 Requires:       kmod >= 18-4
 
-# Libkmod is used to load modules. Assume that if we need udevd, we certainly
-# want to load modules, so make this into a hard dependency here.
-Requires:       libkmod.so.2%{?elf_suffix}
-Requires:       libkmod.so.2(LIBKMOD_5)%{?elf_bits}
-# udev uses libblkid in various builtins so make it a hard dependency.
-Requires:       libblkid.so.1%{?elf_suffix}
-Requires:       libblkid.so.1(BLKID_2.30)%{?elf_bits}
-
-Requires:       libfdisk.so.1%{?elf_suffix}
-
-# Recommends to replace normal Requires deps for stuff that is dlopen()ed
-# used by dissect, integritysetup, veritysetyp, growfs, repart, cryptenroll, home
-Recommends:     libcryptsetup.so.12%{?elf_suffix}
-Recommends:     libcryptsetup.so.12(CRYPTSETUP_2.4)%{?elf_bits}
-
-# used by systemd-coredump and systemd-analyze
-Recommends:     libdw.so.1%{?elf_suffix}
-Recommends:     libdw.so.1(ELFUTILS_0.186)%{?elf_bits}
-Recommends:     libelf.so.1%{?elf_suffix}
-Recommends:     libelf.so.1(ELFUTILS_1.7)%{?elf_bits}
-
-# used by home, cryptsetup, cryptenroll, logind
-Recommends:     libfido2.so.1%{?elf_suffix}
-Recommends:     libp11-kit.so.0%{?elf_suffix}
-Recommends:     libtss2-esys.so.0%{?elf_suffix}
-Recommends:     libtss2-mu.so.0%{?elf_suffix}
-Recommends:     libtss2-rc.so.0%{?elf_suffix}
-Recommends:     libtss2-tcti-device.so.0%{?elf_suffix}
-
-Recommends:     libarchive.so.13%{?elf_suffix}
-
 Provides:       udev = %{version}
 Provides:       udev%{_isa} = %{version}
 %if 0%{?fedora} || 0%{?rhel} >= 10
@@ -526,32 +468,6 @@ Obsoletes:      systemd-timesyncd < %{version}-%{release}
 Provides:       systemd-timesyncd = %{version}-%{release}
 %endif
 Conflicts:      systemd-networkd < %{version}-%{release}
-
-# Libkmod is used to load modules. Assume that if we need udevd, we certainly
-# want to load modules, so make this into a hard dependency here.
-Requires:       libkmod.so.2%{?elf_suffix}
-Requires:       libkmod.so.2(LIBKMOD_5)%{?elf_bits}
-# udev uses libblkid in various builtins so make it a hard dependency.
-Requires:       libblkid.so.1%{?elf_suffix}
-Requires:       libblkid.so.1(BLKID_2.30)%{?elf_bits}
-
-# Recommends to replace normal Requires deps for stuff that is dlopen()ed
-# used by dissect, integritysetup, veritysetyp, growfs, repart, cryptenroll, home
-Recommends:     libcryptsetup.so.12%{?elf_suffix}
-Recommends:     libcryptsetup.so.12(CRYPTSETUP_2.4)%{?elf_bits}
-
-# used by systemd-coredump and systemd-analyze
-Recommends:     libdw.so.1%{?elf_suffix}
-Recommends:     libdw.so.1(ELFUTILS_0.186)%{?elf_bits}
-Recommends:     libelf.so.1%{?elf_suffix}
-Recommends:     libelf.so.1(ELFUTILS_1.7)%{?elf_bits}
-
-# used by home, cryptsetup, cryptenroll, logind
-Recommends:     libfido2.so.1%{?elf_suffix}
-Recommends:     libp11-kit.so.0%{?elf_suffix}
-Recommends:     libtss2-esys.so.0%{?elf_suffix}
-Recommends:     libtss2-mu.so.0%{?elf_suffix}
-Recommends:     libtss2-rc.so.0%{?elf_suffix}
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1377733#c9
 Suggests:       systemd-bootchart
@@ -676,11 +592,6 @@ Recommends:     qemu-device-display-virtio-gpu
 Recommends:     qemu-device-display-virtio-vga
 %endif
 
-# May be used to decompress downloads
-Recommends:     liblzma.so.5%{?elf_suffix}
-Recommends:     libz.so.1%{?elf_suffix}
-Recommends:     libbz2.so.1%{?elf_suffix}
-
 # Bias the system towards libcurl-minimal if nothing pulls in full libcurl (#1997040)
 Suggests:       libcurl-minimal
 License:        LGPL-2.1-or-later
@@ -699,8 +610,6 @@ License:        LGPL-2.1-or-later
 Requires:       firewalld-filesystem
 Provides:       systemd-journal-gateway = %{version}-%{release}
 Provides:       systemd-journal-gateway%{_isa} = %{version}-%{release}
-Requires:       libmicrohttpd.so.12%{?elf_suffix}
-Requires:       libcurl.so.4%{?elf_suffix}
 # Bias the system towards libcurl-minimal if nothing pulls in full libcurl (#1997040)
 Suggests:       libcurl-minimal
 
@@ -737,8 +646,6 @@ enabled for this to have any effect.
 %package resolved
 Summary:        Network Name Resolution manager
 Requires:       systemd%{_isa} = %{version}-%{release}
-Requires:       libidn2.so.0%{?elf_suffix}
-Requires:       libidn2.so.0(IDN2_0.0.0)%{?elf_bits}
 Requires(posttrans): grep
 
 %description resolved
