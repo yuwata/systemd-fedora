@@ -229,7 +229,6 @@ BuildRequires:  docbook-style-xsl
 BuildRequires:  pkgconfig
 BuildRequires:  gperf
 BuildRequires:  gawk
-BuildRequires:  tree
 BuildRequires:  hostname
 BuildRequires:  python3
 BuildRequires:  python3-devel
