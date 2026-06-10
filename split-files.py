@@ -26,8 +26,8 @@ known_files = '''
 %ghost %dir /var/lib/private/systemd
 %ghost %dir /var/lib/private/systemd/journal-upload
 %ghost /var/lib/private/systemd/journal-upload/state
-%ghost %dir /var/lib/systemd/timesync
-%ghost /var/lib/systemd/timesync/clock
+%ghost %dir %verify(not user group) /var/lib/systemd/timesync
+%ghost %verify(not user group) /var/lib/systemd/timesync/clock
 %ghost %dir /var/lib/systemd/backlight
 %ghost /var/lib/systemd/catalog/database
 %ghost %dir /var/lib/systemd/coredump
