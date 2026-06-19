@@ -146,6 +146,9 @@ Patch:          0001-core-create-userdb-root-directory-with-correct-label.patch
 
 # Workaround for https://bugzilla.redhat.com/show_bug.cgi?id=2415701
 Patch:          0002-machined-continue-without-resolve.hook-socket.patch
+
+# We want to depend on and load openssl-4 in preference
+Patch:          https://github.com/systemd/systemd/pull/42668.patch
 %endif
 
 %ifarch %{ix86} x86_64 aarch64 riscv64

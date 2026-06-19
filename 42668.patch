@@ -1,0 +1,44 @@
+From e6f1190eb6be465432cfbab267a59c851ae990c5 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@amutable.com>
+Date: Fri, 19 Jun 2026 21:38:44 +0200
+Subject: [PATCH] crypto-util: prefer openssl-4
+
+Fedora has switched to openssl 4, and we generate a Requires dependency
+on libcrypto for the systemd-udev subpackage, so preferring openssl-3
+does the wrong thing. So the order in the dlopen note needs to be switched.
+But in general, we want to get rid of openssl-3, so we want to load
+openssl-4 in preference. Change the order in both places.
+
+(The "compat" order can stay in 261-stable for other distros.)
+---
+ src/shared/crypto-util.c | 3 +--
+ src/shared/crypto-util.h | 2 +-
+ 2 files changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/src/shared/crypto-util.c b/src/shared/crypto-util.c
+index ed6d2a269c772..b345475fa4043 100644
+--- a/src/shared/crypto-util.c
++++ b/src/shared/crypto-util.c
+@@ -339,8 +339,7 @@ int dlopen_libcrypto(int log_level) {
+ 
+         LIBCRYPTO_NOTE(SD_ELF_NOTE_DLOPEN_PRIORITY_SUGGESTED);
+ 
+-        // FIXME: switch order to prefer libcrypto.so.4 in a future version once it has stabilized
+-        FOREACH_STRING(soname, "libcrypto.so.3", "libcrypto.so.4") {
++        FOREACH_STRING(soname, "libcrypto.so.4", "libcrypto.so.3") {
+                 r = dlopen_many_sym_or_warn(
+                         &libcrypto_dl,
+                         soname,
+diff --git a/src/shared/crypto-util.h b/src/shared/crypto-util.h
+index 980c1c60a2a5f..bd0cb7b67b8dd 100644
+--- a/src/shared/crypto-util.h
++++ b/src/shared/crypto-util.h
+@@ -37,7 +37,7 @@ int dlopen_libcrypto(int log_level);
+         SD_ELF_NOTE_DLOPEN("libcrypto",                                 \
+                            "Support for cryptographic operations",      \
+                            priority,                                    \
+-                           "libcrypto.so.3", "libcrypto.so.4")
++                           "libcrypto.so.4", "libcrypto.so.3")
+ 
+ #define DLOPEN_LIBCRYPTO(log_level, priority)                           \
+         ({                                                              \
