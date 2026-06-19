@@ -89,16 +89,15 @@ if [[ ! -e /dev/kvm ]]; then
 fi
 
 NPROC="$(nproc)"
-if [[ "$NPROC" -ge 10 ]]; then
-    export TEST_JOURNAL_USE_TMP=1
-    NPROC="$((NPROC / 3))"
-else
-    NPROC="$((NPROC - 1))"
+if [[ "$NPROC" -gt 4 ]]; then
+    # Cap the number of parallel tests to 4 to not overwhelm larger hosts
+    NPROC=4
 fi
 
 # This test is only really useful if we're building with sanitizers and takes a long time, so let's skip it
 # for now.
 export TEST_SKIP="TEST-21-DFUZZER ${TEST_SKIP:-}"
+export TEST_JOURNAL_USE_TMP=1
 
 mkosi genkey
 mkosi summary
