@@ -94,6 +94,14 @@ if [[ "$NPROC" -gt 4 ]]; then
     NPROC=4
 fi
 
+# Workaround for a kernel 7.x virtio/vsock bug, where a patch for a potential overflow inadvertently shrunk
+# the receive buffer's effective size below what was configured, which eventually causes the vsock connection
+# to get reset with ENOBUFS, that kills the journal forwarding over vsock
+#
+# Pending fix: https://lore.kernel.org/netdev/20260518090656.134588-3-sgarzare@redhat.com/
+sysctl -w net.core.rmem_max=16777216
+sysctl -w net.core.wmem_max=16777216
+
 # This test is only really useful if we're building with sanitizers and takes a long time, so let's skip it
 # for now.
 export TEST_SKIP="TEST-21-DFUZZER ${TEST_SKIP:-}"
