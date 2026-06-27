@@ -1,0 +1,38 @@
+From 7be9032019015ddd61985e6a6721d813d62dad0b Mon Sep 17 00:00:00 2001
+From: Luca Boccassi <luca.boccassi@gmail.com>
+Date: Sat, 20 Jun 2026 15:21:26 +0100
+Subject: [PATCH] ssl-util: prefer OpenSSL 4
+
+For the next version we can switch to preferring the new version
+---
+ src/shared/ssl-util.c | 3 +--
+ src/shared/ssl-util.h | 2 +-
+ 2 files changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/src/shared/ssl-util.c b/src/shared/ssl-util.c
+index 226120c70e66f..4b7ab2ec29f74 100644
+--- a/src/shared/ssl-util.c
++++ b/src/shared/ssl-util.c
+@@ -40,8 +40,7 @@ int dlopen_libssl(int log_level) {
+ 
+         LIBSSL_NOTE(SD_ELF_NOTE_DLOPEN_PRIORITY_SUGGESTED);
+ 
+-        // FIXME: switch order to prefer libssl.so.4 in a future version once it has stabilized
+-        FOREACH_STRING(soname, "libssl.so.3", "libssl.so.4") {
++        FOREACH_STRING(soname, "libssl.so.4", "libssl.so.3") {
+                 r = dlopen_many_sym_or_warn(
+                                 &libssl_dl,
+                                 soname,
+diff --git a/src/shared/ssl-util.h b/src/shared/ssl-util.h
+index aa3b8308665ba..77b5c049f9e3a 100644
+--- a/src/shared/ssl-util.h
++++ b/src/shared/ssl-util.h
+@@ -12,7 +12,7 @@ int dlopen_libssl(int log_level);
+         SD_ELF_NOTE_DLOPEN("libssl",                                    \
+                            "Support for TLS",                           \
+                            priority,                                    \
+-                           "libssl.so.3", "libssl.so.4")
++                           "libssl.so.4", "libssl.so.3")
+ 
+ #define DLOPEN_LIBSSL(log_level, priority)                              \
+         ({                                                              \

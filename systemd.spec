@@ -149,6 +149,7 @@ Patch:          0002-machined-continue-without-resolve.hook-socket.patch
 
 # We want to depend on and load openssl-4 in preference
 Patch:          https://github.com/systemd/systemd/pull/42668.patch
+Patch:          https://github.com/systemd/systemd/commit/7be9032019015ddd61985e6a6721d813d62dad0b.patch
 %endif
 
 %ifarch %{ix86} x86_64 aarch64 riscv64
