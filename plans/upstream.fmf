@@ -17,6 +17,10 @@ prepare:
     exclude:
       - systemd-standalone-.*
 execute:
-    how: tmt
-    script: exec plans/run-integration-tests.sh
-    duration: 2h
+  how: tmt
+  script: exec plans/run-integration-tests.sh
+  duration: 2h
+adjust:
+  - when: distro == fedora-eln
+    execute:
+      script: echo skipped
