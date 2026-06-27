@@ -1,4 +1,10 @@
- # Disable badfuncs check that has tons of false positives.
+annocheck:
+  ignore:
+    # This test is intentionally compiled with a minimal set of hardcoded
+    # options, so it always generates a predictable stack trace
+    - /usr/lib/systemd/tests/unit-tests/manual/test-coredump-stacktrace
+
+# Disable badfuncs check that has tons of false positives.
 badfuncs:
   allowed:
     /usr/lib/systemd/tests/unit-tests/*:
