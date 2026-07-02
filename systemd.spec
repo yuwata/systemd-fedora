@@ -789,7 +789,11 @@ mv %{_sourcedir}/%{name}.fedora/* %{_sourcedir}
 sed -r -i 's/^u!/u/' sysusers.d/*.conf*
 
 %build
+%if 0%{?eln}
+%global ntpvendor fedora
+%else
 %global ntpvendor %(source /etc/os-release; echo ${ID})
+%endif
 %{!?ntpvendor: echo 'NTP vendor zone is not set!'; exit 1}
 
 VMLINUX_H_PATH=''
