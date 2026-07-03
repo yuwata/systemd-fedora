@@ -120,7 +120,7 @@ for file in files(buildroot):
         elif 'shutdown' in n:
             o = outputs['standalone-shutdown']
         else:
-            assert False, 'Found .standalone not belonging to known packages'
+            assert False, f'Found {n} not belonging to known standalone packages'
 
     elif '/security/pam_' in n or '/man8/pam_' in n:
         o = outputs['pam']
