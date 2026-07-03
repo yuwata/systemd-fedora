@@ -1,7 +1,11 @@
 import re, sys, os, collections
 
 buildroot = sys.argv[1]
-no_bootloader = '--no-bootloader' in sys.argv
+
+potentially_empty_outputs = [
+    'standalone-report',
+    *(['boot'] if '--no-bootloader' in sys.argv else []),
+]
 
 known_files = '''
 %ghost %config(noreplace) /etc/crypttab
@@ -73,6 +77,7 @@ outputs = {suffix: open(f'.file-list-{suffix}', 'w')
                    'resolve',
                    'tests',
                    'standalone-repart',
+                   'standalone-report',
                    'standalone-tmpfiles',
                    'standalone-sysusers',
                    'standalone-shutdown',
@@ -106,6 +111,8 @@ for file in files(buildroot):
     if n.endswith('.standalone'):
         if 'repart' in n:
             o = outputs['standalone-repart']
+        elif 'report' in n:
+            o = outputs['standalone-report']
         elif 'tmpfiles' in n:
             o = outputs['standalone-tmpfiles']
         elif 'sysusers' in n:
@@ -294,9 +301,9 @@ for file in files(buildroot):
     for file in o:
         print(f'{prefix}{n}{suffix}', file=file)
 
+
+
 if [print(f'ERROR: no file names were written to {o.name}')
     for name, o in outputs.items()
-    if (o.tell() == 0 and
-        not (no_bootloader and name == 'boot'))
-    ]:
+    if o.tell() == 0 and name not in potentially_empty_outputs]:
     sys.exit(1)
