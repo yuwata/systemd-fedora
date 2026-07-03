@@ -323,8 +323,10 @@ Conflicts:      dracut < 060-2
 Conflicts:      dracut < 059-16
 %endif
 
+%if %{with upstream}
 Conflicts:      systemd-standalone-report
 Provides:       systemd-report = %{version}-%{release}
+%endif
 Conflicts:      systemd-standalone-tmpfiles
 Provides:       systemd-tmpfiles = %{version}-%{release}
 Conflicts:      systemd-standalone-shutdown
@@ -746,6 +748,26 @@ library or other libraries from systemd-libs. This package conflicts with the
 main systemd package and is meant for use in exitrds.
 
 %prep
+# Print varius with's and without's to make it easier to figure out what is going on
+echo %{shrink:
+       '**'
+       bzip2=%{?with_bzip2}%{!?with_bzip2:0}
+       gnutls=%{?with_gnutls}%{!?with_gnutls:0}
+       lz4=%{?with_lz4}%{!?with_lz4:0}
+       xz=%{?with_xz}%{!?with_xz:0}
+       zlib=%{?with_zlib}%{!?with_zlib:0}
+       zstd=%{?with_zstd}%{!?with_zstd:0}
+       bootstrap=%{?with_bootstrap}%{!?with_bootstrap:0}
+       tests=%{?with_tests}%{!?with_tests:0}
+       lto=%{?with_lto}%{!?with_lto:0}
+       docs=%{?with_docs}%{!?with_docs:0}
+       upstream=%{?with_upstream}%{!?with_upstream:0}
+       obs=%{?with_obs}%{!?with_obs:0}
+       fedora=%{?fedora}
+       rhel=%{?rhel}
+       _arch=%{_arch}
+       '**'}
+
 %if %{with obs}
 # Recipe files in the OBS build are in a distro-specific dir, as they conflict (e.g. with SUSE ones)
 mv %{_sourcedir}/%{name}.fedora/* %{_sourcedir}
