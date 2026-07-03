@@ -158,6 +158,7 @@ for file in files(buildroot):
                        mount.ddi|
                        importctl|
                        portablectl|
+                       portabled|portable1|
                        systemd-nspawn|
                        systemd\.nspawn|
                        systemd-vmspawn|
@@ -255,13 +256,11 @@ for file in files(buildroot):
                        binfmt|
                        sysctl|
                        coredump|
+                       homectl|
                        homed|home1|
-                       sysupdate|updatctl|
-                       oomd|
-                       portabled|portable1
-    ''', n, re.X):     # coredumpctl, homectl, portablectl are included in the main package because
-                       # they can be used to interact with remote daemons. Also, the user could be
-                       # confused if those user-facing binaries are not available.
+                       sysupdate|updatectl|
+                       oomd
+    ''', n, re.X):
         o = outputs['udev']
 
     elif re.search(r'''/boot/efi|
