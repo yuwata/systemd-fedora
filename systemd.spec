@@ -173,9 +173,14 @@ BuildRequires:  cryptsetup-devel
 # Require (previous version) of our macros package.
 # We use the %%systemd_{post,preun,…} macros for various services.
 BuildRequires:  systemd-rpm-macros
+%endif
+
+%if 0%{?rhel} == 0
 # Use dlopen-notes to generate Requires/Recommends from embedded metadata.
+# Currently, package-notes are not available on Centos Stream 9 or 10.
 BuildRequires:  package-notes >= 0.18
 %endif
+
 BuildRequires:  dbus-devel
 BuildRequires:  util-linux
 # /usr/bin/getfacl is needed by test-acl-util
