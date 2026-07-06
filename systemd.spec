@@ -31,6 +31,9 @@
 # Build with OBS-specific quirks
 %bcond obs       0
 
+# Temporary macro to enable systemd-report.standalone
+%bcond report_standalone 0
+
 # When bootstrap, libcryptsetup is disabled
 # but auto-features causes many options to be turned on
 # that depend on libcryptsetup (e.g. libcryptsetup-plugins, homed)
@@ -175,10 +178,10 @@ BuildRequires:  cryptsetup-devel
 BuildRequires:  systemd-rpm-macros
 %endif
 
-%if 0%{?rhel} <= 10
+%if 0%{?rhel} == 0 || 0%{?rhel} > 10
 # Use dlopen-notes to generate Requires/Recommends from embedded metadata.
 # Currently, package-notes are not available on Centos Stream 9 or 10.
-BuildRequires:  package-notes >= 0.18
+BuildRequires:  package-notes >= 0.20
 %endif
 
 BuildRequires:  dbus-devel
@@ -332,7 +335,7 @@ Conflicts:      dracut < 060-2
 Conflicts:      dracut < 059-16
 %endif
 
-%if %{with upstream}
+%if %{with report_standalone}
 Conflicts:      systemd-standalone-report
 Provides:       systemd-report = %{version}-%{release}
 %endif
@@ -745,7 +748,7 @@ Standalone systemd-repart binary with no dependencies on the systemd-shared
 library or other libraries from systemd-libs. This package conflicts with the
 systemd-udev package and is meant for use on systems without systemd-udev.
 
-%if %{with upstream}
+%if %{with report_standalone}
 %package standalone-report
 Summary:       Standalone systemd-report binaries for use on systems without systemd
 Provides:      systemd-report = %{version}-%{release}
@@ -1587,7 +1590,7 @@ fi
 
 %files standalone-repart -f .file-list-standalone-repart
 
-%if %{with upstream}
+%if %{with report_standalone}
 %files standalone-report -f .file-list-standalone-report
 %endif
 
