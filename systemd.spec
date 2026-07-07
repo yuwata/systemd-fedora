@@ -85,7 +85,7 @@ Release:        %autorelease
 %global stable %(c="%version"; [ "$c" = "${c#*.*}" ]; echo $?)
 
 # Temporary macro to enable systemd-report.standalone
-%bcond report_standalone %[ v"%{version}" >= v"262~devel" ]
+%bcond report_standalone %[ v"%{version}" >= v"261.999" ]
 
 # For a breakdown of the licensing, see README
 License:        LGPL-2.1-or-later AND MIT AND GPL-2.0-or-later
