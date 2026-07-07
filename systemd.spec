@@ -31,9 +31,6 @@
 # Build with OBS-specific quirks
 %bcond obs       0
 
-# Temporary macro to enable systemd-report.standalone
-%bcond report_standalone 0
-
 # When bootstrap, libcryptsetup is disabled
 # but auto-features causes many options to be turned on
 # that depend on libcryptsetup (e.g. libcryptsetup-plugins, homed)
@@ -86,6 +83,9 @@ Version:        %{?version_override}%{!?version_override:%(cat meson.version)}
 Release:        %autorelease
 
 %global stable %(c="%version"; [ "$c" = "${c#*.*}" ]; echo $?)
+
+# Temporary macro to enable systemd-report.standalone
+%bcond report_standalone %[ v"%{version}" >= v"262~devel" ]
 
 # For a breakdown of the licensing, see README
 License:        LGPL-2.1-or-later AND MIT AND GPL-2.0-or-later
@@ -816,6 +816,7 @@ main systemd package and is meant for use in exitrds.
        docs=%{?with_docs}%{!?with_docs:0}
        upstream=%{?with_upstream}%{!?with_upstream:0}
        obs=%{?with_obs}%{!?with_obs:0}
+       report_standalone=%{?with_report_standalone}%{!?with_report_standalone:0}
        fedora=%{?fedora}
        rhel=%{?rhel}
        _arch=%{_arch}
