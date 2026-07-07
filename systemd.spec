@@ -67,6 +67,11 @@
 %define noarch_requires_version %{version}-%{release}
 %endif
 
+%if 0%{?__isa_bits} == 64
+%global elf_bits (64bit)
+%global elf_suffix ()%{elf_bits}
+%endif
+
 Name:           systemd
 Url:            https://systemd.io
 # Allow users to specify the version and release when building the rpm by
