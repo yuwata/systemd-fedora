@@ -134,6 +134,13 @@ Source25:       98-default-mac-none.link
 
 Source26:       systemd-user
 
+%if 0%{?fedora} < 40 && 0%{?rhel} < 10
+# Work-around for dracut issue: run generators directly when we are in initrd
+# https://bugzilla.redhat.com/show_bug.cgi?id=2164404
+# Drop when dracut-060 is available.
+Patch:          https://github.com/systemd/systemd/pull/26494.patch
+%endif
+
 %if %{without upstream}
 # Those are downstream-only patches, but we don't want them in packit builds.
 
@@ -176,7 +183,7 @@ BuildRequires:  cryptsetup-devel
 BuildRequires:  systemd-rpm-macros
 %endif
 
-%if 0%{?rhel} == 0 || 0%{?rhel} > 10
+%if !%{defined rhel} || 0%{?rhel} > 10
 # Use dlopen-notes to generate Requires/Recommends from embedded metadata.
 # Currently, package-notes are not available on Centos Stream 9 or 10.
 BuildRequires:  package-notes >= 0.20
@@ -297,7 +304,7 @@ Requires:       /usr/bin/systemd-sysusers
 # so this biases towards the common version.
 Recommends:     systemd-sysusers%{_isa} = %{version}-%{release}
 
-%if 0%{?rhel} <= 10
+%if %{defined rhel} && 0%{?rhel} <= 10
 Requires:       libzstd.so.1%{?elf_suffix}
 %endif
 
@@ -354,7 +361,7 @@ Provides:       /usr/sbin/reboot
 Provides:       /usr/sbin/shutdown
 %endif
 
-%if 0%{?rhel} <= 10
+%if %{defined rhel} && 0%{?rhel} <= 10
 # libmount is always required, even in containers, so make it a hard dependency.
 Requires:       libmount.so.1%{?elf_suffix}
 Requires:       libmount.so.1(MOUNT_2.26)%{?elf_bits}
@@ -480,7 +487,7 @@ Requires(postun): systemd%{_isa} = %{version}-%{release}
 Requires(post): grep
 Requires:       kmod >= 18-4
 
-%if 0%{?rhel} <= 10
+%if %{defined rhel} && 0%{?rhel} <= 10
 # Libkmod is used to load modules. Assume that if we need udevd, we certainly
 # want to load modules, so make this into a hard dependency here.
 Requires:       libkmod.so.2%{?elf_suffix}
@@ -508,7 +515,7 @@ Provides:       systemd-timesyncd = %{version}-%{release}
 %endif
 Conflicts:      systemd-networkd < %{version}-%{release}
 
-%if 0%{?rhel} <= 10
+%if %{defined rhel} && 0%{?rhel} <= 10
 # Libkmod is used to load modules. Assume that if we need udevd, we certainly
 # want to load modules, so make this into a hard dependency here.
 Requires:       libkmod.so.2%{?elf_suffix}
@@ -659,7 +666,7 @@ License:        LGPL-2.1-or-later
 Requires:       firewalld-filesystem
 Provides:       systemd-journal-gateway = %{version}-%{release}
 Provides:       systemd-journal-gateway%{_isa} = %{version}-%{release}
-%if 0%{?rhel} <= 10
+%if %{defined rhel} && 0%{?rhel} <= 10
 Requires:       libmicrohttpd.so.12%{?elf_suffix}
 Requires:       libcurl.so.4%{?elf_suffix}
 %endif
@@ -699,7 +706,7 @@ enabled for this to have any effect.
 %package resolved
 Summary:        Network Name Resolution manager
 Requires:       systemd%{_isa} = %{version}-%{release}
-%if 0%{?rhel} <= 10
+%if %{defined rhel} && 0%{?rhel} <= 10
 Requires:       libidn2.so.0%{?elf_suffix}
 Requires:       libidn2.so.0(IDN2_0.0.0)%{?elf_bits}
 %endif
