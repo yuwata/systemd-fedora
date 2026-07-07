@@ -134,13 +134,6 @@ Source25:       98-default-mac-none.link
 
 Source26:       systemd-user
 
-%if 0%{?fedora} < 40 && 0%{?rhel} < 10
-# Work-around for dracut issue: run generators directly when we are in initrd
-# https://bugzilla.redhat.com/show_bug.cgi?id=2164404
-# Drop when dracut-060 is available.
-Patch:          https://github.com/systemd/systemd/pull/26494.patch
-%endif
-
 %if %{without upstream}
 # Those are downstream-only patches, but we don't want them in packit builds.
 
@@ -802,9 +795,7 @@ Standalone systemd-shutdown binary with no dependencies on the systemd-shared
 library or other libraries from systemd-libs. This package conflicts with the
 main systemd package and is meant for use in exitrds.
 
-%prep
-# Print varius with's and without's to make it easier to figure out what is going on
-echo %{shrink:
+%define status %{shrink:
        '**'
        bzip2=%{?with_bzip2}%{!?with_bzip2:0}
        gnutls=%{?with_gnutls}%{!?with_gnutls:0}
@@ -823,6 +814,10 @@ echo %{shrink:
        _arch=%{_arch}
        '**'}
 
+%prep
+# Print varius with's and without's to make it easier to figure out what is going on
+echo %{status}
+
 %if %{with obs}
 # Recipe files in the OBS build are in a distro-specific dir, as they conflict (e.g. with SUSE ones)
 mv %{_sourcedir}/%{name}.fedora/* %{_sourcedir}
@@ -839,6 +834,8 @@ mv %{_sourcedir}/%{name}.fedora/* %{_sourcedir}
 sed -r -i 's/^u!/u/' sysusers.d/*.conf*
 
 %build
+echo %{status}
+
 %if 0%{?eln}
 %global ntpvendor fedora
 %else
