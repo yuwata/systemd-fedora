@@ -129,7 +129,7 @@ Source15:       10-oomd-per-slice-defaults.conf
 Source16:       10-timeout-abort.conf
 Source17:       10-map-count.conf
 Source18:       60-block-scheduler.rules
-
+Source19:       99-kernel-hardening.conf
 Source20:       macros.sysusers.compat
 Source21:       macros.sysusers
 Source22:       sysusers.attr
@@ -1140,6 +1140,9 @@ install -Dm0644 -t %{buildroot}/usr/lib/firewalld/services/ %{SOURCE8} %{SOURCE9
 # Install additional docs
 # https://bugzilla.redhat.com/show_bug.cgi?id=1234951
 install -Dm0644 -t %{buildroot}%{_pkgdocdir}/ %{SOURCE10}
+
+# Install kernel hardening file. Disabled by default.
+install -Dm0644 -t %{buildroot}%{_pkgdocdir}/ %{SOURCE19}
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1378974
 install -Dm0644 -t %{buildroot}%{system_unit_dir}/systemd-udev-trigger.service.d/ %{SOURCE11}
