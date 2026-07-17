@@ -119,7 +119,6 @@ Source6:        inittab
 Source7:        sysctl.conf.README
 Source8:        systemd-journal-remote.xml
 Source9:        systemd-journal-gatewayd.xml
-Source10:       20-yama-ptrace.conf
 Source11:       systemd-udev-trigger-no-reload.conf
 # https://fedoraproject.org/wiki/How_to_filter_libabigail_reports
 Source13:       libabigail.abignore
@@ -1136,10 +1135,6 @@ protected_packages = systemd, systemd-udev
 EOF
 
 install -Dm0644 -t %{buildroot}/usr/lib/firewalld/services/ %{SOURCE8} %{SOURCE9}
-
-# Install additional docs
-# https://bugzilla.redhat.com/show_bug.cgi?id=1234951
-install -Dm0644 -t %{buildroot}%{_pkgdocdir}/ %{SOURCE10}
 
 # Install kernel hardening file. Disabled by default.
 install -Dm0644 -t %{buildroot}%{_pkgdocdir}/ %{SOURCE19}
