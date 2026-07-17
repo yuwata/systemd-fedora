@@ -99,10 +99,11 @@ for file in files(buildroot):
                     /usr/lib.*/(security|pkgconfig)$|
                     /usr/lib/rpm(/macros.d|)$|
                     /usr/lib/firewalld(/services|)$|
-                    /usr/share/(locale|licenses|doc)|             # no $
+                    /usr/share/(locale|licenses)|             # no $
+                    LICENSE|
                     /etc(/pam\.d|/xdg|/X11|/X11/xinit|/X11.*\.d|)$|
                     /etc/(dnf|dnf/protected.d)$|
-                    /usr/(src|lib/debug)|                         # no $
+                    /usr/(src|lib/debug)|                     # no $
                     /run$|
                     /var(/cache|/log|/lib|/run|)$
     ''', n, re.X):
@@ -283,7 +284,8 @@ for file in files(buildroot):
         prefix = known_files[n].split()[:-1]
     elif file.is_dir(follow_symlinks=False):
         prefix = ['%dir']
-    elif 'README' in n:
+    # Allow .conf files to be linked as config. They must not be %doc.
+    elif ('README' in n or '/doc/' in n) and not n.endswith('.conf'):
         prefix = ['%doc']
     elif n.startswith('/etc'):
         prefix = ['%config(noreplace)']
@@ -301,8 +303,9 @@ for file in files(buildroot):
         print(f'{prefix}{n}{suffix}', file=file)
 
 
-
-if [print(f'ERROR: no file names were written to {o.name}')
-    for name, o in outputs.items()
-    if o.tell() == 0 and name not in potentially_empty_outputs]:
+if [
+        print(f'ERROR: no file names were written to {o.name}')
+        for name, o in outputs.items()
+        if o.tell() == 0 and name not in potentially_empty_outputs
+]:
     sys.exit(1)
