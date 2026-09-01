@@ -82,7 +82,7 @@ Url:            https://systemd.io
 # But don't do that on OBS, otherwise the version subst fails, and will be
 # like 257-123-gabcd257.1 instead of 257-123-gabcd
 %if %{without obs}
-Version:        %{?version_override}%{!?version_override:261.2}
+Version:        %{?version_override}%{!?version_override:262~rc1}
 %else
 Version:        %{?version_override}%{!?version_override:%(cat meson.version)}
 %endif
@@ -159,10 +159,6 @@ Patch:          0001-core-create-userdb-root-directory-with-correct-label.patch
 
 # Workaround for https://bugzilla.redhat.com/show_bug.cgi?id=2415701
 Patch:          0002-machined-continue-without-resolve.hook-socket.patch
-
-# We want to depend on and load openssl-4 in preference
-Patch:          https://github.com/systemd/systemd/pull/42668.patch
-Patch:          https://github.com/systemd/systemd/commit/7be9032019015ddd61985e6a6721d813d62dad0b.patch
 %endif
 
 %ifarch %{ix86} x86_64 aarch64 riscv64
