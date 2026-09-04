@@ -23,7 +23,10 @@
 # create /usr/sbin symlinks instead of shipping them in the package. This
 # avoids file conflicts when installing on merged-sbin systems and eliminates
 # bootstrap ordering issues with the bin/sbin merge.
-%bcond sbin_compat 1
+#
+# So far only Fedora >= 43 ships a filesystem package with those file
+# triggers and the required matching virtual provides.
+%bcond sbin_compat %[0%{?fedora} >= 43]
 
 # riscv64 has LTO disabled globally
 %bcond lto       %["%_arch" != "riscv64"]
