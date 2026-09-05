@@ -162,6 +162,12 @@ Patch:          0001-core-create-userdb-root-directory-with-correct-label.patch
 
 # Workaround for https://bugzilla.redhat.com/show_bug.cgi?id=2415701
 Patch:          0002-machined-continue-without-resolve.hook-socket.patch
+
+# Disable systemd-coredumpd.service until the selinux policy is patched
+# (https://github.com/fedora-selinux/selinux-policy/pull/3397,
+#  https://src.fedoraproject.org/rpms/selinux-policy/pull-request/675)
+Patch:          0001-units-allow-disabling-systemd-coredumpd.service.patch
+
 %endif
 
 %ifarch %{ix86} x86_64 aarch64 riscv64
