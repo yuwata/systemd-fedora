@@ -14,18 +14,6 @@ to presets to enable it by default.
  units/systemd-coredumpd.service.in | 3 +++
  3 files changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/presets/90-systemd.preset b/presets/90-systemd.preset
-index bf6006c35c..563f4d831f 100644
---- a/presets/90-systemd.preset
-+++ b/presets/90-systemd.preset
-@@ -22,6 +22,7 @@ enable getty@.service
- enable systemd-boot-clear-sysfail.service
- enable systemd-boot-update.service
- enable systemd-confext.service
-+enable systemd-coredumpd.service
- enable systemd-homed.service
- enable systemd-homed-activate.service
- enable systemd-journalctl-metrics.socket
 diff --git a/units/meson.build b/units/meson.build
 index 0d60b4e006..9f8f8d0e41 100644
 --- a/units/meson.build
