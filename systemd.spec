@@ -168,6 +168,10 @@ Patch:          0002-machined-continue-without-resolve.hook-socket.patch
 #  https://src.fedoraproject.org/rpms/selinux-policy/pull-request/675)
 Patch:          0001-units-allow-disabling-systemd-coredumpd.service.patch
 
+# Backport patch to restore noop behaviour of udevadm settle if udevd is
+# not running.
+Patch:          https://github.com/systemd/systemd/pull/43689.patch
+
 %endif
 
 %ifarch %{ix86} x86_64 aarch64 riscv64
