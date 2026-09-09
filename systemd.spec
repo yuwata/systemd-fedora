@@ -85,7 +85,7 @@ Url:            https://systemd.io
 # But don't do that on OBS, otherwise the version subst fails, and will be
 # like 257-123-gabcd257.1 instead of 257-123-gabcd
 %if %{without obs}
-Version:        %{?version_override}%{!?version_override:262~rc1}
+Version:        %{?version_override}%{!?version_override:262~rc2}
 %else
 Version:        %{?version_override}%{!?version_override:%(cat meson.version)}
 %endif
@@ -162,15 +162,6 @@ Patch:          0001-core-create-userdb-root-directory-with-correct-label.patch
 
 # Workaround for https://bugzilla.redhat.com/show_bug.cgi?id=2415701
 Patch:          0002-machined-continue-without-resolve.hook-socket.patch
-
-# Disable systemd-coredumpd.service until the selinux policy is patched
-# (https://github.com/fedora-selinux/selinux-policy/pull/3397,
-#  https://src.fedoraproject.org/rpms/selinux-policy/pull-request/675)
-Patch:          0001-units-allow-disabling-systemd-coredumpd.service.patch
-
-# Backport patch to restore noop behaviour of udevadm settle if udevd is
-# not running.
-Patch:          https://github.com/systemd/systemd/pull/43689.patch
 
 %endif
 
@@ -849,6 +840,9 @@ mv %{_sourcedir}/%{name}.fedora/* %{_sourcedir}
 # Disable user lockdown until rpm implements it natively.
 # https://github.com/rpm-software-management/rpm/issues/3450
 sed -r -i 's/^u!/u/' sysusers.d/*.conf*
+
+# Disable the preset for systemd-coredumd to work with old SELinux policy
+sed -r -i '/enable systemd-coredumpd.service/d' presets/90-systemd.preset
 
 %build
 echo %{status}
