@@ -634,6 +634,17 @@ This package contains the signed version.
 %endif
 %endif
 
+%package import-keys
+Summary:        GPG keys for verifying systemd image imports
+BuildArch:      noarch
+License:        LGPL-2.1-or-later
+# self-obsoletes after package split
+Obsoletes:      systemd-container < 262~rc3-2
+
+%description import-keys
+GPG keyring used by systemd-importd to verify signatures of downloaded
+container and virtual machine images.
+
 %package container
 # Name is the same as in Debian
 Summary: Tools for containers and VMs
@@ -641,12 +652,15 @@ Requires:       systemd%{_isa} = %{version}-%{release}
 Requires(post):   systemd%{_isa} = %{version}-%{release}
 Requires(preun):  systemd%{_isa} = %{version}-%{release}
 Requires(postun): systemd%{_isa} = %{version}-%{release}
+Recommends:     systemd-import-keys = %{noarch_requires_version}
 # For systemd-vmspawn which uses qemu:
 Recommends:     qemu-kvm-core
 %if 0%{?fedora}
 Recommends:     qemu-device-display-virtio-gpu
 Recommends:     qemu-device-display-virtio-vga
 %endif
+# self-obsoletes after package split
+Obsoletes:      systemd-container < 262~rc3-2
 
 # Bias the system towards libcurl-minimal if nothing pulls in full libcurl (#1997040)
 Suggests:       libcurl-minimal
@@ -1586,6 +1600,8 @@ fi
 %files boot -f .file-list-boot
 %endif
 %endif
+
+%files import-keys -f .file-list-import-keys
 
 %files container -f .file-list-container
 %ghost %dir %attr(0700,-,-) /var/lib/machines

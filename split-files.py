@@ -70,6 +70,7 @@ outputs = {suffix: open(f'.file-list-{suffix}', 'w')
                    'sysusers',
                    'devel',
                    'container',
+                   'import-keys',
                    'networkd',
                    'networkd-defaults',
                    'oomd-defaults',
@@ -154,6 +155,9 @@ for file in files(buildroot):
     ''', n, re.X):
         o = outputs['sysusers']
 
+    elif re.search(r'import-pubring', n):
+        o = outputs['import-keys']
+
     elif re.search(r'''mymachines|
                        machinectl|
                        mount.ddi|
@@ -164,7 +168,6 @@ for file in files(buildroot):
                        systemd\.nspawn|
                        systemd-vmspawn|
                        systemd-dissect|
-                       import-pubring|
                        systemd-machined|
                        systemd-import|
                        systemd-export|
