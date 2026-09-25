@@ -652,6 +652,7 @@ Requires:       systemd%{_isa} = %{version}-%{release}
 Requires(post):   systemd%{_isa} = %{version}-%{release}
 Requires(preun):  systemd%{_isa} = %{version}-%{release}
 Requires(postun): systemd%{_isa} = %{version}-%{release}
+Requires:       gnupg2
 Recommends:     systemd-import-keys = %{noarch_requires_version}
 # For systemd-vmspawn which uses qemu:
 Recommends:     qemu-kvm-core
