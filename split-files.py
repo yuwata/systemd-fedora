@@ -63,6 +63,7 @@ outputs = {suffix: open(f'.file-list-{suffix}', 'w')
                    'shared',
                    'libs',
                    'udev',
+                   'imds',
                    'ukify',
                    'boot',
                    'pam',
@@ -209,6 +210,9 @@ for file in files(buildroot):
 
     elif re.search(r'10-oomd-.*defaults.conf|lib/systemd/oomd.conf.d', n, re.X):
         o = outputs['oomd-defaults']
+
+    elif 'imds' in n:
+        o = outputs['imds']
 
     elif re.search(r'''udev(?!\.pc)|
                        hwdb|

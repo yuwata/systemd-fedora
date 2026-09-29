@@ -563,6 +563,17 @@ This package also provides systemd-timesyncd, a network time protocol daemon.
 It also contains tools to manage encrypted home areas and secrets bound to the
 machine, and to create or grow partitions and make file systems automatically.
 
+%package imds
+Summary: Client for IMDS cloud metadata services
+Requires:       systemd%{_isa} = %{version}-%{release}
+
+%description imds
+%{summary}. When this package
+is installed, systemd-imds-generator will automatically enable systemd-imds
+on supported clouds.
+
+This code should be considered experimental for now.
+
 %package ukify
 Summary:        Tool to build Unified Kernel Images
 Requires:       systemd = %{noarch_requires_version}
@@ -1590,6 +1601,8 @@ fi
 %files resolved -f .file-list-resolve
 
 %files devel -f .file-list-devel
+
+%files imds -f .file-list-imds
 
 %files udev -f .file-list-udev
 
