@@ -647,6 +647,7 @@ This package contains the signed version.
 
 %package import-keys
 Summary:        GPG keys for verifying systemd image imports
+BuildArch:      noarch
 License:        LGPL-2.1-or-later
 # self-obsoletes after package split
 Obsoletes:      systemd-container < 262~rc3-2
