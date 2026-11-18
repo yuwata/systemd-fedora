@@ -303,6 +303,7 @@ Requires:       systemd-libs%{_isa} = %{version}-%{release}
 %{?fedora:Recommends:     systemd-networkd = %{version}-%{release}}
 %{?fedora:Recommends:     systemd-resolved = %{version}-%{release}}
 Requires:       systemd-shared%{_isa} = %{version}-%{release}
+Requires:       systemd-tools%{_isa} = %{version}-%{release}
 Requires:       /usr/bin/systemd-sysusers
 
 # The standalone version doesn't Provide the _isa suffix,
@@ -313,10 +314,8 @@ Recommends:     systemd-sysusers%{_isa} = %{version}-%{release}
 Requires:       libzstd.so.1%{?elf_suffix}
 %endif
 
-Recommends:     diffutils
 Requires:       (util-linux-core or util-linux)
 Requires:       (libbpf >= 2:1.4.7 if libbpf)
-Provides:       /bin/systemctl
 Provides:       /sbin/shutdown
 Provides:       syslog
 Provides:       systemd-units = %{version}-%{release}
@@ -349,8 +348,6 @@ Conflicts:      dracut < 059-16
 Conflicts:      systemd-standalone-report
 Provides:       systemd-report = %{version}-%{release}
 %endif
-Conflicts:      systemd-standalone-tmpfiles
-Provides:       systemd-tmpfiles = %{version}-%{release}
 Conflicts:      systemd-standalone-shutdown
 Provides:       systemd-shutdown = %{version}-%{release}
 
@@ -468,6 +465,31 @@ Conflicts:      systemd < 257.3-6
 %description sysusers
 This package contains the systemd-sysusers program.
 
+%package tools
+Summary:        systemd command-line tools
+License:        LGPL-2.1-or-later
+Requires:       systemd-shared%{_isa} = %{version}-%{release}
+Recommends:     diffutils
+Provides:       /bin/systemctl
+Provides:       systemd-repart = %{version}-%{release}
+Provides:       systemd-tmpfiles = %{version}-%{release}
+Conflicts:      systemd-standalone-repart
+Conflicts:      systemd-standalone-tmpfiles
+# Older systemd and systemd-udev packages own some of these binaries.
+Conflicts:      systemd < %{version}-%{release}
+Conflicts:      systemd-udev < %{version}-%{release}
+
+%if %{defined rhel} && 0%{?rhel} <= 10
+# systemd-repart loads these libraries at runtime.
+Requires:       libblkid.so.1%{?elf_suffix}
+Requires:       libfdisk.so.1%{?elf_suffix}
+%endif
+
+%description tools
+Command-line tools for controlling systemd, managing credentials, preparing
+disk images, managing temporary files, and more. They can be installed
+without the systemd service manager.
+
 %package devel
 Summary:        Development headers for systemd
 License:        LGPL-2.1-or-later AND MIT
@@ -499,7 +521,6 @@ Requires:       libkmod.so.2(LIBKMOD_5)%{?elf_bits}
 # udev uses libblkid in various builtins so make it a hard dependency.
 Requires:       libblkid.so.1%{?elf_suffix}
 Requires:       libblkid.so.1(BLKID_2.30)%{?elf_bits}
-Requires:       libfdisk.so.1%{?elf_suffix}
 %endif
 
 Provides:       udev = %{version}
@@ -539,9 +560,6 @@ Recommends:     kbd
 Provides:       u2f-hidraw-policy = 1.0.2-40
 Obsoletes:      u2f-hidraw-policy < 1.0.2-40
 
-Conflicts:      systemd-standalone-repart
-Provides:       systemd-repart = %{version}-%{release}
-
 # Newer versions of those are required to support X11 keycode remapping
 Conflicts:      xorg-x11-drv-evdev < 2.11.0
 Conflicts:      xorg-x11-drv-libinput < 1.5.0
@@ -561,7 +579,7 @@ virtual machines, but not in containers.
 This package also provides systemd-timesyncd, a network time protocol daemon.
 
 It also contains tools to manage encrypted home areas and secrets bound to the
-machine, and to create or grow partitions and make file systems automatically.
+machine, and units for automatic partitioning and file system setup.
 
 %package imds
 Summary: Client for IMDS cloud metadata services
@@ -770,14 +788,14 @@ Different binaries test different parts of the codebase.
 %package standalone-repart
 Summary:       Standalone systemd-repart binary for use on systems without systemd
 Provides:      systemd-repart = %{version}-%{release}
-Conflicts:     systemd-udev
+Conflicts:     systemd-tools
 Suggests:      coreutils-single
 RemovePathPostfixes: .standalone
 
 %description standalone-repart
 Standalone systemd-repart binary with no dependencies on the systemd-shared
 library or other libraries from systemd-libs. This package conflicts with the
-systemd-udev package and is meant for use on systems without systemd-udev.
+systemd-tools package.
 
 %if %{with report_standalone}
 %package standalone-report
@@ -796,14 +814,14 @@ is meant for use on systems without systemd or with older version of it.
 %package standalone-tmpfiles
 Summary:       Standalone systemd-tmpfiles binary for use on systems without systemd
 Provides:      systemd-tmpfiles = %{version}-%{release}
-Conflicts:     systemd
+Conflicts:     systemd-tools
 Suggests:      coreutils-single
 RemovePathPostfixes: .standalone
 
 %description standalone-tmpfiles
 Standalone systemd-tmpfiles binary with no dependencies on the systemd-shared
 library or other libraries from systemd-libs. This package conflicts with the
-main systemd package and is meant for use on systems without systemd.
+systemd-tools package.
 
 %package standalone-sysusers
 Summary:       Standalone systemd-sysusers binary for use on systems without systemd
@@ -1597,6 +1615,10 @@ fi
 %files rpm-macros -f .file-list-rpm-macros
 
 %files sysusers -f .file-list-sysusers
+
+%files tools -f .file-list-tools
+%license LICENSE.LGPL2.1
+%dir %{pkgdir}
 
 %files resolved -f .file-list-resolve
 

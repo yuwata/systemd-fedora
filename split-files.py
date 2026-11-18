@@ -47,6 +47,27 @@ known_files = '''
 known_files = {line.split()[-1]:line for line in known_files.splitlines()
                if line and not line.startswith('#')}
 
+tool_paths = {
+    '/usr/bin/portablectl',
+    '/usr/bin/systemctl',
+    '/usr/bin/systemd-cat',
+    '/usr/bin/systemd-creds',
+    '/usr/bin/systemd-delta',
+    '/usr/bin/systemd-detect-virt',
+    '/usr/bin/systemd-escape',
+    '/usr/bin/systemd-id128',
+    '/usr/bin/systemd-inhibit',
+    '/usr/bin/systemd-notify',
+    '/usr/bin/systemd-path',
+    '/usr/bin/systemd-repart',
+    '/usr/bin/systemd-tmpfiles',
+    '/usr/bin/varlinkctl',
+    '/usr/lib/systemd/systemd-keyutil',
+    '/usr/lib/systemd/systemd-measure',
+    '/usr/lib/systemd/systemd-sbsign',
+}
+tool_manpages = {os.path.basename(p) for p in tool_paths}
+
 def files(root):
     os.chdir(root)
     todo = collections.deque(['.'])
@@ -69,6 +90,7 @@ outputs = {suffix: open(f'.file-list-{suffix}', 'w')
                    'pam',
                    'rpm-macros',
                    'sysusers',
+                   'tools',
                    'devel',
                    'container',
                    'import-keys',
@@ -156,6 +178,11 @@ for file in files(buildroot):
     ''', n, re.X):
         o = outputs['sysusers']
 
+    elif (n in tool_paths or
+          (n.startswith('/usr/share/man/') and
+           re.sub(r'\.[1-9](?:\.\w+)?$', '', file.name) in tool_manpages)):
+        o = outputs['tools']
+
     elif re.search(r'import-pubring', n):
         o = outputs['import-keys']
 
@@ -163,7 +190,6 @@ for file in files(buildroot):
                        machinectl|
                        mount.ddi|
                        importctl|
-                       portablectl|
                        portabled|portable1|
                        systemd-nspawn|
                        systemd\.nspawn|
