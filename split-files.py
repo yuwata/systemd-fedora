@@ -178,9 +178,19 @@ for file in files(buildroot):
     ''', n, re.X):
         o = outputs['sysusers']
 
-    elif (file.name in tools or
-          (n.startswith('/usr/share/man/') and
-           re.sub(r'\.[1-9](?:\.\w+)?$', '', file.name) in tools)):
+    elif (
+            # files with the specified name: the binary and the bash completion script
+            file.name in tools
+            # zsh completion scripts, prefixed with '_'
+            or (n.startswith('/usr/share/zsh/') and
+                re.sub(r'^_', '', file.name) in tools)
+            # compressed or non-compressed man pages
+            or (n.startswith('/usr/share/man/') and
+                re.sub(r'\.[1-9](?:\.\w+)?$', '', file.name) in tools)
+            # shared zsh helpers
+            or (n.startswith('/usr/share/zsh/') and
+                file.name.startswith('_sd_'))
+    ):
         o = outputs['tools']
 
     elif re.search(r'import-pubring', n):
