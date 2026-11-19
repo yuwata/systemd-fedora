@@ -48,6 +48,7 @@ known_files = {line.split()[-1]:line for line in known_files.splitlines()
                if line and not line.startswith('#')}
 
 tools = {
+    'busctl',
     'portablectl',
     'systemctl',
     'systemd-cat',
